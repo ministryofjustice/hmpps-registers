@@ -4,7 +4,7 @@
 replicaCount: 2
 
 image:
-  repository: quay.io/hmpps/hmpps-template-typescript
+  repository: quay.io/hmpps/hmpps-registers
   tag: latest
   pullPolicy: IfNotPresent
   port: 3000
@@ -12,8 +12,8 @@ image:
 ingress:
   enabled: true
   enable_whitelist: false
-  host: hmpps-template-typescript-dev.hmpps.service.justice.gov.uk
-  cert_secret: hmpps-template-typescript-cert
+  host: hmpps-registers-dev.hmpps.service.justice.gov.uk
+  cert_secret: hmpps-registers-cert
   path: /
 
 env:

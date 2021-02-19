@@ -1,8 +1,8 @@
 {
-  "name": "hmpps-template-typescript",
+  "name": "hmpps-registers",
   "version": "0.0.1",
-  "description": "HMPPS Typescript Template",
-  "repository": "git@github.com:ministryofjustice/hmpps-template-typescript.git",
+  "description": "Hmpps Registers",
+  "repository": "git@github.com:ministryofjustice/hmpps-registers.git",
   "license": "MIT",
   "scripts": {
     "copy-views": "cp -R server/views dist/server/",

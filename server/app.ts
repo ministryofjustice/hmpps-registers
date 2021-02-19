@@ -140,7 +140,7 @@ export default function createApp(userService: UserService): express.Application
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'HMPPS Typescript Template'
+  app.locals.applicationName = 'Hmpps Registers'
 
   app.use((req, res, next) => {
     res.locals.user = req.user
