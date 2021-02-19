@@ -176,7 +176,7 @@ export default function createApp(userService: UserService): express.Application
     })(req, res, next)
   )
 
-  const authLogoutUrl = `${config.apis.hmppsAuth.externalUrl}/logout?client_id=${config.apis.hmppsAuth.apiClientId}&redirect_uri=${config.domain}`
+  const authLogoutUrl = `${config.apis.hmppsAuth.externalUrl}/logout?client_id=${config.apis.hmppsAuth.systemClientId}&redirect_uri=${config.domain}`
 
   app.use('/logout', (req, res) => {
     if (req.user) {
