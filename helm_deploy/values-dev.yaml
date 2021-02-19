@@ -12,7 +12,7 @@ image:
 ingress:
   enabled: true
   enable_whitelist: false
-  host: hmpps-registers-dev.hmpps.service.justice.gov.uk
+  host: registers-dev.hmpps.service.justice.gov.uk
   cert_secret: hmpps-registers-cert
   path: /
 
