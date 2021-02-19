@@ -1,11 +1,4 @@
-# hmpps-template-typescript
-Template github repo used for new Typescript based projects.
-
-## Manually branding from template app
-Run the `rename-project.bash` and create a PR.
-
-The rename-project.bash script takes a single argument - the name of the project and calculates from it the project description
-It then performs a search and replace and directory renames so the project is ready to be used.
+# hmpps-registers
 
 ## Running the app
 The easiest way to run the app is to use docker compose to create the service and all dependencies. 
