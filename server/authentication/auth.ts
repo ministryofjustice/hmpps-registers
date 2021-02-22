@@ -37,7 +37,12 @@ function init(): void {
       clientSecret: config.apis.hmppsAuth.systemClientSecret,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
-      customHeaders: { Authorization: generateOauthClientToken() },
+      customHeaders: {
+        Authorization: generateOauthClientToken(
+          config.apis.hmppsAuth.systemClientId,
+          config.apis.hmppsAuth.systemClientSecret
+        ),
+      },
     },
     (token, refreshToken, params, profile, done) => {
       return done(null, { token, username: params.user_name, authSource: params.auth_source })
