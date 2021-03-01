@@ -21,4 +21,3 @@ env:
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
   COURT_REGISTER_API_URL: https://court-register-dev.hmpps.service.justice.gov.uk
-
