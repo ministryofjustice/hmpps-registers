@@ -1,15 +1,8 @@
+import type { Court } from 'courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-
-export interface Court {
-  courtId: string
-  courtName: string
-  courtDescription: string
-  courtType: string
-  active: boolean
-}
 
 export interface AllCourts {
   courts: Array<Court>

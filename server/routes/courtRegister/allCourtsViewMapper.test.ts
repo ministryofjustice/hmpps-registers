@@ -1,11 +1,12 @@
-import AllCourtsViewMapper from './allCourtsViewMapper'
+import AllCourtsView from './allCourtsView'
+import data from '../testutils/mockData'
 
 describe('AllCourtsViewMapper', () => {
   let mapper
 
   describe('with no courts', () => {
     beforeEach(() => {
-      mapper = new AllCourtsViewMapper({ courts: [] })
+      mapper = new AllCourtsView({ courts: [] })
     })
     it('can handle when there are no courts', () => {
       expect(mapper.courts).toHaveLength(0)
@@ -13,22 +14,22 @@ describe('AllCourtsViewMapper', () => {
   })
   describe('with many courts', () => {
     beforeEach(() => {
-      mapper = new AllCourtsViewMapper({
+      mapper = new AllCourtsView({
         courts: [
-          {
+          data.court({
             courtId: 'SHFCC',
             courtName: 'Sheffield Crown Court',
             courtDescription: 'Sheffield Crown Court - Yorkshire',
             courtType: 'CROWN',
             active: true,
-          },
-          {
+          }),
+          data.court({
             courtId: 'SHFMC',
             courtName: 'Sheffield Magistrates Court',
             courtDescription: 'Sheffield Magistrates Court - Yorkshire',
             courtType: 'MAGISTRATES',
             active: false,
-          },
+          }),
         ],
       })
     })

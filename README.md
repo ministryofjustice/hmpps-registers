@@ -55,3 +55,7 @@ Or run tests with the cypress UI:
 
 The template project has implemented some scheduled checks to ensure that key dependencies are kept up to date.
 If these are not desired in the cloned project, remove references to `check_outdated` job from `.circleci/config.yml`
+
+### Types
+
+Run npx openapi-typescript  https://court-register.hmpps.service.justice.gov.uk/v3/api-docs -output court-register.ts > server/@types/courtRegister/index.d.ts
