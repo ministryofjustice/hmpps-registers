@@ -32,6 +32,25 @@ function getSystemClientTokenFromHmppsAuth(username?: string): Promise<superagen
     .timeout(timeoutSpec)
 }
 
+function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.Response> {
+  const clientToken = generateOauthClientToken(config.apis.hmppsAuth.apiClientId, config.apis.hmppsAuth.apiClientSecret)
+
+  const authRequest = username
+    ? querystring.stringify({ grant_type: 'client_credentials', username })
+    : querystring.stringify({ grant_type: 'client_credentials' })
+
+  logger.info(
+    `HMPPS Auth request '${authRequest}' for client id '${config.apis.hmppsAuth.apiClientId}' and user '${username}'`
+  )
+
+  return superagent
+    .post(`${hmppsAuthUrl}/oauth/token`)
+    .set('Authorization', clientToken)
+    .set('content-type', 'application/x-www-form-urlencoded')
+    .send(authRequest)
+    .timeout(timeoutSpec)
+}
+
 export interface User {
   name: string
   activeCaseLoadId: string
@@ -71,6 +90,24 @@ export default class HmppsAuthClient {
 
     // set TTL slightly less than expiry of token. Async but no need to wait
     await this.tokenStore.setToken(key, newToken.body.access_token, newToken.body.expires_in - 60)
+
+    return newToken.body.access_token
+  }
+
+  async getApiClientToken(username?: string): Promise<string> {
+    const key = `API${username || '%ANONYMOUS%'}`
+
+    const token = await this.tokenStore.getToken(key)
+    if (token) {
+      console.log(`found token for ${key}`)
+      return token
+    }
+
+    const newToken = await getApiClientTokenFromHmppsAuth(username)
+
+    // set TTL slightly less than expiry of token. Async but no need to wait
+    await this.tokenStore.setToken(key, newToken.body.access_token, newToken.body.expires_in - 60)
+    console.log(`set token for ${key}`)
 
     return newToken.body.access_token
   }

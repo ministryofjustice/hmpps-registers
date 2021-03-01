@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import express, { Router, Express } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
@@ -10,6 +11,7 @@ import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
 import UserService from '../../services/userService'
 import * as auth from '../../authentication/auth'
+import CourtRegisterService from '../../services/courtRegisterService'
 
 const user = {
   name: 'john smith',
@@ -28,6 +30,18 @@ class MockUserService extends UserService {
     return {
       token,
       ...user,
+    }
+  }
+}
+
+class MockCourtRegisterService extends CourtRegisterService {
+  constructor() {
+    super(undefined)
+  }
+
+  async getAllCourts() {
+    return {
+      courts: [],
     }
   }
 }
@@ -57,5 +71,8 @@ function appSetup(route: Router, production: boolean): Express {
 
 export default function appWithAllRoutes({ production = false }: { production?: boolean }): Express {
   auth.default.authenticationMiddleware = () => (req, res, next) => next()
-  return appSetup(allRoutes(standardRouter(new MockUserService())), production)
+  return appSetup(
+    allRoutes(standardRouter(new MockUserService()), { courtRegisterService: new MockCourtRegisterService() }),
+    production
+  )
 }
