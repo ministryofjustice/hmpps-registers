@@ -1,8 +1,6 @@
 const { stubFor } = require('./wiremock')
 
-// TODO add to health check
-// eslint-disable-next-line no-unused-vars
-const ping = () =>
+const stubPing = () =>
   stubFor({
     request: {
       method: 'GET',
@@ -30,5 +28,5 @@ const stubCourts = courts =>
 
 module.exports = {
   stubCourts,
-  ping,
+  stubPing,
 }

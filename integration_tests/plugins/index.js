@@ -17,5 +17,7 @@ module.exports = on => {
     stubTokenVerificationPing: tokenVerification.stubPing,
 
     stubCourts: courtRegister.stubCourts,
+
+    stubCourtRegisterPing: courtRegister.stubPing,
   })
 }
