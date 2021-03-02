@@ -1,14 +1,37 @@
 {% extends "../partials/layout.njk" %}
+{% from "./components/card/card.njk" import card %}
 
 {% set pageTitle = applicationName + " - Home" %}
 
 {% block content %}
 
   <main class="app-container govuk-body">
-    <h1>This site is under construction...</h1>
-    <p>Please check back later when there is content to view.</p>
-    <div>
-      <a href="/court-register">Court register</a>
+    <div class="govuk-width-container">
+      <h1 class="govuk-heading-l govuk-!-margin-top-7">HMPPS Registers</h1>
+    </div>
+
+    <div class="homepage-content">
+      <div class="govuk-width-container">
+        {% if registers.length %}
+
+        <ul class="govuk-grid-row card-group">
+          {% for register in registers %}
+            <li class="govuk-grid-column-one-third card-group__item">
+              {{ card({
+                "href": register.href,
+                "clickable": "true",
+                "heading": register.heading,
+                "description": register.description,
+                "id": register.id
+              }) }}
+            </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+          <p data-qa=no-courts class="govuk-body">There are registers you can view</p>
+        {% endif %}
+
+      </div>
     </div>
   </main>
 

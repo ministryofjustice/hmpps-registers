@@ -144,7 +144,7 @@ export default function createApp(
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'Hmpps Registers'
+  app.locals.applicationName = 'HMPPS Registers'
 
   app.use((req, res, next) => {
     res.locals.user = req.user

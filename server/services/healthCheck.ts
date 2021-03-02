@@ -50,6 +50,7 @@ function gatherCheckInfo(aggregateStatus, currentStatus: HealthCheckStatus) {
 
 const apiChecks = [
   service('hmppsAuth', `${config.apis.hmppsAuth.url}/health/ping`, config.apis.hmppsAuth.agent),
+  service('courtRegister', `${config.apis.courtRegister.url}/health/ping`, config.apis.courtRegister.agent),
   ...(config.apis.tokenVerification.enabled
     ? [
         service(
