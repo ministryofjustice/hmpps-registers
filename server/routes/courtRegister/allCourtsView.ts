@@ -10,7 +10,7 @@ function typeOf(enumType: string) {
       return enumType
   }
 }
-export default class AllCourtsViewMapper {
+export default class AllCourtsView {
   constructor(private readonly allCourts: AllCourts) {}
 
   readonly courts: {

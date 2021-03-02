@@ -3,6 +3,7 @@ import nock from 'nock'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService from './courtRegisterService'
 import config from '../config'
+import data from '../routes/testutils/mockData'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -40,20 +41,12 @@ describe('Court Register service', () => {
     })
     it('will return all courts', async () => {
       fakeCourtRegister.get('/courts/all').reply(200, [
-        {
+        data.court({
           courtId: 'SHFCC',
-          courtName: 'Sheffield Crown Court',
-          courtDescription: 'Sheffield Crown Court - Yorkshire',
-          courtType: 'CROWN',
-          active: true,
-        },
-        {
+        }),
+        data.court({
           courtId: 'SHFMC',
-          courtName: 'Sheffield Magistrates Court',
-          courtDescription: 'Sheffield Magistrates Court - Yorkshire',
-          courtType: 'MAGISTRATES',
-          active: false,
-        },
+        }),
       ])
 
       const result = await courtRegisterService.getAllCourts({})

@@ -71,4 +71,7 @@ env:
   - name: NODE_ENV
     value: production
 
+  - name: COURT_REGISTER_API_URL
+    value: {{ .Values.env.COURT_REGISTER_API_URL | quote }}
+
 {{- end -}}

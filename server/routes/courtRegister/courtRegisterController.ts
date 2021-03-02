@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import CourtRegisterService, { Context } from '../../services/courtRegisterService'
-import AllCourtsViewMapper from './allCourtsViewMapper'
+import AllCourtsView from './allCourtsView'
 
 function context(res: Response): Context {
   return {
@@ -13,8 +13,8 @@ export default class CourtRegisterController {
   async showAllCourts(req: Request, res: Response): Promise<void> {
     const courts = await this.courtRegisterService.getAllCourts(context(res))
 
-    const mapper = new AllCourtsViewMapper(courts)
+    const view = new AllCourtsView(courts)
 
-    res.render('pages/court-register', mapper.renderArgs)
+    res.render('pages/court-register', view.renderArgs)
   }
 }
