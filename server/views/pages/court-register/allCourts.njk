@@ -1,22 +1,22 @@
-{% extends "../partials/layout.njk" %}
+{% extends "../../partials/layout.njk" %}
 
 {% set pageTitle = applicationName + " - Court Register" %}
 
 {% block content %}
 
+  <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
     <h1>Court Register</h1>
-    <p>List of courts</p>
-
 
     {% if courts.length %}
       <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="courts">
         <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Code</th>
-          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Name</th>
+          <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
+          <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
           <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type</th>
-          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Open</th>
+          <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
+          <th class="govuk-table__header govuk-!-width-one-fifth" scope="col"></th>
         </tr>
         </thead>
 
@@ -24,7 +24,7 @@
         {% for court in courts %}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{court.id}}</td>
-            <td class="govuk-table__cell">{{court.name}}</td>
+            <td class="govuk-table__cell"><a href="/court-register/details?id={{court.id}}" class="govuk-link govuk-link--no-visited-state">{{court.name}}</a></td>
             <td class="govuk-table__cell">{{court.type}}</td>
             <td class="govuk-table__cell">
               {% if court.active %}
@@ -33,6 +33,7 @@
                 Closed
               {% endif %}
             </td>
+            <td class="govuk-table__cell"><a href="/court-register/details?id={{court.id}}" class="govuk-link govuk-link--no-visited-state">Change</a></td>
           </tr>
         {% endfor %}
 

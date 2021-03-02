@@ -54,4 +54,29 @@ describe('Court Register service', () => {
       expect(result.courts).toHaveLength(2)
     })
   })
+  describe('getCourt', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, [])
+
+      await courtRegisterService.getCourt({ username: 'tommy' }, 'SHFCC')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will return the court', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(
+        200,
+        data.court({
+          courtId: 'SHFCC',
+        })
+      )
+
+      const court = await courtRegisterService.getCourt({}, 'SHFCC')
+
+      expect(court.courtId).toEqual('SHFCC')
+    })
+  })
 })

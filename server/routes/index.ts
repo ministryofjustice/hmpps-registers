@@ -1,7 +1,7 @@
 import type { RequestHandler, Router } from 'express'
 
 import asyncMiddleware from '../middleware/asyncMiddleware'
-import courtRoutes from './courtRegister'
+import courtRoutes from './courtRegister/courtRegisterRouter'
 import CourtRegisterService from '../services/courtRegisterService'
 
 export interface Services {

@@ -1,5 +1,5 @@
 import request from 'supertest'
-import appWithAllRoutes from './testutils/appSetup'
+import appWithAllRoutes from '../testutils/appSetup'
 
 let app
 

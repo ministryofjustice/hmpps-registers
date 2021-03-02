@@ -1,20 +1,20 @@
 import AllCourtsView from './allCourtsView'
 import data from '../testutils/mockData'
 
-describe('AllCourtsViewMapper', () => {
-  let mapper
+describe('AllCourtsView', () => {
+  let view
 
   describe('with no courts', () => {
     beforeEach(() => {
-      mapper = new AllCourtsView({ courts: [] })
+      view = new AllCourtsView({ courts: [] })
     })
     it('can handle when there are no courts', () => {
-      expect(mapper.courts).toHaveLength(0)
+      expect(view.courts).toHaveLength(0)
     })
   })
   describe('with many courts', () => {
     beforeEach(() => {
-      mapper = new AllCourtsView({
+      view = new AllCourtsView({
         courts: [
           data.court({
             courtId: 'SHFCC',
@@ -34,20 +34,20 @@ describe('AllCourtsViewMapper', () => {
       })
     })
     it('will map each court', () => {
-      expect(mapper.courts).toHaveLength(2)
+      expect(view.courts).toHaveLength(2)
     })
     it('will map courtId', () => {
-      expect(mapper.courts[0].id).toEqual('SHFCC')
+      expect(view.courts[0].id).toEqual('SHFCC')
     })
     it('will convert crown court type', () => {
-      expect(mapper.courts[0].type).toBe('Crown')
+      expect(view.courts[0].type).toBe('Crown')
     })
     it('will convert magistrates court type', () => {
-      expect(mapper.courts[1].type).toBe('Magistrates')
+      expect(view.courts[1].type).toBe('Magistrates')
     })
     it('will map active flag', () => {
-      expect(mapper.courts[0].active).toEqual(true)
-      expect(mapper.courts[1].active).toEqual(false)
+      expect(view.courts[0].active).toEqual(true)
+      expect(view.courts[1].active).toEqual(false)
     })
   })
 })
