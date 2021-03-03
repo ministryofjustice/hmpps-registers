@@ -10,9 +10,14 @@ describe('CourtDetailsView', () => {
         courtDescription: 'Sheffield Crown Court - Yorkshire',
         courtType: 'CROWN',
         active: true,
-      })
+      }),
+      'NONE'
     )
-    expect(view.courtDetails.id).toEqual('SHFCC')
-    expect(view.courtDetails.type).toEqual('Crown')
+    expect(view.renderArgs.courtDetails.id).toEqual('SHFCC')
+    expect(view.renderArgs.courtDetails.type).toEqual('Crown')
+  })
+  it('will pass through action', () => {
+    const view = new CourtDetailsView(data.court({}), 'ACTIVATE')
+    expect(view.renderArgs.action).toEqual('ACTIVATE')
   })
 })

@@ -11,9 +11,15 @@ function typeOf(enumType: string) {
   }
 }
 
-export default function courtMapper(
-  court: Court
-): { name: string; description: string; type: string; active: boolean; id: string } {
+export type CourtDetail = {
+  name: string
+  type: string
+  description: string
+  active: boolean
+  id: string
+}
+
+export default function courtMapper(court: Court): CourtDetail {
   const name = court.courtName
   const description = court.courtDescription
   const type = typeOf(court.courtType)

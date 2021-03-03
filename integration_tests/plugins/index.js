@@ -18,6 +18,7 @@ module.exports = on => {
 
     stubCourts: courtRegister.stubCourts,
     stubCourt: courtRegister.stubCourt,
+    stubUpdateCourt: courtRegister.stubUpdateCourt,
 
     stubCourtRegisterPing: courtRegister.stubPing,
   })

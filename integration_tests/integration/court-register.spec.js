@@ -30,6 +30,14 @@ context('Court register', () => {
       courtType: 'CROWN',
       active: true,
     })
+    cy.task('stubCourt', {
+      courtId: 'SHFMC',
+      courtName: 'Sheffield Magistrates Court',
+      courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+      courtType: 'MAGISTRATES',
+      active: false,
+    })
+    cy.task('stubUpdateCourt')
     cy.login()
   })
 
@@ -57,9 +65,16 @@ context('Court register', () => {
       status().contains('Closed')
     }
   })
-  it('Can view specific court details', () => {
+  it('Can deactivate open court', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()
     AllCourtsPage.verifyOnPage().viewCourtLink('SHFCC').should('contain.text', 'Sheffield Crown Court').click()
-    CourtDetailsPage.verifyOnPage('Sheffield Crown Court')
+    CourtDetailsPage.verifyOnPage('Sheffield Crown Court').markAsClosedButton().click()
+    CourtDetailsPage.verifyOnPage('Sheffield Crown Court').deactivatedConfirmationBlock().should('exist')
+  })
+  it('Can activate closed court', () => {
+    IndexPage.verifyOnPage().courtRegisterLink().click()
+    AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+    CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').markAsOpenButton().click()
+    CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').activatedConfirmationBlock().should('exist')
   })
 })
