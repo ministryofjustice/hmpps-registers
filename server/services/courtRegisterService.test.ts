@@ -1,5 +1,6 @@
 import nock from 'nock'
 
+import { Court, UpdateCourt } from 'courtRegister'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService from './courtRegisterService'
 import config from '../config'
@@ -60,7 +61,7 @@ describe('Court Register service', () => {
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
-      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, [])
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({}))
 
       await courtRegisterService.getCourt({ username: 'tommy' }, 'SHFCC')
 
@@ -77,6 +78,47 @@ describe('Court Register service', () => {
       const court = await courtRegisterService.getCourt({}, 'SHFCC')
 
       expect(court.courtId).toEqual('SHFCC')
+    })
+  })
+  describe('updateActiveMarker', () => {
+    let updatedCourt: UpdateCourt
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({}))
+      fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC', body => {
+          updatedCourt = body
+          return body
+        })
+        .reply(200, data.court({}))
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.updateActiveMarker({ username: 'tommy' }, 'SHFCC', true)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send all data back with active marker now true', async () => {
+      const courtBeforeUpdate: Court = data.court({
+        courtId: 'SHFCC',
+        courtName: 'Sheffield Crown Court',
+        courtDescription: 'Sheffield Crown Court - Yorkshire',
+        courtType: 'CROWN',
+        active: false,
+      })
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, courtBeforeUpdate)
+
+      await courtRegisterService.updateActiveMarker({ username: 'tommy' }, 'SHFCC', true)
+
+      expect(updatedCourt).toEqual(
+        expect.objectContaining({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtDescription: 'Sheffield Crown Court - Yorkshire',
+          courtType: 'CROWN',
+          active: true,
+        })
+      )
     })
   })
 })

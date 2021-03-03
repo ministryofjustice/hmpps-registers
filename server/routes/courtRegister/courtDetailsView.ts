@@ -1,17 +1,15 @@
 import { Court } from 'courtRegister'
 import courtMapper from './courtMapper'
+import type { CourtDetail } from './courtMapper'
+
+export type Action = 'NONE' | 'ACTIVATE' | 'DEACTIVATE'
 
 export default class CourtDetailsView {
-  constructor(private readonly court: Court) {}
+  constructor(private readonly court: Court, private readonly action: Action) {}
 
-  readonly courtDetails: {
-    name: string
-    type: string
-    active: boolean
-    id: string
-  } = courtMapper(this.court)
+  readonly courtDetails: CourtDetail = courtMapper(this.court)
 
-  get renderArgs(): Record<string, unknown> {
-    return { courtDetails: this.courtDetails }
+  get renderArgs(): { courtDetails: CourtDetail; action: Action } {
+    return { courtDetails: this.courtDetails, action: this.action }
   }
 }

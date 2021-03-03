@@ -29,7 +29,7 @@ const stubCourt = court =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/court-register/courts/id/.*',
+      urlPattern: `/court-register/courts/id/${court.courtId}`,
     },
     response: {
       status: 200,
@@ -40,8 +40,30 @@ const stubCourt = court =>
     },
   })
 
+const stubUpdateCourt = () =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/court-register/court-maintenance/id/.*`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        courtId: 'SHFMC',
+        courtName: 'Sheffield Magistrates Court',
+        courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+        courtType: 'MAGISTRATES',
+        active: false,
+      },
+    },
+  })
+
 module.exports = {
   stubCourts,
   stubPing,
   stubCourt,
+  stubUpdateCourt,
 }

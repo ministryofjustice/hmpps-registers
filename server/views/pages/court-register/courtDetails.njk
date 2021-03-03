@@ -4,8 +4,24 @@
 
 {% block content %}
 
+  <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ courtDetails.name }}</h1>
+
+    {% if action == 'ACTIVATE' %}
+    <div data-qa=confirm-activation class="govuk-panel govuk-panel--confirmation">
+      <div class="govuk-panel__body">
+        Court has been successfully activated
+      </div>
+    </div>
+    {% endif %}
+    {% if action == 'DEACTIVATE' %}
+    <div data-qa=confirm-deactivation class="govuk-panel govuk-panel--confirmation">
+      <div class="govuk-panel__body">
+        Court has been successfully marked as closed
+      </div>
+    </div>
+    {% endif %}
 
     <dl class="govuk-summary-list govuk-!-margin-bottom-9">
       <div class="govuk-summary-list__row">
@@ -26,7 +42,11 @@
           Description
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ courtDetails.description }}
+          {% if courtDetails.description is defined %}
+            {{ courtDetails.description }}
+          {% else %}
+            ---
+          {% endif %}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" href="#">
@@ -47,7 +67,39 @@
           </a>
         </dd>
       </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Status
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if courtDetails.active %}
+            Active
+          {% else %}
+            Closed
+          {% endif %}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="#">
+            Change<span class="govuk-visually-hidden"> court status</span>
+          </a>
+        </dd>
+      </div>
     </dl>
+    <form action="/court-register/toggle-active" method="post" novalidate="">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      <input type="hidden" name="id" value="{{ courtDetails.id }}">
+      {% if courtDetails.active %}
+        <input type="hidden" name="active" value="false">
+        <button data-qa=mark-as-closed class="govuk-button" data-module="govuk-button">
+          Mark as closed
+        </button>
+      {% else %}
+        <input type="hidden" name="active" value="true">
+        <button data-qa=mark-as-open class="govuk-button" data-module="govuk-button">
+          Mark as open
+        </button>
+      {% endif %}
+    </form>
 
   </main>
 

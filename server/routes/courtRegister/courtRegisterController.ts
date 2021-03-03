@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import CourtRegisterService, { Context } from '../../services/courtRegisterService'
 import AllCourtsView from './allCourtsView'
 import CourtDetailsView from './courtDetailsView'
+import type { Action } from './courtDetailsView'
 
 function context(res: Response): Context {
   return {
@@ -20,18 +21,20 @@ export default class CourtRegisterController {
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {
-    const court = await this.courtRegisterService.getCourt(context(res), extractCourtId(req))
+    const { id, action } = req.query as { id: string; action: Action }
 
-    const view = new CourtDetailsView(court)
+    const court = await this.courtRegisterService.getCourt(context(res), id)
+
+    const view = new CourtDetailsView(court, (action || 'NONE') as Action)
 
     res.render('pages/court-register/courtDetails', view.renderArgs)
   }
-}
 
-function extractCourtId(req: Request): string {
-  if (req.query && req.query.id) {
-    const { id } = (req.query as unknown) as { id: string }
-    return id
+  async toggleCourtActive(req: Request, res: Response): Promise<void> {
+    const { id, active } = req.body
+    const activate = active === 'true'
+    const action: Action = activate ? 'ACTIVATE' : 'DEACTIVATE'
+    await this.courtRegisterService.updateActiveMarker(context(res), id, activate)
+    res.redirect(`/court-register/details?id=${id}&action=${action}`)
   }
-  return undefined
 }

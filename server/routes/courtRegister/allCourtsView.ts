@@ -1,17 +1,13 @@
 import { AllCourts } from '../../services/courtRegisterService'
 import courtMapper from './courtMapper'
+import type { CourtDetail } from './courtMapper'
 
 export default class AllCourtsView {
   constructor(private readonly allCourts: AllCourts) {}
 
-  readonly courts: {
-    name: string
-    type: string
-    active: boolean
-    id: string
-  }[] = this.allCourts.courts.map(courtMapper)
+  readonly courts: CourtDetail[] = this.allCourts.courts.map(courtMapper)
 
-  get renderArgs(): Record<string, unknown> {
+  get renderArgs(): { courts: Array<CourtDetail> } {
     return { courts: this.courts }
   }
 }

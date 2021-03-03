@@ -9,10 +9,12 @@ export interface Services {
 }
 export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+  const post = (path: string, handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
   const courtRegisterController = new CourtRegisterController(services.courtRegisterService)
 
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
+  post('/court-register/toggle-active', (req, res) => courtRegisterController.toggleCourtActive(req, res))
   return router
 }
