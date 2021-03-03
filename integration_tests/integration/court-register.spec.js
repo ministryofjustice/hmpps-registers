@@ -1,5 +1,6 @@
 const IndexPage = require('../pages/index')
-const CourtRegisterPage = require('../pages/court-register')
+const AllCourtsPage = require('../pages/court-register/allCourts')
+const CourtDetailsPage = require('../pages/court-register/courtDetails')
 
 context('Court register', () => {
   beforeEach(() => {
@@ -22,19 +23,24 @@ context('Court register', () => {
         active: false,
       },
     ])
+    cy.task('stubCourt', {
+      courtId: 'SHFCC',
+      courtName: 'Sheffield Crown Court',
+      courtDescription: 'Sheffield Crown Court - Yorkshire',
+      courtType: 'CROWN',
+      active: true,
+    })
     cy.login()
   })
 
   it('Can navigate to court registers', () => {
-    const landingPage = IndexPage.verifyOnPage()
-    landingPage.courtRegisterLink().should('contain.text', 'Court register')
-    landingPage.courtRegisterLink().click()
-    CourtRegisterPage.verifyOnPage()
+    IndexPage.verifyOnPage().courtRegisterLink().should('contain.text', 'Court register').click()
+    AllCourtsPage.verifyOnPage()
   })
 
   it('Will display all courts', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()
-    const courtRegisterPage = CourtRegisterPage.verifyOnPage()
+    const courtRegisterPage = AllCourtsPage.verifyOnPage()
 
     {
       const { code, name, type, status } = courtRegisterPage.courts(0)
@@ -50,5 +56,10 @@ context('Court register', () => {
       type().contains('Magistrates')
       status().contains('Closed')
     }
+  })
+  it('Can view specific court details', () => {
+    IndexPage.verifyOnPage().courtRegisterLink().click()
+    AllCourtsPage.verifyOnPage().viewCourtLink('SHFCC').should('contain.text', 'Sheffield Crown Court').click()
+    CourtDetailsPage.verifyOnPage('Sheffield Crown Court')
   })
 })

@@ -25,8 +25,23 @@ const stubCourts = courts =>
       jsonBody: courts,
     },
   })
+const stubCourt = court =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/court-register/courts/id/.*',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: court,
+    },
+  })
 
 module.exports = {
   stubCourts,
   stubPing,
+  stubCourt,
 }

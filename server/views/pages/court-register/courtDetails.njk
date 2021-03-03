@@ -1,0 +1,54 @@
+{% extends "../../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Court Details" %}
+
+{% block content %}
+
+  <main class="app-container govuk-body">
+    <h1 class="govuk-heading-l">{{ courtDetails.name }}</h1>
+
+    <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Name
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ courtDetails.name }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="#">
+            Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Description
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ courtDetails.description }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="#">
+            Change<span class="govuk-visually-hidden"> description</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Court type
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ courtDetails.type }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="#">
+            Change<span class="govuk-visually-hidden"> court type</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+  </main>
+
+{% endblock %}

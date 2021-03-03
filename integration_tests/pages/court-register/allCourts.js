@@ -1,9 +1,9 @@
-const page = require('./page')
+const page = require('../page')
 
 const row = (type, i) => cy.get(`[data-qa=${type}] tbody tr`).eq(i)
 const col = (i, j) => row('courts', i).find('td').eq(j)
 
-const courtRegister = () =>
+const allCourts = () =>
   page('Court Register', {
     courts: i => ({
       code: () => col(i, 0),
@@ -13,4 +13,4 @@ const courtRegister = () =>
     }),
   })
 
-module.exports = { verifyOnPage: courtRegister }
+module.exports = { verifyOnPage: allCourts }
