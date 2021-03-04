@@ -1,7 +1,7 @@
 import type { Response } from 'express'
 import jwtDecode from 'jwt-decode'
 
-const MAINTAINER_ROLE = 'HMPPS_REGISTERS_MAINTAINER'
+const MAINTAINER_ROLE = 'ROLE_HMPPS_REGISTERS_MAINTAINER'
 
 const extractRoles = (res: Response): Array<string> => {
   const token = res?.locals?.user?.token

@@ -28,7 +28,7 @@ context('Login', () => {
   describe('role based access', () => {
     context('without the correct role', () => {
       beforeEach(() => {
-        cy.task('stubLogin', ['HMPPS_BANANAS'])
+        cy.task('stubLogin', ['ROLE_HMPPS_BANANAS'])
       })
 
       it('Will be shown the not authorised page', () => {
@@ -38,7 +38,7 @@ context('Login', () => {
     })
     context('with the correct role', () => {
       beforeEach(() => {
-        cy.task('stubLogin', ['HMPPS_REGISTERS_MAINTAINER'])
+        cy.task('stubLogin', ['ROLE_HMPPS_REGISTERS_MAINTAINER'])
       })
 
       it('Will be shown the home page', () => {

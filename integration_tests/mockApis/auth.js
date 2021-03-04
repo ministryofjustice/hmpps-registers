@@ -138,7 +138,7 @@ const stubUserRoles = () =>
 module.exports = {
   getLoginUrl,
   stubPing: () => Promise.all([ping(), tokenVerification.stubPing()]),
-  stubLogin: (roles = ['HMPPS_REGISTERS_MAINTAINER']) =>
+  stubLogin: (roles = ['ROLE_HMPPS_REGISTERS_MAINTAINER']) =>
     Promise.all([favicon(), redirect(), logout(), token(roles), tokenVerification.stubVerifyToken()]),
   stubUser: () => Promise.all([stubUser(), stubUserRoles()]),
 }
