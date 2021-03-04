@@ -1,5 +1,6 @@
 const IndexPage = require('../pages/index')
 const AuthLoginPage = require('../pages/authLogin')
+const AuthErrorPage = require('../pages/authError')
 
 context('Login', () => {
   beforeEach(() => {
@@ -22,5 +23,28 @@ context('Login', () => {
     const landingPage = IndexPage.verifyOnPage()
     landingPage.logout().click()
     AuthLoginPage.verifyOnPage()
+  })
+
+  describe('role based access', () => {
+    context('without the correct role', () => {
+      beforeEach(() => {
+        cy.task('stubLogin', ['ROLE_HMPPS_BANANAS'])
+      })
+
+      it('Will be shown the not authorised page', () => {
+        cy.login({ failOnStatusCode: false })
+        AuthErrorPage.verifyOnPage()
+      })
+    })
+    context('with the correct role', () => {
+      beforeEach(() => {
+        cy.task('stubLogin', ['ROLE_HMPPS_REGISTERS_MAINTAINER'])
+      })
+
+      it('Will be shown the home page', () => {
+        cy.login({ failOnStatusCode: false })
+        IndexPage.verifyOnPage()
+      })
+    })
   })
 })
