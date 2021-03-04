@@ -24,6 +24,7 @@ import standardRouter from './routes/standardRouter'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
 import CourtRegisterService from './services/courtRegisterService'
+import { MAINTAINER_ROLE } from './authentication/roles'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -191,7 +192,7 @@ export default function createApp(
     res.redirect(authLogoutUrl)
   })
 
-  app.use(authorisationMiddleware())
+  app.use(authorisationMiddleware([MAINTAINER_ROLE]))
   app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService }))
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
