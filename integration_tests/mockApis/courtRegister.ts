@@ -1,6 +1,7 @@
-const { stubFor } = require('./wiremock')
+import { SuperAgentRequest } from 'superagent'
+import { stubFor } from './wiremock'
 
-const stubPing = () =>
+const stubPing = (): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -11,7 +12,7 @@ const stubPing = () =>
     },
   })
 
-const stubCourts = courts =>
+const stubCourts = (courts: Array<Record<string, unknown>>): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -25,7 +26,7 @@ const stubCourts = courts =>
       jsonBody: courts,
     },
   })
-const stubCourt = court =>
+const stubCourt = (court: Record<string, unknown>): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -40,7 +41,7 @@ const stubCourt = court =>
     },
   })
 
-const stubUpdateCourt = () =>
+const stubUpdateCourt = (): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'PUT',
@@ -61,7 +62,7 @@ const stubUpdateCourt = () =>
     },
   })
 
-module.exports = {
+export default {
   stubCourts,
   stubPing,
   stubCourt,

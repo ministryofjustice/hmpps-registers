@@ -1,6 +1,6 @@
-const IndexPage = require('../pages/index')
-const AllCourtsPage = require('../pages/court-register/allCourts')
-const CourtDetailsPage = require('../pages/court-register/courtDetails')
+import IndexPage from '../pages'
+import AllCourtsPage from '../pages/court-register/allCourts'
+import CourtDetailsPage from '../pages/court-register/courtDetails'
 
 context('Court register', () => {
   beforeEach(() => {

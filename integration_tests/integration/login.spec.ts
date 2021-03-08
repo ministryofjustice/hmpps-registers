@@ -1,6 +1,6 @@
-const IndexPage = require('../pages/index')
-const AuthLoginPage = require('../pages/authLogin')
-const AuthErrorPage = require('../pages/authError')
+import IndexPage from '../pages'
+import AuthLoginPage from '../pages/authLogin'
+import AuthErrorPage from '../pages/authError'
 
 context('Login', () => {
   beforeEach(() => {
