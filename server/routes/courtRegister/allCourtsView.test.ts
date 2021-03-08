@@ -30,24 +30,37 @@ describe('AllCourtsView', () => {
             courtType: 'MAGISTRATES',
             active: false,
           }),
+          data.court({
+            courtId: 'AYLSMC',
+            courtName: 'Aylesbury MC',
+            courtType: 'CROWN',
+            active: true,
+          }),
         ],
       })
     })
     it('will map each court', () => {
-      expect(view.courts).toHaveLength(2)
+      expect(view.courts).toHaveLength(3)
+    })
+    it('will order by court name', () => {
+      expect(view.courts.map(court => court.name)).toEqual([
+        'Aylesbury MC',
+        'Sheffield Crown Court',
+        'Sheffield Magistrates Court',
+      ])
     })
     it('will map courtId', () => {
-      expect(view.courts[0].id).toEqual('SHFCC')
+      expect(view.courts[1].id).toEqual('SHFCC')
     })
     it('will convert crown court type', () => {
-      expect(view.courts[0].type).toBe('Crown')
+      expect(view.courts[1].type).toBe('Crown')
     })
     it('will convert magistrates court type', () => {
-      expect(view.courts[1].type).toBe('Magistrates')
+      expect(view.courts[2].type).toBe('Magistrates')
     })
     it('will map active flag', () => {
-      expect(view.courts[0].active).toEqual(true)
-      expect(view.courts[1].active).toEqual(false)
+      expect(view.courts[1].active).toEqual(true)
+      expect(view.courts[2].active).toEqual(false)
     })
   })
 })
