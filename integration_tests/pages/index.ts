@@ -1,15 +1,16 @@
-import page, { Page } from './page'
+import page from './page'
+import type { Page } from './page'
 import Chainable = Cypress.Chainable
 
-interface IndexPage extends Page {
-  headerUserName: () => Chainable<Element>
-  courtRegisterLink: () => Chainable<Element>
+interface IndexPage {
+  headerUserName: () => Chainable
+  courtRegisterLink: () => Chainable
 }
 
-const indexPage = (): IndexPage =>
-  page('HMPPS Registers', {
+const indexPage = (): Page & IndexPage =>
+  page<IndexPage>('HMPPS Registers', {
     headerUserName: () => cy.get('[data-qa=header-user-name]'),
     courtRegisterLink: () => cy.get('[href="/court-register"]'),
-  }) as IndexPage
+  })
 
 export default { verifyOnPage: indexPage }

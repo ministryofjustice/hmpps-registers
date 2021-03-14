@@ -1,23 +1,24 @@
-import page, { Page } from '../page'
+import page from '../page'
+import type { Page } from '../page'
 import Chainable = Cypress.Chainable
 
 const row = (type: string, rowNumber: number) => cy.get(`[data-qa=${type}] tbody tr`).eq(rowNumber)
 const column = (rowNumber: number, columnNumber: number) => row('courts', rowNumber).find('td').eq(columnNumber)
 
-interface AllCourtsPage extends Page {
-  courts: (rowNumber: number) => CourtElement
-  viewCourtLink: (courtCode: string) => Chainable<Element>
+interface AllCourtsPage {
+  courts: (rowNumber) => CourtElement
+  viewCourtLink: (courtId) => Chainable
 }
 
 interface CourtElement {
-  code: () => Chainable<Element>
-  name: () => Chainable<Element>
-  type: () => Chainable<Element>
-  status: () => Chainable<Element>
+  code: () => Chainable
+  name: () => Chainable
+  type: () => Chainable
+  status: () => Chainable
 }
 
-const allCourts = (): AllCourtsPage =>
-  page('Court Register', {
+const allCourts = (): AllCourtsPage & Page =>
+  page<AllCourtsPage>('Court Register', {
     courts: rowNumber => ({
       code: () => column(rowNumber, 0),
       name: () => column(rowNumber, 1),
@@ -25,6 +26,6 @@ const allCourts = (): AllCourtsPage =>
       status: () => column(rowNumber, 3),
     }),
     viewCourtLink: courtId => cy.get(`[href="/court-register/details?id=${courtId}"]`).first(),
-  }) as AllCourtsPage
+  })
 
 export default { verifyOnPage: allCourts }

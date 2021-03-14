@@ -1,4 +1,5 @@
-import page, { Page } from './page'
+import page from './page'
+import type { Page } from './page'
 
 const authErrorPage = (): Page => page('Authorisation Error', {})
 
