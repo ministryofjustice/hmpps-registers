@@ -2,7 +2,7 @@ import AllCourtsView from './allCourtsView'
 import data from '../testutils/mockData'
 
 describe('AllCourtsView', () => {
-  let view
+  let view: AllCourtsView
 
   describe('with no courts', () => {
     beforeEach(() => {
