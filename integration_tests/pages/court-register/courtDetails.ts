@@ -1,20 +1,12 @@
-import page from '../page'
 import type { Page } from '../page'
-import Chainable = Cypress.Chainable
+import page from '../page'
 
-interface CourtDetailsPage {
-  markAsClosedButton: () => Chainable
-  markAsOpenButton: () => Chainable
-  activatedConfirmationBlock: () => Chainable
-  deactivatedConfirmationBlock: () => Chainable
+const courtDetails = {
+  markAsClosedButton: () => cy.get('[data-qa=mark-as-closed]'),
+  markAsOpenButton: () => cy.get('[data-qa=mark-as-open]'),
+  activatedConfirmationBlock: () => cy.get('[data-qa=confirm-activation]'),
+  deactivatedConfirmationBlock: () => cy.get('[data-qa=confirm-deactivation]'),
 }
+const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)
 
-const courtDetails = (courtName: string): CourtDetailsPage & Page =>
-  page<CourtDetailsPage>(courtName, {
-    markAsClosedButton: () => cy.get('[data-qa=mark-as-closed]'),
-    markAsOpenButton: () => cy.get('[data-qa=mark-as-open]'),
-    activatedConfirmationBlock: () => cy.get('[data-qa=confirm-activation]'),
-    deactivatedConfirmationBlock: () => cy.get('[data-qa=confirm-deactivation]'),
-  })
-
-export default { verifyOnPage: courtDetails }
+export default { verifyOnPage }
