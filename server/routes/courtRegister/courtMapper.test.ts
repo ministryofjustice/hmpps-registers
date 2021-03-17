@@ -1,8 +1,8 @@
-import courtMapper from './courtMapper'
+import courtMapper, { CourtDetail } from './courtMapper'
 import data from '../testutils/mockData'
 
 describe('courtMapper', () => {
-  let court
+  let court: CourtDetail
 
   beforeEach(() => {
     court = courtMapper(
