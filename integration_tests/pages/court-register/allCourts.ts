@@ -6,8 +6,8 @@ const row = (type: string, rowNumber: number) => cy.get(`[data-qa=${type}] tbody
 const column = (rowNumber: number, columnNumber: number) => row('courts', rowNumber).find('td').eq(columnNumber)
 
 interface AllCourtsPage {
-  courts: (rowNumber) => CourtElement
-  viewCourtLink: (courtId) => Chainable
+  courts: (rowNumber: number) => CourtElement
+  viewCourtLink: (courtId: string) => Chainable
 }
 
 interface CourtElement {

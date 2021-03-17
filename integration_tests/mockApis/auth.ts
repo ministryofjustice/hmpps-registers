@@ -3,7 +3,7 @@ import { Response } from 'superagent'
 import { stubFor, getRequests } from './wiremock'
 import tokenVerification from './tokenVerification'
 
-const createToken = roles => {
+const createToken = (roles: string[]) => {
   const payload = {
     user_name: 'USER1',
     scope: ['read'],
@@ -77,7 +77,7 @@ const logout = () =>
     },
   })
 
-const token = roles =>
+const token = (roles: string[]) =>
   stubFor({
     request: {
       method: 'POST',

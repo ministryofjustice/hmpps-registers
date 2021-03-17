@@ -4,7 +4,7 @@ import auth from '../mockApis/auth'
 import courtRegister from '../mockApis/courtRegister'
 import tokenVerification from '../mockApis/tokenVerification'
 
-export default (on: (string, Record) => void): void => {
+export default (on: (task: string, tasks: Record<string, unknown>) => void): void => {
   on('task', {
     reset: resetStubs,
 

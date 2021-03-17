@@ -8,7 +8,8 @@
       "es2015.promise"
     ],
     "types": ["cypress"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noImplicitAny": true
   },
   "include": [
     "**/*.ts"
