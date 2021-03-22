@@ -22,3 +22,13 @@ describe('GET /', () => {
       })
   })
 })
+describe('GET /add-new', () => {
+  it('should render add new court start page', () => {
+    return request(app)
+      .get('/court-register/add-new')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Add a new court')
+      })
+  })
+})

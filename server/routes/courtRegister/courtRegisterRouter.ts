@@ -16,5 +16,6 @@ export default function routes(router: Router, services: Services): Router {
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
   post('/court-register/toggle-active', (req, res) => courtRegisterController.toggleCourtActive(req, res))
+  get('/court-register/add-new', (req, res) => courtRegisterController.addCourtStart(req, res))
   return router
 }
