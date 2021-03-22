@@ -37,4 +37,8 @@ export default class CourtRegisterController {
     await this.courtRegisterService.updateActiveMarker(context(res), id, activate)
     res.redirect(`/court-register/details?id=${id}&action=${action}`)
   }
+
+  addCourtStart(req: Request, res: Response): void {
+    res.render('pages/court-register/addCourtStart')
+  }
 }

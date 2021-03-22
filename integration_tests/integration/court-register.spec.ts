@@ -1,6 +1,7 @@
 import IndexPage from '../pages'
 import AllCourtsPage from '../pages/court-register/allCourts'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
+import AddCourtStartPage from '../pages/court-register/addCourtStart'
 
 context('Court register', () => {
   beforeEach(() => {
@@ -76,5 +77,14 @@ context('Court register', () => {
     AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
     CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').markAsOpenButton().click()
     CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').activatedConfirmationBlock().should('exist')
+  })
+  describe('adding a new court', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().courtRegisterLink().click()
+      AllCourtsPage.verifyOnPage().addNewCourtButton().click()
+    })
+    it('Can navigate to add new court page', () => {
+      AddCourtStartPage.verifyOnPage()
+    })
   })
 })

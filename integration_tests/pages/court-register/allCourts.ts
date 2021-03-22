@@ -12,6 +12,7 @@ const allCourts = {
     status: () => column(rowNumber, 3),
   }),
   viewCourtLink: (courtId: string) => cy.get(`[href="/court-register/details?id=${courtId}"]`).first(),
+  addNewCourtButton: () => cy.contains('Add a new court'),
 }
 
 const verifyOnPage = (): typeof allCourts & Page => page('Court Register', allCourts)
