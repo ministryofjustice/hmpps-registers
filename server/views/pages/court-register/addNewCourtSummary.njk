@@ -1,0 +1,121 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+<!--suppress HtmlUnknownTarget -->
+{% set pageTitle = applicationName + " - Add Court" %}
+{% macro line(text) %}
+  {% if text is defined %}
+    <p> {{ text }} </p>
+  {% endif %}
+{% endmacro %}
+
+{% macro courtname(type, id, name, description) %}
+  {{ line(type) }}
+  <p>
+    {{ id }} - {{ name }}
+  </p>
+  {{ line(description) }}
+{% endmacro %}
+{% macro building(name, line1, line2, town, county, postcode, country) %}
+  <p>
+    {{ name }}
+  </p>
+  {{ line(line1) }}
+  {{ line(line2) }}
+  {{ line(town) }}
+  {{ line(county) }}
+  {{ line(postcode) }}
+  {{ line(country) }}
+{% endmacro %}
+{% macro contact(telephone, fax) %}
+  {{ line(telephone) }}
+  {% if fax is defined %}
+    <p>{{ fax }} (fax) </p>
+  {% endif %}
+{% endmacro %}
+
+{% block content %}
+
+  <main class="app-container govuk-body">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Add a new court - check details</h1>
+      </div>
+      <div class="govuk-grid-column-full">
+        <form action="/court-register/add-new-court-finished" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                text: "Court"
+              },
+                value: {
+                html: courtname(typeDescription, form.id, form.name, form.description),
+                classes: "court-details"
+              },
+                actions: {
+                items: [
+                  {
+                    href: "/court-register/add?mode=review",
+                    text: "Change",
+                    visuallyHiddenText: "name"
+                  }
+                ]
+              }
+              },
+              {
+                key: {
+                text: "Main building"
+              },
+                value: {
+                html: building( buildingname, addressline1, addressline2, addresstown, addresscounty, addresspostcode, addresscountry),
+                classes: "building-details"
+              },
+                actions: {
+                items: [
+                  {
+                    href: "/court-register/add-new-court-building?mode=review",
+                    text: "Change",
+                    visuallyHiddenText: "building address"
+                  }
+                ]
+              }
+              },
+              {
+                key: {
+                text: "Contact information"
+              },
+                value: {
+                html: contact(telephonenumber, faxnumber),
+                classes: "contact-details"
+              },
+                actions: {
+                items: [
+                  {
+                    href: "/court-register/add-new-court-contact-details?mode=review",
+                    text: "Change",
+                    visuallyHiddenText: "contact information"
+                  }
+                ]
+              }
+              }
+            ]
+          }) }}
+
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Save and continue"
+            }) }}
+            <a class="govuk-link" href="/court-register">Cancel</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = applicationName + " - Add Court" %}
+
+{% block content %}
+
+  <main class="app-container govuk-body">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Add a new court - contact details</h1>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <form action="/court-register/add-new-court-contact-details" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {% call govukFieldset({
+            legend: {
+              text: "How can court staff be contacted in this building?",
+              classes: "govuk-fieldset__legend--l",
+              isPageHeading: true
+            }
+          }) %}
+
+            {{ govukDetails({
+              summaryText: "Can I add more then one telehphone or fax number?",
+              text: "You can add as many numbers as required. To add more numbers first save the primary numbers then after the new court has been saved you can add more numbers."
+            }) }}
+
+
+            {{ govukInput({
+              label: {
+                html: 'Telephone number'
+              },
+              classes: "govuk-input--width-10",
+              id: "telephonenumber",
+              name: "telephonenumber",
+              value: telephonenumber
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: 'Fax number'
+              },
+              classes: "govuk-input--width-10",
+              id: "faxnumber",
+              name: "faxnumber",
+              value: faxnumber
+            }) }}
+
+            <div class="govuk-button-group">
+              {{ govukButton({
+                text: "Continue"
+              }) }}
+              <a class="govuk-link" href="/court-register">Cancel</a>
+            </div>
+
+          {% endcall %}
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}

@@ -3,4 +3,5 @@ declare module 'courtRegister' {
 
   export type Court = components.schemas['CourtDto']
   export type UpdateCourt = components.schemas['UpdateCourtDto']
+  export type CourtType = components.schemas['CourtTypeDto']
 }

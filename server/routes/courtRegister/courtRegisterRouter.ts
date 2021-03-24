@@ -16,6 +16,21 @@ export default function routes(router: Router, services: Services): Router {
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
   post('/court-register/toggle-active', (req, res) => courtRegisterController.toggleCourtActive(req, res))
-  get('/court-register/add', (req, res) => courtRegisterController.addCourtStart(req, res))
+  get('/court-register/add', (req, res) => courtRegisterController.addNewCourtDetails(req, res))
+  post('/court-register/add-court-details', (req, res) => courtRegisterController.submitNewCourtDetails(req, res))
+  get('/court-register/add-new-court-building', (req, res) => courtRegisterController.addNewCourtBuilding(req, res))
+  post('/court-register/add-new-court-building', (req, res) =>
+    courtRegisterController.submitNewCourtNewBuilding(req, res)
+  )
+  get('/court-register/add-new-court-contact-details', (req, res) =>
+    courtRegisterController.addNewCourtContactDetails(req, res)
+  )
+  post('/court-register/add-new-court-contact-details', (req, res) =>
+    courtRegisterController.submitNewCourtContactDetails(req, res)
+  )
+  get('/court-register/add-new-court-summary', (req, res) => courtRegisterController.addNewCourtSummary(req, res))
+  post('/court-register/add-new-court-finished', (req, res) => courtRegisterController.submitNewCourtFinished(req, res))
+  get('/court-register/add-new-court-finished', (req, res) => courtRegisterController.addNewCourtFinished(req, res))
+
   return router
 }

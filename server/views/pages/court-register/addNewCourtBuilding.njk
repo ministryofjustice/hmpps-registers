@@ -1,0 +1,122 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = applicationName + " - Add Court" %}
+
+{% block content %}
+
+  <!--suppress ALL -->
+  <main class="app-container govuk-body">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Add a new court - building details</h1>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <form action="/court-register/add-new-court-building" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {% call govukFieldset({
+          legend: {
+            text: "What is the address for new court main building?",
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+
+            {{ govukDetails({
+              summaryText: "What should I do if this court has multiple buildings at different addresses?",
+              text: "Many services are only interested in the main building for a court and they would typically only show users the court and main building address. However, where the physical address is significant, for instance the location where a prisoner needs to be sent to, then multiple buildings should be entered. Adding additional buildings can be done after you have finished creating this court, so for now just enter the main builiding address."
+            }) }}
+
+
+            {{ govukInput({
+              label: {
+                html: 'Building name'
+              },
+              id: "buildingname",
+              name: "buildingname",
+              hint: {
+                text: "Building name is sometimes used to identify a court nation-wide, So `Birmingham Crown Court - Main Street Annex` is better than just the building name when there are multiple buildings."
+              },
+              value: buildingname
+
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
+              },
+              id: "addressline1",
+              name: "addressline1",
+              value: addressline1
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
+              },
+              id: "addressline2",
+              name: "addressline2",
+              value: addressline2
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Town or city"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresstown",
+              name: "addresstown",
+              value: addresstown
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "County"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresscounty",
+              name: "addresscounty",
+              value: addresscounty
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Postcode"
+              },
+              classes: "govuk-input--width-10",
+              id: "addresspostcode",
+              name: "addresspostcode",
+              value: addresspostcode
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Country"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresscountry",
+              name: "addresscountry",
+              hint: {
+                text: "Typically ths would be either England, Scotland, Wales or Northern Ireland"
+              },
+              value: addresscountry
+            }) }}
+
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Continue"
+            }) }}
+            <a class="govuk-link" href="/court-register">Cancel</a>
+          </div>
+        {% endcall %}
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}
