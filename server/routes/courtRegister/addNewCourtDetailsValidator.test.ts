@@ -25,7 +25,7 @@ describe('addNewCourtDetailsValidator', () => {
         type: 'CRN',
       }
       const nextPage = validate(form, req)
-      expect(nextPage).toEqual('/court-register/add?mode=review')
+      expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#id', text: 'Enter a court code' }])
     })
     it('name must not be a blank', () => {
@@ -35,7 +35,7 @@ describe('addNewCourtDetailsValidator', () => {
         type: 'CRN',
       }
       const nextPage = validate(form, req)
-      expect(nextPage).toEqual('/court-register/add?mode=review')
+      expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#name', text: 'Enter a court name' }])
     })
     it('type must not be selected', () => {
@@ -45,7 +45,7 @@ describe('addNewCourtDetailsValidator', () => {
         type: '',
       }
       const nextPage = validate(form, req)
-      expect(nextPage).toEqual('/court-register/add?mode=review')
+      expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#type', text: 'Select a court type' }])
     })
   })

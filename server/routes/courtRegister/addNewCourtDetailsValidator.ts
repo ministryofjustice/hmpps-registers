@@ -16,7 +16,7 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
 
   if (errors.length > 0) {
     req.flash('errors', errors)
-    return '/court-register/add?mode=review'
+    return '/court-register/add-new-court-details'
   }
   return '/court-register/add-new-court-building'
 }

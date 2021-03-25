@@ -23,7 +23,7 @@
                 <h1 class="govuk-heading-xl">Add a new court - main details</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
-                <form action="/court-register/add-court-details" method="post" novalidate>
+                <form action="/court-register/add-new-court-details" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     {% call govukFieldset({
                         legend: {

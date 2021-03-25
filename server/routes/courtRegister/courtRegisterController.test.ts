@@ -118,6 +118,17 @@ describe('Court Register controller', () => {
         },
       ])
     })
+    describe('addNewCourtStart', () => {
+      it('will clear any existing form', async () => {
+        req.session.addNewCourtForm = {
+          id: 'SHFCC',
+        }
+
+        controller.addNewCourtStart(req, res)
+
+        expect(req.session.addNewCourtForm).toEqual({})
+      })
+    })
     describe('addNewCourtDetails', () => {
       it('will request court types', async () => {
         res.locals.user = {
@@ -140,27 +151,10 @@ describe('Court Register controller', () => {
           errors: [],
         })
       })
-      it('will discard previous form in session when first entering page', async () => {
+      it('will pass through form to page', async () => {
         req.session.addNewCourtForm = {
           type: 'CRN',
         }
-        await controller.addNewCourtDetails(req, res)
-
-        expect(res.render).toHaveBeenCalledWith('pages/court-register/addNewCourtDetails', {
-          form: {},
-          courtTypes: expect.arrayContaining([
-            expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
-            expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
-            expect.objectContaining({ text: '', value: '' }),
-          ]),
-          errors: [],
-        })
-      })
-      it('will not discard previous form in session when reviewing page', async () => {
-        req.session.addNewCourtForm = {
-          type: 'CRN',
-        }
-        req.query.mode = 'review'
         await controller.addNewCourtDetails(req, res)
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/addNewCourtDetails', {

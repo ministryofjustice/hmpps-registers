@@ -45,12 +45,12 @@ export default class CourtRegisterController {
     res.redirect(`/court-register/details?id=${id}&action=${action}`)
   }
 
-  async addNewCourtDetails(req: Request, res: Response): Promise<void> {
-    const { mode } = req.query as { mode?: 'review' }
-    if (mode !== 'review') {
-      req.session.addNewCourtForm = {}
-    }
+  addNewCourtStart(req: Request, res: Response): void {
+    req.session.addNewCourtForm = {}
+    res.redirect(`/court-register/add-new-court-details`)
+  }
 
+  async addNewCourtDetails(req: Request, res: Response): Promise<void> {
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
     const view = new AddNewCourtDetailsView(req.session.addNewCourtForm, courtTypes, req.flash('errors'))
