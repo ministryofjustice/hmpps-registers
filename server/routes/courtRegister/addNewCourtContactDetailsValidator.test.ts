@@ -16,6 +16,14 @@ describe('addNewCourtContactDetailsValidator', () => {
       expect(nextPage).toEqual('/court-register/add-new-court-summary')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
+    it('returns to summary page when valid and already complete', () => {
+      const form: AddNewCourtForm = {
+        telephonenumber: '0114 123 4567',
+        completed: true,
+      }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-summary')
+    })
     it('telephonenumber must not be a blank', () => {
       const form: AddNewCourtForm = {
         telephonenumber: '   ',

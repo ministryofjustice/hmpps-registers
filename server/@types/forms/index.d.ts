@@ -13,5 +13,6 @@ declare module 'forms' {
     addresscountry?: string
     telephonenumber?: string
     faxnumber?: string
+    completed?: boolean
   }
 }

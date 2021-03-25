@@ -18,6 +18,16 @@ describe('addNewCourtDetailsValidator', () => {
       expect(nextPage).toEqual('/court-register/add-new-court-building')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
+    it('returns to summary page when valid and already complete', () => {
+      const form: AddNewCourtForm = {
+        id: 'SHFCC',
+        name: 'Sheffield Crown Court',
+        type: 'CRN',
+        completed: true,
+      }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-summary')
+    })
     it('id must not be a blank', () => {
       const form: AddNewCourtForm = {
         id: '   ',

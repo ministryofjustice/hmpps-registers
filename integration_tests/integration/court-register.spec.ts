@@ -180,6 +180,66 @@ context('Court register', () => {
         courtContactDetailsWithErrors.errorSummary().contains('Enter the telephone number')
       })
     })
+    describe('viewing the summary page', () => {
+      beforeEach(() => {
+        fillCourtDetailsPage()
+        fillCourtBuildingPage()
+        fillCourtContactDetailsPage()
+      })
+      it('shows court details and can amend them', () => {
+        const summaryPage = AddCourtSummaryPage.verifyOnPage()
+
+        summaryPage.courtDetails().contains('Crown Court')
+        summaryPage.courtDetails().contains('SHFCC')
+        summaryPage.courtDetails().contains('Sheffield Crown Court')
+        summaryPage.courtDetails().contains('Sheffield Crown Court - South Yorkshire')
+
+        summaryPage.changeCourtDetailsLink().click()
+
+        const courtDetails = AddCourtDetailsPage.verifyOnPage()
+        courtDetails.id().type('SHFXX')
+        courtDetails.continueButton().click()
+
+        const summaryPageAfterChange = AddCourtSummaryPage.verifyOnPage()
+
+        summaryPageAfterChange.courtDetails().contains('SHFXX')
+      })
+      it('shows building details and can amend them', () => {
+        const summaryPage = AddCourtSummaryPage.verifyOnPage()
+
+        summaryPage.buildingDetails().contains('Main building')
+        summaryPage.buildingDetails().contains('Crown Square')
+        summaryPage.buildingDetails().contains('32 High Street')
+        summaryPage.buildingDetails().contains('Sheffield')
+        summaryPage.buildingDetails().contains('South Yorkshire')
+        summaryPage.buildingDetails().contains('S1 2BJ')
+        summaryPage.buildingDetails().contains('England')
+
+        summaryPage.changeBuildingDetailsLink().click()
+
+        const courtBuilding = AddCourtBuildingPage.verifyOnPage()
+        courtBuilding.buildingName().type('Big building')
+        courtBuilding.continueButton().click()
+
+        const summaryPageAfterChange = AddCourtSummaryPage.verifyOnPage()
+        summaryPageAfterChange.buildingDetails().contains('Big building')
+      })
+      it('shows contact details and can amend them', () => {
+        const summaryPage = AddCourtSummaryPage.verifyOnPage()
+
+        summaryPage.contactDetails().contains('0114 555 1234')
+        summaryPage.contactDetails().contains('0114 555 6767')
+
+        summaryPage.changeContactDetailsLink().click()
+
+        const courtContactDetails = AddCourtContactDetailsPage.verifyOnPage()
+        courtContactDetails.telephoneNumber().type('0114 888 1234')
+        courtContactDetails.continueButton().click()
+
+        const summaryPageAfterChange = AddCourtSummaryPage.verifyOnPage()
+        summaryPageAfterChange.contactDetails().contains('0114 888 1234')
+      })
+    })
     describe('when successfully adding a new court', () => {
       beforeEach(() => {
         fillCourtDetailsPage()

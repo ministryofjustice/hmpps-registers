@@ -18,5 +18,5 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
     req.flash('errors', errors)
     return '/court-register/add-new-court-details'
   }
-  return '/court-register/add-new-court-building'
+  return form.completed ? '/court-register/add-new-court-summary' : '/court-register/add-new-court-building'
 }

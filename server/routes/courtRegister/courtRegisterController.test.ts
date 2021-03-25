@@ -190,6 +190,7 @@ describe('Court Register controller', () => {
           form: {
             name: 'Sheffield Crown Court',
             type: 'CRN',
+            completed: true,
           },
           typeDescription: 'Crown Court',
         })

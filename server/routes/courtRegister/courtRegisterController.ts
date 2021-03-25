@@ -89,6 +89,8 @@ export default class CourtRegisterController {
   }
 
   async addNewCourtSummary(req: Request, res: Response): Promise<void> {
+    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, completed: true }
+
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
     const view = new AddNewCourtSummaryView(req.session.addNewCourtForm, courtTypes)

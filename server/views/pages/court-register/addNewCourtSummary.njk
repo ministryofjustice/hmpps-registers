@@ -13,7 +13,7 @@
 {% macro courtname(type, id, name, description) %}
   {{ line(type) }}
   <p>
-    {{ id }} - {{ name }}
+    {{ name }} ( {{ id }} )
   </p>
   {{ line(description) }}
 {% endmacro %}
@@ -62,7 +62,8 @@
                   {
                     href: "/court-register/add-new-court-details",
                     text: "Change",
-                    visuallyHiddenText: "name"
+                    visuallyHiddenText: "court details",
+                    attributes: { "data-qa": "change-court-details-link"}
                   }
                 ]
               }
@@ -72,7 +73,7 @@
                 text: "Main building"
               },
                 value: {
-                html: building( buildingname, addressline1, addressline2, addresstown, addresscounty, addresspostcode, addresscountry),
+                html: building( form.buildingname, form.addressline1, form.addressline2, form.addresstown, form.addresscounty, form.addresspostcode, form.addresscountry),
                 classes: "building-details"
               },
                 actions: {
@@ -80,7 +81,8 @@
                   {
                     href: "/court-register/add-new-court-building",
                     text: "Change",
-                    visuallyHiddenText: "building address"
+                    visuallyHiddenText: "building address",
+                    attributes: { "data-qa": "change-building-details-link"}
                   }
                 ]
               }
@@ -90,7 +92,7 @@
                 text: "Contact information"
               },
                 value: {
-                html: contact(telephonenumber, faxnumber),
+                html: contact(form.telephonenumber, form.faxnumber),
                 classes: "contact-details"
               },
                 actions: {
@@ -98,7 +100,8 @@
                   {
                     href: "/court-register/add-new-court-contact-details",
                     text: "Change",
-                    visuallyHiddenText: "contact information"
+                    visuallyHiddenText: "contact deatils",
+                    attributes: { "data-qa": "change-contact-details-link"}
                   }
                 ]
               }
