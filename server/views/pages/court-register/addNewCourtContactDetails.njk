@@ -3,12 +3,21 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% set pageTitle = applicationName + " - Add Court" %}
 
 {% block content %}
 
+  <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
+    {% if errors.length > 0 %}
+      {{ govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      }) }}
+    {% endif %}
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -27,7 +36,7 @@
           }) %}
 
             {{ govukDetails({
-              summaryText: "Can I add more then one telehphone or fax number?",
+              summaryText: "Can I add more than one telehphone or fax number?",
               text: "You can add as many numbers as required. To add more numbers first save the primary numbers then after the new court has been saved you can add more numbers."
             }) }}
 
@@ -39,7 +48,8 @@
               classes: "govuk-input--width-10",
               id: "telephonenumber",
               name: "telephonenumber",
-              value: telephonenumber
+              value: form.telephonenumber,
+              errorMessage: errors | findError('telephonenumber')
             }) }}
 
             {{ govukInput({
@@ -49,7 +59,8 @@
               classes: "govuk-input--width-10",
               id: "faxnumber",
               name: "faxnumber",
-              value: faxnumber
+              value: form.faxnumber,
+              errorMessage: errors | findError('faxnumber')
             }) }}
 
             <div class="govuk-button-group">

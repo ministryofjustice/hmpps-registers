@@ -8,10 +8,11 @@ jest.mock('../../services/courtRegisterService')
 describe('Court Register controller', () => {
   let courtRegisterService: jest.Mocked<CourtRegisterService>
   let controller: CourtRegisterController
-  const req = {
+  const req = ({
     query: {},
     session: {},
-  } as Request
+    flash: jest.fn(),
+  } as unknown) as Request
   const res = ({
     locals: {},
     render: jest.fn(),
@@ -136,6 +137,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
             expect.objectContaining({ text: '', value: '' }),
           ]),
+          errors: [],
         })
       })
       it('will discard previous form in session when first entering page', async () => {
@@ -151,6 +153,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
             expect.objectContaining({ text: '', value: '' }),
           ]),
+          errors: [],
         })
       })
       it('will not discard previous form in session when reviewing page', async () => {
@@ -168,6 +171,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
           ]),
+          errors: [],
         })
       })
     })

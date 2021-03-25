@@ -7,6 +7,7 @@ const courtDetails = {
   type: () => cy.get('#type'),
   name: () => cy.get('#name'),
   description: () => cy.get('#description'),
+  errorSummary: () => cy.get('.govuk-error-summary'),
 }
 const verifyOnPage = (): typeof courtDetails & Page => page('Add a new court - main details', courtDetails)
 

@@ -5,6 +5,11 @@ import CourtDetailsView from './courtDetailsView'
 import type { Action } from './courtDetailsView'
 import AddNewCourtDetailsView from './addNewCourtDetailsView'
 import AddNewCourtSummaryView from './addNewCourtSummaryView'
+import AddNewCourtBuildingView from './addNewCourtBuildingView'
+import AddNewCourtContactDetailsView from './addNewCourtContactDetailsView'
+import addNewCourtDetailsValidator from './addNewCourtDetailsValidator'
+import addNewCourtBuildingValidator from './addNewCourtBuildingValidator'
+import addNewCourtContactDetailsValidator from './addNewCourtContactDetailsValidator'
 
 function context(res: Response): Context {
   return {
@@ -48,32 +53,39 @@ export default class CourtRegisterController {
 
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
-    const view = new AddNewCourtDetailsView(req.session.addNewCourtForm, courtTypes)
+    const view = new AddNewCourtDetailsView(req.session.addNewCourtForm, courtTypes, req.flash('errors'))
 
     res.render('pages/court-register/addNewCourtDetails', view.renderArgs)
   }
 
   submitNewCourtDetails(req: Request, res: Response): void {
     req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
-    res.redirect('/court-register/add-new-court-building')
+
+    res.redirect(addNewCourtDetailsValidator(req.session.addNewCourtForm, req))
   }
 
   addNewCourtBuilding(req: Request, res: Response): void {
-    res.render('pages/court-register/addNewCourtBuilding', req.session.addNewCourtForm)
+    const view = new AddNewCourtBuildingView(req.session.addNewCourtForm, req.flash('errors'))
+
+    res.render('pages/court-register/addNewCourtBuilding', view.renderArgs)
   }
 
   submitNewCourtNewBuilding(req: Request, res: Response): void {
     req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
-    res.redirect('/court-register/add-new-court-contact-details')
+
+    res.redirect(addNewCourtBuildingValidator(req.session.addNewCourtForm, req))
   }
 
   addNewCourtContactDetails(req: Request, res: Response): void {
-    res.render('pages/court-register/addNewCourtContactDetails', req.session.addNewCourtForm)
+    const view = new AddNewCourtContactDetailsView(req.session.addNewCourtForm, req.flash('errors'))
+
+    res.render('pages/court-register/addNewCourtContactDetails', view.renderArgs)
   }
 
   submitNewCourtContactDetails(req: Request, res: Response): void {
     req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
-    res.redirect('/court-register/add-new-court-summary')
+
+    res.redirect(addNewCourtContactDetailsValidator(req.session.addNewCourtForm, req))
   }
 
   async addNewCourtSummary(req: Request, res: Response): Promise<void> {

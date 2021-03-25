@@ -19,6 +19,8 @@ export declare global {
         username: string
         token: string
       }
+      flash(type: string, message: Array<Record<string, string>>): number
+      flash(message: 'errors'): Array<Record<string, string>>
     }
   }
 }

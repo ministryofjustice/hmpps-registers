@@ -10,6 +10,7 @@ const courtBuilding = {
   addressCounty: () => cy.get('#addresscounty'),
   addressPostcode: () => cy.get('#addresspostcode'),
   addressCountry: () => cy.get('#addresscountry'),
+  errorSummary: () => cy.get('.govuk-error-summary'),
 }
 const verifyOnPage = (): typeof courtBuilding & Page => page('Add a new court - building details', courtBuilding)
 

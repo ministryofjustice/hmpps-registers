@@ -84,6 +84,31 @@ context('Court register', () => {
     CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').activatedConfirmationBlock().should('exist')
   })
   describe('adding a new court', () => {
+    const fillCourtDetailsPage = () => {
+      const courtDetails = AddCourtDetailsPage.verifyOnPage()
+      courtDetails.id().type('SHFCC')
+      courtDetails.type().select('Crown Court')
+      courtDetails.name().type('Sheffield Crown Court')
+      courtDetails.description().type('Sheffield Crown Court - South Yorkshire')
+      courtDetails.continueButton().click()
+    }
+    const fillCourtBuildingPage = () => {
+      const buildingDetails = AddCourtBuildingPage.verifyOnPage()
+      buildingDetails.buildingName().type('Main building')
+      buildingDetails.addressLine1().type('Crown Square')
+      buildingDetails.addressLine2().type('32 High Street')
+      buildingDetails.addressTown().type('Sheffield')
+      buildingDetails.addressCounty().type('South Yorkshire')
+      buildingDetails.addressPostcode().type('S1 2BJ')
+      buildingDetails.addressCountry().type('England')
+      buildingDetails.continueButton().click()
+    }
+    const fillCourtContactDetailsPage = () => {
+      const contactDetails = AddCourtContactDetailsPage.verifyOnPage()
+      contactDetails.telephoneNumber().type('0114 555 1234')
+      contactDetails.faxNumber().type('0114 555 6767')
+      contactDetails.continueButton().click()
+    }
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
       AllCourtsPage.verifyOnPage().addNewCourtButton().click()
@@ -91,29 +116,75 @@ context('Court register', () => {
     it('Can navigate to add new court page', () => {
       AddCourtDetailsPage.verifyOnPage()
     })
-    describe('when successfully adding a new court', () => {
-      beforeEach(() => {
+
+    describe('add new court details', () => {
+      it('Entering valid data allows moving to build page', () => {
+        fillCourtDetailsPage()
+        AddCourtBuildingPage.verifyOnPage()
+      })
+      it('Entering invalid data keeps you on page with error messages', () => {
         const courtDetails = AddCourtDetailsPage.verifyOnPage()
-        courtDetails.id().type('SHFCC')
-        courtDetails.type().select('Crown Court')
-        courtDetails.name().type('Sheffield Crown Court')
-        courtDetails.description().type('Sheffield Crown Court - South Yorkshire')
+        courtDetails.id().type(' ')
+        courtDetails.name().type(' ')
+        courtDetails.description().type(' ')
         courtDetails.continueButton().click()
 
-        const buildingDetails = AddCourtBuildingPage.verifyOnPage()
-        buildingDetails.buildingName().type('Main building')
-        buildingDetails.addressLine1().type('Crown Square')
-        buildingDetails.addressLine2().type('32 High Street')
-        buildingDetails.addressTown().type('Sheffield')
-        buildingDetails.addressCounty().type('South Yorkshire')
-        buildingDetails.addressPostcode().type('S1 2BJ')
-        buildingDetails.addressCountry().type('England')
-        buildingDetails.continueButton().click()
+        const courtDetailsWithErrors = AddCourtDetailsPage.verifyOnPage()
+        courtDetailsWithErrors.errorSummary().contains('Enter a court name')
+        courtDetailsWithErrors.errorSummary().contains('Enter a court code')
+        courtDetailsWithErrors.errorSummary().contains('Select a court type')
+      })
+    })
+    describe('add new court building', () => {
+      beforeEach(() => {
+        fillCourtDetailsPage()
+      })
+      it('Entering valid data allows moving to contact page', () => {
+        fillCourtBuildingPage()
+        AddCourtContactDetailsPage.verifyOnPage()
+      })
+      it('Entering invalid data keeps you on page with error messages', () => {
+        const courtBuilding = AddCourtBuildingPage.verifyOnPage()
+        courtBuilding.buildingName().type(' ')
+        courtBuilding.addressLine1().type(' ')
+        courtBuilding.addressTown().type(' ')
+        courtBuilding.addressCounty().type(' ')
+        courtBuilding.addressPostcode().type(' ')
+        courtBuilding.addressCountry().type(' ')
+        courtBuilding.continueButton().click()
 
-        const contactDetails = AddCourtContactDetailsPage.verifyOnPage()
-        contactDetails.telephoneNumber().type('0114 555 1234')
-        contactDetails.faxNumber().type('0114 555 6767')
-        buildingDetails.continueButton().click()
+        const courtBuildingWithErrors = AddCourtBuildingPage.verifyOnPage()
+        courtBuildingWithErrors.errorSummary().contains('Enter the building name')
+        courtBuildingWithErrors.errorSummary().contains('Enter the first line of the address')
+        courtBuildingWithErrors.errorSummary().contains('Enter the town or city')
+        courtBuildingWithErrors.errorSummary().contains('Enter the postcode')
+        courtBuildingWithErrors.errorSummary().contains('Enter the county')
+        courtBuildingWithErrors.errorSummary().contains('Enter the country')
+      })
+    })
+    describe('add new court contact details', () => {
+      beforeEach(() => {
+        fillCourtDetailsPage()
+        fillCourtBuildingPage()
+      })
+      it('Entering valid data allows moving to contact page', () => {
+        fillCourtContactDetailsPage()
+        AddCourtSummaryPage.verifyOnPage()
+      })
+      it('Entering invalid data keeps you on page with error messages', () => {
+        const courtContactDetails = AddCourtContactDetailsPage.verifyOnPage()
+        courtContactDetails.telephoneNumber().type(' ')
+        courtContactDetails.continueButton().click()
+
+        const courtContactDetailsWithErrors = AddCourtContactDetailsPage.verifyOnPage()
+        courtContactDetailsWithErrors.errorSummary().contains('Enter the telephone number')
+      })
+    })
+    describe('when successfully adding a new court', () => {
+      beforeEach(() => {
+        fillCourtDetailsPage()
+        fillCourtBuildingPage()
+        fillCourtContactDetailsPage()
 
         const summary = AddCourtSummaryPage.verifyOnPage()
         summary.saveButton().click()

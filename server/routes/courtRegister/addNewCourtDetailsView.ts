@@ -21,12 +21,17 @@ function sortAlphabetically(courtType1: SelectItem, courtType2: SelectItem) {
 }
 
 export default class AddNewCourtDetailsView {
-  constructor(private readonly addCourtForm: AddNewCourtForm, private readonly courtTypes: Array<CourtType>) {}
+  constructor(
+    private readonly addCourtForm: AddNewCourtForm,
+    private readonly courtTypes: Array<CourtType>,
+    private readonly errors?: Array<Record<string, string>>
+  ) {}
 
-  get renderArgs(): { form: AddNewCourtForm; courtTypes: Array<SelectItem> } {
+  get renderArgs(): { form: AddNewCourtForm; courtTypes: Array<SelectItem>; errors: Array<Record<string, string>> } {
     return {
       form: this.addCourtForm,
       courtTypes: this.getCourtTypes(),
+      errors: this.errors || [],
     }
   }
 
