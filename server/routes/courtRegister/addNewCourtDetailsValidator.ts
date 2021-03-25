@@ -6,9 +6,19 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
 
   if (form.name.trim().length === 0) {
     errors.push({ text: 'Enter a court name', href: '#name' })
+  } else if (form.name.trim().length < 2) {
+    errors.push({ text: 'Court name must be at least 2 characters', href: '#name' })
+  }
+  if (form.name.trim().length > 200) {
+    errors.push({ text: 'Court name must be 200 characters or fewer', href: '#name' })
   }
   if (form.id.trim().length === 0) {
     errors.push({ text: 'Enter a court code', href: '#id' })
+  } else if (form.id.trim().length < 2) {
+    errors.push({ text: 'Court code must be at least 2 characters', href: '#id' })
+  }
+  if (form.id.trim().length > 12) {
+    errors.push({ text: 'Court code must be 12 characters or fewer', href: '#id' })
   }
   if (form.type.trim().length === 0) {
     errors.push({ text: 'Select a court type', href: '#type' })
