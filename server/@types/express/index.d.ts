@@ -1,3 +1,5 @@
+import type { AddNewCourtForm } from '../forms'
+
 export default {}
 
 declare module 'express-session' {
@@ -5,6 +7,7 @@ declare module 'express-session' {
   interface SessionData {
     returnTo: string
     nowInMinutes: number
+    addNewCourtForm: AddNewCourtForm
   }
 }
 
@@ -16,6 +19,8 @@ export declare global {
         username: string
         token: string
       }
+      flash(type: string, message: Array<Record<string, string>>): number
+      flash(message: 'errors'): Array<Record<string, string>>
     }
   }
 }

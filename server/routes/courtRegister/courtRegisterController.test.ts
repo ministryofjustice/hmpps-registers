@@ -8,9 +8,11 @@ jest.mock('../../services/courtRegisterService')
 describe('Court Register controller', () => {
   let courtRegisterService: jest.Mocked<CourtRegisterService>
   let controller: CourtRegisterController
-  const req = {
+  const req = ({
     query: {},
-  } as Request
+    session: {},
+    flash: jest.fn(),
+  } as unknown) as Request
   const res = ({
     locals: {},
     render: jest.fn(),
@@ -99,6 +101,100 @@ describe('Court Register controller', () => {
       await controller.toggleCourtActive(req, res)
 
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=DEACTIVATE')
+    })
+  })
+  describe('Add new court flow', () => {
+    beforeEach(() => {
+      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      controller = new CourtRegisterController(courtRegisterService)
+      courtRegisterService.getCourtTypes.mockResolvedValue([
+        {
+          courtType: 'CRN',
+          courtName: 'Crown Court',
+        },
+        {
+          courtType: 'MAG',
+          courtName: 'Magistrates Court',
+        },
+      ])
+    })
+    describe('addNewCourtStart', () => {
+      it('will clear any existing form', async () => {
+        req.session.addNewCourtForm = {
+          id: 'SHFCC',
+        }
+
+        controller.addNewCourtStart(req, res)
+
+        expect(req.session.addNewCourtForm).toEqual({})
+      })
+    })
+    describe('addNewCourtDetails', () => {
+      it('will request court types', async () => {
+        res.locals.user = {
+          username: 'tom',
+        }
+        await controller.addNewCourtDetails(req, res)
+
+        expect(courtRegisterService.getCourtTypes).toHaveBeenCalledWith({ username: 'tom' })
+      })
+      it('will render court details page with court types', async () => {
+        await controller.addNewCourtDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/addNewCourtDetails', {
+          form: {},
+          courtTypes: expect.arrayContaining([
+            expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
+            expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
+            expect.objectContaining({ text: '', value: '' }),
+          ]),
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        req.session.addNewCourtForm = {
+          type: 'CRN',
+        }
+        await controller.addNewCourtDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/addNewCourtDetails', {
+          form: {
+            type: 'CRN',
+          },
+          courtTypes: expect.arrayContaining([
+            expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
+            expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
+          ]),
+          errors: [],
+        })
+      })
+    })
+    describe('addNewCourtSummary', () => {
+      it('will request court types', async () => {
+        res.locals.user = {
+          username: 'tom',
+        }
+        await controller.addNewCourtSummary(req, res)
+
+        expect(courtRegisterService.getCourtTypes).toHaveBeenCalledWith({ username: 'tom' })
+      })
+      it('will render summary with selected court type description', async () => {
+        req.session.addNewCourtForm = {
+          name: 'Sheffield Crown Court',
+          type: 'CRN',
+        }
+
+        await controller.addNewCourtSummary(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/addNewCourtSummary', {
+          form: {
+            name: 'Sheffield Crown Court',
+            type: 'CRN',
+            completed: true,
+          },
+          typeDescription: 'Crown Court',
+        })
+      })
     })
   })
 })

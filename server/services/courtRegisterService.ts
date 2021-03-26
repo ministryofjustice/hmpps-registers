@@ -1,4 +1,4 @@
-import type { Court, UpdateCourt } from 'courtRegister'
+import type { Court, CourtType, UpdateCourt } from 'courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
@@ -36,5 +36,11 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating court ${courtId}`)
     await CourtRegisterService.restClient(token).put({ path: `/court-maintenance/id/${courtId}`, data: updatedCourt })
+  }
+
+  async getCourtTypes(context: Context): Promise<Array<CourtType>> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all court types`)
+    return (await CourtRegisterService.restClient(token).get({ path: `/courts/types` })) as Array<CourtType>
   }
 }

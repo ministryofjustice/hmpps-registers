@@ -121,4 +121,33 @@ describe('Court Register service', () => {
       )
     })
   })
+  describe('getCourtTypes', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister.get('/courts/types').reply(200, [])
+
+      await courtRegisterService.getCourtTypes({ username: 'tommy' })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will return all court types', async () => {
+      fakeCourtRegister.get('/courts/types').reply(200, [
+        {
+          courtType: 'COU',
+          courtName: 'County Court/County Divorce Ct',
+        },
+        {
+          courtType: 'YOU',
+          courtName: 'Youth Court',
+        },
+      ])
+
+      const result = await courtRegisterService.getCourtTypes({})
+
+      expect(result).toHaveLength(2)
+    })
+  })
 })
