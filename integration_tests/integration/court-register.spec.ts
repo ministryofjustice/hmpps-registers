@@ -12,7 +12,7 @@ context('Court register', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubCourts', [
+    cy.task('stubAllCourts', [
       {
         courtId: 'SHFCC',
         courtName: 'Sheffield Crown Court',
@@ -28,6 +28,39 @@ context('Court register', () => {
         active: false,
       },
     ])
+    cy.task('stubPageOfCourts', {
+      content: [
+        {
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtDescription: 'Sheffield Crown Court - Yorkshire',
+          courtType: 'CROWN',
+          active: true,
+        },
+        {
+          courtId: 'SHFMC',
+          courtName: 'Sheffield Magistrates Court',
+          courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+          courtType: 'MAGISTRATES',
+          active: true,
+        },
+        {
+          courtId: 'SHFYC',
+          courtName: 'Sheffield Touth Court',
+          courtDescription: 'Sheffield Youth Court - Yorkshire',
+          courtType: 'YOUTH',
+          active: false,
+        },
+      ],
+      last: false,
+      totalPages: 2,
+      totalElements: 4,
+      number: 0,
+      size: 3,
+      first: true,
+      numberOfElements: 3,
+      empty: false,
+    })
     cy.task('stubCourt', {
       courtId: 'SHFCC',
       courtName: 'Sheffield Crown Court',

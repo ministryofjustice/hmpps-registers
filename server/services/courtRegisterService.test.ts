@@ -61,6 +61,81 @@ describe('Court Register service', () => {
       expect(result.courts).toHaveLength(2)
     })
   })
+  describe('getPageOfCourts', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister
+        .get('/courts/all/paged?page=0&size=3')
+        .reply(200, { content: [], last: false, totalPages: 0, totalElements: 0, first: true, empty: true })
+
+      await courtRegisterService.getPageOfCourts({ username: 'tommy' }, 0, 3)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('is ok if there are no courts', async () => {
+      fakeCourtRegister.get('/courts/all/paged?page=0&size=3').reply(200, {
+        content: [],
+        last: true,
+        totalPages: 0,
+        totalElements: 0,
+        number: 0,
+        size: 3,
+        first: true,
+        numberOfElements: 0,
+        empty: true,
+      })
+
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3)
+
+      expect(result.content).toEqual([])
+      expect(result.last).toEqual(true)
+      expect(result.totalPages).toEqual(0)
+      expect(result.totalElements).toEqual(0)
+      expect(result.number).toEqual(0)
+      expect(result.size).toEqual(3)
+      expect(result.first).toEqual(true)
+      expect(result.numberOfElements).toEqual(0)
+      expect(result.empty).toEqual(true)
+    })
+    it('will return page of courts', async () => {
+      fakeCourtRegister.get('/courts/all/paged?page=0&size=3').reply(200, {
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+          }),
+          data.court({
+            courtId: 'SHFMC',
+          }),
+          data.court({
+            courtId: 'SHFYC',
+          }),
+        ],
+        last: false,
+        totalPages: 2,
+        totalElements: 4,
+        number: 0,
+        size: 3,
+        first: true,
+        numberOfElements: 3,
+        empty: false,
+      })
+
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3)
+
+      expect(result.content).toHaveLength(3)
+      expect(result.last).toEqual(false)
+      expect(result.totalPages).toEqual(2)
+      expect(result.totalElements).toEqual(4)
+      expect(result.number).toEqual(0)
+      expect(result.size).toEqual(3)
+      expect(result.first).toEqual(true)
+      expect(result.numberOfElements).toEqual(3)
+      expect(result.empty).toEqual(false)
+    })
+  })
   describe('getCourt', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
