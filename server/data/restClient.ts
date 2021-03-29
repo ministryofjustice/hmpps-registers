@@ -13,6 +13,7 @@ interface GetRequest {
   headers?: Record<string, string>
   responseType?: string
   raw?: boolean
+  allowNotFound?: boolean
 }
 
 interface PostRequest {
@@ -50,11 +51,19 @@ export default class RestClient {
     logger.warn(sanitiseError(error), `Error calling ${this.name}`)
   }
 
-  async get({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetRequest): Promise<unknown> {
+  async get({
+    path = null,
+    query = '',
+    headers = {},
+    responseType = '',
+    raw = false,
+    allowNotFound = false,
+  }: GetRequest): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
         .get(`${this.apiUrl()}${path}`)
+        .ok(res => res.status < 400 || (allowNotFound && res.status === 404))
         .agent(this.agent)
         .retry(2, (err, res) => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
@@ -65,6 +74,10 @@ export default class RestClient {
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
+
+      if (result.notFound) {
+        return null
+      }
 
       return raw ? result : result.body
     } catch (error) {

@@ -84,9 +84,9 @@ context('Court register', () => {
     CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').activatedConfirmationBlock().should('exist')
   })
   describe('adding a new court', () => {
-    const fillCourtDetailsPage = () => {
+    const fillCourtDetailsPage = (id = 'SHXCC') => {
       const courtDetails = AddCourtDetailsPage.verifyOnPage()
-      courtDetails.id().type('SHFCC')
+      courtDetails.id().type(id)
       courtDetails.type().select('Crown Court')
       courtDetails.name().type('Sheffield Crown Court')
       courtDetails.description().type('Sheffield Crown Court - South Yorkshire')
@@ -133,6 +133,12 @@ context('Court register', () => {
         courtDetailsWithErrors.errorSummary().contains('Enter a court name')
         courtDetailsWithErrors.errorSummary().contains('Enter a court code')
         courtDetailsWithErrors.errorSummary().contains('Select a court type')
+      })
+      it('Entering court id for existing court keeps you on page with error messages', () => {
+        fillCourtDetailsPage('SHFCC')
+
+        const courtDetailsWithErrors = AddCourtDetailsPage.verifyOnPage()
+        courtDetailsWithErrors.errorSummary().contains('Choose another code')
       })
     })
     describe('add new court building', () => {
@@ -190,7 +196,7 @@ context('Court register', () => {
         const summaryPage = AddCourtSummaryPage.verifyOnPage()
 
         summaryPage.courtDetails().contains('Crown Court')
-        summaryPage.courtDetails().contains('SHFCC')
+        summaryPage.courtDetails().contains('SHXCC')
         summaryPage.courtDetails().contains('Sheffield Crown Court')
         summaryPage.courtDetails().contains('Sheffield Crown Court - South Yorkshire')
 
@@ -252,7 +258,7 @@ context('Court register', () => {
       it('Will show success message', () => {
         const finished = AddCourtFinishedPage.verifyOnPage()
         finished.message().contains('Court saved')
-        finished.message().contains('SHFCC - Sheffield Crown Court has been saved successfully')
+        finished.message().contains('SHXCC - Sheffield Crown Court has been saved successfully')
       })
     })
   })

@@ -30,6 +30,15 @@ export default class CourtRegisterService {
     return (await CourtRegisterService.restClient(token).get({ path: `/courts/id/${courtId}` })) as Court
   }
 
+  async findCourt(context: Context, courtId: string): Promise<Court> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`finding details for court ${courtId}`)
+    return (await CourtRegisterService.restClient(token).get({
+      path: `/courts/id/${courtId}`,
+      allowNotFound: true,
+    })) as Court
+  }
+
   async updateActiveMarker(context: Context, courtId: string, active: boolean): Promise<void> {
     const court: Court = await this.getCourt(context, courtId)
     const updatedCourt: UpdateCourt = { ...court, active }

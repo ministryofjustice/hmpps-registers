@@ -5,7 +5,7 @@
 <!--suppress HtmlUnknownTarget -->
 {% set pageTitle = applicationName + " - Add Court" %}
 {% macro line(text) %}
-  {% if text is defined %}
+  {% if text is defined and text.trim() != '' %}
     <p> {{ text }} </p>
   {% endif %}
 {% endmacro %}
@@ -30,7 +30,7 @@
 {% endmacro %}
 {% macro contact(telephone, fax) %}
   {{ line(telephone) }}
-  {% if fax is defined %}
+  {% if fax is defined and fax.trim() != '' %}
     <p>{{ fax }} (fax) </p>
   {% endif %}
 {% endmacro %}

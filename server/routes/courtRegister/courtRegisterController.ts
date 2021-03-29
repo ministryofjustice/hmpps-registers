@@ -58,10 +58,14 @@ export default class CourtRegisterController {
     res.render('pages/court-register/addNewCourtDetails', view.renderArgs)
   }
 
-  submitNewCourtDetails(req: Request, res: Response): void {
+  async submitNewCourtDetails(req: Request, res: Response): Promise<void> {
     req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
 
-    res.redirect(addNewCourtDetailsValidator(req.session.addNewCourtForm, req))
+    res.redirect(
+      await addNewCourtDetailsValidator(req.session.addNewCourtForm, req, (id: string) =>
+        this.courtRegisterService.findCourt(context(res), id)
+      )
+    )
   }
 
   addNewCourtBuilding(req: Request, res: Response): void {

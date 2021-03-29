@@ -1,7 +1,12 @@
 import { Request } from 'express'
 import type { AddNewCourtForm } from 'forms'
+import { Court } from 'courtRegister'
 
-export default function validate(form: AddNewCourtForm, req: Request): string {
+export default async function validate(
+  form: AddNewCourtForm,
+  req: Request,
+  courtLookup: (id: string) => Promise<Court>
+): Promise<string> {
   const errors: Array<{ text: string; href: string }> = []
 
   if (form.name.trim().length === 0) {
@@ -16,6 +21,11 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
     errors.push({ text: 'Enter a court code', href: '#id' })
   } else if (form.id.trim().length < 2) {
     errors.push({ text: 'Court code must be at least 2 characters', href: '#id' })
+  } else {
+    const court = await courtLookup(form.id)
+    if (court) {
+      errors.push({ text: `${court.courtName} already has that code. Choose another code`, href: '#id' })
+    }
   }
   if (form.id.trim().length > 12) {
     errors.push({ text: 'Court code must be 12 characters or fewer', href: '#id' })
