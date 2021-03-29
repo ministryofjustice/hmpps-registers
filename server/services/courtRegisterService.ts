@@ -1,16 +1,15 @@
-import { components } from '../@types/courtRegisterImport'
-
+import type {
+  Court,
+  CourtType,
+  UpdateCourt,
+  InsertCourt,
+  InsertCourtBuilding,
+  InsertCourtBuildingContact,
+} from '../@types/courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-
-type Court = components['schemas']['CourtDto']
-type UpdateCourt = components['schemas']['UpdateCourtDto']
-type CourtType = components['schemas']['CourtTypeDto']
-type InsertCourt = components['schemas']['InsertCourtDto']
-type InsertCourtBuilding = components['schemas']['UpdateBuildingDto']
-type InsertCourtBuildingContact = components['schemas']['UpdateContactDto']
 
 export interface AllCourts {
   courts: Array<Court>

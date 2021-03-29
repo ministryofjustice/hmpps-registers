@@ -1,7 +1,5 @@
 import type { AddNewCourtForm } from 'forms'
-import { components } from '../../@types/courtRegisterImport'
-
-type CourtType = components['schemas']['CourtTypeDto']
+import { CourtType } from '../../@types/courtRegister'
 
 export default class AddNewCourtSummaryView {
   constructor(private readonly addCourtForm: AddNewCourtForm, private readonly courtTypes: Array<CourtType>) {}

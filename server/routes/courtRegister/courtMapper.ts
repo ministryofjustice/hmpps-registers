@@ -1,6 +1,4 @@
-import { components } from '../../@types/courtRegisterImport'
-
-type Court = components['schemas']['CourtDto']
+import { Court } from '../../@types/courtRegister'
 
 function typeOf(enumType: string) {
   switch (enumType) {

@@ -1,10 +1,8 @@
 import { AddNewCourtForm } from 'forms'
 import { Request } from 'express'
+import { Court } from '../../@types/courtRegister'
 import validate from './addNewCourtDetailsValidator'
 import data from '../testutils/mockData'
-import { components } from '../../@types/courtRegisterImport'
-
-type Court = components['schemas']['CourtDto']
 
 jest.mock('../../services/courtRegisterService')
 
