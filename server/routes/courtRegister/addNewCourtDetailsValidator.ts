@@ -1,6 +1,8 @@
 import { Request } from 'express'
 import type { AddNewCourtForm } from 'forms'
-import { Court } from 'courtRegister'
+import { components } from '../../@types/courtRegisterImport'
+
+type Court = components['schemas']['CourtDto']
 
 export default async function validate(
   form: AddNewCourtForm,

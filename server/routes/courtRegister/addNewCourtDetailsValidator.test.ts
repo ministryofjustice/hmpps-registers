@@ -1,9 +1,10 @@
 import { AddNewCourtForm } from 'forms'
 import { Request } from 'express'
-import { Court } from 'courtRegister'
 import validate from './addNewCourtDetailsValidator'
-import { CourtDetail } from './courtMapper'
 import data from '../testutils/mockData'
+import { components } from '../../@types/courtRegisterImport'
+
+type Court = components['schemas']['CourtDto']
 
 jest.mock('../../services/courtRegisterService')
 
@@ -19,7 +20,7 @@ describe('addNewCourtDetailsValidator', () => {
   }
 
   describe('validate', () => {
-    let lookup: jest.Mocked<(id: string) => Promise<CourtDetail>>
+    let lookup: jest.Mocked<(id: string) => Promise<Court>>
     beforeEach(() => {
       lookup = jest.fn().mockResolvedValue(null)
     })

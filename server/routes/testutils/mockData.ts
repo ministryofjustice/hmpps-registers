@@ -1,4 +1,6 @@
-import type { Court } from 'courtRegister'
+import { components } from '../../@types/courtRegisterImport'
+
+type Court = components['schemas']['CourtDto']
 
 export default {
   court: ({

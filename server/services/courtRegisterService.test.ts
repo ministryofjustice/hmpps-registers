@@ -1,10 +1,13 @@
 import nock from 'nock'
+import { components } from '../@types/courtRegisterImport'
 
-import { Court, UpdateCourt } from 'courtRegister'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService from './courtRegisterService'
 import config from '../config'
 import data from '../routes/testutils/mockData'
+
+type Court = components['schemas']['CourtDto']
+type UpdateCourt = components['schemas']['UpdateCourtDto']
 
 jest.mock('../data/hmppsAuthClient')
 

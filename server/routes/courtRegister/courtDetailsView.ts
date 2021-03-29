@@ -1,6 +1,8 @@
-import { Court } from 'courtRegister'
+import { components } from '../../@types/courtRegisterImport'
 import courtMapper from './courtMapper'
 import type { CourtDetail } from './courtMapper'
+
+type Court = components['schemas']['CourtDto']
 
 export type Action = 'NONE' | 'ACTIVATE' | 'DEACTIVATE'
 

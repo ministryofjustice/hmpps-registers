@@ -1,11 +1,30 @@
-import type { Court, CourtType, UpdateCourt } from 'courtRegister'
+import { components } from '../@types/courtRegisterImport'
+
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
 
+type Court = components['schemas']['CourtDto']
+type UpdateCourt = components['schemas']['UpdateCourtDto']
+type CourtType = components['schemas']['CourtTypeDto']
+type InsertCourt = components['schemas']['InsertCourtDto']
+type InsertCourtBuilding = components['schemas']['UpdateBuildingDto']
+type InsertCourtBuildingContact = components['schemas']['UpdateContactDto']
+
 export interface AllCourts {
   courts: Array<Court>
+}
+
+export interface AddCourt {
+  court: InsertCourt
+  building: InsertCourtBuilding
+  contacts: InsertCourtBuildingContact[]
+}
+
+export interface AddUpdateResponse {
+  success: boolean
+  errorMessage?: string
 }
 
 export interface Context {
@@ -45,6 +64,14 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating court ${courtId}`)
     await CourtRegisterService.restClient(token).put({ path: `/court-maintenance/id/${courtId}`, data: updatedCourt })
+  }
+
+  async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {
+    // TODO - add service calls
+    logger.info(`Adding court ${addCourt.court.courtId}`)
+    return new Promise<AddUpdateResponse>(resolve => {
+      resolve({ success: true })
+    })
   }
 
   async getCourtTypes(context: Context): Promise<Array<CourtType>> {
