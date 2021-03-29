@@ -84,10 +84,9 @@ describe('Court Register service', () => {
         status: 404,
         developerMessage: 'Court SHFCC not found',
       })
-
+      expect.assertions(1)
       try {
         await courtRegisterService.getCourt({}, 'SHFCC')
-        expect(true).toBe(false)
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }

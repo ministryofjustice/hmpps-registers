@@ -177,15 +177,28 @@ export interface components {
       /** Details of the contact */
       detail: string
     }
+    /** Court Insert Record */
+    InsertCourtDto: {
+      /** Court ID */
+      courtId: string
+      /** Name of the court */
+      courtName: string
+      /** Description of the court */
+      courtDescription?: string
+      /** Type of court */
+      courtType: string
+      /** Whether the court is still active */
+      active: boolean
+    }
     CourtDtoPage: {
       content?: components['schemas']['CourtDto'][]
       pageable?: components['schemas']['Pageable']
       last?: boolean
-      totalPages?: number
       totalElements?: number
+      totalPages?: number
+      size?: number
       number?: number
       sort?: components['schemas']['Sort']
-      size?: number
       first?: boolean
       numberOfElements?: number
       empty?: boolean
@@ -443,7 +456,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['CourtDto']
+        'application/json': components['schemas']['InsertCourtDto']
       }
     }
   }
