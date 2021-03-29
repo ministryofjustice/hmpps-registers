@@ -40,6 +40,10 @@ export interface paths {
     /** All court types */
     get: operations['getCourtTypes']
   }
+  '/courts/paged': {
+    /** Page of courts (active only) */
+    get: operations['getPageOfActiveCourts']
+  }
   '/courts/id/{courtId}': {
     /** Information on a specific court */
     get: operations['getCourtFromId']
@@ -59,6 +63,10 @@ export interface paths {
   '/courts/all': {
     /** All active/inactive courts */
     get: operations['getAllCourts']
+  }
+  '/courts/all/paged': {
+    /** Page of active/inactive courts */
+    get: operations['getPageOfCourts']
   }
 }
 
@@ -168,6 +176,29 @@ export interface components {
       type: 'TEL' | 'FAX'
       /** Details of the contact */
       detail: string
+    }
+    CourtDtoPage: {
+      content?: components['schemas']['CourtDto'][]
+      pageable?: components['schemas']['Pageable']
+      last?: boolean
+      totalPages?: number
+      totalElements?: number
+      number?: number
+      sort?: components['schemas']['Sort']
+      size?: number
+      first?: boolean
+      numberOfElements?: number
+      empty?: boolean
+    }
+    Pageable: {
+      page?: number
+      size?: number
+      sort?: string[]
+    }
+    Sort: {
+      sorted?: boolean
+      unsorted?: boolean
+      empty?: boolean
     }
   }
 }
@@ -517,6 +548,22 @@ export interface operations {
       }
     }
   }
+  /** Page of courts (active only) */
+  getPageOfActiveCourts: {
+    parameters: {
+      query: {
+        pageable?: components['schemas']['Pageable']
+      }
+    }
+    responses: {
+      /** Page of Active Court Information Returned */
+      200: {
+        content: {
+          'application/json': components['schemas']['CourtDtoPage'][]
+        }
+      }
+    }
+  }
   /** Information on a specific court */
   getCourtFromId: {
     parameters: {
@@ -639,6 +686,22 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['CourtDto'][]
+        }
+      }
+    }
+  }
+  /** Page of active/inactive courts */
+  getPageOfCourts: {
+    parameters: {
+      query: {
+        pageable?: components['schemas']['Pageable']
+      }
+    }
+    responses: {
+      /** All Court Information Returned (Active only) */
+      200: {
+        content: {
+          'application/json': components['schemas']['CourtDtoPage'][]
         }
       }
     }
