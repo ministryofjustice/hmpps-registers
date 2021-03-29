@@ -79,6 +79,54 @@ describe('Court Register service', () => {
 
       expect(court.courtId).toEqual('SHFCC')
     })
+    it('will throw error when not found', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(404, {
+        status: 404,
+        developerMessage: 'Court SHFCC not found',
+      })
+
+      try {
+        await courtRegisterService.getCourt({}, 'SHFCC')
+        expect(true).toBe(false)
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+  describe('findCourt', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({}))
+
+      await courtRegisterService.findCourt({ username: 'tommy' }, 'SHFCC')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will return the court when found', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(
+        200,
+        data.court({
+          courtId: 'SHFCC',
+        })
+      )
+
+      const court = await courtRegisterService.findCourt({}, 'SHFCC')
+
+      expect(court.courtId).toEqual('SHFCC')
+    })
+    it('will null when court not found', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(404, {
+        status: 404,
+        developerMessage: 'Court SHFCC not found',
+      })
+
+      const court = await courtRegisterService.findCourt({}, 'SHFCC')
+
+      expect(court).toBeFalsy()
+    })
   })
   describe('updateActiveMarker', () => {
     let updatedCourt: UpdateCourt
