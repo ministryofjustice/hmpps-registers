@@ -1,5 +1,5 @@
 import type { AddNewCourtForm } from 'forms'
-import { CourtType } from 'courtRegister'
+import { CourtType } from '../../@types/courtRegister'
 
 export default class AddNewCourtSummaryView {
   constructor(private readonly addCourtForm: AddNewCourtForm, private readonly courtTypes: Array<CourtType>) {}

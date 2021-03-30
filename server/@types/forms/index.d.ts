@@ -6,7 +6,7 @@ declare module 'forms' {
     description?: string
     buildingname?: string
     addressline1?: string
-    addressline?: string
+    addressline2?: string
     addresstown?: string
     addresscounty?: string
     addresspostcode?: string

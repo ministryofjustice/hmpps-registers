@@ -1,4 +1,4 @@
-import { Court } from 'courtRegister'
+import { Court } from '../../@types/courtRegister'
 import courtMapper from './courtMapper'
 import type { CourtDetail } from './courtMapper'
 

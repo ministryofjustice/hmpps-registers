@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import type { AddNewCourtForm } from 'forms'
-import { Court } from 'courtRegister'
+import { Court } from '../../@types/courtRegister'
 
 export default async function validate(
   form: AddNewCourtForm,

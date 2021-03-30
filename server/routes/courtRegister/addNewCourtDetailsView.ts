@@ -1,5 +1,5 @@
 import type { AddNewCourtForm } from 'forms'
-import { CourtType } from 'courtRegister'
+import { CourtType } from '../../@types/courtRegister'
 
 interface SelectItem {
   value: string

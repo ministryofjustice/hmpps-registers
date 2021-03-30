@@ -1,6 +1,6 @@
 import nock from 'nock'
 
-import { Court, UpdateCourt } from 'courtRegister'
+import { Court, UpdateCourt } from '../@types/courtRegister'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService from './courtRegisterService'
 import config from '../config'

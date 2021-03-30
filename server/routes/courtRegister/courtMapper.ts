@@ -1,4 +1,4 @@
-import { Court } from 'courtRegister'
+import { Court } from '../../@types/courtRegister'
 
 function typeOf(enumType: string) {
   switch (enumType) {

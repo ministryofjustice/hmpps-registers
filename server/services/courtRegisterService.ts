@@ -1,4 +1,11 @@
-import type { Court, CourtType, UpdateCourt } from 'courtRegister'
+import type {
+  Court,
+  CourtType,
+  UpdateCourt,
+  InsertCourt,
+  InsertCourtBuilding,
+  InsertCourtBuildingContact,
+} from '../@types/courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
@@ -6,6 +13,17 @@ import logger from '../../logger'
 
 export interface AllCourts {
   courts: Array<Court>
+}
+
+export interface AddCourt {
+  court: InsertCourt
+  building: InsertCourtBuilding
+  contacts: InsertCourtBuildingContact[]
+}
+
+export interface AddUpdateResponse {
+  success: boolean
+  errorMessage?: string
 }
 
 export interface Context {
@@ -45,6 +63,14 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating court ${courtId}`)
     await CourtRegisterService.restClient(token).put({ path: `/court-maintenance/id/${courtId}`, data: updatedCourt })
+  }
+
+  async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {
+    // TODO - add service calls
+    logger.info(`Adding court ${addCourt.court.courtId}`)
+    return new Promise<AddUpdateResponse>(resolve => {
+      resolve({ success: true })
+    })
   }
 
   async getCourtTypes(context: Context): Promise<Array<CourtType>> {

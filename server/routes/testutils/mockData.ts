@@ -1,4 +1,4 @@
-import type { Court } from 'courtRegister'
+import type { Court } from '../../@types/courtRegister'
 
 export default {
   court: ({
