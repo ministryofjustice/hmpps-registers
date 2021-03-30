@@ -31,13 +31,13 @@ describe('courtsPageMapper', () => {
   beforeEach(() => {
     courtsPage = courtsPageMapper({
       content: [
-        {
+        data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
           courtDescription: 'Sheffield Crown Court - Yorkshire',
           courtType: 'CROWN',
           active: true,
-        },
+        }),
       ],
       first: true,
       last: true,

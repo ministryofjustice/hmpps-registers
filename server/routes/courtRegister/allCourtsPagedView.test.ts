@@ -12,11 +12,11 @@ describe('AllCourtsPagedView', () => {
         first: true,
         last: true,
         empty: true,
-        totalPage: 0,
+        totalPages: 0,
         totalElements: 0,
-        pageNumber: 0,
-        pageSize: 20,
-        elementsOnPage: 0,
+        number: 0,
+        size: 20,
+        numberOfElements: 0,
       })
     })
     it('can handle when there are no courts', () => {
