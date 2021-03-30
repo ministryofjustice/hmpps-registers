@@ -1,4 +1,4 @@
-import { Court } from '../../@types/courtRegister'
+import { Court, CourtsPage } from '../../@types/courtRegister'
 
 function typeOf(enumType: string) {
   switch (enumType) {
@@ -6,6 +6,8 @@ function typeOf(enumType: string) {
       return 'Magistrates'
     case 'CROWN':
       return 'Crown'
+    case 'YOUTH':
+      return 'Youth'
     default:
       return enumType
   }
@@ -17,6 +19,18 @@ export type CourtDetail = {
   description: string
   active: boolean
   id: string
+}
+
+export type CourtsPageView = {
+  courts: CourtDetail[]
+  first: boolean
+  last: boolean
+  empty: boolean
+  totalPages: number
+  totalElements: number
+  pageNumber: number
+  pageSize: number
+  elementsOnPage: number
 }
 
 export default function courtMapper(court: Court): CourtDetail {
@@ -31,5 +45,23 @@ export default function courtMapper(court: Court): CourtDetail {
     type,
     active,
     id,
+  }
+}
+export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
+  const courts = courtsPage.content.map((court: Court) => courtMapper(court))
+  const { first, last, empty, totalPages, totalElements } = courtsPage
+  const pageNumber = courtsPage.number
+  const pageSize = courtsPage.size
+  const elementsOnPage = courtsPage.numberOfElements
+  return {
+    courts,
+    first,
+    last,
+    empty,
+    totalPages,
+    totalElements,
+    pageNumber,
+    pageSize,
+    elementsOnPage,
   }
 }

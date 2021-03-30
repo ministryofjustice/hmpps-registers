@@ -11,6 +11,7 @@ import addNewCourtDetailsValidator from './addNewCourtDetailsValidator'
 import addNewCourtBuildingValidator from './addNewCourtBuildingValidator'
 import addNewCourtContactDetailsValidator from './addNewCourtContactDetailsValidator'
 import addNewCourtSummaryValidator from './addNewCourtSummaryValidator'
+import AllCourtsPagedView from './allCourtsPagedView'
 
 function context(res: Response): Context {
   return {
@@ -26,6 +27,14 @@ export default class CourtRegisterController {
     const view = new AllCourtsView(courts)
 
     res.render('pages/court-register/allCourts', view.renderArgs)
+  }
+
+  async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), 0, 20)
+
+    const view = new AllCourtsPagedView(courtsPage)
+
+    res.render('pages/court-register/allCourtsPaged', view.renderArgs)
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {

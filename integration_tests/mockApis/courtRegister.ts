@@ -31,7 +31,7 @@ const stubPageOfCourts = (courtPage: Record<string, unknown>): SuperAgentRequest
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/court-register/courts/all',
+      urlPattern: '/court-register/courts/all/paged.*',
     },
     response: {
       status: 200,

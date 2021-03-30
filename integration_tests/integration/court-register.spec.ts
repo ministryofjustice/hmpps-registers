@@ -1,5 +1,6 @@
 import IndexPage from '../pages'
 import AllCourtsPage from '../pages/court-register/allCourts'
+import AllCourtsPagedPage from '../pages/court-register/allCourtsPaged'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
 import AddCourtDetailsPage from '../pages/court-register/addNewCourtDetails'
 import AddCourtBuildingPage from '../pages/court-register/addNewCourtBuilding'
@@ -46,7 +47,7 @@ context('Court register', () => {
         },
         {
           courtId: 'SHFYC',
-          courtName: 'Sheffield Touth Court',
+          courtName: 'Sheffield Youth Court',
           courtDescription: 'Sheffield Youth Court - Yorkshire',
           courtType: 'YOUTH',
           active: false,
@@ -104,6 +105,35 @@ context('Court register', () => {
       code().contains('SHFMC')
       name().contains('Sheffield Magistrates Court')
       type().contains('Magistrates')
+      status().contains('Closed')
+    }
+  })
+
+  it('Will display a page of courts', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  Will need this when plumbing in the paged court list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // and this will need removing
+    const courtRegisterPagedPage = AllCourtsPagedPage.verifyOnPage()
+
+    {
+      const { code, name, type, status } = courtRegisterPagedPage.courts(0)
+      code().contains('SHFCC')
+      name().contains('Sheffield Crown Court')
+      type().contains('Crown')
+      status().contains('Active')
+    }
+    {
+      const { code, name, type, status } = courtRegisterPagedPage.courts(1)
+      code().contains('SHFMC')
+      name().contains('Sheffield Magistrates Court')
+      type().contains('Magistrates')
+      status().contains('Active')
+    }
+    {
+      const { code, name, type, status } = courtRegisterPagedPage.courts(2)
+      code().contains('SHFYC')
+      name().contains('Sheffield Youth Court')
+      type().contains('Youth')
       status().contains('Closed')
     }
   })
