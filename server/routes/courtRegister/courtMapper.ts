@@ -1,4 +1,5 @@
 import { Court, CourtsPage } from '../../@types/courtRegister'
+import { PageMetaData, springPageToPageMetaData } from '../../utils/page'
 
 function typeOf(enumType: string) {
   switch (enumType) {
@@ -23,14 +24,7 @@ export type CourtDetail = {
 
 export type CourtsPageView = {
   courts: CourtDetail[]
-  first: boolean
-  last: boolean
-  empty: boolean
-  totalPages: number
-  totalElements: number
-  pageNumber: number
-  pageSize: number
-  elementsOnPage: number
+  pageMetaData: PageMetaData
 }
 
 export default function courtMapper(court: Court): CourtDetail {
@@ -49,19 +43,15 @@ export default function courtMapper(court: Court): CourtDetail {
 }
 export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
-  const { first, last, empty, totalPages, totalElements } = courtsPage
-  const pageNumber = courtsPage.number
-  const pageSize = courtsPage.size
-  const elementsOnPage = courtsPage.numberOfElements
-  return {
-    courts,
-    first,
-    last,
-    empty,
-    totalPages,
-    totalElements,
-    pageNumber,
-    pageSize,
-    elementsOnPage,
-  }
+  const pageMetaData = springPageToPageMetaData(
+    courtsPage.first,
+    courtsPage.last,
+    courtsPage.empty,
+    courtsPage.totalPages,
+    courtsPage.totalElements,
+    courtsPage.number,
+    courtsPage.size,
+    courtsPage.numberOfElements
+  )
+  return { courts, pageMetaData }
 }

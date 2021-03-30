@@ -59,27 +59,27 @@ describe('courtsPageMapper', () => {
     expect(courtsPage.courts[0].active).toEqual(true)
   })
   it('will map first page flag', () => {
-    expect(courtsPage.first).toEqual(true)
+    expect(courtsPage.pageMetaData.first).toEqual(true)
   })
   it('will map last page flag', () => {
-    expect(courtsPage.last).toEqual(true)
+    expect(courtsPage.pageMetaData.last).toEqual(true)
   })
   it('will map empty page flag', () => {
-    expect(courtsPage.empty).toEqual(true)
+    expect(courtsPage.pageMetaData.empty).toEqual(true)
   })
   it('will map total pages count', () => {
-    expect(courtsPage.totalPages).toEqual(1)
+    expect(courtsPage.pageMetaData.totalPages).toEqual(1)
   })
   it('will map total elements count', () => {
-    expect(courtsPage.totalElements).toEqual(2)
+    expect(courtsPage.pageMetaData.totalElements).toEqual(2)
   })
   it('will map page number', () => {
-    expect(courtsPage.pageNumber).toEqual(3)
+    expect(courtsPage.pageMetaData.pageNumber).toEqual(3)
   })
   it('will map page size', () => {
-    expect(courtsPage.pageSize).toEqual(4)
+    expect(courtsPage.pageMetaData.pageSize).toEqual(4)
   })
   it('will map elements on page', () => {
-    expect(courtsPage.elementsOnPage).toEqual(5)
+    expect(courtsPage.pageMetaData.elementsOnPage).toEqual(5)
   })
 })
