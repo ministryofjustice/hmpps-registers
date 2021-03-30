@@ -1,8 +1,14 @@
 import nock from 'nock'
 
-import { Court, UpdateCourt } from '../@types/courtRegister'
+import {
+  Court,
+  InsertCourt,
+  InsertCourtBuilding,
+  InsertCourtBuildingContact,
+  UpdateCourt,
+} from '../@types/courtRegister'
 import HmppsAuthClient from '../data/hmppsAuthClient'
-import CourtRegisterService from './courtRegisterService'
+import CourtRegisterService, { AddCourt } from './courtRegisterService'
 import config from '../config'
 import data from '../routes/testutils/mockData'
 
@@ -195,6 +201,135 @@ describe('Court Register service', () => {
       const result = await courtRegisterService.getCourtTypes({})
 
       expect(result).toHaveLength(2)
+    })
+  })
+  describe('addCourt', () => {
+    let newAddedCourt: InsertCourt
+    let newAddedBuilding: InsertCourtBuilding
+    let newAddedBuildingContactTelephone: InsertCourtBuildingContact
+    let newAddedBuildingContactFax: InsertCourtBuildingContact
+    let addCourtRequest: AddCourt
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      addCourtRequest = {
+        court: {
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtType: 'CRN',
+          courtDescription: 'Main court',
+          active: true,
+        },
+        building: {
+          buildingName: 'Crown Square',
+          street: '1 High Street',
+          locality: 'Main center',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          county: 'South Yorkshire',
+          country: 'England',
+        },
+        contacts: [
+          {
+            type: 'TEL',
+            detail: '0114 555 6666',
+          },
+          {
+            type: 'FAX',
+            detail: '0114 777 8888',
+          },
+        ],
+      }
+      newAddedCourt = null
+      newAddedBuilding = null
+      newAddedBuildingContactTelephone = null
+      newAddedBuildingContactFax = null
+
+      fakeCourtRegister
+        .post('/court-maintenance', body => {
+          newAddedCourt = body
+          return body
+        })
+        .reply(200, data.court({ courtId: 'SHFCC' }))
+      fakeCourtRegister
+        .post('/court-maintenance/id/SHFCC/buildings', body => {
+          newAddedBuilding = body
+          return body
+        })
+        .reply(200, { id: 123 })
+      fakeCourtRegister
+        .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
+          newAddedBuildingContactTelephone = body
+          return body
+        })
+        .reply(200, { id: 321 })
+      fakeCourtRegister
+        .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
+          newAddedBuildingContactFax = body
+          return body
+        })
+        .reply(200, { id: 322 })
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send back success', async () => {
+      const result = await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(result.success).toEqual(true)
+    })
+    it('court will be sent when adding', async () => {
+      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(newAddedCourt).toEqual({
+        courtId: 'SHFCC',
+        courtName: 'Sheffield Crown Court',
+        courtType: 'CRN',
+        courtDescription: 'Main court',
+        active: true,
+      })
+    })
+    it('court building will be sent when adding', async () => {
+      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(newAddedBuilding).toEqual({
+        buildingName: 'Crown Square',
+        street: '1 High Street',
+        locality: 'Main center',
+        town: 'Sheffield',
+        postcode: 'S1 2BJ',
+        county: 'South Yorkshire',
+        country: 'England',
+      })
+    })
+    it('both telephone and fax sent when both present will be sent when adding', async () => {
+      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(newAddedBuildingContactTelephone).toEqual({
+        type: 'TEL',
+        detail: '0114 555 6666',
+      })
+      expect(newAddedBuildingContactFax).toEqual({
+        type: 'FAX',
+        detail: '0114 777 8888',
+      })
+    })
+    it('ony telephone sent when fax not present will be sent when adding', async () => {
+      addCourtRequest.contacts = [
+        {
+          type: 'TEL',
+          detail: '0114 555 6666',
+        },
+      ]
+      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+      expect(newAddedBuildingContactTelephone).toEqual({
+        type: 'TEL',
+        detail: '0114 555 6666',
+      })
+      expect(newAddedBuildingContactFax).toBeNull()
     })
   })
 })

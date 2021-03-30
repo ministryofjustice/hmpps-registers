@@ -62,6 +62,64 @@ const stubUpdateCourt = (): SuperAgentRequest =>
     },
   })
 
+const stubAddCourt = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/court-register/court-maintenance`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        courtId: 'SHFMC',
+        courtName: 'Sheffield Magistrates Court',
+        courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+        courtType: 'MAGISTRATES',
+        active: false,
+      },
+    },
+  })
+
+const stubAddCourtBuilding = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/court-register/court-maintenance/id/.*/buildings`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        id: 99,
+        courtId: 'SHFCC',
+      },
+    },
+  })
+
+const stubAddCourtBuildingContact = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/court-register/court-maintenance/id/.*/buildings/.*/contacts`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        id: 99,
+        buildingId: 99,
+        courtId: 'SHFCC',
+      },
+    },
+  })
+
 const stubCourtTypes = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -136,4 +194,7 @@ export default {
   stubCourt,
   stubUpdateCourt,
   stubCourtTypes,
+  stubAddCourt,
+  stubAddCourtBuilding,
+  stubAddCourtBuildingContact,
 }

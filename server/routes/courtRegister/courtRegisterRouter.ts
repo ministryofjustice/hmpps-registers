@@ -30,7 +30,7 @@ export default function routes(router: Router, services: Services): Router {
     courtRegisterController.submitNewCourtContactDetails(req, res)
   )
   get('/court-register/add-new-court-summary', (req, res) => courtRegisterController.addNewCourtSummary(req, res))
-  post('/court-register/add-new-court-finished', (req, res) => courtRegisterController.submitNewCourtFinished(req, res))
+  post('/court-register/add-new-court-finished', (req, res) => courtRegisterController.submitNewCourtSummary(req, res))
   get('/court-register/add-new-court-finished', (req, res) => courtRegisterController.addNewCourtFinished(req, res))
 
   return router
