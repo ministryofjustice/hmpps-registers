@@ -13,7 +13,7 @@ interface GetRequest {
   headers?: Record<string, string>
   responseType?: string
   raw?: boolean
-  allowNotFound?: boolean
+  additionalStatusChecker?: (status: number) => boolean
 }
 
 interface PostRequest {
@@ -22,6 +22,7 @@ interface PostRequest {
   responseType?: string
   data?: Record<string, unknown>
   raw?: boolean
+  additionalStatusChecker?: (status: number) => boolean
 }
 
 interface StreamRequest {
@@ -57,13 +58,13 @@ export default class RestClient {
     headers = {},
     responseType = '',
     raw = false,
-    allowNotFound = false,
+    additionalStatusChecker = () => false,
   }: GetRequest): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
         .get(`${this.apiUrl()}${path}`)
-        .ok(res => res.status < 400 || (allowNotFound && res.status === 404))
+        .ok(res => (res.status >= 200 && res.status < 300) || additionalStatusChecker(res.status))
         .agent(this.agent)
         .retry(2, (err, res) => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
@@ -93,12 +94,14 @@ export default class RestClient {
     responseType = '',
     data = {},
     raw = false,
+    additionalStatusChecker = () => false,
   }: PostRequest = {}): Promise<unknown> {
     logger.info(`Post using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
         .post(`${this.apiUrl()}${path}`)
         .send(data)
+        .ok(res => (res.status >= 200 && res.status < 300) || additionalStatusChecker(res.status))
         .agent(this.agent)
         .retry(2, (err, res) => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)

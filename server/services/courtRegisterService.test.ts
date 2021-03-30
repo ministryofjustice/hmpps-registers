@@ -279,11 +279,8 @@ describe('Court Register service', () => {
     })
   })
   describe('addCourt', () => {
-    let newAddedCourt: InsertCourt
-    let newAddedBuilding: InsertCourtBuilding
-    let newAddedBuildingContactTelephone: InsertCourtBuildingContact
-    let newAddedBuildingContactFax: InsertCourtBuildingContact
     let addCourtRequest: AddCourt
+
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
@@ -315,96 +312,170 @@ describe('Court Register service', () => {
           },
         ],
       }
-      newAddedCourt = null
-      newAddedBuilding = null
-      newAddedBuildingContactTelephone = null
-      newAddedBuildingContactFax = null
-
-      fakeCourtRegister
-        .post('/court-maintenance', body => {
-          newAddedCourt = body
-          return body
-        })
-        .reply(200, data.court({ courtId: 'SHFCC' }))
-      fakeCourtRegister
-        .post('/court-maintenance/id/SHFCC/buildings', body => {
-          newAddedBuilding = body
-          return body
-        })
-        .reply(200, { id: 123 })
-      fakeCourtRegister
-        .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
-          newAddedBuildingContactTelephone = body
-          return body
-        })
-        .reply(200, { id: 321 })
-      fakeCourtRegister
-        .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
-          newAddedBuildingContactFax = body
-          return body
-        })
-        .reply(200, { id: 322 })
     })
-    it('username will be used by client', async () => {
-      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+    describe('on failure', () => {
+      it('will send back error if court failed to be added due to bad request', async () => {
+        fakeCourtRegister.post('/court-maintenance').reply(400, {
+          timestamp: '2021-03-30 10:42:59',
+          status: 400,
+          error: 'Bad Request',
+          message: "Validation failed for object='insertCourtDto'. Error count: 1",
+          path: '/court-maintenance',
+        })
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
-    })
-    it('will send back success', async () => {
-      const result = await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+        const result = await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
 
-      expect(result.success).toEqual(true)
-    })
-    it('court will be sent when adding', async () => {
-      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+        expect(result).toEqual({
+          success: false,
+          errorMessage: "Validation failed for object='insertCourtDto'. Error count: 1",
+        })
+      })
+      it('will throw error if court failed to be added due to some of reason', async () => {
+        fakeCourtRegister
+          .post('/court-maintenance')
+          .reply(500, {
+            timestamp: '2021-03-30 10:42:59',
+            status: 500,
+            error: 'Bad Request',
+            message: 'Internal Error',
+            path: '/court-maintenance',
+          })
+          .persist()
 
-      expect(newAddedCourt).toEqual({
-        courtId: 'SHFCC',
-        courtName: 'Sheffield Crown Court',
-        courtType: 'CRN',
-        courtDescription: 'Main court',
-        active: true,
+        expect.assertions(1)
+        try {
+          await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+        } catch (e) {
+          expect(e.message).toEqual('Internal Server Error')
+        }
       })
     })
-    it('court building will be sent when adding', async () => {
-      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
 
-      expect(newAddedBuilding).toEqual({
-        buildingName: 'Crown Square',
-        street: '1 High Street',
-        locality: 'Main center',
-        town: 'Sheffield',
-        postcode: 'S1 2BJ',
-        county: 'South Yorkshire',
-        country: 'England',
-      })
-    })
-    it('both telephone and fax sent when both present will be sent when adding', async () => {
-      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+    describe('on success', () => {
+      let newAddedCourt: InsertCourt
+      let newAddedBuilding: InsertCourtBuilding
+      let newAddedBuildingContactTelephone: InsertCourtBuildingContact
+      let newAddedBuildingContactFax: InsertCourtBuildingContact
+      beforeEach(() => {
+        addCourtRequest = {
+          court: {
+            courtId: 'SHFCC',
+            courtName: 'Sheffield Crown Court',
+            courtType: 'CRN',
+            courtDescription: 'Main court',
+            active: true,
+          },
+          building: {
+            buildingName: 'Crown Square',
+            street: '1 High Street',
+            locality: 'Main center',
+            town: 'Sheffield',
+            postcode: 'S1 2BJ',
+            county: 'South Yorkshire',
+            country: 'England',
+          },
+          contacts: [
+            {
+              type: 'TEL',
+              detail: '0114 555 6666',
+            },
+            {
+              type: 'FAX',
+              detail: '0114 777 8888',
+            },
+          ],
+        }
+        newAddedCourt = null
+        newAddedBuilding = null
+        newAddedBuildingContactTelephone = null
+        newAddedBuildingContactFax = null
 
-      expect(newAddedBuildingContactTelephone).toEqual({
-        type: 'TEL',
-        detail: '0114 555 6666',
+        fakeCourtRegister
+          .post('/court-maintenance', body => {
+            newAddedCourt = body
+            return body
+          })
+          .reply(200, data.court({ courtId: 'SHFCC' }))
+        fakeCourtRegister
+          .post('/court-maintenance/id/SHFCC/buildings', body => {
+            newAddedBuilding = body
+            return body
+          })
+          .reply(200, { id: 123 })
+        fakeCourtRegister
+          .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
+            newAddedBuildingContactTelephone = body
+            return body
+          })
+          .reply(200, { id: 321 })
+        fakeCourtRegister
+          .post('/court-maintenance/id/SHFCC/buildings/123/contacts', body => {
+            newAddedBuildingContactFax = body
+            return body
+          })
+          .reply(200, { id: 322 })
       })
-      expect(newAddedBuildingContactFax).toEqual({
-        type: 'FAX',
-        detail: '0114 777 8888',
+      it('username will be used by client', async () => {
+        await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
-    })
-    it('ony telephone sent when fax not present will be sent when adding', async () => {
-      addCourtRequest.contacts = [
-        {
+      it('will send back success', async () => {
+        const result = await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(result.success).toEqual(true)
+      })
+      it('court will be sent when adding', async () => {
+        await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(newAddedCourt).toEqual({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtType: 'CRN',
+          courtDescription: 'Main court',
+          active: true,
+        })
+      })
+      it('court building will be sent when adding', async () => {
+        await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(newAddedBuilding).toEqual({
+          buildingName: 'Crown Square',
+          street: '1 High Street',
+          locality: 'Main center',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          county: 'South Yorkshire',
+          country: 'England',
+        })
+      })
+      it('both telephone and fax sent when both present will be sent when adding', async () => {
+        await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(newAddedBuildingContactTelephone).toEqual({
           type: 'TEL',
           detail: '0114 555 6666',
-        },
-      ]
-      await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
-
-      expect(newAddedBuildingContactTelephone).toEqual({
-        type: 'TEL',
-        detail: '0114 555 6666',
+        })
+        expect(newAddedBuildingContactFax).toEqual({
+          type: 'FAX',
+          detail: '0114 777 8888',
+        })
       })
-      expect(newAddedBuildingContactFax).toBeNull()
+      it('ony telephone sent when fax not present will be sent when adding', async () => {
+        addCourtRequest.contacts = [
+          {
+            type: 'TEL',
+            detail: '0114 555 6666',
+          },
+        ]
+        await courtRegisterService.addCourt({ username: 'tommy' }, addCourtRequest)
+
+        expect(newAddedBuildingContactTelephone).toEqual({
+          type: 'TEL',
+          detail: '0114 555 6666',
+        })
+        expect(newAddedBuildingContactFax).toBeNull()
+      })
     })
   })
 })

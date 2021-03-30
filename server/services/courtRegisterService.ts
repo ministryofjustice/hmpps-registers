@@ -65,7 +65,7 @@ export default class CourtRegisterService {
     logger.info(`finding details for court ${courtId}`)
     return (await CourtRegisterService.restClient(token).get({
       path: `/courts/id/${courtId}`,
-      allowNotFound: true,
+      additionalStatusChecker: status => status === 404,
     })) as Court
   }
 
@@ -83,12 +83,21 @@ export default class CourtRegisterService {
     const createdCourt = (await CourtRegisterService.restClient(token).post({
       path: `/court-maintenance`,
       data: addCourt.court,
-    })) as Court
+      additionalStatusChecker: status => status === 400,
+    })) as Court & { status: number; error: string; message: string }
+    if (createdCourt.error) {
+      logger.error(`failed to create court ${addCourt.court.courtId}`)
+      return {
+        success: false,
+        errorMessage: createdCourt.message,
+      }
+    }
     logger.info(`court ${createdCourt.courtId} created`)
     const createdBuilding = (await CourtRegisterService.restClient(token).post({
       path: `/court-maintenance/id/${createdCourt.courtId}/buildings`,
       data: addCourt.building,
     })) as CourtBuilding
+
     logger.info(`court building ${createdBuilding.id} created`)
     const createdContacts = (await Promise.all(
       addCourt.contacts.map(contact => {
