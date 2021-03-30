@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import CourtRegisterService, { Context } from '../../services/courtRegisterService'
+import CourtRegisterService, { AddCourt, Context } from '../../services/courtRegisterService'
 import AllCourtsView from './allCourtsView'
 import CourtDetailsView from './courtDetailsView'
 import type { Action } from './courtDetailsView'
@@ -10,6 +10,7 @@ import AddNewCourtContactDetailsView from './addNewCourtContactDetailsView'
 import addNewCourtDetailsValidator from './addNewCourtDetailsValidator'
 import addNewCourtBuildingValidator from './addNewCourtBuildingValidator'
 import addNewCourtContactDetailsValidator from './addNewCourtContactDetailsValidator'
+import addNewCourtSummaryValidator from './addNewCourtSummaryValidator'
 
 function context(res: Response): Context {
   return {
@@ -102,8 +103,12 @@ export default class CourtRegisterController {
     res.render('pages/court-register/addNewCourtSummary', view.renderArgs)
   }
 
-  submitNewCourtFinished(req: Request, res: Response): void {
-    res.redirect('/court-register/add-new-court-finished')
+  async submitNewCourtSummary(req: Request, res: Response): Promise<void> {
+    res.redirect(
+      await addNewCourtSummaryValidator(req.session.addNewCourtForm, req, (court: AddCourt) =>
+        this.courtRegisterService.addCourt(context(res), court)
+      )
+    )
   }
 
   addNewCourtFinished(req: Request, res: Response): void {

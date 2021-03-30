@@ -5,6 +5,8 @@ import type {
   InsertCourt,
   InsertCourtBuilding,
   InsertCourtBuildingContact,
+  CourtBuilding,
+  CourtBuildingContact,
 } from '../@types/courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
@@ -66,11 +68,32 @@ export default class CourtRegisterService {
   }
 
   async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {
-    // TODO - add service calls
-    logger.info(`Adding court ${addCourt.court.courtId}`)
-    return new Promise<AddUpdateResponse>(resolve => {
-      resolve({ success: true })
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Creating court ${addCourt.court.courtId}`)
+    const createdCourt = (await CourtRegisterService.restClient(token).post({
+      path: `/court-maintenance`,
+      data: addCourt.court,
+    })) as Court
+    logger.info(`court ${createdCourt.courtId} created`)
+    const createdBuilding = (await CourtRegisterService.restClient(token).post({
+      path: `/court-maintenance/id/${createdCourt.courtId}/buildings`,
+      data: addCourt.building,
+    })) as CourtBuilding
+    logger.info(`court building ${createdBuilding.id} created`)
+    const createdContacts = (await Promise.all(
+      addCourt.contacts.map(contact => {
+        return CourtRegisterService.restClient(token).post({
+          path: `/court-maintenance/id/${createdCourt.courtId}/buildings/${createdBuilding.id}/contacts`,
+          data: contact,
+        })
+      })
+    )) as CourtBuildingContact[]
+
+    createdContacts.forEach(createdContact => {
+      logger.info(`court building contact ${createdContact.id} created`)
     })
+
+    return { success: true }
   }
 
   async getCourtTypes(context: Context): Promise<Array<CourtType>> {

@@ -44,6 +44,9 @@ context('Court register', () => {
     })
     cy.task('stubUpdateCourt')
     cy.task('stubCourtTypes')
+    cy.task('stubAddCourt')
+    cy.task('stubAddCourtBuilding')
+    cy.task('stubAddCourtBuildingContact')
     cy.login()
   })
 
