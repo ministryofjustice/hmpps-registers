@@ -1,0 +1,72 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = applicationName + " - Court Register" %}
+
+{% block content %}
+<!--suppress HtmlUnknownTarget -->
+  <div class="govuk-width-container">
+  {{ govukBackLink({
+    text: "Back",
+    href: "/"
+  }) }}
+
+
+  <main class="app-container govuk-body">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Court Register Paged</h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukButton({
+          text: "Add a new court",
+          href: "/court-register/add"
+        }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+
+        {% if courts.length %}
+          <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="courts">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
+              <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
+              <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type</th>
+              <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
+              <th class="govuk-table__header govuk-!-width-one-fifth" scope="col"></th>
+            </tr>
+            </thead>
+
+            <tbody class="govuk-table__body">
+            {% for court in courts %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{court.id}}</td>
+                <td class="govuk-table__cell"><a href="/court-register/details?id={{court.id}}" class="govuk-link govuk-link--no-visited-state">{{court.name}}</a></td>
+                <td class="govuk-table__cell">{{court.type}}</td>
+                <td class="govuk-table__cell">
+                  {% if court.active %}
+                    Active
+                  {% else %}
+                    Closed
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell"><a href="/court-register/details?id={{court.id}}" class="govuk-link govuk-link--no-visited-state">Change</a></td>
+              </tr>
+            {% endfor %}
+
+            </tbody>
+          </table>
+        {% else %}
+          <p data-qa=no-courts class="govuk-body">There are no courts</p>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+{% endblock %}

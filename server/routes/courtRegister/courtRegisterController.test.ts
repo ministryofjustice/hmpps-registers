@@ -36,6 +36,40 @@ describe('Court Register controller', () => {
       })
     })
   })
+  describe('getPageOfCourts', () => {
+    beforeEach(() => {
+      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      controller = new CourtRegisterController(courtRegisterService)
+      courtRegisterService.getPageOfCourts.mockResolvedValue({
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+            courtName: 'Sheffield Crown Court',
+            courtDescription: 'Sheffield Crown Court - Yorkshire',
+            courtType: 'CROWN',
+            active: true,
+          }),
+        ],
+        first: true,
+        last: true,
+        empty: false,
+        totalPages: 1,
+        totalElements: 1,
+        number: 0,
+        size: 20,
+        numberOfElements: 1,
+      })
+    })
+    it('will render all courts page with courts', async () => {
+      await controller.showAllCourtsPaged(req, res)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/allCourtsPaged',
+        expect.objectContaining({
+          courts: [expect.objectContaining({ id: 'SHFCC' })],
+        })
+      )
+    })
+  })
   describe('viewCourt', () => {
     beforeEach(() => {
       courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>

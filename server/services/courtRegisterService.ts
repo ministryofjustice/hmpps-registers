@@ -1,5 +1,6 @@
 import type {
   Court,
+  CourtsPage,
   CourtType,
   UpdateCourt,
   InsertCourt,
@@ -42,6 +43,15 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for all courts`)
     return { courts: await CourtRegisterService.restClient(token).get({ path: `/courts/all` }) } as AllCourts
+  }
+
+  async getPageOfCourts(context: Context, pageNumber: number, pageSize: number): Promise<CourtsPage> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting details for page of courts`)
+    return (await CourtRegisterService.restClient(token).get({
+      path: `/courts/all/paged`,
+      query: `page=${pageNumber}&size=${pageSize}`,
+    })) as CourtsPage
   }
 
   async getCourt(context: Context, courtId: string): Promise<Court> {

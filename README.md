@@ -58,4 +58,4 @@ If these are not desired in the cloned project, remove references to `check_outd
 
 ### Types
 
-Run npx openapi-typescript  https://court-register.hmpps.service.justice.gov.uk/v3/api-docs -output court-register.ts > server/@types/courtRegisterImport/index.d.ts
+Run npx openapi-typescript  https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs -output court-register.ts > server/@types/courtRegisterImport/index.d.ts
