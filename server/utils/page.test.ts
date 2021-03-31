@@ -1,8 +1,8 @@
-import { springPageToPageMetaData } from './page'
+import { toPageMetaData } from './page'
 
 describe('page meta data', () => {
   it('converts spring page data to PageMetaData', () => {
-    expect(springPageToPageMetaData(true, true, true, 1, 2, 3, 4, 5)).toEqual({
+    expect(toPageMetaData(true, true, true, 1, 2, 3, 4, 5, 'hreftemplate')).toEqual({
       first: true,
       last: true,
       empty: true,
@@ -11,6 +11,7 @@ describe('page meta data', () => {
       pageNumber: 3,
       pageSize: 4,
       elementsOnPage: 5,
+      hrefTemplate: 'hreftemplate',
     })
   })
 })

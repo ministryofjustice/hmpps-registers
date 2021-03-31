@@ -73,8 +73,8 @@ describe('courtsPageMapper', () => {
   it('will map total elements count', () => {
     expect(courtsPage.pageMetaData.totalElements).toEqual(2)
   })
-  it('will map page number', () => {
-    expect(courtsPage.pageMetaData.pageNumber).toEqual(3)
+  it('will map page number to be 1 based', () => {
+    expect(courtsPage.pageMetaData.pageNumber).toEqual(4)
   })
   it('will map page size', () => {
     expect(courtsPage.pageMetaData.pageSize).toEqual(4)

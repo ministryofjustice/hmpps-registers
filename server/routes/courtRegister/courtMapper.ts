@@ -1,5 +1,5 @@
 import { Court, CourtsPage } from '../../@types/courtRegister'
-import { PageMetaData, springPageToPageMetaData } from '../../utils/page'
+import { PageMetaData, toPageMetaData } from '../../utils/page'
 
 function typeOf(enumType: string) {
   switch (enumType) {
@@ -41,17 +41,19 @@ export default function courtMapper(court: Court): CourtDetail {
     id,
   }
 }
+
 export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
-  const pageMetaData = springPageToPageMetaData(
+  const pageMetaData = toPageMetaData(
     courtsPage.first,
     courtsPage.last,
     courtsPage.empty,
     courtsPage.totalPages,
     courtsPage.totalElements,
-    courtsPage.number,
+    courtsPage.number + 1,
     courtsPage.size,
-    courtsPage.numberOfElements
+    courtsPage.numberOfElements,
+    '/court-register/paged?page=:page'
   )
   return { courts, pageMetaData }
 }

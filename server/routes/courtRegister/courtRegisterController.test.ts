@@ -69,6 +69,10 @@ describe('Court Register controller', () => {
         })
       )
     })
+    it('will map the page number to Springs zero based pages', async () => {
+      await controller.showAllCourtsPaged(req, res)
+      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 20)
+    })
   })
   describe('viewCourt', () => {
     beforeEach(() => {

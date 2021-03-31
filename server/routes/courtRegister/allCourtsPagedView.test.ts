@@ -78,9 +78,11 @@ describe('AllCourtsPagedView', () => {
       expect(view.courtsPageView.pageMetaData.empty).toEqual(false)
       expect(view.courtsPageView.pageMetaData.totalPages).toEqual(1)
       expect(view.courtsPageView.pageMetaData.totalElements).toEqual(3)
-      expect(view.courtsPageView.pageMetaData.pageNumber).toEqual(0)
       expect(view.courtsPageView.pageMetaData.pageSize).toEqual(20)
       expect(view.courtsPageView.pageMetaData.elementsOnPage).toEqual(3)
+    })
+    it('will map page number to be 1 based', () => {
+      expect(view.courtsPageView.pageMetaData.pageNumber).toEqual(1)
     })
   })
 })

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 import CourtRegisterService, { AddCourt, Context } from '../../services/courtRegisterService'
 import AllCourtsView from './allCourtsView'
-import CourtDetailsView from './courtDetailsView'
 import type { Action } from './courtDetailsView'
+import CourtDetailsView from './courtDetailsView'
 import AddNewCourtDetailsView from './addNewCourtDetailsView'
 import AddNewCourtSummaryView from './addNewCourtSummaryView'
 import AddNewCourtBuildingView from './addNewCourtBuildingView'
@@ -30,7 +30,8 @@ export default class CourtRegisterController {
   }
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
-    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), 0, 20)
+    const page = parseInt(req.query.page as string, 10) || 1
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 20)
 
     const view = new AllCourtsPagedView(courtsPage)
 

@@ -7,9 +7,10 @@ export type PageMetaData = {
   pageNumber: number
   pageSize: number
   elementsOnPage: number
+  hrefTemplate: string
 }
 
-export function springPageToPageMetaData(
+export function toPageMetaData(
   first: boolean,
   last: boolean,
   empty: boolean,
@@ -17,7 +18,8 @@ export function springPageToPageMetaData(
   totalElements: number,
   pageNumber: number,
   pageSize: number,
-  elementsOnPage: number
+  elementsOnPage: number,
+  hrefTemplate: string
 ): PageMetaData {
   return {
     first,
@@ -28,5 +30,6 @@ export function springPageToPageMetaData(
     pageNumber,
     pageSize,
     elementsOnPage,
+    hrefTemplate,
   }
 }

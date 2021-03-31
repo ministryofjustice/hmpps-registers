@@ -47,7 +47,7 @@ export default function createApp(
   // View Engine Configuration
   app.set('view engine', 'njk')
 
-  nunjucksSetup(app, path)
+  nunjucksSetup(app)
 
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
@@ -122,6 +122,7 @@ export default function createApp(
     '/node_modules/govuk-frontend/govuk/assets',
     '/node_modules/govuk-frontend',
     '/node_modules/jquery/dist',
+    `/node_modules/@ministryofjustice/frontend/`,
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
