@@ -43,7 +43,8 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
 
   njkEnv.addFilter('toMojPagination', (pageMetaData: PageMetaData) => {
     const hrefForPage = (n: number) => pageMetaData.hrefTemplate.replace(':page', `${n}`)
-    const items = [pageMetaData.pageNumber - 1, pageMetaData.pageNumber, pageMetaData.pageNumber + 1]
+    const items = [...Array(5).keys()]
+      .map(i => i + pageMetaData.pageNumber - 2)
       .filter(page => page > 0 && page <= pageMetaData.totalPages)
       .map(page => {
         return {

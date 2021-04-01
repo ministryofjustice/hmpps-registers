@@ -39,8 +39,8 @@ describe('toMojPagination', () => {
       first: true,
       last: false,
       empty: false,
-      totalPages: 2,
-      totalElements: 8,
+      totalPages: 4,
+      totalElements: 16,
       pageNumber: 1,
       pageSize: 4,
       elementsOnPage: 4,
@@ -51,7 +51,7 @@ describe('toMojPagination', () => {
       results: {
         from: 1,
         to: 4,
-        count: 8,
+        count: 16,
       },
       previous: false,
       next: {
@@ -67,6 +67,11 @@ describe('toMojPagination', () => {
         {
           text: 2,
           href: '/courts-register/paged?page=2',
+          selected: false,
+        },
+        {
+          text: 3,
+          href: '/courts-register/paged?page=3',
           selected: false,
         },
       ],
@@ -101,6 +106,11 @@ describe('toMojPagination', () => {
       },
       items: [
         {
+          text: 1,
+          href: '/courts-register/paged?page=1',
+          selected: false,
+        },
+        {
           text: 2,
           href: '/courts-register/paged?page=2',
           selected: false,
@@ -115,6 +125,11 @@ describe('toMojPagination', () => {
           href: '/courts-register/paged?page=4',
           selected: false,
         },
+        {
+          text: 5,
+          href: '/courts-register/paged?page=5',
+          selected: false,
+        },
       ],
     })
   })
@@ -123,9 +138,9 @@ describe('toMojPagination', () => {
       first: false,
       last: true,
       empty: false,
-      totalPages: 2,
-      totalElements: 8,
-      pageNumber: 2,
+      totalPages: 4,
+      totalElements: 16,
+      pageNumber: 4,
       pageSize: 4,
       elementsOnPage: 4,
       hrefTemplate: '/courts-register/paged?page=:page',
@@ -133,24 +148,29 @@ describe('toMojPagination', () => {
 
     expect(result).toEqual({
       results: {
-        from: 5,
-        to: 8,
-        count: 8,
+        from: 13,
+        to: 16,
+        count: 16,
       },
       previous: {
         text: 'Previous',
-        href: '/courts-register/paged?page=1',
+        href: '/courts-register/paged?page=3',
       },
       next: false,
       items: [
         {
-          text: 1,
-          href: '/courts-register/paged?page=1',
+          text: 2,
+          href: '/courts-register/paged?page=2',
           selected: false,
         },
         {
-          text: 2,
-          href: '/courts-register/paged?page=2',
+          text: 3,
+          href: '/courts-register/paged?page=3',
+          selected: false,
+        },
+        {
+          text: 4,
+          href: '/courts-register/paged?page=4',
           selected: true,
         },
       ],
