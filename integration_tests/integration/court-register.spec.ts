@@ -110,9 +110,9 @@ context('Court register', () => {
   })
 
   it('Will display a page of courts', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  Will need this when plumbing in the paged court list
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removing the all courts list
     IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // and this will need removing
+    cy.visit('/court-register/paged') // TODO and this will need removing
     const courtRegisterPagedPage = AllCourtsPagedPage.verifyOnPage()
 
     {
@@ -136,6 +136,29 @@ context('Court register', () => {
       type().contains('Youth')
       status().contains('Closed')
     }
+  })
+  it('Will display pagination controls', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const courtRegisterPagedPage = AllCourtsPagedPage.verifyOnPage()
+
+    const pageLinks = courtRegisterPagedPage.pageLinks()
+    pageLinks.then(items => {
+      // TODO There must be a better way than this?
+      expect(items[0].href).to.equal(undefined)
+      expect(items[0].text).to.equal('1')
+      expect(items[0].selected).to.equal(true)
+      expect(items[1].href).to.equal('/court-register/paged?page=2')
+      expect(items[1].text).to.equal('2')
+      expect(items[1].selected).to.equal(false)
+      expect(items[2].href).to.equal('/court-register/paged?page=2')
+      expect(items[2].text).to.contain('Next')
+      expect(items[2].selected).to.equal(false)
+    })
+
+    const pageResults = courtRegisterPagedPage.pageResults()
+    pageResults.contains('Showing 1 to 3 of 4 results')
   })
   it('Can deactivate open court', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()

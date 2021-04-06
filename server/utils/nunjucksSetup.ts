@@ -1,18 +1,20 @@
 import nunjucks from 'nunjucks'
 import express from 'express'
-import * as pathModule from 'path'
+import path from 'path'
+import { PageMetaData } from './page'
 
 type Error = {
   href: string
   text: string
 }
 
-export default function nunjucksSetup(app: express.Application, path: pathModule.PlatformPath): void {
+export default function nunjucksSetup(app: express.Application): nunjucks.Environment {
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
       'node_modules/govuk-frontend/',
       'node_modules/govuk-frontend/components/',
+      'node_modules/@ministryofjustice/frontend',
     ],
     {
       autoescape: true,
@@ -38,4 +40,37 @@ export default function nunjucksSetup(app: express.Application, path: pathModule
     }
     return null
   })
+
+  njkEnv.addFilter('toMojPagination', (pageMetaData: PageMetaData) => {
+    const hrefForPage = (n: number) => pageMetaData.hrefTemplate.replace(':page', `${n}`)
+    const items = [...Array(5).keys()]
+      .map(i => i + pageMetaData.pageNumber - 2)
+      .filter(page => page > 0 && page <= pageMetaData.totalPages)
+      .map(page => {
+        return {
+          text: page,
+          href: hrefForPage(page),
+          selected: page === pageMetaData.pageNumber,
+        }
+      })
+      .filter(x => x !== null)
+    return {
+      results: {
+        from: (pageMetaData.pageNumber - 1) * pageMetaData.pageSize + 1,
+        to: (pageMetaData.pageNumber - 1) * pageMetaData.pageSize + pageMetaData.elementsOnPage,
+        count: pageMetaData.totalElements,
+      },
+      previous: !pageMetaData.first && {
+        text: 'Previous',
+        href: hrefForPage(pageMetaData.pageNumber - 1),
+      },
+      next: !pageMetaData.last && {
+        text: 'Next',
+        href: hrefForPage(pageMetaData.pageNumber + 1),
+      },
+      items,
+    }
+  })
+
+  return njkEnv
 }

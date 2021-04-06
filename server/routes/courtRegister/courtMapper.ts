@@ -1,4 +1,5 @@
 import { Court, CourtsPage } from '../../@types/courtRegister'
+import { PageMetaData, toPageMetaData } from '../../utils/page'
 
 function typeOf(enumType: string) {
   switch (enumType) {
@@ -23,14 +24,7 @@ export type CourtDetail = {
 
 export type CourtsPageView = {
   courts: CourtDetail[]
-  first: boolean
-  last: boolean
-  empty: boolean
-  totalPages: number
-  totalElements: number
-  pageNumber: number
-  pageSize: number
-  elementsOnPage: number
+  pageMetaData: PageMetaData
 }
 
 export default function courtMapper(court: Court): CourtDetail {
@@ -47,21 +41,19 @@ export default function courtMapper(court: Court): CourtDetail {
     id,
   }
 }
+
 export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
-  const { first, last, empty, totalPages, totalElements } = courtsPage
-  const pageNumber = courtsPage.number
-  const pageSize = courtsPage.size
-  const elementsOnPage = courtsPage.numberOfElements
-  return {
-    courts,
-    first,
-    last,
-    empty,
-    totalPages,
-    totalElements,
-    pageNumber,
-    pageSize,
-    elementsOnPage,
-  }
+  const pageMetaData = toPageMetaData(
+    courtsPage.first,
+    courtsPage.last,
+    courtsPage.empty,
+    courtsPage.totalPages,
+    courtsPage.totalElements,
+    courtsPage.number + 1,
+    courtsPage.size,
+    courtsPage.numberOfElements,
+    '/court-register/paged?page=:page'
+  )
+  return { courts, pageMetaData }
 }
