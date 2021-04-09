@@ -2,7 +2,11 @@ import { Request } from 'express'
 import type { AddNewCourtForm } from 'forms'
 
 function isBlank(text: string) {
-  return text === null || text.trim().length === 0
+  return !text || text.trim().length === 0
+}
+
+function isValidPostcode(text: string) {
+  return text.replace(/[\s.,/=\-_`()]/g, '').match(/^[A-Z]{1,2}[0-9R][0-9A-Z]?[0-9][ABD-HJLNP-UW-Z]{2}$/)
 }
 
 export default function validate(form: AddNewCourtForm, req: Request): string {
@@ -26,10 +30,12 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
 
   if (isBlank(form.addresspostcode)) {
     errors.push({ text: 'Enter the postcode, like AA11AA', href: '#addresspostcode' })
+  } else if (!isValidPostcode(form.addresspostcode)) {
+    errors.push({ text: 'Enter a real postcode, like AA11AA', href: '#addresspostcode' })
   }
 
   if (isBlank(form.addresscountry)) {
-    errors.push({ text: 'Enter the country, like England', href: '#addresscountry' })
+    errors.push({ text: 'Select the country', href: '#addresscountry' })
   }
 
   if (errors.length > 0) {
