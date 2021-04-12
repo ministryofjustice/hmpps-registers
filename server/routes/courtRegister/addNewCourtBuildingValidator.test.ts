@@ -17,6 +17,9 @@ describe('addNewCourtBuildingValidator', () => {
   }
 
   describe('validate', () => {
+    beforeEach(() => {
+      jest.resetAllMocks()
+    })
     it('returns next page when valid', () => {
       const form = { ...validForm }
       const nextPage = validate(form, req)
@@ -65,14 +68,38 @@ describe('addNewCourtBuildingValidator', () => {
         },
       ])
     })
+    it('addresspostcode must valid', () => {
+      const form = { ...validForm, addresspostcode: 'BANANAS' }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        {
+          href: '#addresspostcode',
+          text: 'Enter a real postcode, like AA11AA',
+        },
+      ])
+    })
+    it('addresspostcode with spaces anywhere is ok', () => {
+      const form = { ...validForm, addresspostcode: 'S1 2B J' }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
+      expect(req.flash).toHaveBeenCalledTimes(0)
+    })
+    it('addresspostcode with common punctuation anywhere is ok', () => {
+      const form = { ...validForm, addresspostcode: 'S1-(2BJ)' }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
+      expect(req.flash).toHaveBeenCalledTimes(0)
+    })
     it('addresscountry must not be a blank', () => {
-      const form = { ...validForm, addresscountry: '  ' }
+      const form = { ...validForm }
+      delete form.addresscountry
       const nextPage = validate(form, req)
       expect(nextPage).toEqual('/court-register/add-new-court-building')
       expect(req.flash).toBeCalledWith('errors', [
         {
           href: '#addresscountry',
-          text: 'Enter the country, like England',
+          text: 'Select the country',
         },
       ])
     })

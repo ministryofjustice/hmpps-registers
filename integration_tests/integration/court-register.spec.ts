@@ -189,7 +189,7 @@ context('Court register', () => {
       buildingDetails.addressTown().type('Sheffield')
       buildingDetails.addressCounty().type('South Yorkshire')
       buildingDetails.addressPostcode().type('S1 2BJ')
-      buildingDetails.addressCountry().type('England')
+      buildingDetails.addressCountry().check('England')
       buildingDetails.continueButton().click()
     }
     const fillCourtContactDetailsPage = () => {
@@ -245,7 +245,6 @@ context('Court register', () => {
         courtBuilding.addressTown().type(' ')
         courtBuilding.addressCounty().type(' ')
         courtBuilding.addressPostcode().type(' ')
-        courtBuilding.addressCountry().type(' ')
         courtBuilding.continueButton().click()
 
         const courtBuildingWithErrors = AddCourtBuildingPage.verifyOnPage()
@@ -254,7 +253,7 @@ context('Court register', () => {
         courtBuildingWithErrors.errorSummary().contains('Enter the town or city')
         courtBuildingWithErrors.errorSummary().contains('Enter the postcode')
         courtBuildingWithErrors.errorSummary().contains('Enter the county')
-        courtBuildingWithErrors.errorSummary().contains('Enter the country')
+        courtBuildingWithErrors.errorSummary().contains('Select the country')
       })
     })
     describe('add new court contact details', () => {

@@ -72,5 +72,12 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
+  njkEnv.addFilter('toSimpleSelect', (array, value) => {
+    return array.map((item: string) => ({
+      value: item,
+      text: item,
+      checked: item === value,
+    }))
+  })
   return njkEnv
 }

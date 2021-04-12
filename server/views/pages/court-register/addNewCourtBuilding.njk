@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% set pageTitle = applicationName + " - Add Court" %}
 
@@ -37,7 +38,7 @@
 
             {{ govukDetails({
               summaryText: "What should I do if this court has multiple buildings at different addresses?",
-              text: "Many services are only interested in the main building for a court and they would typically only show users the court and main building address. However, where the physical address is significant, for instance the location where a prisoner needs to be sent to, then multiple buildings should be entered. Adding additional buildings can be done after you have finished creating this court, so for now just enter the main builiding address."
+              text: "Many services are only interested in the main building for a court and they would typically only show their users the court and main building address. However, where the physical address is significant, for instance the location where a prisoner needs to be sent to, then multiple buildings should be entered. Adding additional buildings can be done after you have finished creating this court, so for now just enter the main builiding address."
             }) }}
 
 
@@ -48,7 +49,7 @@
               id: "buildingname",
               name: "buildingname",
               hint: {
-                text: "Building name is sometimes used to identify a court nation-wide, So `Birmingham Crown Court - Main Street Annex` is better than just the building name when there are multiple buildings."
+                text: "Building name is sometimes used to identify a court alongside the court name, So `Main Street Annex` would be a good name since it will appear as `Birmingham Crown Court - Main Street Annex' in any service which displays different buildings for a court."
               },
               value: form.buildingname,
               errorMessage: errors | findError('buildingname')
@@ -107,20 +108,17 @@
               errorMessage: errors | findError('addresspostcode')
             }) }}
 
-            {{ govukInput({
-              label: {
-                text: "Country"
-              },
-              classes: "govuk-!-width-two-thirds",
-              id: "addresscountry",
+            {{ govukRadios({
+              idPrefix: "addresscountry",
               name: "addresscountry",
-              hint: {
-                text: "Typically ths would be either England, Scotland, Wales or Northern Ireland"
+              errorMessage: errors | findError('addresscountry'),
+              fieldset: {
+                legend: {
+                  text: "Country"
+                }
               },
-              value: form.addresscountry,
-              errorMessage: errors | findError('addresscountry')
+              items: ["England", "Northern Ireland", "Scotland", "Wales" ] | toSimpleSelect(form.addresscountry)
             }) }}
-
           <div class="govuk-button-group">
             {{ govukButton({
               text: "Continue"
