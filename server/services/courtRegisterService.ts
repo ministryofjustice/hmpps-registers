@@ -50,7 +50,7 @@ export default class CourtRegisterService {
     logger.info(`getting details for page of courts`)
     return (await CourtRegisterService.restClient(token).get({
       path: `/courts/all/paged`,
-      query: `page=${pageNumber}&size=${pageSize}`,
+      query: `page=${pageNumber}&size=${pageSize}&sort=courtName`,
     })) as CourtsPage
   }
 

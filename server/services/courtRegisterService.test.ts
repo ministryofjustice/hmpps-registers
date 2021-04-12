@@ -68,7 +68,7 @@ describe('Court Register service', () => {
     })
     it('username will be used by client', async () => {
       fakeCourtRegister
-        .get('/courts/all/paged?page=0&size=3')
+        .get('/courts/all/paged?page=0&size=3&sort=courtName')
         .reply(200, { content: [], last: false, totalPages: 0, totalElements: 0, first: true, empty: true })
 
       await courtRegisterService.getPageOfCourts({ username: 'tommy' }, 0, 3)
@@ -76,7 +76,7 @@ describe('Court Register service', () => {
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('is ok if there are no courts', async () => {
-      fakeCourtRegister.get('/courts/all/paged?page=0&size=3').reply(200, {
+      fakeCourtRegister.get('/courts/all/paged?page=0&size=3&sort=courtName').reply(200, {
         content: [],
         last: true,
         totalPages: 0,
@@ -101,7 +101,7 @@ describe('Court Register service', () => {
       expect(result.empty).toEqual(true)
     })
     it('will return page of courts', async () => {
-      fakeCourtRegister.get('/courts/all/paged?page=0&size=3').reply(200, {
+      fakeCourtRegister.get('/courts/all/paged?page=0&size=3&sort=courtName').reply(200, {
         content: [
           data.court({
             courtId: 'SHFCC',
