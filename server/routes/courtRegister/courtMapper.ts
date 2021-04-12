@@ -1,19 +1,6 @@
 import { Court, CourtsPage } from '../../@types/courtRegister'
 import { PageMetaData, toPageMetaData } from '../../utils/page'
 
-function typeOf(enumType: string) {
-  switch (enumType) {
-    case 'MAGISTRATES':
-      return 'Magistrates'
-    case 'CROWN':
-      return 'Crown'
-    case 'YOUTH':
-      return 'Youth'
-    default:
-      return enumType
-  }
-}
-
 export type CourtDetail = {
   name: string
   type: string
@@ -30,7 +17,7 @@ export type CourtsPageView = {
 export default function courtMapper(court: Court): CourtDetail {
   const name = court.courtName
   const description = court.courtDescription
-  const type = typeOf(court.courtType)
+  const type = court.type.courtName
   const { active } = court
   const id = court.courtId
   return {

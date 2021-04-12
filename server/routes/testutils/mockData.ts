@@ -6,6 +6,7 @@ export default {
     courtName = 'Sheffield Crown Court',
     courtDescription = 'Sheffield Crown Court - Yorkshire',
     courtType = 'CROWN',
+    type = { courtType: 'CROWN', courtName: 'Crown' },
     active = true,
   }: Partial<Court>): Court =>
     ({
@@ -13,6 +14,7 @@ export default {
       courtName,
       courtDescription,
       courtType,
+      type,
       active,
     } as Court),
 }
