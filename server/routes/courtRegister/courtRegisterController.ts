@@ -31,7 +31,7 @@ export default class CourtRegisterController {
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
-    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 20)
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40)
 
     const view = new AllCourtsPagedView(courtsPage)
 
