@@ -19,6 +19,7 @@ context('Court register', () => {
         courtName: 'Sheffield Crown Court',
         courtDescription: 'Sheffield Crown Court - Yorkshire',
         courtType: 'CROWN',
+        type: { courtType: 'CROWN', courtName: 'Crown' },
         active: true,
       },
       {
@@ -26,6 +27,7 @@ context('Court register', () => {
         courtName: 'Sheffield Magistrates Court',
         courtDescription: 'Sheffield Magistrates Court - Yorkshire',
         courtType: 'MAGISTRATES',
+        type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
         active: false,
       },
     ])
@@ -36,6 +38,7 @@ context('Court register', () => {
           courtName: 'Sheffield Crown Court',
           courtDescription: 'Sheffield Crown Court - Yorkshire',
           courtType: 'CROWN',
+          type: { courtType: 'CROWN', courtName: 'Crown' },
           active: true,
         },
         {
@@ -43,6 +46,7 @@ context('Court register', () => {
           courtName: 'Sheffield Magistrates Court',
           courtDescription: 'Sheffield Magistrates Court - Yorkshire',
           courtType: 'MAGISTRATES',
+          type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
           active: true,
         },
         {
@@ -50,6 +54,7 @@ context('Court register', () => {
           courtName: 'Sheffield Youth Court',
           courtDescription: 'Sheffield Youth Court - Yorkshire',
           courtType: 'YOUTH',
+          type: { courtType: 'YOUTH', courtName: 'Youth' },
           active: false,
         },
       ],
@@ -67,6 +72,7 @@ context('Court register', () => {
       courtName: 'Sheffield Crown Court',
       courtDescription: 'Sheffield Crown Court - Yorkshire',
       courtType: 'CROWN',
+      type: { courtType: 'CROWN', courtName: 'Crown' },
       active: true,
     })
     cy.task('stubCourt', {
@@ -74,6 +80,7 @@ context('Court register', () => {
       courtName: 'Sheffield Magistrates Court',
       courtDescription: 'Sheffield Magistrates Court - Yorkshire',
       courtType: 'MAGISTRATES',
+      type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
       active: false,
     })
     cy.task('stubUpdateCourt')

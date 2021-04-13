@@ -32,6 +32,7 @@ describe('AllCourtsPagedView', () => {
             courtName: 'Sheffield Crown Court',
             courtDescription: 'Sheffield Crown Court - Yorkshire',
             courtType: 'CROWN',
+            type: { courtType: 'CROWN', courtName: 'Crown' },
             active: true,
           }),
           data.court({
@@ -39,12 +40,14 @@ describe('AllCourtsPagedView', () => {
             courtName: 'Sheffield Magistrates Court',
             courtDescription: 'Sheffield Magistrates Court - Yorkshire',
             courtType: 'MAGISTRATES',
+            type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
             active: false,
           }),
           data.court({
             courtId: 'AYLSMC',
             courtName: 'Aylesbury MC',
             courtType: 'CROWN',
+            type: { courtType: 'CROWN', courtName: 'Crown' },
             active: true,
           }),
         ],
