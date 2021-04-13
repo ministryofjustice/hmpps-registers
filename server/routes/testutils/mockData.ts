@@ -1,4 +1,4 @@
-import type { Court } from '../../@types/courtRegister'
+import type { Court, CourtBuilding, CourtBuildingContact } from '../../@types/courtRegister'
 
 export default {
   court: ({
@@ -8,6 +8,7 @@ export default {
     courtType = 'CROWN',
     type = { courtType: 'CROWN', courtName: 'Crown' },
     active = true,
+    buildings = [],
   }: Partial<Court>): Court =>
     ({
       courtId,
@@ -16,5 +17,47 @@ export default {
       courtType,
       type,
       active,
+      buildings,
     } as Court),
+  courtBuilding: ({
+    id = 99,
+    buildingName = 'Crown Square',
+    contacts = [],
+    street = '1 High Street',
+    locality = 'Castle Market',
+    town = 'Sheffield',
+    postcode = 'S1 2BJ',
+    county = 'South Yorkshire',
+    country = 'England',
+    courtId = 'SHFCC',
+    subCode = null,
+  }: Partial<CourtBuilding>): CourtBuilding =>
+    ({
+      id,
+      buildingName,
+      contacts,
+      street,
+      locality,
+      town,
+      postcode,
+      county,
+      country,
+      courtId,
+      subCode,
+    } as CourtBuilding),
+
+  courtBuildingContact: ({
+    id = 99,
+    courtId = 'SHFCC',
+    buildingId = 99,
+    type = 'TEL',
+    detail = '0114 555 1234',
+  }: Partial<CourtBuildingContact>): CourtBuildingContact =>
+    ({
+      id,
+      courtId,
+      buildingId,
+      type,
+      detail,
+    } as CourtBuildingContact),
 }

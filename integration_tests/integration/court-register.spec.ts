@@ -21,6 +21,7 @@ context('Court register', () => {
         courtType: 'CROWN',
         type: { courtType: 'CROWN', courtName: 'Crown' },
         active: true,
+        buildings: [],
       },
       {
         courtId: 'SHFMC',
@@ -29,6 +30,7 @@ context('Court register', () => {
         courtType: 'MAGISTRATES',
         type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
         active: false,
+        buildings: [],
       },
     ])
     cy.task('stubPageOfCourts', {
@@ -40,6 +42,7 @@ context('Court register', () => {
           courtType: 'CROWN',
           type: { courtType: 'CROWN', courtName: 'Crown' },
           active: true,
+          buildings: [],
         },
         {
           courtId: 'SHFMC',
@@ -48,6 +51,7 @@ context('Court register', () => {
           courtType: 'MAGISTRATES',
           type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
           active: true,
+          buildings: [],
         },
         {
           courtId: 'SHFYC',
@@ -56,6 +60,7 @@ context('Court register', () => {
           courtType: 'YOUTH',
           type: { courtType: 'YOUTH', courtName: 'Youth' },
           active: false,
+          buildings: [],
         },
       ],
       last: false,
@@ -74,6 +79,7 @@ context('Court register', () => {
       courtType: 'CROWN',
       type: { courtType: 'CROWN', courtName: 'Crown' },
       active: true,
+      buildings: [],
     })
     cy.task('stubCourt', {
       courtId: 'SHFMC',
@@ -82,6 +88,7 @@ context('Court register', () => {
       courtType: 'MAGISTRATES',
       type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
       active: false,
+      buildings: [],
     })
     cy.task('stubUpdateCourt')
     cy.task('stubCourtTypes')
