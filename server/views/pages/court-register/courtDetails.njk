@@ -1,8 +1,59 @@
 {% extends "../../partials/layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% set pageTitle = applicationName + " - Court Details" %}
+{% macro line(text) %}
+  {% if text is defined and text.trim() != '' %}
+    <!--suppress ALL -->
+    <p> {{ text }} </p>
+  {% endif %}
+{% endmacro %}
+
+{% macro courtname(type, id, name, description) %}
+  {{ line(type) }}
+  <p>
+    {{ name }} ( {{ id }} )
+  </p>
+  {{ line(description) }}
+{% endmacro %}
+{% macro renderBuilding(name, line1, line2, town, county, postcode, country) %}
+  <p>
+    {{ name }}
+  </p>
+  {{ line(line1) }}
+  {{ line(line2) }}
+  {{ line(town) }}
+  {{ line(county) }}
+  {{ line(postcode) }}
+  {{ line(country) }}
+{% endmacro %}
+{% macro renderContacts(contacts) %}
+  {% for contact in contacts %}
+    <p>
+    {{ contact.number }}
+    {% if contact.type == 'FAX' %}
+      &nbsp;(fax)
+    {% endif %}
+    </p>
+  {% endfor %}
+{% endmacro %}
+
+{% macro amendCourtUrl(court) %}
+  /court-register/amend-court-details?courtId={{court.id}}
+{% endmacro %}
+{% macro amendBuildUrl(building) %}
+  /court-register/amend-court-building?buildId={{building.id}}
+{% endmacro %}
+{% macro amendBuildContactsUrl(building) %}
+  /court-register/amend-court-building-contacts?buildId={{building.id}}
+{% endmacro %}
 
 {% block content %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/court-register"
+  }) }}
 
   <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
@@ -23,68 +74,80 @@
     </div>
     {% endif %}
 
-    <dl class="govuk-summary-list govuk-!-margin-bottom-9">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Name
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ courtDetails.name }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href="#">
-            Change<span class="govuk-visually-hidden"> name</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Description
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {% if courtDetails.description is defined %}
-            {{ courtDetails.description }}
-          {% else %}
-            ---
-          {% endif %}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href="#">
-            Change<span class="govuk-visually-hidden"> description</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Court type
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ courtDetails.type }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href="#">
-            Change<span class="govuk-visually-hidden"> court type</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Status
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {% if courtDetails.active %}
-            Active
-          {% else %}
-            Closed
-          {% endif %}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href="#">
-            Change<span class="govuk-visually-hidden"> court status</span>
-          </a>
-        </dd>
-      </div>
-    </dl>
+    <h2 class="govuk-heading-m">Court details</h2>
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+          text: "Court"
+        },
+          value: {
+          html: courtname(courtDetails.type, courtDetails.id, courtDetails.name, courtDetails.description),
+          classes: "court-details"
+        },
+          actions: {
+          items: [
+            {
+              href: amendCourtUrl(courtDetails),
+              text: "Change",
+              visuallyHiddenText: "court details",
+              attributes: { "data-qa": "amend-court-details-link"}
+            }
+          ]
+        }
+        }
+      ]
+    }) }}
+
+    {% for building in courtDetails.buildings %}
+      <h2 class="govuk-heading-m">{{ building.name }}</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+            text: "Main building"
+          },
+            value: {
+            html: renderBuilding( building.name, building.addressline1, building.addressline2, building.addresstown, building.addresscounty, building.addresspostcode, building.addresscountry),
+            classes: "building-details"
+          },
+            actions: {
+            items: [
+              {
+                href: amendBuildUrl(building),
+                text: "Change",
+                visuallyHiddenText: "building address",
+                attributes: { "data-qa": "amend-building-details-link"}
+              }
+            ]
+          }
+          },
+          {
+            key: {
+            text: "Contact information"
+          },
+            value: {
+            html: renderContacts(building.contacts),
+            classes: "contact-details"
+          },
+            actions: {
+            items: [
+              {
+                href: amendBuildContactsUrl(building),
+                text: "Change",
+                visuallyHiddenText: "contact deatils",
+                attributes: { "data-qa": "change-contact-details-link"}
+              }
+            ]
+          }
+          }
+        ]
+      }) }}
+
+    {% endfor %}
+
+    <div class="govuk-button-group">
     <form action="/court-register/toggle-active" method="post" novalidate="">
       <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
       <input type="hidden" name="id" value="{{ courtDetails.id }}">
@@ -100,6 +163,14 @@
         </button>
       {% endif %}
     </form>
+    <form action="/court-register/add-new-court-building" method="post" novalidate="">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      <input type="hidden" name="id" value="{{ courtDetails.id }}">
+      <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
+        Add another building
+      </button>
+    </form>
+    </div>
 
   </main>
 
