@@ -130,8 +130,10 @@ export default class CourtRegisterController {
   async amendCourtDetails(req: Request, res: Response): Promise<void> {
     const { courtId } = req.query as { courtId: string }
 
-    const court = await this.courtRegisterService.getCourt(context(res), courtId)
-    const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
+    const [court, courtTypes] = await Promise.all([
+      this.courtRegisterService.getCourt(context(res), courtId),
+      this.courtRegisterService.getCourtTypes(context(res)),
+    ])
 
     const view = new AmendCourtDetailsView(court, courtTypes, req.flash('errors'))
 
