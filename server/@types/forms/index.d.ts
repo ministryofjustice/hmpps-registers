@@ -15,4 +15,11 @@ declare module 'forms' {
     faxnumber?: string
     completed?: boolean
   }
+
+  export interface AmendCourtDetailsForm {
+    type: string
+    id: string
+    name?: string
+    description?: string
+  }
 }

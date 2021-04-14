@@ -235,4 +235,75 @@ describe('Court Register controller', () => {
       })
     })
   })
+  describe('Amend court flow', () => {
+    beforeEach(() => {
+      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      controller = new CourtRegisterController(courtRegisterService)
+      courtRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtDescription: 'Sheffield Crown Court - Yorkshire',
+          type: {
+            courtType: 'CRN',
+            courtName: 'Crown Court',
+          },
+        })
+      )
+      courtRegisterService.getCourtTypes.mockResolvedValue([
+        {
+          courtType: 'CRN',
+          courtName: 'Crown Court',
+        },
+        {
+          courtType: 'MAG',
+          courtName: 'Magistrates Court',
+        },
+      ])
+    })
+    describe('amendCourtDetails', () => {
+      beforeEach(() => {
+        req.query.courtId = 'SHFCC'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will request court types', async () => {
+        await controller.amendCourtDetails(req, res)
+
+        expect(courtRegisterService.getCourtTypes).toHaveBeenCalledWith({ username: 'tom' })
+      })
+      it('will request court details', async () => {
+        await controller.amendCourtDetails(req, res)
+
+        expect(courtRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      })
+      it('will render court details page with court types', async () => {
+        await controller.amendCourtDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtDetails', {
+          form: expect.objectContaining({}),
+          courtTypes: expect.arrayContaining([
+            expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
+            expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
+          ]),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.amendCourtDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtDetails', {
+          form: {
+            type: 'CRN',
+            name: 'Sheffield Crown Court',
+            description: 'Sheffield Crown Court - Yorkshire',
+            id: 'SHFCC',
+          },
+          courtTypes: expect.arrayContaining([expect.objectContaining({}), expect.objectContaining({})]),
+          errors: [],
+        })
+      })
+    })
+  })
 })

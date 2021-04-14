@@ -12,6 +12,7 @@ import addNewCourtBuildingValidator from './addNewCourtBuildingValidator'
 import addNewCourtContactDetailsValidator from './addNewCourtContactDetailsValidator'
 import addNewCourtSummaryValidator from './addNewCourtSummaryValidator'
 import AllCourtsPagedView from './allCourtsPagedView'
+import AmendCourtDetailsView from './amendCourtDetailsView'
 
 function context(res: Response): Context {
   return {
@@ -124,5 +125,16 @@ export default class CourtRegisterController {
   addNewCourtFinished(req: Request, res: Response): void {
     const { id, name } = req.session.addNewCourtForm
     res.render('pages/court-register/addNewCourtFinished', { id, name })
+  }
+
+  async amendCourtDetails(req: Request, res: Response): Promise<void> {
+    const { courtId } = req.query as { courtId: string }
+
+    const court = await this.courtRegisterService.getCourt(context(res), courtId)
+    const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
+
+    const view = new AmendCourtDetailsView(court, courtTypes, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtDetails', view.renderArgs)
   }
 }
