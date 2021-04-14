@@ -71,7 +71,7 @@ export default class CourtRegisterService {
 
   async updateActiveMarker(context: Context, courtId: string, active: boolean): Promise<void> {
     const court: Court = await this.getCourt(context, courtId)
-    const updatedCourt: UpdateCourt = { ...court, active }
+    const updatedCourt: UpdateCourt = { ...court, active, courtType: court.type.courtType }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating court ${courtId}`)
     await CourtRegisterService.restClient(token).put({ path: `/court-maintenance/id/${courtId}`, data: updatedCourt })

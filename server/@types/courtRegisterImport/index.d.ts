@@ -41,8 +41,8 @@ export interface paths {
     get: operations['getCourtTypes']
   }
   '/courts/paged': {
-    /** Page of courts (active only) */
-    get: operations['getPageOfActiveCourts']
+    /** Page of courts */
+    get: operations['getPageOfCourts']
   }
   '/courts/id/{courtId}': {
     /** Information on a specific court */
@@ -63,10 +63,6 @@ export interface paths {
   '/courts/all': {
     /** All active/inactive courts */
     get: operations['getAllCourts']
-  }
-  '/courts/all/paged': {
-    /** Page of active/inactive courts */
-    get: operations['getPageOfCourts']
   }
 }
 
@@ -134,8 +130,6 @@ export interface components {
       active: boolean
       /** List of buildings for this court entity */
       buildings?: components['schemas']['BuildingDto'][]
-      /** Type of court */
-      courtType: string
     }
     /** Court Type */
     CourtTypeDto: {
@@ -194,8 +188,8 @@ export interface components {
       content?: components['schemas']['CourtDto'][]
       pageable?: components['schemas']['Pageable']
       last?: boolean
-      totalElements?: number
       totalPages?: number
+      totalElements?: number
       size?: number
       number?: number
       sort?: components['schemas']['Sort']
@@ -561,15 +555,19 @@ export interface operations {
       }
     }
   }
-  /** Page of courts (active only) */
-  getPageOfActiveCourts: {
+  /** Page of courts */
+  getPageOfCourts: {
     parameters: {
       query: {
+        /** Active? */
+        active?: boolean
+        /** Court Type */
+        courtTypeIds?: string[]
         pageable?: components['schemas']['Pageable']
       }
     }
     responses: {
-      /** Page of Active Court Information Returned */
+      /** All Court Information Returned */
       200: {
         content: {
           'application/json': components['schemas']['CourtDtoPage'][]
@@ -699,22 +697,6 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['CourtDto'][]
-        }
-      }
-    }
-  }
-  /** Page of active/inactive courts */
-  getPageOfCourts: {
-    parameters: {
-      query: {
-        pageable?: components['schemas']['Pageable']
-      }
-    }
-    responses: {
-      /** All Court Information Returned (Active only) */
-      200: {
-        content: {
-          'application/json': components['schemas']['CourtDtoPage'][]
         }
       }
     }
