@@ -177,3 +177,101 @@ describe('toMojPagination', () => {
     })
   })
 })
+
+describe('toCourtTypeFilterCheckboxes', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create checkboxes metadata', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')([], { courtTypes: [], active: null })
+    expect(result.idPrefix).toEqual('courtType')
+    expect(result.name).toEqual('courtType')
+    expect(result.classes).toEqual('govuk-checkboxes--small')
+    expect(result.fieldset).toEqual({
+      legend: {
+        text: 'Court Types',
+        classes: 'govuk-fieldset__legend--m',
+      },
+    })
+  })
+  it('should map an empty filter to unchecked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: [], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: false,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: false,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: false,
+      },
+    ])
+  })
+  it('should map a single item to a single checked checkbox', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: ['CRN'], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: true,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: false,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: false,
+      },
+    ])
+  })
+  it('should map multiple items to multiple checked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: ['COU', 'MAG'], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: false,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: true,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: true,
+      },
+    ])
+  })
+})

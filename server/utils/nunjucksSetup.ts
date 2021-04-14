@@ -2,6 +2,8 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
 import { PageMetaData } from './page'
+import { AllCourtsFilter } from '../routes/courtRegister/allCourtsPagedView'
+import { CourtType } from '../@types/courtRegister'
 
 type Error = {
   href: string
@@ -79,5 +81,28 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       checked: item === value,
     }))
   })
+
+  njkEnv.addFilter('toCourtTypeFilterCheckboxes', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
+    const courtTypeItems = courtTypes.map((courtType: CourtType) => {
+      return {
+        value: courtType.courtType,
+        text: courtType.courtName,
+        checked: allCourtsFilter.courtTypeIds.includes(courtType.courtType),
+      }
+    })
+    return {
+      idPrefix: 'courtType',
+      name: 'courtType',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Court Types',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      items: courtTypeItems,
+    }
+  })
+
   return njkEnv
 }

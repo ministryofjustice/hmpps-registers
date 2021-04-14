@@ -1,4 +1,4 @@
-import { CourtsPage } from '../../@types/courtRegister'
+import { CourtsPage, CourtType } from '../../@types/courtRegister'
 import type { CourtsPageView } from './courtMapper'
 import { courtsPageMapper } from './courtMapper'
 
@@ -10,4 +10,9 @@ export default class AllCourtsPagedView {
   get renderArgs(): CourtsPageView {
     return this.courtsPageView
   }
+}
+
+export type AllCourtsFilter = {
+  courtTypeIds: string[]
+  active: string
 }
