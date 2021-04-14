@@ -18,7 +18,7 @@ describe('courtMapper', () => {
         courtId: 'SHFCC',
         courtName: 'Sheffield Crown Court',
         courtDescription: 'Sheffield Crown Court - Yorkshire',
-        courtType: 'CROWN',
+        type: { courtType: 'CROWN', courtName: 'Crown' },
         active: true,
         buildings: [data.courtBuilding({ id: 1 }), data.courtBuilding({ id: 2 })],
       })
@@ -47,7 +47,7 @@ describe('courtsPageMapper', () => {
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
           courtDescription: 'Sheffield Crown Court - Yorkshire',
-          courtType: 'CROWN',
+          type: { courtType: 'CROWN', courtName: 'Crown' },
           active: true,
         }),
       ],

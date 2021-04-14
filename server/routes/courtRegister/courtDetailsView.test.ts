@@ -8,7 +8,7 @@ describe('CourtDetailsView', () => {
         courtId: 'SHFCC',
         courtName: 'Sheffield Crown Court',
         courtDescription: 'Sheffield Crown Court - Yorkshire',
-        courtType: 'CROWN',
+        type: { courtType: 'CROWN', courtName: 'Crown' },
         active: true,
       }),
       'NONE'
