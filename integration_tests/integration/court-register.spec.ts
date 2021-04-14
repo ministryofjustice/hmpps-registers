@@ -18,7 +18,7 @@ context('Court register', () => {
       {
         courtId: 'SHFCC',
         courtName: 'Sheffield Crown Court',
-        courtDescription: 'Sheffield Crown Court - Yorkshire',
+        courtDescription: 'Sheffield Main Court - Yorkshire',
         type: { courtType: 'CRN', courtName: 'Crown' },
         active: true,
         buildings: [],
@@ -26,7 +26,7 @@ context('Court register', () => {
       {
         courtId: 'SHFMC',
         courtName: 'Sheffield Magistrates Court',
-        courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+        courtDescription: 'Sheffield Secondary Court - Yorkshire',
         type: { courtType: 'MAG', courtName: 'Magistrates' },
         active: false,
         buildings: [],
@@ -37,7 +37,7 @@ context('Court register', () => {
         {
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
-          courtDescription: 'Sheffield Crown Court - Yorkshire',
+          courtDescription: 'Sheffield Main Court - Yorkshire',
           type: { courtType: 'CRN', courtName: 'Crown' },
           active: true,
           buildings: [],
@@ -45,7 +45,7 @@ context('Court register', () => {
         {
           courtId: 'SHFMC',
           courtName: 'Sheffield Magistrates Court',
-          courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+          courtDescription: 'Sheffield Secondary Court - Yorkshire',
           type: { courtType: 'MAG', courtName: 'Magistrates' },
           active: true,
           buildings: [],
@@ -71,7 +71,7 @@ context('Court register', () => {
     cy.task('stubCourt', {
       courtId: 'SHFCC',
       courtName: 'Sheffield Crown Court',
-      courtDescription: 'Sheffield Crown Court - Yorkshire',
+      courtDescription: 'Sheffield Main Court - Yorkshire',
       type: { courtType: 'CRN', courtName: 'Crown' },
       active: true,
       buildings: [],
@@ -79,7 +79,7 @@ context('Court register', () => {
     cy.task('stubCourt', {
       courtId: 'SHFMC',
       courtName: 'Sheffield Magistrates Court',
-      courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+      courtDescription: 'Sheffield Secondary Court - Yorkshire',
       type: { courtType: 'MAG', courtName: 'Magistrates' },
       active: false,
       buildings: [],
@@ -188,7 +188,7 @@ context('Court register', () => {
     it('should show summary of court with link to amend', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
       courtDetailsPage.courtDetailsSection().should('contain.text', 'Sheffield Magistrates Court')
-      courtDetailsPage.courtDetailsSection().should('contain.text', 'Sheffield Magistrates Court - Yorkshire')
+      courtDetailsPage.courtDetailsSection().should('contain.text', 'Sheffield Secondary Court - Yorkshire')
       courtDetailsPage.amendCourtDetailsLink().should('contain.text', 'Change')
     })
     it('can navigate to amend court details page', () => {
@@ -197,9 +197,9 @@ context('Court register', () => {
       const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
 
       amendCourtDetailsPage.name().should('have.value', 'Sheffield Magistrates Court')
-      amendCourtDetailsPage.description().should('have.value', 'Sheffield Magistrates Court - Yorkshire')
+      amendCourtDetailsPage.description().should('have.value', 'Sheffield Secondary Court - Yorkshire')
       amendCourtDetailsPage.type().should('have.value', 'MAG')
-      amendCourtDetailsPage.saveButton().should('contain.text', 'Save')
+      amendCourtDetailsPage.saveButton()
     })
   })
   describe('adding a new court', () => {
