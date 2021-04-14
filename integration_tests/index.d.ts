@@ -13,7 +13,7 @@ declare namespace Cypress {
      */
     task<S = unknown>(event: 'stubAllCourts', courts: Array<Court>): Chainable<S>
     /**
-     * Task to stub a page of courts when calling /courts/all/paged
+     * Task to stub a page of courts when calling /courts/paged
      * @example cy.task('stubPageOfCourts', {
       content: [
         { courtId: 'SHFCC', courtName: 'Sheffield Crown Court', courtDescription: 'Sheffield Crown Court - Yorkshire', courtType: 'CROWN', active: true, },

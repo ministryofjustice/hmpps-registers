@@ -49,7 +49,7 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for page of courts`)
     return (await CourtRegisterService.restClient(token).get({
-      path: `/courts/all/paged`,
+      path: `/courts/paged`,
       query: `page=${pageNumber}&size=${pageSize}&sort=courtName`,
     })) as CourtsPage
   }
