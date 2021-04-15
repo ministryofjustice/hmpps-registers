@@ -185,13 +185,9 @@ describe('toCourtTypeFilterCheckboxes', () => {
     const result = njk.getFilter('toCourtTypeFilterCheckboxes')([], { courtTypes: [], active: null })
     expect(result.idPrefix).toEqual('courtType')
     expect(result.name).toEqual('courtType')
-    expect(result.classes).toEqual('govuk-checkboxes--small')
-    expect(result.fieldset).toEqual({
-      legend: {
-        text: 'Court Types',
-        classes: 'govuk-fieldset__legend--m',
-      },
-    })
+    expect(result.classes).toContain('govuk-checkboxes')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
   })
   it('should map an empty filter to unchecked checkboxes', () => {
     const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
@@ -270,6 +266,78 @@ describe('toCourtTypeFilterCheckboxes', () => {
       {
         value: 'MAG',
         text: 'Magistrates',
+        checked: true,
+      },
+    ])
+  })
+})
+describe('toActiveFilterRadioButtons', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create radio button metadata', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypes: [], active: null })
+    expect(result.idPrefix).toEqual('active')
+    expect(result.name).toEqual('active')
+    expect(result.classes).toContain('govuk-radios')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+  it('should map null to all courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypes: [], active: null })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: true,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+  it('should map true to open courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypes: [], active: true })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: true,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+  it('should map false to closed courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypes: [], active: false })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
         checked: true,
       },
     ])

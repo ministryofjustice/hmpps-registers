@@ -14,5 +14,5 @@ export default class AllCourtsPagedView {
 
 export type AllCourtsFilter = {
   courtTypeIds: string[]
-  active: string
+  active?: boolean
 }

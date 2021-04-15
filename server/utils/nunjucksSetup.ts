@@ -104,5 +104,39 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
+  njkEnv.addFilter('toActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
+    return {
+      idPrefix: 'active',
+      name: 'active',
+      classes: 'govuk-radios--inline',
+      fieldset: {
+        legend: {
+          text: 'Active?',
+          classes: 'govuk-fieldset__legend--l',
+        },
+      },
+      hint: {
+        text: 'Show only open or closed courts',
+      },
+      items: [
+        {
+          value: '',
+          text: 'All',
+          checked: allCourtsFilter.active === null,
+        },
+        {
+          value: true,
+          text: 'Open',
+          checked: allCourtsFilter.active === true,
+        },
+        {
+          value: false,
+          text: 'Closed',
+          checked: allCourtsFilter.active === false,
+        },
+      ],
+    }
+  })
+
   return njkEnv
 }
