@@ -13,6 +13,7 @@ import addNewCourtContactDetailsValidator from './addNewCourtContactDetailsValid
 import addNewCourtSummaryValidator from './addNewCourtSummaryValidator'
 import AllCourtsPagedView from './allCourtsPagedView'
 import AmendCourtDetailsView from './amendCourtDetailsView'
+import amendCourtDetailsValidator from './amendCourtDetailsValidator'
 
 function context(res: Response): Context {
   return {
@@ -127,7 +128,7 @@ export default class CourtRegisterController {
     res.render('pages/court-register/addNewCourtFinished', { id, name })
   }
 
-  async amendCourtDetails(req: Request, res: Response): Promise<void> {
+  async amendCourtDetailsStart(req: Request, res: Response): Promise<void> {
     const { courtId } = req.query as { courtId: string }
 
     const [court, courtTypes] = await Promise.all([
@@ -135,8 +136,35 @@ export default class CourtRegisterController {
       this.courtRegisterService.getCourtTypes(context(res)),
     ])
 
-    const view = new AmendCourtDetailsView(court, courtTypes, req.flash('errors'))
+    req.session.amendCourtDetailsForm = {
+      id: court.courtId,
+      name: court.courtName,
+      description: court.courtDescription,
+      type: court.type.courtType,
+    }
+
+    const view = new AmendCourtDetailsView(req.session.amendCourtDetailsForm, courtTypes, req.flash('errors'))
 
     res.render('pages/court-register/amendCourtDetails', view.renderArgs)
+  }
+
+  async amendCourtDetails(req: Request, res: Response): Promise<void> {
+    const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
+
+    const view = new AmendCourtDetailsView(req.session.amendCourtDetailsForm, courtTypes, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtDetails', view.renderArgs)
+  }
+
+  async submitAmendCourtDetails(req: Request, res: Response): Promise<void> {
+    req.session.amendCourtDetailsForm = { ...req.body }
+    res.redirect(
+      await amendCourtDetailsValidator(
+        req.session.amendCourtDetailsForm,
+        req,
+        (courtId: string, name: string, type: string, description: string) =>
+          this.courtRegisterService.updateCourtDetails(context(res), courtId, name, type, description)
+      )
+    )
   }
 }

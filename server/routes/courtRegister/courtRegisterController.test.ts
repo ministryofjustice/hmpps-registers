@@ -261,9 +261,61 @@ describe('Court Register controller', () => {
         },
       ])
     })
-    describe('amendCourtDetails', () => {
+    describe('amendCourtDetailsStart', () => {
       beforeEach(() => {
         req.query.courtId = 'SHFCC'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will request court types', async () => {
+        await controller.amendCourtDetailsStart(req, res)
+
+        expect(courtRegisterService.getCourtTypes).toHaveBeenCalledWith({ username: 'tom' })
+      })
+      it('will request court details', async () => {
+        await controller.amendCourtDetailsStart(req, res)
+
+        expect(courtRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      })
+      it('will render court details page with court types', async () => {
+        await controller.amendCourtDetailsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtDetails', {
+          form: expect.objectContaining({}),
+          courtTypes: expect.arrayContaining([
+            expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
+            expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
+          ]),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.amendCourtDetailsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtDetails', {
+          form: {
+            type: 'CRN',
+            name: 'Sheffield Crown Court',
+            description: 'Sheffield Crown Court - Yorkshire',
+            id: 'SHFCC',
+          },
+          courtTypes: expect.arrayContaining([expect.objectContaining({}), expect.objectContaining({})]),
+          errors: [],
+        })
+      })
+    })
+    describe('amendCourtDetails', () => {
+      beforeEach(() => {
+        req.session.amendCourtDetailsForm = {
+          name: 'Sheffield Crown Court',
+          type: 'CRN',
+          id: 'SHFCC',
+        }
+        req.body = {
+          ...req.session.amendCourtDetailsForm,
+        }
+
         res.locals.user = {
           username: 'tom',
         }
@@ -273,10 +325,10 @@ describe('Court Register controller', () => {
 
         expect(courtRegisterService.getCourtTypes).toHaveBeenCalledWith({ username: 'tom' })
       })
-      it('will request court details', async () => {
+      it('will not request court details', async () => {
         await controller.amendCourtDetails(req, res)
 
-        expect(courtRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+        expect(courtRegisterService.getCourt).toBeCalledTimes(0)
       })
       it('will render court details page with court types', async () => {
         await controller.amendCourtDetails(req, res)
@@ -290,14 +342,13 @@ describe('Court Register controller', () => {
           errors: [],
         })
       })
-      it('will create form and pass through to page', async () => {
+      it('will pass through form to page', async () => {
         await controller.amendCourtDetails(req, res)
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtDetails', {
           form: {
-            type: 'CRN',
             name: 'Sheffield Crown Court',
-            description: 'Sheffield Crown Court - Yorkshire',
+            type: 'CRN',
             id: 'SHFCC',
           },
           courtTypes: expect.arrayContaining([expect.objectContaining({}), expect.objectContaining({})]),
