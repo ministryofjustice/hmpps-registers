@@ -6,6 +6,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "moj/components/filter/macro.njk" import mojFilter %}
+{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
 {% set pageTitle = applicationName + " - Court Register" %}
 
@@ -25,7 +26,6 @@
       text: "Back",
       href: "/"
     }) }}
-
 
     <main class="app-container govuk-body">
       <div class="govuk-grid-row">
@@ -57,6 +57,7 @@
 
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
+              <div class="moj-action-bar__filter"></div>
               {{ govukButton({
                 text: "Add a new court",
                 href: "/court-register/add"
@@ -118,4 +119,9 @@
     </main>
   </div>
 
+{% endblock %}
+
+{%  block bodyEnd %}
+  {{ super() }}
+  <script src="/assets/court-type-filter-toggle-button.js"></script>
 {% endblock %}

@@ -129,6 +129,9 @@ export default function createApp(
   ;['/node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
     app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
+  ;['/node_modules/@ministryofjustice/frontend/moj/assets/images'].forEach(dir => {
+    app.use('/assets/images', express.static(path.join(process.cwd(), dir), cacheControl))
+  })
   ;['/node_modules/jquery/dist/jquery.min.js'].forEach(dir => {
     app.use('/assets/js/jquery.min.js', express.static(path.join(process.cwd(), dir), cacheControl))
   })
