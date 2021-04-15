@@ -1,4 +1,4 @@
-import { CourtsPage, CourtType } from '../../@types/courtRegister'
+import { CourtsPage } from '../../@types/courtRegister'
 import type { CourtsPageView } from './courtMapper'
 import { courtsPageMapper } from './courtMapper'
 
