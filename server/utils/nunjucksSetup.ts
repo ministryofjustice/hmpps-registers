@@ -2,6 +2,8 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
 import { PageMetaData } from './page'
+import { AllCourtsFilter } from '../routes/courtRegister/allCourtsPagedView'
+import { CourtType } from '../@types/courtRegister'
 
 type Error = {
   href: string
@@ -79,5 +81,109 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       checked: item === value,
     }))
   })
+
+  njkEnv.addFilter('toCourtTypeFilterCheckboxes', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
+    const courtTypeItems = courtTypes.map((courtType: CourtType) => {
+      return {
+        value: courtType.courtType,
+        text: courtType.courtName,
+        checked: allCourtsFilter.courtTypeIds.includes(courtType.courtType),
+      }
+    })
+    return {
+      idPrefix: 'courtType',
+      name: 'courtType',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Court Types',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      items: courtTypeItems,
+    }
+  })
+
+  njkEnv.addFilter('toActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
+    return {
+      idPrefix: 'active',
+      name: 'active',
+      classes: 'govuk-radios--inline',
+      fieldset: {
+        legend: {
+          text: 'Active?',
+          classes: 'govuk-fieldset__legend--l',
+        },
+      },
+      hint: {
+        text: 'Show only open or closed courts',
+      },
+      items: [
+        {
+          value: '',
+          text: 'All',
+          checked: allCourtsFilter.active === null,
+        },
+        {
+          value: true,
+          text: 'Open',
+          checked: allCourtsFilter.active === true,
+        },
+        {
+          value: false,
+          text: 'Closed',
+          checked: allCourtsFilter.active === false,
+        },
+      ],
+    }
+  })
+
+  njkEnv.addFilter('toCourtListFilter', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
+    const courtTypeItems = allCourtsFilter.courtTypeIds.map(courtTypeId => {
+      return {
+        href: '#',
+        text: courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName,
+      }
+    })
+    let activeItemText = 'All'
+    if (allCourtsFilter.active === true) {
+      activeItemText = 'Open'
+    } else if (allCourtsFilter.active === false) {
+      activeItemText = 'Closed'
+    }
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+        },
+      },
+      categories: [
+        {
+          heading: {
+            text: 'Court Types',
+          },
+          items: courtTypeItems,
+        },
+        {
+          heading: {
+            text: 'Active?',
+          },
+          items: [
+            {
+              href: '#',
+              text: activeItemText,
+            },
+          ],
+        },
+      ],
+    }
+  })
+
   return njkEnv
 }
