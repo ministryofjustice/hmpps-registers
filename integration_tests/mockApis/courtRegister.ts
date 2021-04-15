@@ -1,5 +1,32 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
+import { Court } from '../../server/@types/courtRegister'
+
+export const sheffieldCrownCourt: Court = {
+  courtId: 'SHFCC',
+  courtName: 'Sheffield Crown Court',
+  courtDescription: 'Sheffield Main Court - Yorkshire',
+  type: { courtType: 'CRN', courtName: 'Crown' },
+  active: true,
+  buildings: [],
+}
+export const sheffieldMagistratesCourt: Court = {
+  courtId: 'SHFMC',
+  courtName: 'Sheffield Magistrates Court',
+  courtDescription: 'Sheffield Secondary Court - Yorkshire',
+  type: { courtType: 'MAG', courtName: 'Magistrates' },
+  active: false,
+  buildings: [],
+}
+
+export const sheffieldYouthCourt: Court = {
+  courtId: 'SHFYC',
+  courtName: 'Sheffield Youth Court',
+  courtDescription: 'Sheffield Youth Court - Yorkshire',
+  type: { courtType: 'YOUTH', courtName: 'Youth' },
+  active: false,
+  buildings: [],
+}
 
 const stubPing = (): SuperAgentRequest =>
   stubFor({
