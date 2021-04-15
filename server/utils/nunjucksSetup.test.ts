@@ -352,7 +352,7 @@ describe('toCourtListFilter', () => {
     expect(result.selectedFilters.heading.text).toBeTruthy()
     expect(result.selectedFilters.clearLink.text).toBeTruthy()
   })
-  it('should show selected court types and active all', () => {
+  it('should show selected court types', () => {
     const result = njk.getFilter('toCourtListFilter')(
       [
         { courtType: 'CRN', courtName: 'Crown' },
