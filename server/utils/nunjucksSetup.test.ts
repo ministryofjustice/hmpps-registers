@@ -177,3 +177,262 @@ describe('toMojPagination', () => {
     })
   })
 })
+
+describe('toCourtTypeFilterCheckboxes', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create checkboxes metadata', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')([], { courtTypeIds: [], active: null })
+    expect(result.idPrefix).toEqual('courtType')
+    expect(result.name).toEqual('courtType')
+    expect(result.classes).toContain('govuk-checkboxes')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+  it('should map an empty filter to unchecked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: [], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: false,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: false,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: false,
+      },
+    ])
+  })
+  it('should map a single item to a single checked checkbox', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: ['CRN'], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: true,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: false,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: false,
+      },
+    ])
+  })
+  it('should map multiple items to multiple checked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeFilterCheckboxes')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: ['COU', 'MAG'], active: null }
+    )
+    expect(result.items).toEqual([
+      {
+        value: 'CRN',
+        text: 'Crown',
+        checked: false,
+      },
+      {
+        value: 'COU',
+        text: 'County',
+        checked: true,
+      },
+      {
+        value: 'MAG',
+        text: 'Magistrates',
+        checked: true,
+      },
+    ])
+  })
+})
+describe('toActiveFilterRadioButtons', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create radio button metadata', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    expect(result.idPrefix).toEqual('active')
+    expect(result.name).toEqual('active')
+    expect(result.classes).toContain('govuk-radios')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+  it('should map null to all courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: true,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+  it('should map true to open courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: true })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: true,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+  it('should map false to closed courts', () => {
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: false })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: true,
+      },
+    ])
+  })
+})
+describe('toCourtListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should show filter headings', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: null })
+    expect(result.heading.text).toBeTruthy()
+    expect(result.selectedFilters.heading.text).toBeTruthy()
+    expect(result.selectedFilters.clearLink.text).toBeTruthy()
+  })
+  it('should show selected court types', () => {
+    const result = njk.getFilter('toCourtListFilter')(
+      [
+        { courtType: 'CRN', courtName: 'Crown' },
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'MAG', courtName: 'Magistrates' },
+      ],
+      { courtTypeIds: ['CRN', 'MAG'], active: null }
+    )
+    expect(result.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Court Types',
+          },
+          items: [
+            {
+              href: '#',
+              text: 'Crown',
+            },
+            {
+              href: '#',
+              text: 'Magistrates',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+  it('should show active All', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: null })
+    expect(result.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Active?',
+          },
+          items: [
+            {
+              href: '#',
+              text: 'All',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+  it('should show active Open', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: true })
+    expect(result.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Active?',
+          },
+          items: [
+            {
+              href: '#',
+              text: 'Open',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+  it('should show active Closed', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false })
+    expect(result.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Active?',
+          },
+          items: [
+            {
+              href: '#',
+              text: 'Closed',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+})
