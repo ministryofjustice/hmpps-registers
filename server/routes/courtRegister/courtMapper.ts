@@ -1,4 +1,4 @@
-import { Court, CourtBuilding, CourtBuildingContact, CourtsPage } from '../../@types/courtRegister'
+import { Court, CourtBuilding, CourtBuildingContact, CourtsPage, CourtType } from '../../@types/courtRegister'
 import { PageMetaData, toPageMetaData } from '../../utils/page'
 
 export type CourtDetail = {
@@ -32,6 +32,8 @@ export type CourtBuildingContactDetail = {
 export type CourtsPageView = {
   courts: CourtDetail[]
   pageMetaData: PageMetaData
+  allCourtsFilter: AllCourtsFilter
+  courtTypes: CourtType[]
 }
 
 export default function courtMapper(court: Court): CourtDetail {
@@ -65,6 +67,7 @@ export function courtBuildingMapper(building: CourtBuilding): CourtBuildingDetai
     contacts: building.contacts.map(courtBuildingContactMapper),
   }
 }
+
 export function courtBuildingContactMapper(contact: CourtBuildingContact): CourtBuildingContactDetail {
   return {
     id: contact.id,
@@ -72,6 +75,7 @@ export function courtBuildingContactMapper(contact: CourtBuildingContact): Court
     number: contact.detail,
   }
 }
+
 export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
   const pageMetaData = toPageMetaData(
@@ -85,5 +89,15 @@ export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
     courtsPage.numberOfElements,
     '/court-register/paged?page=:page'
   )
-  return { courts, pageMetaData }
+  const allCourtsFilter: AllCourtsFilter = { courtTypeIds: [] }
+  const courtTypes: CourtType[] = [
+    { courtType: 'CRN', courtName: 'Crown' },
+    { courtType: 'COU', courtName: 'County' },
+  ]
+  return { courts, pageMetaData, allCourtsFilter, courtTypes }
+}
+
+export type AllCourtsFilter = {
+  courtTypeIds: string[]
+  active?: boolean
 }

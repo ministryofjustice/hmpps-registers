@@ -3,8 +3,20 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/filter/macro.njk" import mojFilter %}
 
 {% set pageTitle = applicationName + " - Court Register" %}
+
+{% set filterOptionsHtml %}
+  {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
+  {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
+{% endset %}
+
+{% set filterCategoriesHtml %}
+  {{ courtTypes | toCourtListFilterCategories(allCourtsFilter) }}
+{% endset %}
 
 {% block content %}
   <!--suppress HtmlUnknownTarget -->
@@ -21,65 +33,88 @@
           <h1 class="govuk-heading-xl">Court Register Paged</h1>
         </div>
       </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          {{ govukButton({
-            text: "Add a new court",
-            href: "/court-register/add"
+
+      <div class="moj-filter-layout">
+        <div class="moj-filter-layout__filter">
+          {{ mojFilter({
+            heading: {
+              text: 'Filter'
+            },
+            selectedFilters: {
+              heading: {
+                text: 'Selected filters'
+              },
+              clearLink: {
+                text: 'Clear filters'
+              },
+              categories: filterCategoriesHtml
+            },
+            optionsHtml: filterOptionsHtml
           }) }}
         </div>
-      </div>
-      <div>
-        {{ mojPagination( pageMetaData | toMojPagination ) }}
-      </div>
+
+        <div class="moj-filter-layout__content">
+
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              {{ govukButton({
+                text: "Add a new court",
+                href: "/court-register/add"
+              }) }}
+            </div>
+          </div>
+          <div>
+            {{ mojPagination( pageMetaData | toMojPagination ) }}
+          </div>
 
 
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
 
-          {% if courts.length %}
-            <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="courts">
-              <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
-                <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
-                <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type</th>
-                <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
-                <th class="govuk-table__header govuk-!-width-one-fifth" scope="col"></th>
-              </tr>
-              </thead>
+              {% if courts.length %}
+                <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="courts">
+                  <thead class="govuk-table__head">
+                  <tr class="govuk-table__row">
+                    <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
+                    <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
+                    <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type</th>
+                    <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
+                    <th class="govuk-table__header govuk-!-width-one-fifth" scope="col"></th>
+                  </tr>
+                  </thead>
 
-              <tbody class="govuk-table__body">
-              {% for court in courts %}
-                <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">{{ court.id }}</td>
-                  <td class="govuk-table__cell"><a href="/court-register/details?id={{ court.id }}"
-                                                   class="govuk-link govuk-link--no-visited-state">{{ court.name }}</a>
-                  </td>
-                  <td class="govuk-table__cell">{{ court.type }}</td>
-                  <td class="govuk-table__cell">
-                    {% if court.active %}
-                      Active
-                    {% else %}
-                      Closed
-                    {% endif %}
-                  </td>
-                  <td class="govuk-table__cell"><a href="/court-register/details?id={{ court.id }}"
-                                                   class="govuk-link govuk-link--no-visited-state">Change</a></td>
-                </tr>
-              {% endfor %}
+                  <tbody class="govuk-table__body">
+                  {% for court in courts %}
+                    <tr class="govuk-table__row">
+                      <td class="govuk-table__cell">{{ court.id }}</td>
+                      <td class="govuk-table__cell"><a href="/court-register/details?id={{ court.id }}"
+                                                       class="govuk-link govuk-link--no-visited-state">{{ court.name }}</a>
+                      </td>
+                      <td class="govuk-table__cell">{{ court.type }}</td>
+                      <td class="govuk-table__cell">
+                        {% if court.active %}
+                          Active
+                        {% else %}
+                          Closed
+                        {% endif %}
+                      </td>
+                      <td class="govuk-table__cell"><a href="/court-register/details?id={{ court.id }}"
+                                                       class="govuk-link govuk-link--no-visited-state">Change</a></td>
+                    </tr>
+                  {% endfor %}
 
-              </tbody>
-            </table>
-          {% else %}
-            <p data-qa=no-courts class="govuk-body">There are no courts</p>
-          {% endif %}
+                  </tbody>
+                </table>
+              {% else %}
+                <p data-qa=no-courts class="govuk-body">There are no courts</p>
+              {% endif %}
+            </div>
+          </div>
+          <div>
+            {{ mojPagination( pageMetaData | toMojPagination ) }}
+          </div>
         </div>
       </div>
-      <div>
-        {{ mojPagination( pageMetaData | toMojPagination ) }}
-      </div>
-
     </main>
   </div>
 

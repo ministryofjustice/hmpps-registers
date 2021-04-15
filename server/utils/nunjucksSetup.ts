@@ -2,8 +2,8 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
 import { PageMetaData } from './page'
-import { AllCourtsFilter } from '../routes/courtRegister/allCourtsPagedView'
 import { CourtType } from '../@types/courtRegister'
+import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
 
 type Error = {
   href: string
@@ -138,7 +138,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toCourtListFilter', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
+  njkEnv.addFilter('toCourtListFilterCategories', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
     const courtTypeItems = allCourtsFilter.courtTypeIds.map(courtTypeId => {
       return {
         href: '#',
@@ -151,38 +151,25 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     } else if (allCourtsFilter.active === false) {
       activeItemText = 'Closed'
     }
-    return {
-      heading: {
-        text: 'Filter',
-      },
-      selectedFilters: {
+    return [
+      {
         heading: {
-          text: 'Selected filters',
+          text: 'Court Types',
         },
-        clearLink: {
-          text: 'Clear filters',
-        },
+        items: courtTypeItems,
       },
-      categories: [
-        {
-          heading: {
-            text: 'Court Types',
-          },
-          items: courtTypeItems,
+      {
+        heading: {
+          text: 'Active?',
         },
-        {
-          heading: {
-            text: 'Active?',
+        items: [
+          {
+            href: '#',
+            text: activeItemText,
           },
-          items: [
-            {
-              href: '#',
-              text: activeItemText,
-            },
-          ],
-        },
-      ],
-    }
+        ],
+      },
+    ]
   })
 
   return njkEnv
