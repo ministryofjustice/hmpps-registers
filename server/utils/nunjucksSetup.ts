@@ -138,5 +138,52 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
+  njkEnv.addFilter('toCourtListFilter', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
+    const courtTypeItems = allCourtsFilter.courtTypeIds.map(courtTypeId => {
+      return {
+        href: '#',
+        text: courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName,
+      }
+    })
+    let activeItemText = 'All'
+    if (allCourtsFilter.active === true) {
+      activeItemText = 'Open'
+    } else if (allCourtsFilter.active === false) {
+      activeItemText = 'Closed'
+    }
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+        },
+      },
+      categories: [
+        {
+          heading: {
+            text: 'Court Types',
+          },
+          items: courtTypeItems,
+        },
+        {
+          heading: {
+            text: 'Active?',
+          },
+          items: [
+            {
+              href: '#',
+              text: activeItemText,
+            },
+          ],
+        },
+      ],
+    }
+  })
+
   return njkEnv
 }
