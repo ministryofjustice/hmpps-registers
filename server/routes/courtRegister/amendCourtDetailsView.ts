@@ -1,5 +1,5 @@
 import type { AmendCourtDetailsForm } from 'forms'
-import { Court, CourtType } from '../../@types/courtRegister'
+import { CourtType } from '../../@types/courtRegister'
 
 interface SelectItem {
   value: string
@@ -19,7 +19,7 @@ function sortAlphabetically(courtType1: SelectItem, courtType2: SelectItem) {
 
 export default class AmendCourtDetailsView {
   constructor(
-    private readonly court: Court,
+    private readonly form: AmendCourtDetailsForm,
     private readonly courtTypes: Array<CourtType>,
     private readonly errors?: Array<Record<string, string>>
   ) {}
@@ -30,12 +30,7 @@ export default class AmendCourtDetailsView {
     errors: Array<Record<string, string>>
   } {
     return {
-      form: {
-        id: this.court.courtId,
-        name: this.court.courtName,
-        type: this.court.type.courtType,
-        description: this.court.courtDescription,
-      },
+      form: this.form,
       courtTypes: this.getCourtTypes(),
       errors: this.errors || [],
     }
@@ -46,7 +41,7 @@ export default class AmendCourtDetailsView {
       .map((courtType: CourtType) => ({
         value: courtType.courtType,
         text: courtType.courtName,
-        selected: courtType.courtType === this.court.type.courtType,
+        selected: courtType.courtType === this.form.type,
       }))
       .sort(sortAlphabetically)
   }

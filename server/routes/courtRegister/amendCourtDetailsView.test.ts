@@ -1,9 +1,15 @@
+import { AmendCourtDetailsForm } from 'forms'
 import AmendCourtDetailsView from './amendCourtDetailsView'
-import data from '../testutils/mockData'
 
 describe('AmendCourtDetailsView', () => {
-  it('will map court types  alphabetically', () => {
-    const view = new AmendCourtDetailsView(data.court({}), [
+  const form: AmendCourtDetailsForm = {
+    id: 'SHFCC',
+    name: 'Sheffield Crown Court',
+    type: 'CRN',
+    description: 'Main Sheffield Court',
+  }
+  it('will map court types alphabetically', () => {
+    const view = new AmendCourtDetailsView(form, [
       {
         courtType: 'YOU',
         courtName: 'Youth Court',
@@ -27,7 +33,7 @@ describe('AmendCourtDetailsView', () => {
     ])
   })
   it('will select current court type and not bother having blank item', () => {
-    const view = new AmendCourtDetailsView(data.court({ type: { courtType: 'CRN', courtName: 'Crown Court' } }), [
+    const view = new AmendCourtDetailsView(form, [
       {
         courtType: 'CRN',
         courtName: 'Crown Court',
@@ -50,13 +56,14 @@ describe('AmendCourtDetailsView', () => {
       },
     ])
   })
-  it('will create current form from court', () => {
+  it('will pass through the form', () => {
     const view = new AmendCourtDetailsView(
-      data.court({
-        courtId: 'SHFCC',
-        type: { courtType: 'CRN', courtName: 'Crown Court' },
-        courtDescription: 'Main Sheffield Court',
-      }),
+      {
+        id: 'SHFCC',
+        name: 'Sheffield Crown Court',
+        type: 'CRN',
+        description: 'Main Sheffield Court',
+      },
       []
     )
     expect(view.renderArgs.form).toEqual({

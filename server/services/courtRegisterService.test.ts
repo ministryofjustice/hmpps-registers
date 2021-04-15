@@ -240,11 +240,41 @@ describe('Court Register service', () => {
 
       expect(updatedCourt).toEqual(
         expect.objectContaining({
-          courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
           courtDescription: 'Sheffield Crown Court - Yorkshire',
           courtType: 'CROWN',
           active: true,
+        })
+      )
+    })
+  })
+  describe('updateCourtDetails', () => {
+    let updatedCourt: UpdateCourt
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({ active: false }))
+      fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC', body => {
+          updatedCourt = body
+          return body
+        })
+        .reply(200, data.court({}))
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', 'Sheffield Crown Court', 'CRN', '')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send current active marker with request', async () => {
+      await courtRegisterService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', 'Sheffield Crown Court', 'CRN', '')
+
+      expect(updatedCourt).toEqual(
+        expect.objectContaining({
+          courtName: 'Sheffield Crown Court',
+          courtType: 'CRN',
+          active: false,
+          courtDescription: null,
         })
       )
     })

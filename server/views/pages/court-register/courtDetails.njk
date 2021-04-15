@@ -40,13 +40,13 @@
 {% endmacro %}
 
 {% macro amendCourtUrl(court) %}
-  /court-register/amend-court-details?courtId={{court.id}}
+  /court-register/amend-court-details-start?courtId={{court.id}}
 {% endmacro %}
 {% macro amendBuildUrl(building) %}
-  /court-register/amend-court-building?buildId={{building.id}}
+  /court-register/amend-court-building-start?buildId={{building.id}}
 {% endmacro %}
 {% macro amendBuildContactsUrl(building) %}
-  /court-register/amend-court-building-contacts?buildId={{building.id}}
+  /court-register/amend-court-building-contacts-start?buildId={{building.id}}
 {% endmacro %}
 
 {% block content %}
