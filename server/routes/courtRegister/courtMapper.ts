@@ -89,7 +89,7 @@ export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
     courtsPage.numberOfElements,
     '/court-register/paged?page=:page'
   )
-  const allCourtsFilter: AllCourtsFilter = { courtTypeIds: [] }
+  const allCourtsFilter: AllCourtsFilter = { courtTypeIds: [], active: null }
   const courtTypes: CourtType[] = [
     { courtType: 'CRN', courtName: 'Crown' },
     { courtType: 'COU', courtName: 'County' },

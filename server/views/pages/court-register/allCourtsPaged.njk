@@ -15,10 +15,6 @@
   {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
 {% endset %}
 
-{% set filterCategoriesHtml %}
-  {{ courtTypes | toCourtListFilterCategories(allCourtsFilter) }}
-{% endset %}
-
 {% block content %}
   <!--suppress HtmlUnknownTarget -->
   <div class="govuk-width-container">
@@ -35,23 +31,7 @@
       </div>
 
       <div class="moj-filter-layout">
-        <div class="moj-filter-layout__filter">
-          {{ mojFilter({
-            heading: {
-              text: 'Filter'
-            },
-            selectedFilters: {
-              heading: {
-                text: 'Selected filters'
-              },
-              clearLink: {
-                text: 'Clear filters'
-              },
-              categories: filterCategoriesHtml
-            },
-            optionsHtml: filterOptionsHtml
-          }) }}
-        </div>
+        <div class="moj-filter-layout__filter">{{ mojFilter( courtTypes | toCourtListFilter(allCourtsFilter, filterOptionsHtml)) }}</div>
 
         <div class="moj-filter-layout__content">
 
@@ -121,7 +101,7 @@
 
 {% endblock %}
 
-{%  block bodyEnd %}
+{% block bodyEnd %}
   {{ super() }}
   <script src="/assets/court-type-filter-toggle-button.js"></script>
 {% endblock %}
