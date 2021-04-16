@@ -48,6 +48,13 @@
 {% macro amendBuildContactsUrl(building) %}
   /court-register/amend-court-building-contacts-start?buildId={{building.id}}
 {% endmacro %}
+{% macro confirmationPanel(message, attribute) %}
+  <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
+    <div class="govuk-panel__body">
+      {{ message }}
+    </div>
+  </div>
+{% endmacro %}
 
 {% block content %}
   {{ govukBackLink({
@@ -60,18 +67,13 @@
     <h1 class="govuk-heading-l">{{ courtDetails.name }}</h1>
 
     {% if action == 'ACTIVATE' %}
-    <div data-qa=confirm-activation class="govuk-panel govuk-panel--confirmation">
-      <div class="govuk-panel__body">
-        Court has been successfully activated
-      </div>
-    </div>
+      {{  confirmationPanel('Court has been successfully activated', 'confirm-activation') }}
     {% endif %}
     {% if action == 'DEACTIVATE' %}
-    <div data-qa=confirm-deactivation class="govuk-panel govuk-panel--confirmation">
-      <div class="govuk-panel__body">
-        Court has been successfully marked as closed
-      </div>
-    </div>
+      {{  confirmationPanel('Court has been successfully marked as closed', 'confirm-deactivation') }}
+    {% endif %}
+    {% if action == 'UPDATED' %}
+      {{  confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
     {% endif %}
 
     <h2 class="govuk-heading-m">Court details</h2>
