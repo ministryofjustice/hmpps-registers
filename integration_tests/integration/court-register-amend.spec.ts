@@ -63,5 +63,26 @@ context('Court register - amend existing court', () => {
       amendCourtDetailsPage.type().should('have.value', 'MAG')
       amendCourtDetailsPage.saveButton()
     })
+    it('will validate court details page', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendCourtDetailsLink().click()
+      const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
+
+      amendCourtDetailsPage.name().clear().type('A')
+      amendCourtDetailsPage.saveButton().click()
+
+      const courtDetailsWithErrors = AmendCourtDetailsPage.verifyOnPage('SHFMC')
+      courtDetailsWithErrors.errorSummary().contains('Court name must be at least 2 characters')
+    })
+    it('will return to court details page with success message after saving', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendCourtDetailsLink().click()
+      const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
+
+      amendCourtDetailsPage.name().clear().type('Sheffield Magistrates New Court')
+      amendCourtDetailsPage.saveButton().click()
+
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
   })
 })
