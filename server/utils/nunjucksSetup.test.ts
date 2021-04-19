@@ -184,7 +184,7 @@ describe('toCourtTypeFilterCheckboxes', () => {
   it('should create checkboxes metadata', () => {
     const result = njk.getFilter('toCourtTypeFilterCheckboxes')([], { courtTypeIds: [], active: null })
     expect(result.idPrefix).toEqual('courtType')
-    expect(result.name).toEqual('courtType')
+    expect(result.name).toEqual('courtTypeIds')
     expect(result.classes).toContain('govuk-checkboxes')
     expect(result.fieldset.legend.text).toBeTruthy()
     expect(result.fieldset.legend.classes).toContain('govuk-fieldset')

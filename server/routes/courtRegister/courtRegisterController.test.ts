@@ -82,7 +82,7 @@ describe('Court Register controller', () => {
     })
     it('will parse a filter from the query parameters', async () => {
       const reqWithQueryParms = ({
-        query: { active: false, courtTypeIds: ['COU', 'CRO'] },
+        query: { active: 'false', courtTypeIds: ['COU', 'CRO'] },
         session: {},
         flash: jest.fn(),
       } as unknown) as Request

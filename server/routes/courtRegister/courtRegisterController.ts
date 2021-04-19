@@ -38,21 +38,22 @@ export default class CourtRegisterController {
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
-    const courtsPage = await this.courtRegisterService.getPageOfCourts(
-      context(res),
-      page - 1,
-      40,
-      this.parseFilter(req)
-    )
+    const filter = this.parseFilter(req)
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40, filter)
 
-    const view = new AllCourtsPagedView(courtsPage)
+    const view = new AllCourtsPagedView(courtsPage, filter)
 
     res.render('pages/court-register/allCourtsPaged', view.renderArgs)
   }
 
   parseFilter(req: Request): AllCourtsFilter {
-    const active: boolean = req.query.active !== undefined ? JSON.parse(req.query.active as string) : null
-    const courtTypeIds: string[] = req.query.courtTypeIds !== undefined ? (req.query.courtTypeIds as string[]) : null
+    const activeString: string = req.query.active as string
+    let active = null
+    if (activeString === 'true') active = true
+    else if (activeString === 'false') active = false
+    let courtTypeIds: string[] = req.query.courtTypeIds as string[]
+    if (courtTypeIds === undefined) courtTypeIds = null
+    else if (!Array.isArray(courtTypeIds)) courtTypeIds = [courtTypeIds]
     return { active, courtTypeIds }
   }
 

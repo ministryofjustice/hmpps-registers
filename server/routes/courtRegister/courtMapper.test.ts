@@ -41,25 +41,28 @@ describe('courtsPageMapper', () => {
   let courtsPage: CourtsPageView
 
   beforeEach(() => {
-    courtsPage = courtsPageMapper({
-      content: [
-        data.court({
-          courtId: 'SHFCC',
-          courtName: 'Sheffield Crown Court',
-          courtDescription: 'Sheffield Crown Court - Yorkshire',
-          type: { courtType: 'CROWN', courtName: 'Crown' },
-          active: true,
-        }),
-      ],
-      first: true,
-      last: true,
-      empty: true,
-      totalPages: 1,
-      totalElements: 2,
-      number: 3,
-      size: 4,
-      numberOfElements: 5,
-    })
+    courtsPage = courtsPageMapper(
+      {
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+            courtName: 'Sheffield Crown Court',
+            courtDescription: 'Sheffield Crown Court - Yorkshire',
+            type: { courtType: 'CROWN', courtName: 'Crown' },
+            active: true,
+          }),
+        ],
+        first: true,
+        last: true,
+        empty: true,
+        totalPages: 1,
+        totalElements: 2,
+        number: 3,
+        size: 4,
+        numberOfElements: 5,
+      },
+      {}
+    )
   })
   it('will map court id', () => {
     expect(courtsPage.courts[0].id).toEqual('SHFCC')

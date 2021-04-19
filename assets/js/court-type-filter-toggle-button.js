@@ -15,3 +15,9 @@ new MOJFrontend.FilterToggleButton({
     container: $('.moj-filter-layout__filter'),
   },
 })
+
+$('.moj-filter__options')
+  .find(':button')
+  .on('click', () => {
+    $('#filter-form').submit()
+  })

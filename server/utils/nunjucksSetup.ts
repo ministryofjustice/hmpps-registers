@@ -87,12 +87,12 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       return {
         value: courtType.courtType,
         text: courtType.courtName,
-        checked: allCourtsFilter.courtTypeIds.includes(courtType.courtType),
+        checked: allCourtsFilter.courtTypeIds?.includes(courtType.courtType),
       }
     })
     return {
       idPrefix: 'courtType',
-      name: 'courtType',
+      name: 'courtTypeIds',
       classes: 'govuk-checkboxes--small',
       fieldset: {
         legend: {
@@ -144,7 +144,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
   njkEnv.addFilter(
     'toCourtListFilter',
     (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter, filterOptionsHtml: string) => {
-      const courtTypeItems = allCourtsFilter.courtTypeIds.map(courtTypeId => {
+      const courtTypeItems = allCourtsFilter.courtTypeIds?.map(courtTypeId => {
         return {
           href: '#',
           text: courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName,
@@ -166,6 +166,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           },
           clearLink: {
             text: 'Clear filters',
+            href: '/court-register/paged',
           },
           categories: [
             {
