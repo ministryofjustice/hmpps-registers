@@ -150,11 +150,21 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           text: courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName,
         }
       })
-      let activeItemText = 'All'
+      let activeItems
       if (allCourtsFilter.active === true) {
-        activeItemText = 'Open'
+        activeItems = [
+          {
+            href: '#',
+            text: 'Open',
+          },
+        ]
       } else if (allCourtsFilter.active === false) {
-        activeItemText = 'Closed'
+        activeItems = [
+          {
+            href: '#',
+            text: 'Closed',
+          },
+        ]
       }
       return {
         heading: {
@@ -171,20 +181,15 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           categories: [
             {
               heading: {
-                text: 'Court Types',
+                text: 'Active?',
               },
-              items: courtTypeItems,
+              items: activeItems,
             },
             {
               heading: {
-                text: 'Active?',
+                text: 'Court Types',
               },
-              items: [
-                {
-                  href: '#',
-                  text: activeItemText,
-                },
-              ],
+              items: courtTypeItems,
             },
           ],
         },

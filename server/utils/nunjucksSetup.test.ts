@@ -381,24 +381,6 @@ describe('toCourtListFilter', () => {
       ])
     )
   })
-  it('should show active All', () => {
-    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: null })
-    expect(result.selectedFilters.categories).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          heading: {
-            text: 'Active?',
-          },
-          items: [
-            {
-              href: '#',
-              text: 'All',
-            },
-          ],
-        }),
-      ])
-    )
-  })
   it('should show active Open', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: true })
     expect(result.selectedFilters.categories).toEqual(
