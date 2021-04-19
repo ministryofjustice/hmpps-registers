@@ -361,7 +361,7 @@ describe('toCourtListFilter', () => {
       ],
       { courtTypeIds: ['CRN', 'MAG'], active: null }
     )
-    expect(result.categories).toEqual(
+    expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
@@ -383,7 +383,7 @@ describe('toCourtListFilter', () => {
   })
   it('should show active All', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: null })
-    expect(result.categories).toEqual(
+    expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
@@ -401,7 +401,7 @@ describe('toCourtListFilter', () => {
   })
   it('should show active Open', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: true })
-    expect(result.categories).toEqual(
+    expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
@@ -419,7 +419,7 @@ describe('toCourtListFilter', () => {
   })
   it('should show active Closed', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false })
-    expect(result.categories).toEqual(
+    expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
@@ -434,5 +434,9 @@ describe('toCourtListFilter', () => {
         }),
       ])
     )
+  })
+  it('should pass in options html', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false }, 'some-options-html')
+    expect(result.optionsHtml).toEqual('some-options-html')
   })
 })
