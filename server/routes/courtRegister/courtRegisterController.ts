@@ -17,12 +17,14 @@ import amendCourtDetailsValidator from './amendCourtDetailsValidator'
 import AmendCourtBuildingView from './amendCourtBuildingView'
 import amendCourtBuildingValidator from './amendCourtBuildingValidator'
 import { UpdateCourtBuilding } from '../../@types/courtRegister'
+import { AllCourtsFilter } from './courtMapper'
 
 function context(res: Response): Context {
   return {
     username: res?.locals?.user?.username,
   }
 }
+
 export default class CourtRegisterController {
   constructor(private readonly courtRegisterService: CourtRegisterService) {}
 
@@ -36,11 +38,22 @@ export default class CourtRegisterController {
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
-    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40)
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(
+      context(res),
+      page - 1,
+      40,
+      this.parseFilter(req)
+    )
 
     const view = new AllCourtsPagedView(courtsPage)
 
     res.render('pages/court-register/allCourtsPaged', view.renderArgs)
+  }
+
+  parseFilter(req: Request): AllCourtsFilter {
+    const active: boolean = req.query.active !== undefined ? JSON.parse(req.query.active as string) : null
+    const courtTypeIds: string[] = req.query.courtTypeIds !== undefined ? (req.query.courtTypeIds as string[]) : null
+    return { active, courtTypeIds }
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {

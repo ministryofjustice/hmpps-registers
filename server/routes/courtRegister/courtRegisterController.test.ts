@@ -71,7 +71,26 @@ describe('Court Register controller', () => {
     })
     it('will map the page number to Springs zero based pages', async () => {
       await controller.showAllCourtsPaged(req, res)
-      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40)
+      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, expect.anything())
+    })
+    it('will parse an empty filter from the query parameters', async () => {
+      await controller.showAllCourtsPaged(req, res)
+      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
+        active: null,
+        courtTypeIds: null,
+      })
+    })
+    it('will parse a filter from the query parameters', async () => {
+      const reqWithQueryParms = ({
+        query: { active: false, courtTypeIds: ['COU', 'CRO'] },
+        session: {},
+        flash: jest.fn(),
+      } as unknown) as Request
+      await controller.showAllCourtsPaged(reqWithQueryParms, res)
+      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
+        active: false,
+        courtTypeIds: ['COU', 'CRO'],
+      })
     })
   })
   describe('viewCourt', () => {

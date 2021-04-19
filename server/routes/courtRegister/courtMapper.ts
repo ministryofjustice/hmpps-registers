@@ -98,6 +98,6 @@ export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
 }
 
 export type AllCourtsFilter = {
-  courtTypeIds: string[]
+  courtTypeIds?: string[]
   active?: boolean
 }
