@@ -38,6 +38,11 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/court-register/amend-court-details', (req, res) => courtRegisterController.amendCourtDetails(req, res))
   post('/court-register/amend-court-details', (req, res) => courtRegisterController.submitAmendCourtDetails(req, res))
+  get('/court-register/amend-court-building-start', (req, res) =>
+    courtRegisterController.amendCourtBuildingStart(req, res)
+  )
+  get('/court-register/amend-court-building', (req, res) => courtRegisterController.amendCourtBuilding(req, res))
+  post('/court-register/amend-court-building', (req, res) => courtRegisterController.submitAmendCourtBuilding(req, res))
 
   return router
 }

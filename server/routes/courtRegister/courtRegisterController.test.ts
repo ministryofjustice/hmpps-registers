@@ -260,6 +260,20 @@ describe('Court Register controller', () => {
           courtName: 'Magistrates Court',
         },
       ])
+      courtRegisterService.getCourtBuilding.mockResolvedValue(
+        data.courtBuilding({
+          courtId: 'SHFCC',
+          id: 1,
+          buildingName: 'Crown Square',
+          street: '1 High Street',
+          locality: 'Castle Market',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          county: 'South Yorkshire',
+          country: 'England',
+          subCode: 'SHFAN',
+        })
+      )
     })
     describe('amendCourtDetailsStart', () => {
       beforeEach(() => {
@@ -352,6 +366,105 @@ describe('Court Register controller', () => {
             id: 'SHFCC',
           },
           courtTypes: expect.arrayContaining([expect.objectContaining({}), expect.objectContaining({})]),
+          errors: [],
+        })
+      })
+    })
+    describe('amendCourtBuildingStart', () => {
+      beforeEach(() => {
+        req.query.courtId = 'SHFCC'
+        req.query.buildingId = '1'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will request court building', async () => {
+        await controller.amendCourtBuildingStart(req, res)
+
+        expect(courtRegisterService.getCourtBuilding).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', '1')
+      })
+      it('will render court building page', async () => {
+        await controller.amendCourtBuildingStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.amendCourtBuildingStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
+          form: {
+            courtId: 'SHFCC',
+            id: 1,
+            subCode: 'SHFAN',
+            addressline1: '1 High Street',
+            addressline2: 'Castle Market',
+            buildingname: 'Crown Square',
+            originalbuildingname: 'Crown Square',
+            addresstown: 'Sheffield',
+            addresspostcode: 'S1 2BJ',
+            addresscounty: 'South Yorkshire',
+            addresscountry: 'England',
+          },
+          errors: [],
+        })
+      })
+    })
+    describe('amendCourtBuilding', () => {
+      beforeEach(() => {
+        req.session.amendCourtBuildingForm = {
+          courtId: 'SHFCC',
+          id: 1,
+          subCode: 'SHFAN',
+          addressline1: '1 High Street',
+          addressline2: 'Castle Market',
+          buildingname: 'Crown Square',
+          originalbuildingname: 'Crown Square',
+          addresstown: 'Sheffield',
+          addresspostcode: 'S1 2BJ',
+          addresscounty: 'South Yorkshire',
+          addresscountry: 'England',
+        }
+        req.body = {
+          ...req.session.amendCourtDetailsForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will not request court building', async () => {
+        await controller.amendCourtBuilding(req, res)
+
+        expect(courtRegisterService.getCourtBuilding).toBeCalledTimes(0)
+      })
+      it('will render court building page', async () => {
+        await controller.amendCourtBuilding(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        await controller.amendCourtBuilding(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
+          form: {
+            courtId: 'SHFCC',
+            id: 1,
+            subCode: 'SHFAN',
+            addressline1: '1 High Street',
+            addressline2: 'Castle Market',
+            buildingname: 'Crown Square',
+            originalbuildingname: 'Crown Square',
+            addresstown: 'Sheffield',
+            addresspostcode: 'S1 2BJ',
+            addresscounty: 'South Yorkshire',
+            addresscountry: 'England',
+          },
           errors: [],
         })
       })

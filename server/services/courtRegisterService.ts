@@ -141,4 +141,12 @@ export default class CourtRegisterService {
     logger.info(`getting all court types`)
     return (await CourtRegisterService.restClient(token).get({ path: `/courts/types` })) as Array<CourtType>
   }
+
+  async getCourtBuilding(context: Context, courtId: string, buildingId: string): Promise<CourtBuilding> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting details for court ${courtId} building ${buildingId}`)
+    return (await CourtRegisterService.restClient(token).get({
+      path: `/courts/id/${courtId}/buildings/id/${buildingId}`,
+    })) as CourtBuilding
+  }
 }

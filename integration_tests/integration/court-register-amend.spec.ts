@@ -2,7 +2,13 @@ import IndexPage from '../pages'
 import AllCourtsPage from '../pages/court-register/allCourts'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
 import AmendCourtDetailsPage from '../pages/court-register/amendCourtDetails'
-import { sheffieldCrownCourt, sheffieldMagistratesCourt, sheffieldYouthCourt } from '../mockApis/courtRegister'
+import AmendCourtBuildingPage from '../pages/court-register/amendCourtBuilding'
+import {
+  sheffieldCrownCourt,
+  sheffieldMagistratesCourt,
+  sheffieldMagistratesMainBuilding,
+  sheffieldYouthCourt,
+} from '../mockApis/courtRegister'
 
 context('Court register - amend existing court', () => {
   beforeEach(() => {
@@ -26,6 +32,7 @@ context('Court register - amend existing court', () => {
     cy.task('stubUpdateCourt')
     cy.task('stubCourtTypes')
     cy.login()
+    cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)
   })
 
   describe('amending a open court', () => {
@@ -81,6 +88,48 @@ context('Court register - amend existing court', () => {
 
       amendCourtDetailsPage.name().clear().type('Sheffield Magistrates New Court')
       amendCourtDetailsPage.saveButton().click()
+
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+  })
+  describe('amending a court building', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().courtRegisterLink().click()
+      AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+    })
+    it('should show summary of court with link to amend each building', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.buildingDetailsSection('1').should('contain.text', 'Sheffield Courts')
+      courtDetailsPage.buildingDetailsSection('2').should('contain.text', 'Sheffield Court Annexe')
+      courtDetailsPage.amendBuildingDetailsLink('1').should('contain.text', 'Change')
+      courtDetailsPage.amendBuildingDetailsLink('2').should('contain.text', 'Change')
+    })
+    it('will validate court building details page', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingDetailsLink('1').click()
+      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingDetailPage.buildingName().clear()
+      amendCourtBuildingDetailPage.addressLine1().clear()
+      amendCourtBuildingDetailPage.addressTown().clear()
+      amendCourtBuildingDetailPage.addressCounty().clear()
+      amendCourtBuildingDetailPage.addressPostcode().clear()
+      amendCourtBuildingDetailPage.saveButton().click()
+
+      const amendCourtBuildingDetailPageWithErrors = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+      amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the building name')
+      amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the first line of the address')
+      amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the town or city')
+      amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the postcode')
+      amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the county')
+    })
+    it('will return to court details page with success message after saving', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingDetailsLink('1').click()
+      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingDetailPage.addressLine1().type('67 Castle Street')
+      amendCourtBuildingDetailPage.saveButton().click()
 
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
     })
