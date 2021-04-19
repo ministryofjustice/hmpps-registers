@@ -27,6 +27,12 @@ describe('amendCourtDetailsValidator', () => {
       expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
+    it('calls update service when valid', async () => {
+      const form = { ...validForm, description: 'Sheffield Court' }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(updateService).toHaveBeenCalledWith(form.id, form.name, form.type, 'Sheffield Court')
+    })
     it('name must not be a blank', async () => {
       const form = { ...validForm, name: '  ' }
       const nextPage = await validate(form, req, updateService)
