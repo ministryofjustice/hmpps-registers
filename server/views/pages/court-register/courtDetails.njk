@@ -42,11 +42,11 @@
 {% macro amendCourtUrl(court) %}
   /court-register/amend-court-details-start?courtId={{court.id}}
 {% endmacro %}
-{% macro amendBuildUrl(building) %}
-  /court-register/amend-court-building-start?buildId={{building.id}}
+{% macro amendBuildUrl(court, building) %}
+  /court-register/amend-court-building-start?courtId={{court.id}}&buildingId={{building.id}}
 {% endmacro %}
-{% macro amendBuildContactsUrl(building) %}
-  /court-register/amend-court-building-contacts-start?buildId={{building.id}}
+{% macro amendBuildContactsUrl(court, building) %}
+  /court-register/amend-court-building-contacts-start?courtId={{court.id}}&buildingId={{building.id}}
 {% endmacro %}
 {% macro confirmationPanel(message, attribute) %}
   <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
@@ -106,7 +106,7 @@
     {% for building in courtDetails.buildings %}
       <h2 class="govuk-heading-m">{{ building.name }}</h2>
       {{ govukSummaryList({
-        attributes: { "data-qa": "building-summary-section"},
+        attributes: { "data-qa": "building-summary-section-"+ building.id},
         rows: [
           {
             key: {
@@ -119,10 +119,10 @@
             actions: {
             items: [
               {
-                href: amendBuildUrl(building),
+                href: amendBuildUrl(courtDetails, building),
                 text: "Change",
-                visuallyHiddenText: "building address",
-                attributes: { "data-qa": "amend-building-details-link"}
+                visuallyHiddenText: "building details",
+                attributes: { "data-qa": "amend-building-details-link-"+ building.id}
               }
             ]
           }
@@ -138,7 +138,7 @@
             actions: {
             items: [
               {
-                href: amendBuildContactsUrl(building),
+                href: amendBuildContactsUrl(courtDetails, building),
                 text: "Change",
                 visuallyHiddenText: "contact deatils",
                 attributes: { "data-qa": "change-contact-details-link"}

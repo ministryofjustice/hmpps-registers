@@ -1,6 +1,33 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Court } from '../../server/@types/courtRegister'
+import { Court, CourtBuilding } from '../../server/@types/courtRegister'
+
+export const sheffieldMagistratesMainBuilding: CourtBuilding = {
+  id: 1,
+  courtId: 'SHFMC',
+  buildingName: 'Sheffield Courts',
+  street: 'Castle Street',
+  locality: 'Sheffield City Centre',
+  town: 'Sheffield',
+  county: 'South Yorkshire',
+  postcode: ' S3 8LU',
+  country: 'England',
+  contacts: [],
+}
+
+export const sheffieldMagistratesAnnexeBuilding: CourtBuilding = {
+  id: 2,
+  courtId: 'SHFMC',
+  subCode: 'SHFAN',
+  buildingName: 'Sheffield Court Annexe',
+  street: '25 Castle Street',
+  locality: 'Sheffield City Centre',
+  town: 'Sheffield',
+  county: 'South Yorkshire',
+  postcode: ' S3 8LU',
+  country: 'England',
+  contacts: [],
+}
 
 export const sheffieldCrownCourt: Court = {
   courtId: 'SHFCC',
@@ -16,7 +43,7 @@ export const sheffieldMagistratesCourt: Court = {
   courtDescription: 'Sheffield Secondary Court - Yorkshire',
   type: { courtType: 'MAG', courtName: 'Magistrates' },
   active: false,
-  buildings: [],
+  buildings: [sheffieldMagistratesMainBuilding, sheffieldMagistratesAnnexeBuilding],
 }
 
 export const sheffieldYouthCourt: Court = {
@@ -80,6 +107,21 @@ const stubCourt = (court: Record<string, unknown>): SuperAgentRequest =>
         'Content-Type': 'application/json;charset=UTF-8',
       },
       jsonBody: court,
+    },
+  })
+
+const stubCourtBuilding = (building: CourtBuilding): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/court-register/courts/id/${building.courtId}/buildings/id/${building.id}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: building,
     },
   })
 
@@ -240,4 +282,5 @@ export default {
   stubAddCourt,
   stubAddCourtBuilding,
   stubAddCourtBuildingContact,
+  stubCourtBuilding,
 }

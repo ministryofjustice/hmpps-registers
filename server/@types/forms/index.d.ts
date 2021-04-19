@@ -22,4 +22,16 @@ declare module 'forms' {
     name?: string
     description?: string
   }
+  export interface AmendCourtBuildingForm {
+    id: string
+    courtId?: string
+    buildingname?: string
+    subCode?: string
+    addressline1?: string
+    addressline2?: string
+    addresstown?: string
+    addresscounty?: string
+    addresspostcode?: string
+    addresscountry?: string
+  }
 }

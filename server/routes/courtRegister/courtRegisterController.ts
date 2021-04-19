@@ -14,6 +14,8 @@ import addNewCourtSummaryValidator from './addNewCourtSummaryValidator'
 import AllCourtsPagedView from './allCourtsPagedView'
 import AmendCourtDetailsView from './amendCourtDetailsView'
 import amendCourtDetailsValidator from './amendCourtDetailsValidator'
+import AmendCourtBuildingView from './amendCourtBuildingView'
+import amendCourtBuildingValidator from './amendCourtBuildingValidator'
 
 function context(res: Response): Context {
   return {
@@ -166,5 +168,40 @@ export default class CourtRegisterController {
           this.courtRegisterService.updateCourtDetails(context(res), courtId, name, type, description)
       )
     )
+  }
+
+  async amendCourtBuildingStart(req: Request, res: Response): Promise<void> {
+    const { courtId, buildingId } = req.query as { courtId: string; buildingId: string }
+
+    const courtBuilding = await this.courtRegisterService.getCourtBuilding(context(res), courtId, buildingId)
+
+    req.session.amendCourtBuildingForm = {
+      id: courtBuilding.id,
+      courtId: courtBuilding.courtId,
+      originalbuildingname: courtBuilding.buildingName,
+      buildingname: courtBuilding.buildingName,
+      subCode: courtBuilding.subCode,
+      addressline1: courtBuilding.street,
+      addressline2: courtBuilding.locality,
+      addresstown: courtBuilding.town,
+      addresscounty: courtBuilding.county,
+      addresspostcode: courtBuilding.postcode,
+      addresscountry: courtBuilding.country,
+    }
+
+    const view = new AmendCourtBuildingView(req.session.amendCourtBuildingForm, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtBuilding', view.renderArgs)
+  }
+
+  async amendCourtBuilding(req: Request, res: Response): Promise<void> {
+    const view = new AmendCourtBuildingView(req.session.amendCourtBuildingForm, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtBuilding', view.renderArgs)
+  }
+
+  async submitAmendCourtBuilding(req: Request, res: Response): Promise<void> {
+    req.session.amendCourtBuildingForm = { ...req.body }
+    res.redirect(await amendCourtBuildingValidator(req.session.amendCourtBuildingForm, req))
   }
 }

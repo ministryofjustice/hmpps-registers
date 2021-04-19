@@ -508,4 +508,39 @@ describe('Court Register service', () => {
       })
     })
   })
+  describe('getCourtBuilding', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(200, data.courtBuilding({}))
+
+      await courtRegisterService.getCourtBuilding({ username: 'tommy' }, 'SHFCC', '1')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will return the court building', async () => {
+      fakeCourtRegister
+        .get('/courts/id/SHFCC/buildings/id/1')
+        .reply(200, data.courtBuilding({ id: 1, courtId: 'SHFCC' }))
+
+      const courtBuilding = await courtRegisterService.getCourtBuilding({ username: 'tommy' }, 'SHFCC', '1')
+
+      expect(courtBuilding.courtId).toEqual('SHFCC')
+      expect(courtBuilding.id).toEqual(1)
+    })
+    it('will throw error when not found', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(404, {
+        status: 404,
+        developerMessage: 'Building 1 not found',
+      })
+      expect.assertions(1)
+      try {
+        await courtRegisterService.getCourtBuilding({ username: 'tommy' }, 'SHFCC', '1')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
 })

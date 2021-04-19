@@ -24,6 +24,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubAddCourt: courtRegister.stubAddCourt,
     stubAddCourtBuilding: courtRegister.stubAddCourtBuilding,
     stubAddCourtBuildingContact: courtRegister.stubAddCourtBuildingContact,
+    stubCourtBuilding: courtRegister.stubCourtBuilding,
 
     stubCourtRegisterPing: courtRegister.stubPing,
   })
