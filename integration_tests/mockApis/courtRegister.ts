@@ -145,6 +145,20 @@ const stubUpdateCourt = (): SuperAgentRequest =>
       },
     },
   })
+const stubUpdateCourtBuilding = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/court-register/court-maintenance/id/.*/buildings/.*`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: sheffieldMagistratesMainBuilding,
+    },
+  })
 
 const stubAddCourt = (): SuperAgentRequest =>
   stubFor({
@@ -278,6 +292,7 @@ export default {
   stubPing,
   stubCourt,
   stubUpdateCourt,
+  stubUpdateCourtBuilding,
   stubCourtTypes,
   stubAddCourt,
   stubAddCourtBuilding,

@@ -6,6 +6,7 @@ import {
   InsertCourtBuilding,
   InsertCourtBuildingContact,
   UpdateCourt,
+  UpdateCourtBuilding,
 } from '../@types/courtRegister'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService, { AddCourt } from './courtRegisterService'
@@ -277,6 +278,39 @@ describe('Court Register service', () => {
           courtDescription: null,
         })
       )
+    })
+  })
+  describe('updateCourtBuilding', () => {
+    let updatedCourtBuilding: UpdateCourtBuilding
+    const courtBuilding = {
+      buildingName: 'Crown Square',
+      street: 'High Street',
+      locality: 'City Centre',
+      town: 'Sheffield',
+      subCode: 'SHFAN',
+      postcode: 'S1 2BJ',
+      county: 'South Yorkshire',
+      country: 'England',
+    }
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC/buildings/1', body => {
+          updatedCourtBuilding = body
+          return body
+        })
+        .reply(200, data.court({}))
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.updateCourtBuilding({ username: 'tommy' }, 'SHFCC', '1', courtBuilding)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send update court building', async () => {
+      await courtRegisterService.updateCourtBuilding({ username: 'tommy' }, 'SHFCC', '1', courtBuilding)
+
+      expect(updatedCourtBuilding).toEqual(courtBuilding)
     })
   })
   describe('getCourtTypes', () => {

@@ -274,6 +274,8 @@ describe('Court Register controller', () => {
           subCode: 'SHFAN',
         })
       )
+      courtRegisterService.updateCourtDetails.mockResolvedValue(null)
+      courtRegisterService.updateCourtBuilding.mockResolvedValue(null)
     })
     describe('amendCourtDetailsStart', () => {
       beforeEach(() => {
@@ -368,6 +370,33 @@ describe('Court Register controller', () => {
           courtTypes: expect.arrayContaining([expect.objectContaining({}), expect.objectContaining({})]),
           errors: [],
         })
+      })
+    })
+    describe('submitAmendCourtDetails', () => {
+      beforeEach(() => {
+        req.session.amendCourtDetailsForm = {
+          name: 'Sheffield Crown Court',
+          type: 'CRN',
+          id: 'SHFCC',
+          description: 'Sheffield Courts',
+        }
+        req.body = {
+          ...req.session.amendCourtDetailsForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with a valid form data', async () => {
+        await controller.submitAmendCourtDetails(req, res)
+        expect(courtRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'SHFCC',
+          'Sheffield Crown Court',
+          'CRN',
+          'Sheffield Courts'
+        )
       })
     })
     describe('amendCourtBuildingStart', () => {
@@ -466,6 +495,43 @@ describe('Court Register controller', () => {
             addresscountry: 'England',
           },
           errors: [],
+        })
+      })
+    })
+    describe('submitAmendCourtBuilding', () => {
+      beforeEach(() => {
+        req.session.amendCourtBuildingForm = {
+          courtId: 'SHFCC',
+          id: 1,
+          subCode: 'SHFAN',
+          addressline1: '1 High Street',
+          addressline2: 'Castle Market',
+          buildingname: 'Crown Square',
+          originalbuildingname: 'Crown Square',
+          addresstown: 'Sheffield',
+          addresspostcode: 'S1 2BJ',
+          addresscounty: 'South Yorkshire',
+          addresscountry: 'England',
+        }
+        req.body = {
+          ...req.session.amendCourtBuildingForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with a valid form data', async () => {
+        await controller.submitAmendCourtBuilding(req, res)
+        expect(courtRegisterService.updateCourtBuilding).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 1, {
+          subCode: 'SHFAN',
+          street: '1 High Street',
+          locality: 'Castle Market',
+          buildingName: 'Crown Square',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          county: 'South Yorkshire',
+          country: 'England',
         })
       })
     })

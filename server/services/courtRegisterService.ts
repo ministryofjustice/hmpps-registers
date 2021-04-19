@@ -8,6 +8,7 @@ import type {
   InsertCourtBuildingContact,
   CourtBuilding,
   CourtBuildingContact,
+  UpdateCourtBuilding,
 } from '../@types/courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
@@ -96,6 +97,20 @@ export default class CourtRegisterService {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending court details for ${courtId}`)
     await CourtRegisterService.restClient(token).put({ path: `/court-maintenance/id/${courtId}`, data: updatedCourt })
+  }
+
+  async updateCourtBuilding(
+    context: Context,
+    courtId: string,
+    buildingId: string,
+    courtBuilding: UpdateCourtBuilding
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Amending court ${courtId} building for ${buildingId}`)
+    await CourtRegisterService.restClient(token).put({
+      path: `/court-maintenance/id/${courtId}/buildings/${buildingId}`,
+      data: courtBuilding,
+    })
   }
 
   async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {

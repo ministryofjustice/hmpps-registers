@@ -19,44 +19,52 @@ describe('amendCourtBuildingValidator', () => {
   }
 
   describe('validate', () => {
+    let updateService: jest.Mocked<(form: AmendCourtBuildingForm) => Promise<void>>
     beforeEach(() => {
+      updateService = jest.fn().mockResolvedValue(null)
       jest.resetAllMocks()
     })
-    it('returns to court details when valid', () => {
+    it('returns to court details when valid', async () => {
       const form = { ...validForm }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
-    it('buildingname must not be a blank', () => {
+    it('calls update service when valid', async () => {
+      const form = { ...validForm, description: 'Sheffield Court' }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(updateService).toHaveBeenCalledWith(form)
+    })
+    it('buildingname must not be a blank', async () => {
       const form = { ...validForm, buildingname: '  ' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#buildingname', text: 'Enter the building name' }])
     })
-    it('addressline1 must not be a blank', () => {
+    it('addressline1 must not be a blank', async () => {
       const form = { ...validForm, addressline1: '  ' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [
         { href: '#addressline1', text: 'Enter the first line of the address' },
       ])
     })
-    it('addresstown must not be a blank', () => {
+    it('addresstown must not be a blank', async () => {
       const form = { ...validForm, addresstown: '  ' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#addresstown', text: 'Enter the town or city' }])
     })
-    it('addresscounty must not be a blank', () => {
+    it('addresscounty must not be a blank', async () => {
       const form = { ...validForm, addresscounty: '  ' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#addresscounty', text: 'Enter the county' }])
     })
-    it('addresspostcode must not be a blank', () => {
+    it('addresspostcode must not be a blank', async () => {
       const form = { ...validForm, addresspostcode: '  ' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [
         {
@@ -65,9 +73,9 @@ describe('amendCourtBuildingValidator', () => {
         },
       ])
     })
-    it('addresspostcode must valid', () => {
+    it('addresspostcode must valid', async () => {
       const form = { ...validForm, addresspostcode: 'BANANAS' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [
         {
@@ -76,22 +84,22 @@ describe('amendCourtBuildingValidator', () => {
         },
       ])
     })
-    it('addresspostcode with spaces anywhere is ok', () => {
+    it('addresspostcode with spaces anywhere is ok', async () => {
       const form = { ...validForm, addresspostcode: 'S1 2B J' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
-    it('addresspostcode with common punctuation anywhere is ok', () => {
+    it('addresspostcode with common punctuation anywhere is ok', async () => {
       const form = { ...validForm, addresspostcode: 'S1-(2BJ)' }
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
-    it('addresscountry must not be a blank', () => {
+    it('addresscountry must not be a blank', async () => {
       const form = { ...validForm }
       delete form.addresscountry
-      const nextPage = validate(form, req)
+      const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-building')
       expect(req.flash).toBeCalledWith('errors', [
         {

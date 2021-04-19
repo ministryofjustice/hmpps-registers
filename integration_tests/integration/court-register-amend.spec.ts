@@ -30,6 +30,7 @@ context('Court register - amend existing court', () => {
     cy.task('stubCourt', sheffieldCrownCourt)
     cy.task('stubCourt', sheffieldMagistratesCourt)
     cy.task('stubUpdateCourt')
+    cy.task('stubUpdateCourtBuilding')
     cy.task('stubCourtTypes')
     cy.login()
     cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)

@@ -9,7 +9,11 @@ function isValidPostcode(text: string) {
   return text.replace(/[\s.,/=\-_`()]/g, '').match(/^[A-Z]{1,2}[0-9R][0-9A-Z]?[0-9][ABD-HJLNP-UW-Z]{2}$/)
 }
 
-export default function validate(form: AmendCourtBuildingForm, req: Request): string {
+export default async function validate(
+  form: AmendCourtBuildingForm,
+  req: Request,
+  updateService: (courtBuildingForm: AmendCourtBuildingForm) => Promise<void>
+): Promise<string> {
   const errors: Array<{ text: string; href: string }> = []
 
   if (isBlank(form.buildingname)) {
@@ -42,5 +46,8 @@ export default function validate(form: AmendCourtBuildingForm, req: Request): st
     req.flash('errors', errors)
     return '/court-register/amend-court-building'
   }
+
+  await updateService(form)
+
   return `/court-register/details?id=${form.courtId}&action=UPDATED`
 }
