@@ -50,7 +50,21 @@
                         errorMessage: errors | findError('buildingname')
                     }) }}
 
-                    {{ govukInput({
+                        {{ govukInput({
+                            label: {
+                                html: 'Code'
+                            },
+                            id: "subCode",
+                            name: "subCode",
+                            classes: "govuk-input--width-5",
+                            hint: {
+                                text: "The unique code for this building when there are secondary buildings for a court. Only enter if this is not the main building."
+                            },
+                            value: form.subCode,
+                            errorMessage: errors | findError('subCode')
+                        }) }}
+
+                        {{ govukInput({
                         label: {
                             html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
                         },

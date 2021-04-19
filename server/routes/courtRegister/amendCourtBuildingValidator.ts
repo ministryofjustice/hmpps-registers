@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import type { AmendCourtBuildingForm } from 'forms'
+import { Court, CourtBuilding } from '../../@types/courtRegister'
 
 function isBlank(text: string) {
   return !text || text.trim().length === 0
@@ -12,7 +13,9 @@ function isValidPostcode(text: string) {
 export default async function validate(
   form: AmendCourtBuildingForm,
   req: Request,
-  updateService: (courtBuildingForm: AmendCourtBuildingForm) => Promise<void>
+  updateService: (courtBuildingForm: AmendCourtBuildingForm) => Promise<void>,
+  courtLookup: (subCode: string) => Promise<Court | null>,
+  courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | null>
 ): Promise<string> {
   const errors: Array<{ text: string; href: string }> = []
 
@@ -40,6 +43,23 @@ export default async function validate(
 
   if (isBlank(form.addresscountry)) {
     errors.push({ text: 'Select the country', href: '#addresscountry' })
+  }
+
+  if (!isBlank(form.subCode)) {
+    const existingCourt = await courtLookup(form.subCode)
+    if (existingCourt) {
+      errors.push({ text: `${existingCourt.courtName} already has that code. Choose another code`, href: '#subCode' })
+    } else {
+      const existingCourtBuilding = await courtBuildingLookup(form.subCode)
+      if (existingCourtBuilding) {
+        if (existingCourtBuilding.id !== Number.parseInt(form.id, 10)) {
+          errors.push({
+            text: `The court building ${existingCourtBuilding.buildingName} already has that code. Choose another code`,
+            href: '#subCode',
+          })
+        }
+      }
+    }
   }
 
   if (errors.length > 0) {
