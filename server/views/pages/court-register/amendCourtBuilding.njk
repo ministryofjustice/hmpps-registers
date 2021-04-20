@@ -37,18 +37,18 @@
                             isPageHeading: true
                         }
                     }) %}
-                    {{ govukInput({
-                        label: {
-                            html: 'Building name'
-                        },
-                        id: "buildingname",
-                        name: "buildingname",
-                        hint: {
-                            text: "Building name is sometimes used to identify a court alongside the court name, So `Main Street Annex` would be a good name since it will appear as `Birmingham Crown Court - Main Street Annex' in any service which displays different buildings for a court."
-                        },
-                        value: form.buildingname,
-                        errorMessage: errors | findError('buildingname')
-                    }) }}
+                        {{ govukInput({
+                            label: {
+                                html: 'Building name'
+                            },
+                            id: "buildingname",
+                            name: "buildingname",
+                            hint: {
+                                text: "Building name is sometimes used to identify a court alongside the court name, So `Main Street Annex` would be a good name since it will appear as `Birmingham Crown Court - Main Street Annex' in any service which displays different buildings for a court."
+                            },
+                            value: form.buildingname,
+                            errorMessage: errors | findError('buildingname')
+                        }) }}
 
                         {{ govukInput({
                             label: {
@@ -65,69 +65,69 @@
                         }) }}
 
                         {{ govukInput({
-                        label: {
-                            html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
-                        },
-                        id: "addressline1",
-                        name: "addressline1",
-                        value: form.addressline1,
-                        errorMessage: errors | findError('addressline1')
-                    }) }}
+                            label: {
+                                html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
+                            },
+                            id: "addressline1",
+                            name: "addressline1",
+                            value: form.addressline1,
+                            errorMessage: errors | findError('addressline1')
+                        }) }}
 
-                    {{ govukInput({
-                        label: {
-                            html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
-                        },
-                        id: "addressline2",
-                        name: "addressline2",
-                        value: form.addressline2,
-                        errorMessage: errors | findError('addressline2')
-                    }) }}
+                        {{ govukInput({
+                            label: {
+                                html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
+                            },
+                            id: "addressline2",
+                            name: "addressline2",
+                            value: form.addressline2,
+                            errorMessage: errors | findError('addressline2')
+                        }) }}
 
-                    {{ govukInput({
-                        label: {
-                            text: "Town or city"
-                        },
-                        classes: "govuk-!-width-two-thirds",
-                        id: "addresstown",
-                        name: "addresstown",
-                        value: form.addresstown,
-                        errorMessage: errors | findError('addresstown')
-                    }) }}
+                        {{ govukInput({
+                            label: {
+                                text: "Town or city"
+                            },
+                            classes: "govuk-!-width-two-thirds",
+                            id: "addresstown",
+                            name: "addresstown",
+                            value: form.addresstown,
+                            errorMessage: errors | findError('addresstown')
+                        }) }}
 
-                    {{ govukInput({
-                        label: {
-                            text: "County"
-                        },
-                        classes: "govuk-!-width-two-thirds",
-                        id: "addresscounty",
-                        name: "addresscounty",
-                        value: form.addresscounty,
-                        errorMessage: errors | findError('addresscounty')
-                    }) }}
+                        {{ govukInput({
+                            label: {
+                                text: "County"
+                            },
+                            classes: "govuk-!-width-two-thirds",
+                            id: "addresscounty",
+                            name: "addresscounty",
+                            value: form.addresscounty,
+                            errorMessage: errors | findError('addresscounty')
+                        }) }}
 
-                    {{ govukInput({
-                        label: {
-                            text: "Postcode"
-                        },
-                        classes: "govuk-input--width-10",
-                        id: "addresspostcode",
-                        name: "addresspostcode",
-                        value: form.addresspostcode,
-                        errorMessage: errors | findError('addresspostcode')
-                    }) }}
+                        {{ govukInput({
+                            label: {
+                                text: "Postcode"
+                            },
+                            classes: "govuk-input--width-10",
+                            id: "addresspostcode",
+                            name: "addresspostcode",
+                            value: form.addresspostcode,
+                            errorMessage: errors | findError('addresspostcode')
+                        }) }}
 
-                    {{ govukRadios({
-                        idPrefix: "addresscountry",
-                        name: "addresscountry",
-                        errorMessage: errors | findError('addresscountry'),
-                        fieldset: {
-                            legend: {
-                                text: "Country"
-                            }
-                        },
-                        items: ["England", "Northern Ireland", "Scotland", "Wales" ] | toSimpleSelect(form.addresscountry)
-                    }) }}
+                        {{ govukRadios({
+                            idPrefix: "addresscountry",
+                            name: "addresscountry",
+                            errorMessage: errors | findError('addresscountry'),
+                            fieldset: {
+                                legend: {
+                                    text: "Country"
+                                }
+                            },
+                            items: ["England", "Northern Ireland", "Scotland", "Wales" ] | toSimpleSelect(form.addresscountry)
+                        }) }}
                         <div class="govuk-button-group">
                             {{ govukButton({
                                 text: "Save"

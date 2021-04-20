@@ -1,6 +1,7 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = applicationName + " - Court Details" %}
 {% macro line(text) %}
@@ -157,22 +158,25 @@
       <input type="hidden" name="id" value="{{ courtDetails.id }}">
       {% if courtDetails.active %}
         <input type="hidden" name="active" value="false">
-        <button data-qa=mark-as-closed class="govuk-button" data-module="govuk-button">
-          Mark as closed
-        </button>
+        {{ govukButton({
+          text: "Mark as closed",
+          classes: "govuk-button",
+          attributes: { "data-qa": "mark-as-closed"}
+        }) }}
       {% else %}
         <input type="hidden" name="active" value="true">
-        <button data-qa=mark-as-open class="govuk-button" data-module="govuk-button">
-          Mark as open
-        </button>
+        {{ govukButton({
+          text: "Mark as open",
+          classes: "govuk-button",
+          attributes: { "data-qa": "mark-as-open"}
+        }) }}
       {% endif %}
-    </form>
-    <form action="/court-register/add-new-court-building" method="post" novalidate="">
-      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-      <input type="hidden" name="id" value="{{ courtDetails.id }}">
-      <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
-        Add another building
-      </button>
+      {{ govukButton({
+        text: "Add another building",
+        href: "/court-register/add-court-building-start?courtId=" + courtDetails.id ,
+        classes: "govuk-button govuk-button--secondary",
+        attributes: { "data-qa": "add-court-building-link"}
+      }) }}
     </form>
     </div>
 

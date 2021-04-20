@@ -1,0 +1,143 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = applicationName + " - Amend Court" %}
+
+{% block content %}
+
+  <!--suppress HtmlUnknownTarget -->
+  <main class="app-container govuk-body">
+    {% if errors.length > 0 %}
+      {{ govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      }) }}
+    {% endif %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Amend court - new building details</h1>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <form action="/court-register/add-court-building" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          <input type="hidden" name="courtId" value="{{ form.courtId }}" />
+
+          {% call govukFieldset({
+            legend: {
+              text: "What is the address for the new court building?",
+              classes: "govuk-fieldset__legend--l",
+              isPageHeading: true
+            }
+          }) %}
+
+            {{ govukInput({
+              label: {
+                html: 'Building name'
+              },
+              id: "buildingname",
+              name: "buildingname",
+              hint: {
+                text: "Building name is sometimes used to identify a court alongside the court name, So `Main Street Annex` would be a good name since it will appear as `Birmingham Crown Court - Main Street Annex' in any service which displays different buildings for a court."
+              },
+              value: form.buildingname,
+              errorMessage: errors | findError('buildingname')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: 'Code'
+              },
+              id: "subCode",
+              name: "subCode",
+              classes: "govuk-input--width-5",
+              hint: {
+                text: "The unique code for this building when there are secondary buildings for a court"
+              },
+              value: form.subCode,
+              errorMessage: errors | findError('subCode')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
+              },
+              id: "addressline1",
+              name: "addressline1",
+              value: form.addressline1,
+              errorMessage: errors | findError('addressline1')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
+              },
+              id: "addressline2",
+              name: "addressline2",
+              value: form.addressline2,
+              errorMessage: errors | findError('addressline2')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Town or city"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresstown",
+              name: "addresstown",
+              value: form.addresstown,
+              errorMessage: errors | findError('addresstown')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "County"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresscounty",
+              name: "addresscounty",
+              value: form.addresscounty,
+              errorMessage: errors | findError('addresscounty')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Postcode"
+              },
+              classes: "govuk-input--width-10",
+              id: "addresspostcode",
+              name: "addresspostcode",
+              value: form.addresspostcode,
+              errorMessage: errors | findError('addresspostcode')
+            }) }}
+
+            {{ govukRadios({
+              idPrefix: "addresscountry",
+              name: "addresscountry",
+              errorMessage: errors | findError('addresscountry'),
+              fieldset: {
+                legend: {
+                  text: "Country"
+                }
+              },
+              items: ["England", "Northern Ireland", "Scotland", "Wales" ] | toSimpleSelect(form.addresscountry)
+            }) }}
+            <div class="govuk-button-group">
+              {{ govukButton({
+                text: "Save"
+              }) }}
+              <a class="govuk-link" href="/court-register/details?id={{ form.courtId }}">Cancel</a>
+            </div>
+        {% endcall %}
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}
