@@ -45,9 +45,9 @@ jobs:
           paths:
             - node_modules
             - build-info.json
-            - build
             - dist
             - .cache/Cypress
+            - assets/stylesheets
 
   check_outdated:
     executor:
