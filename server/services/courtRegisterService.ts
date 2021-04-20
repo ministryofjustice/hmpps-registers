@@ -93,6 +93,15 @@ export default class CourtRegisterService {
     })) as Court
   }
 
+  async findCourtBuilding(context: Context, subCode: string): Promise<CourtBuilding> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`finding details for court building ${subCode}`)
+    return (await CourtRegisterService.restClient(token).get({
+      path: `/courts/buildings/sub-code/${subCode}`,
+      additionalStatusChecker: status => status === 404,
+    })) as CourtBuilding
+  }
+
   async updateActiveMarker(context: Context, courtId: string, active: boolean): Promise<void> {
     const court: Court = await this.getCourt(context, courtId)
     const { courtName, courtDescription } = court

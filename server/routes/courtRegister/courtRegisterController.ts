@@ -218,19 +218,25 @@ export default class CourtRegisterController {
   async submitAmendCourtBuilding(req: Request, res: Response): Promise<void> {
     req.session.amendCourtBuildingForm = { ...req.body }
     res.redirect(
-      await amendCourtBuildingValidator(req.session.amendCourtBuildingForm, req, form => {
-        const updatedBuilding: UpdateCourtBuilding = {
-          buildingName: form.buildingname,
-          street: form.addressline1,
-          locality: form.addressline2,
-          town: form.addresstown,
-          county: form.addresscounty,
-          postcode: form.addresspostcode,
-          country: form.addresscountry,
-          subCode: form.subCode,
-        }
-        return this.courtRegisterService.updateCourtBuilding(context(res), form.courtId, form.id, updatedBuilding)
-      })
+      await amendCourtBuildingValidator(
+        req.session.amendCourtBuildingForm,
+        req,
+        form => {
+          const updatedBuilding: UpdateCourtBuilding = {
+            buildingName: form.buildingname,
+            street: form.addressline1,
+            locality: form.addressline2,
+            town: form.addresstown,
+            county: form.addresscounty,
+            postcode: form.addresspostcode,
+            country: form.addresscountry,
+            subCode: form.subCode,
+          }
+          return this.courtRegisterService.updateCourtBuilding(context(res), form.courtId, form.id, updatedBuilding)
+        },
+        subCode => this.courtRegisterService.findCourt(context(res), subCode),
+        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
+      )
     )
   }
 }

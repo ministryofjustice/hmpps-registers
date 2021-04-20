@@ -17,9 +17,9 @@
   </p>
   {{ line(description) }}
 {% endmacro %}
-{% macro renderBuilding(name, line1, line2, town, county, postcode, country) %}
+{% macro renderBuilding(name, code, line1, line2, town, county, postcode, country) %}
   <p>
-    {{ name }}
+    {{ name }} {% if code is defined and code.trim() != '' %} ( {{ code }} ){% endif %}
   </p>
   {{ line(line1) }}
   {{ line(line2) }}
@@ -113,7 +113,7 @@
             text: "Main building"
           },
             value: {
-            html: renderBuilding( building.name, building.addressline1, building.addressline2, building.addresstown, building.addresscounty, building.addresspostcode, building.addresscountry),
+            html: renderBuilding( building.name, building.code, building.addressline1, building.addressline2, building.addresstown, building.addresscounty, building.addresspostcode, building.addresscountry),
             classes: "building-details"
           },
             actions: {
