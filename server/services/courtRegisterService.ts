@@ -1,3 +1,4 @@
+import querystring from 'querystring'
 import type {
   Court,
   CourtsPage,
@@ -57,25 +58,8 @@ export default class CourtRegisterService {
     logger.info(`getting details for page of courts with filter ${filter}`)
     return (await CourtRegisterService.restClient(token).get({
       path: `/courts/paged`,
-      query: `page=${pageNumber}&size=${pageSize}&sort=courtName${this.filterToQueryParms(filter)}`,
+      query: `page=${pageNumber}&size=${pageSize}&sort=courtName&${querystring.stringify(filter)}`,
     })) as CourtsPage
-  }
-
-  filterToQueryParms(filter: AllCourtsFilter): string {
-    let query = ''
-    if (filter.active === true) {
-      query += '&active=true'
-    } else if (filter.active === false) {
-      query += '&active=false'
-    }
-    if (filter.courtTypeIds && filter.courtTypeIds.length > 0) {
-      query += filter.courtTypeIds
-        .map(value => {
-          return `&courtTypeIds=${value}`
-        })
-        .join('')
-    }
-    return query
   }
 
   async getCourt(context: Context, courtId: string): Promise<Court> {
