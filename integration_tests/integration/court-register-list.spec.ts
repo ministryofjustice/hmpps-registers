@@ -108,9 +108,13 @@ context('Court register - court list navigation', () => {
     const page = AllCourtsPagedPage.verifyOnPage()
 
     page.showFilterButton().click()
+    cy.screenshot()
     page.mojFilter().should('be.visible')
+    cy.screenshot()
     page.hideFilterButton().click()
+    cy.screenshot()
     page.mojFilter().should('not.be.visible')
+    cy.screenshot()
   })
   it('Will change the active filter', () => {
     // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
