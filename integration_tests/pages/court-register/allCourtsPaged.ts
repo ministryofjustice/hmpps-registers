@@ -15,6 +15,15 @@ const allCourtsPaged = {
   viewCourtLink: (courtId: string) => cy.get(`[href="/court-register/details?id=${courtId}"]`).first(),
   addNewCourtButton: () => cy.contains('Add a new court'),
   ...pagination,
+  mojFilter: () => cy.get('div.moj-filter'),
+  showFilterButton: () => cy.contains('Show filter'),
+  hideFilterButton: () => cy.contains('Hide filter'),
+  applyFilterButton: () => cy.contains('Apply filters'),
+  activeAllFilter: () => cy.contains('label', 'All'),
+  activeOpenFilter: () => cy.contains('label', 'Open'),
+  activeClosedFilter: () => cy.contains('label', 'Closed'),
+  courtTypeCrownFilter: () => cy.get('input[value="CRN"]'),
+  courtTypeCountyFilter: () => cy.get('input[value="COU"]'),
 }
 
 const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register Paged', allCourtsPaged)

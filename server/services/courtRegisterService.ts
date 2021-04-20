@@ -14,6 +14,7 @@ import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
+import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
 
 export interface AllCourts {
   courts: Array<Court>
@@ -46,13 +47,35 @@ export default class CourtRegisterService {
     return { courts: await CourtRegisterService.restClient(token).get({ path: `/courts/all` }) } as AllCourts
   }
 
-  async getPageOfCourts(context: Context, pageNumber: number, pageSize: number): Promise<CourtsPage> {
+  async getPageOfCourts(
+    context: Context,
+    pageNumber: number,
+    pageSize: number,
+    filter: AllCourtsFilter
+  ): Promise<CourtsPage> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
-    logger.info(`getting details for page of courts`)
+    logger.info(`getting details for page of courts with filter ${filter}`)
     return (await CourtRegisterService.restClient(token).get({
       path: `/courts/paged`,
-      query: `page=${pageNumber}&size=${pageSize}&sort=courtName`,
+      query: `page=${pageNumber}&size=${pageSize}&sort=courtName${this.filterToQueryParms(filter)}`,
     })) as CourtsPage
+  }
+
+  filterToQueryParms(filter: AllCourtsFilter): string {
+    let query = ''
+    if (filter.active === true) {
+      query += '&active=true'
+    } else if (filter.active === false) {
+      query += '&active=false'
+    }
+    if (filter.courtTypeIds && filter.courtTypeIds.length > 0) {
+      query += filter.courtTypeIds
+        .map(value => {
+          return `&courtTypeIds=${value}`
+        })
+        .join('')
+    }
+    return query
   }
 
   async getCourt(context: Context, courtId: string): Promise<Court> {
