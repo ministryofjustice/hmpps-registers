@@ -72,7 +72,7 @@ describe('Court Register service', () => {
         .get('/courts/paged?page=0&size=3&sort=courtName')
         .reply(200, { content: [], last: false, totalPages: 0, totalElements: 0, first: true, empty: true })
 
-      await courtRegisterService.getPageOfCourts({ username: 'tommy' }, 0, 3)
+      await courtRegisterService.getPageOfCourts({ username: 'tommy' }, 0, 3, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -89,7 +89,7 @@ describe('Court Register service', () => {
         empty: true,
       })
 
-      const result = await courtRegisterService.getPageOfCourts({}, 0, 3)
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, {})
 
       expect(result.content).toEqual([])
       expect(result.last).toEqual(true)
@@ -124,7 +124,7 @@ describe('Court Register service', () => {
         empty: false,
       })
 
-      const result = await courtRegisterService.getPageOfCourts({}, 0, 3)
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, {})
 
       expect(result.content).toHaveLength(3)
       expect(result.last).toEqual(false)
@@ -135,6 +135,91 @@ describe('Court Register service', () => {
       expect(result.first).toEqual(true)
       expect(result.numberOfElements).toEqual(3)
       expect(result.empty).toEqual(false)
+    })
+    it('will request the active filter', async () => {
+      fakeCourtRegister.get('/courts/paged?page=0&size=3&sort=courtName&active=true').reply(200, {
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+          }),
+        ],
+        last: false,
+        totalPages: 1,
+        totalElements: 1,
+        number: 0,
+        size: 1,
+        first: true,
+        numberOfElements: 1,
+        empty: false,
+      })
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, { active: true })
+
+      expect(result.content).toHaveLength(1)
+    })
+    it('will request a single courtTypeIds filter', async () => {
+      fakeCourtRegister.get('/courts/paged?page=0&size=3&sort=courtName&courtTypeIds=COU').reply(200, {
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+          }),
+        ],
+        last: false,
+        totalPages: 1,
+        totalElements: 1,
+        number: 0,
+        size: 1,
+        first: true,
+        numberOfElements: 1,
+        empty: false,
+      })
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, { courtTypeIds: ['COU'] })
+
+      expect(result.content).toHaveLength(1)
+    })
+    it('will request multiple courtTypeIds filter', async () => {
+      fakeCourtRegister.get('/courts/paged?page=0&size=3&sort=courtName&courtTypeIds=COU&courtTypeIds=CRO').reply(200, {
+        content: [
+          data.court({
+            courtId: 'SHFCC',
+          }),
+        ],
+        last: false,
+        totalPages: 1,
+        totalElements: 1,
+        number: 0,
+        size: 1,
+        first: true,
+        numberOfElements: 1,
+        empty: false,
+      })
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, { courtTypeIds: ['COU', 'CRO'] })
+
+      expect(result.content).toHaveLength(1)
+    })
+    it('will request active and multiple courtTypeIds filter', async () => {
+      fakeCourtRegister
+        .get('/courts/paged?page=0&size=3&sort=courtName&active=false&courtTypeIds=COU&courtTypeIds=CRO')
+        .reply(200, {
+          content: [
+            data.court({
+              courtId: 'SHFCC',
+            }),
+          ],
+          last: false,
+          totalPages: 1,
+          totalElements: 1,
+          number: 0,
+          size: 1,
+          first: true,
+          numberOfElements: 1,
+          empty: false,
+        })
+      const result = await courtRegisterService.getPageOfCourts({}, 0, 3, {
+        active: false,
+        courtTypeIds: ['COU', 'CRO'],
+      })
+
+      expect(result.content).toHaveLength(1)
     })
   })
   describe('getCourt', () => {

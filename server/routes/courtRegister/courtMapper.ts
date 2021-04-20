@@ -76,7 +76,7 @@ export function courtBuildingContactMapper(contact: CourtBuildingContact): Court
   }
 }
 
-export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
+export function courtsPageMapper(courtsPage: CourtsPage, allCourtsFilter: AllCourtsFilter): CourtsPageView {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
   const pageMetaData = toPageMetaData(
     courtsPage.first,
@@ -89,7 +89,6 @@ export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
     courtsPage.numberOfElements,
     '/court-register/paged?page=:page'
   )
-  const allCourtsFilter: AllCourtsFilter = { courtTypeIds: [], active: null }
   const courtTypes: CourtType[] = [
     { courtType: 'CRN', courtName: 'Crown' },
     { courtType: 'COU', courtName: 'County' },
@@ -98,6 +97,6 @@ export function courtsPageMapper(courtsPage: CourtsPage): CourtsPageView {
 }
 
 export type AllCourtsFilter = {
-  courtTypeIds: string[]
+  courtTypeIds?: string[]
   active?: boolean
 }

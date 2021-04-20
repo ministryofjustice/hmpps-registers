@@ -11,8 +11,10 @@
 {% set pageTitle = applicationName + " - Court Register" %}
 
 {% set filterOptionsHtml %}
-  {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
-  {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
+  <form id="filter-form" action="/court-register/paged" novalidate>
+    {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
+    {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
+  </form>
 {% endset %}
 
 {% block content %}

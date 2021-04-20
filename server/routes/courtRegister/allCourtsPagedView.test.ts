@@ -7,17 +7,20 @@ describe('AllCourtsPagedView', () => {
 
   describe('with no courts', () => {
     beforeEach(() => {
-      view = new AllCourtsPagedView({
-        content: [],
-        first: true,
-        last: true,
-        empty: true,
-        totalPages: 0,
-        totalElements: 0,
-        number: 0,
-        size: 20,
-        numberOfElements: 0,
-      })
+      view = new AllCourtsPagedView(
+        {
+          content: [],
+          first: true,
+          last: true,
+          empty: true,
+          totalPages: 0,
+          totalElements: 0,
+          number: 0,
+          size: 20,
+          numberOfElements: 0,
+        },
+        {}
+      )
     })
     it('can handle when there are no courts', () => {
       expect(view.courtsPageView.courts).toHaveLength(0)
@@ -25,38 +28,41 @@ describe('AllCourtsPagedView', () => {
   })
   describe('with many courts', () => {
     beforeEach(() => {
-      view = new AllCourtsPagedView({
-        content: [
-          data.court({
-            courtId: 'SHFCC',
-            courtName: 'Sheffield Crown Court',
-            courtDescription: 'Sheffield Crown Court - Yorkshire',
-            type: { courtType: 'CROWN', courtName: 'Crown' },
-            active: true,
-          }),
-          data.court({
-            courtId: 'SHFMC',
-            courtName: 'Sheffield Magistrates Court',
-            courtDescription: 'Sheffield Magistrates Court - Yorkshire',
-            type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
-            active: false,
-          }),
-          data.court({
-            courtId: 'AYLSMC',
-            courtName: 'Aylesbury MC',
-            type: { courtType: 'CROWN', courtName: 'Crown' },
-            active: true,
-          }),
-        ],
-        first: true,
-        last: true,
-        empty: false,
-        totalPages: 1,
-        totalElements: 3,
-        number: 0,
-        size: 20,
-        numberOfElements: 3,
-      })
+      view = new AllCourtsPagedView(
+        {
+          content: [
+            data.court({
+              courtId: 'SHFCC',
+              courtName: 'Sheffield Crown Court',
+              courtDescription: 'Sheffield Crown Court - Yorkshire',
+              type: { courtType: 'CROWN', courtName: 'Crown' },
+              active: true,
+            }),
+            data.court({
+              courtId: 'SHFMC',
+              courtName: 'Sheffield Magistrates Court',
+              courtDescription: 'Sheffield Magistrates Court - Yorkshire',
+              type: { courtType: 'MAGISTRATES', courtName: 'Magistrates' },
+              active: false,
+            }),
+            data.court({
+              courtId: 'AYLSMC',
+              courtName: 'Aylesbury MC',
+              type: { courtType: 'CROWN', courtName: 'Crown' },
+              active: true,
+            }),
+          ],
+          first: true,
+          last: true,
+          empty: false,
+          totalPages: 1,
+          totalElements: 3,
+          number: 0,
+          size: 20,
+          numberOfElements: 3,
+        },
+        {}
+      )
     })
     it('will map each court', () => {
       expect(view.courtsPageView.courts).toHaveLength(3)

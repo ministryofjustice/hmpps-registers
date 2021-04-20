@@ -82,9 +82,9 @@ context('Court register - court list navigation', () => {
     // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
     IndexPage.verifyOnPage()
     cy.visit('/court-register/paged') // TODO and this will need removing
-    const courtRegisterPagedPage = AllCourtsPagedPage.verifyOnPage()
+    const page = AllCourtsPagedPage.verifyOnPage()
 
-    const pageLinks = courtRegisterPagedPage.pageLinks()
+    const pageLinks = page.pageLinks()
     pageLinks.then(items => {
       // TODO There must be a better way than this?
       expect(items[0].href).to.equal(undefined)
@@ -98,7 +98,53 @@ context('Court register - court list navigation', () => {
       expect(items[2].selected).to.equal(false)
     })
 
-    const pageResults = courtRegisterPagedPage.pageResults()
+    const pageResults = page.pageResults()
     pageResults.contains('Showing 1 to 3 of 4 results')
+  })
+  it('Will display filter', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.mojFilter().should('be.visible')
+    page.hideFilterButton().click()
+    page.mojFilter().should('not.be.visible')
+  })
+  it('Will change the active filter', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.activeAllFilter().prev().should('have.attr', 'type', 'radio').should('be.checked')
+    page.activeOpenFilter().prev().should('have.attr', 'type', 'radio').should('not.be.checked')
+    page.activeClosedFilter().prev().should('have.attr', 'type', 'radio').should('not.be.checked')
+    page.activeOpenFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    page.activeAllFilter().prev().should('not.be.checked')
+    page.activeOpenFilter().prev().should('be.checked')
+    cy.url().should('include', 'active=true')
+  })
+  it('Will change the court type filter', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.courtTypeCountyFilter().should('have.attr', 'type', 'checkbox').should('not.be.checked')
+    page.courtTypeCrownFilter().should('have.attr', 'type', 'checkbox').should('not.be.checked')
+    page.courtTypeCrownFilter().click()
+    page.courtTypeCountyFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    page.courtTypeCountyFilter().should('be.checked')
+    page.courtTypeCrownFilter().should('be.checked')
+    cy.url().should('include', 'courtTypeIds=CRN')
+    cy.url().should('include', 'courtTypeIds=COU')
   })
 })

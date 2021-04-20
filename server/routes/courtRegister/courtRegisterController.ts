@@ -17,12 +17,14 @@ import amendCourtDetailsValidator from './amendCourtDetailsValidator'
 import AmendCourtBuildingView from './amendCourtBuildingView'
 import amendCourtBuildingValidator from './amendCourtBuildingValidator'
 import { UpdateCourtBuilding } from '../../@types/courtRegister'
+import { AllCourtsFilter } from './courtMapper'
 
 function context(res: Response): Context {
   return {
     username: res?.locals?.user?.username,
   }
 }
+
 export default class CourtRegisterController {
   constructor(private readonly courtRegisterService: CourtRegisterService) {}
 
@@ -36,11 +38,23 @@ export default class CourtRegisterController {
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
-    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40)
+    const filter = this.parseFilter(req)
+    const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40, filter)
 
-    const view = new AllCourtsPagedView(courtsPage)
+    const view = new AllCourtsPagedView(courtsPage, filter)
 
     res.render('pages/court-register/allCourtsPaged', view.renderArgs)
+  }
+
+  parseFilter(req: Request): AllCourtsFilter {
+    const activeString: string = req.query.active as string
+    let active = null
+    if (activeString === 'true') active = true
+    else if (activeString === 'false') active = false
+    let courtTypeIds: string[] = req.query.courtTypeIds as string[]
+    if (courtTypeIds === undefined) courtTypeIds = null
+    else if (!Array.isArray(courtTypeIds)) courtTypeIds = [courtTypeIds]
+    return { active, courtTypeIds }
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {
