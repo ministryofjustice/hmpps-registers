@@ -34,4 +34,16 @@ declare module 'forms' {
     addresspostcode?: string
     addresscountry?: string
   }
+  export interface AddCourtBuildingForm {
+    id: string
+    courtId?: string
+    buildingname?: string
+    subCode?: string
+    addressline1?: string
+    addressline2?: string
+    addresstown?: string
+    addresscounty?: string
+    addresspostcode?: string
+    addresscountry?: string
+  }
 }

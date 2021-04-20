@@ -18,6 +18,7 @@ import AmendCourtBuildingView from './amendCourtBuildingView'
 import amendCourtBuildingValidator from './amendCourtBuildingValidator'
 import { UpdateCourtBuilding } from '../../@types/courtRegister'
 import { AllCourtsFilter } from './courtMapper'
+import AddCourtBuildingView from './addCourtBuildingView'
 
 function context(res: Response): Context {
   return {
@@ -238,5 +239,27 @@ export default class CourtRegisterController {
         subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
       )
     )
+  }
+
+  async addCourtBuildingStart(req: Request, res: Response): Promise<void> {
+    const { courtId } = req.query as { courtId: string }
+
+    req.session.addCourtBuildingForm = {
+      courtId,
+    }
+
+    const view = new AddCourtBuildingView(req.session.addCourtBuildingForm, req.flash('errors'))
+
+    res.render('pages/court-register/addCourtBuilding', view.renderArgs)
+  }
+
+  async addCourtBuilding(req: Request, res: Response): Promise<void> {
+    const view = new AddCourtBuildingView(req.session.addCourtBuildingForm, req.flash('errors'))
+
+    res.render('pages/court-register/addCourtBuilding', view.renderArgs)
+  }
+
+  async submitAddCourtBuilding(req: Request, res: Response): Promise<void> {
+    res.redirect(`/court-register/details?id=${req.session.addCourtBuildingForm.courtId}&action=UPDATED`)
   }
 }

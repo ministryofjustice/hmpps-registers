@@ -1,4 +1,4 @@
-import type { AddNewCourtForm, AmendCourtDetailsForm, AmendCourtBuildingForm } from '../forms'
+import type { AddNewCourtForm, AmendCourtDetailsForm, AmendCourtBuildingForm, AddCourtBuildingForm } from '../forms'
 
 export default {}
 
@@ -10,6 +10,7 @@ declare module 'express-session' {
     addNewCourtForm: AddNewCourtForm
     amendCourtDetailsForm: AmendCourtDetailsForm
     amendCourtBuildingForm: AmendCourtBuildingForm
+    addCourtBuildingForm: AddCourtBuildingForm
   }
 }
 

@@ -3,6 +3,7 @@ import AllCourtsPage from '../pages/court-register/allCourts'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
 import AmendCourtDetailsPage from '../pages/court-register/amendCourtDetails'
 import AmendCourtBuildingPage from '../pages/court-register/amendCourtBuilding'
+import AddCourtBuildingPage from '../pages/court-register/addCourtBuilding'
 import {
   sheffieldCrownCourt,
   sheffieldMagistratesCourt,
@@ -133,6 +134,17 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingDetailPage.saveButton().click()
 
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+  })
+  describe('adding a court building', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().courtRegisterLink().click()
+      AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+    })
+    it('should show summary of court with link to add a building', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.addBuildingLink().click()
+      AddCourtBuildingPage.verifyOnPage()
     })
   })
 })

@@ -554,5 +554,47 @@ describe('Court Register controller', () => {
         })
       })
     })
+    describe('addCourtBuildingStart', () => {
+      beforeEach(() => {
+        req.query.courtId = 'SHFCC'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will render court building page', async () => {
+        await controller.addCourtBuildingStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/addCourtBuilding', {
+          form: expect.objectContaining({ courtId: 'SHFCC' }),
+          errors: [],
+        })
+      })
+    })
+    describe('addCourtBuilding', () => {
+      beforeEach(() => {
+        req.session.addCourtBuildingForm = {
+          courtId: 'SHFCC',
+          addresspostcode: 'S1 2BJ',
+        }
+        req.body = {
+          ...req.session.addCourtBuildingForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will pass through form to page', async () => {
+        await controller.addCourtBuilding(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/addCourtBuilding', {
+          form: {
+            courtId: 'SHFCC',
+            addresspostcode: 'S1 2BJ',
+          },
+          errors: [],
+        })
+      })
+    })
   })
 })

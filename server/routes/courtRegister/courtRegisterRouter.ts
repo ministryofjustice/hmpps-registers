@@ -43,6 +43,9 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/court-register/amend-court-building', (req, res) => courtRegisterController.amendCourtBuilding(req, res))
   post('/court-register/amend-court-building', (req, res) => courtRegisterController.submitAmendCourtBuilding(req, res))
+  get('/court-register/add-court-building-start', (req, res) => courtRegisterController.addCourtBuildingStart(req, res))
+  get('/court-register/add-court-building', (req, res) => courtRegisterController.addCourtBuilding(req, res))
+  post('/court-register/add-court-building', (req, res) => courtRegisterController.submitAddCourtBuilding(req, res))
 
   return router
 }
