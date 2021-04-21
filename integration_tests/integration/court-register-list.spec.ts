@@ -84,22 +84,17 @@ context('Court register - court list navigation', () => {
     cy.visit('/court-register/paged') // TODO and this will need removing
     const page = AllCourtsPagedPage.verifyOnPage()
 
-    const pageLinks = page.pageLinks()
-    pageLinks.then(items => {
-      // TODO There must be a better way than this?
-      expect(items[0].href).to.equal(undefined)
-      expect(items[0].text).to.equal('1')
-      expect(items[0].selected).to.equal(true)
-      expect(items[1].href).to.equal('/court-register/paged?page=2')
-      expect(items[1].text).to.equal('2')
-      expect(items[1].selected).to.equal(false)
-      expect(items[2].href).to.equal('/court-register/paged?page=2')
-      expect(items[2].text).to.contain('Next')
-      expect(items[2].selected).to.equal(false)
+    page.pageLinks().then(items => {
+      expect(items[0]).to.deep.equal({ href: undefined, text: '1', selected: true })
+      expect(items[1]).to.deep.equal({ href: '/court-register/paged?page=2', text: '2', selected: false })
+      expect(items[2]).to.deep.equal({
+        href: '/court-register/paged?page=2',
+        text: 'Next set of pages',
+        selected: false,
+      })
     })
 
-    const pageResults = page.pageResults()
-    pageResults.contains('Showing 1 to 3 of 4 results')
+    page.pageResults().contains('Showing 1 to 3 of 4 results')
   })
   it('Will display filter', () => {
     // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
