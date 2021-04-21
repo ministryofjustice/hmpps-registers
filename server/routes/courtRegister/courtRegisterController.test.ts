@@ -59,6 +59,10 @@ describe('Court Register controller', () => {
         size: 20,
         numberOfElements: 1,
       })
+      courtRegisterService.getCourtTypes.mockResolvedValue([
+        { courtType: 'COU', courtName: 'County' },
+        { courtType: 'CRN', courtName: 'Crown' },
+      ])
     })
     it('will render all courts page with courts', async () => {
       await controller.showAllCourtsPaged(req, res)
