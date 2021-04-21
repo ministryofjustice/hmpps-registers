@@ -162,7 +162,7 @@ context('Court register - court list navigation', () => {
     page.nextPageLink().invoke('attr', 'href').should('contain', 'active=true')
     page.nextPageLink().invoke('attr', 'href').should('contain', 'courtTypeIds=COU')
   })
-  it('Will include the filter when retrieving another page from the server', () => {
+  it.only('Will include the filter when retrieving another page from the server', () => {
     // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
     IndexPage.verifyOnPage()
     cy.visit('/court-register/paged') // TODO and this will need removing
@@ -176,15 +176,14 @@ context('Court register - court list navigation', () => {
       .page2Link()
       .first()
       .click()
-      .then(() => {
-        getRequests().then(data => {
-          const requests = data.body.requests.filter((request: { url: string }) =>
-            request.url.includes('/court-register/courts/paged?page=1')
-          )
-          expect(requests).length.to.equal(1)
-          expect(requests[0].url).to.contain('active=true')
-          expect(requests[0].url).to.contain('courtTypeIds=COU')
-        })
+      .then(() => getRequests())
+      .then((response: { body: { requests: { request: { url: string } }[] } }) =>
+        response.body.requests.filter(request => request.request.url.includes('/court-register/courts/paged?page=1'))
+      )
+      .then(page1Requests => {
+        expect(page1Requests).to.have.length(1)
+        expect(page1Requests[0].request.url).to.contain('active=true')
+        expect(page1Requests[0].request.url).to.contain('courtTypeIds=COU')
       })
   })
 })
