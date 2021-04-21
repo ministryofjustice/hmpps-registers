@@ -26,6 +26,9 @@ const allCourtsPaged = {
   courtTypeCountyFilter: () => cy.get('input[value="COU"]'),
   page2Link: () => cy.get('.moj-pagination__link').get('a').contains('2'),
   nextPageLink: () => cy.get('.moj-pagination__link').contains('Next'),
+  activeOpenFilterTag: () => cy.get('.moj-filter-tags').contains('Open'),
+  courtTypeCrownFilterTag: () => cy.get('.moj-filter-tags').contains('Crown'),
+  courtTypeCountyFilterTag: () => cy.get('.moj-filter-tags').contains('County'),
 }
 
 const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register Paged', allCourtsPaged)

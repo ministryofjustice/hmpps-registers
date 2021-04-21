@@ -187,4 +187,63 @@ context('Court register - court list navigation', () => {
         expect(page1Requests[0].request.url).to.contain('courtTypeIds=COU')
       })
   })
+  it('Will remove the active filter when cancelling via the tag', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.activeAllFilter().prev().should('have.attr', 'type', 'radio').should('be.checked')
+    page.activeOpenFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    page.activeOpenFilterTag().click()
+    page.showFilterButton().click()
+    page.activeOpenFilterTag().should('not.exist')
+    page.activeOpenFilter().should('not.be', 'checked')
+    cy.url().should('not.contain', 'active=true')
+  })
+  it('Will remove the court type filter when cancelling via the tag', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.courtTypeCrownFilter().click()
+    page.courtTypeCountyFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    page.courtTypeCountyFilterTag().click()
+    page.showFilterButton().click()
+    page.courtTypeCountyFilterTag().should('not.exist')
+    page.courtTypeCrownFilterTag().should('exist')
+    page.courtTypeCountyFilter().should('not.be', 'checked')
+    page.courtTypeCrownFilter().should('to.be', 'checked')
+    cy.url().should('not.contains', 'courtTypeIds=COU')
+    cy.url().should('contain', 'courtTypeIds=CRN')
+  })
+  it('Will remove one from a combination of filter tags', () => {
+    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
+    IndexPage.verifyOnPage()
+    cy.visit('/court-register/paged') // TODO and this will need removing
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    page.showFilterButton().click()
+    page.activeOpenFilter().click()
+    page.courtTypeCrownFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    page.activeOpenFilter().should('to.be', 'checked')
+    page.courtTypeCrownFilter().should('to.be', 'checked')
+    cy.url().should('contains', 'active=true')
+    cy.url().should('contain', 'courtTypeIds=CRN')
+    page.activeOpenFilterTag().click()
+    page.showFilterButton().click()
+    page.activeOpenFilter().should('not.be', 'checked')
+    page.courtTypeCrownFilter().should('to.be', 'checked')
+    cy.url().should('not.contains', 'active=true')
+    cy.url().should('contain', 'courtTypeIds=CRN')
+  })
 })
