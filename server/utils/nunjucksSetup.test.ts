@@ -387,7 +387,7 @@ describe('toCourtListFilter', () => {
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Active?',
+            text: 'Open or Closed',
           },
           items: [
             {
@@ -405,7 +405,7 @@ describe('toCourtListFilter', () => {
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Active?',
+            text: 'Open or Closed',
           },
           items: [
             {

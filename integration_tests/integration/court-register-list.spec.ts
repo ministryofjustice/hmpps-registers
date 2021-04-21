@@ -61,14 +61,14 @@ context('Court register - court list navigation', () => {
       code().contains('SHFCC')
       name().contains('Sheffield Crown Court')
       type().contains('Crown')
-      status().contains('Active')
+      status().contains('Open')
     }
     {
       const { code, name, type, status } = courtRegisterPagedPage.courts(1)
       code().contains('SHFMC')
       name().contains('Sheffield Magistrates Court')
       type().contains('Magistrates')
-      status().contains('Active')
+      status().contains('Open')
     }
     {
       const { code, name, type, status } = courtRegisterPagedPage.courts(2)

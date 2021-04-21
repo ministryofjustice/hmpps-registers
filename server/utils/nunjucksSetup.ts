@@ -114,7 +114,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       classes: 'govuk-radios--inline',
       fieldset: {
         legend: {
-          text: 'Active?',
+          text: 'Open or Closed',
           classes: 'govuk-fieldset__legend--m',
         },
       },
@@ -181,7 +181,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           categories: [
             {
               heading: {
-                text: 'Active?',
+                text: 'Open or Closed',
               },
               items: activeItems,
             },
