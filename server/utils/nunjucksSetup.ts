@@ -146,8 +146,8 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     'toCourtListFilter',
     (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter, filterOptionsHtml: string) => {
       const hrefBase = '/court-register/paged?'
-      const courtTypeFilterTags = getCourtTypeFilterTags(allCourtsFilter, hrefBase, courtTypes)
-      const activeFilterTags = getActiveFilterTags(allCourtsFilter, hrefBase)
+      const cancelCourtTypeFilterTags = getCancelCourtTypeFilterTags(allCourtsFilter, hrefBase, courtTypes)
+      const cancelActiveFilterTags = getCancelActiveFilterTags(allCourtsFilter, hrefBase)
       return {
         heading: {
           text: 'Filter',
@@ -165,13 +165,13 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
               heading: {
                 text: 'Open or Closed',
               },
-              items: activeFilterTags,
+              items: cancelActiveFilterTags,
             },
             {
               heading: {
                 text: 'Court Types',
               },
-              items: courtTypeFilterTags,
+              items: cancelCourtTypeFilterTags,
             },
           ],
         },
@@ -180,7 +180,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   )
 
-  function getCourtTypeFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string, courtTypes: CourtType[]) {
+  function getCancelCourtTypeFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string, courtTypes: CourtType[]) {
     return allCourtsFilter.courtTypeIds?.map(courtTypeId => {
       const newFilter = removeCourtTypeId(allCourtsFilter, courtTypeId)
       return {
@@ -200,7 +200,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     return courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName
   }
 
-  function getActiveFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
+  function getCancelActiveFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
     const newFilter = { courtTypeIds: allCourtsFilter.courtTypeIds }
     if (allCourtsFilter.active === true) {
       return [
