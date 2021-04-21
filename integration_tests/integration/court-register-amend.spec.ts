@@ -164,7 +164,7 @@ context('Court register - amend existing court', () => {
       courtBuildingWithErrors.errorSummary().contains('Enter the county')
       courtBuildingWithErrors.errorSummary().contains('Select the country')
     })
-    it('should return to court details page with succes message', () => {
+    it('should return to court details page with success message', () => {
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').addBuildingLink().click()
       const courtBuilding = AddCourtBuildingPage.verifyOnPage()
       courtBuilding.buildingName().type('Main building')
