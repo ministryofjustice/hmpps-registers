@@ -1,3 +1,4 @@
+import * as querystring from 'querystring'
 import { Court, CourtBuilding, CourtBuildingContact, CourtsPage, CourtType } from '../../@types/courtRegister'
 import { PageMetaData, toPageMetaData } from '../../utils/page'
 
@@ -87,7 +88,7 @@ export function courtsPageMapper(courtsPage: CourtsPage, allCourtsFilter: AllCou
     courtsPage.number + 1,
     courtsPage.size,
     courtsPage.numberOfElements,
-    '/court-register/paged?page=:page'
+    `/court-register/paged?page=:page&${querystring.stringify(allCourtsFilter)}`
   )
   const courtTypes: CourtType[] = [
     { courtType: 'CRN', courtName: 'Crown' },

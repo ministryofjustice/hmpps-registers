@@ -24,6 +24,8 @@ const allCourtsPaged = {
   activeClosedFilter: () => cy.contains('label', 'Closed'),
   courtTypeCrownFilter: () => cy.get('input[value="CRN"]'),
   courtTypeCountyFilter: () => cy.get('input[value="COU"]'),
+  page2Link: () => cy.get('.moj-pagination__link').get('a').contains('2'),
+  nextPageLink: () => cy.get('.moj-pagination__link').contains('Next'),
 }
 
 const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register Paged', allCourtsPaged)
