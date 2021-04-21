@@ -181,9 +181,12 @@ export default class CourtRegisterService {
     })) as CourtBuilding
   }
 
-  addCourtBuilding(context: Context, courtId: string, newBuilding: InsertCourtBuilding): Promise<void> {
-    // TODO add court building
-    logger.info(`adding a building for court ${courtId} building ${newBuilding}`)
-    return null
+  async addCourtBuilding(context: Context, courtId: string, newBuilding: InsertCourtBuilding): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding a building for court ${courtId} building ${newBuilding.buildingName}`)
+    await CourtRegisterService.restClient(token).post({
+      path: `/court-maintenance/id/${courtId}/buildings`,
+      data: newBuilding,
+    })
   }
 }

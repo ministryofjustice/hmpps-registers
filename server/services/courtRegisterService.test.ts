@@ -701,4 +701,37 @@ describe('Court Register service', () => {
       }
     })
   })
+  describe('addCourtBuilding', () => {
+    let newCourtBuilding: InsertCourtBuilding
+    const courtBuilding = {
+      buildingName: 'Crown Square',
+      street: 'High Street',
+      locality: 'City Centre',
+      town: 'Sheffield',
+      subCode: 'SHFAN',
+      postcode: 'S1 2BJ',
+      county: 'South Yorkshire',
+      country: 'England',
+    }
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      fakeCourtRegister
+        .post('/court-maintenance/id/SHFCC/buildings', body => {
+          newCourtBuilding = body
+          return body
+        })
+        .reply(200, data.courtBuilding({}))
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.addCourtBuilding({ username: 'tommy' }, 'SHFCC', courtBuilding)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send new court building', async () => {
+      await courtRegisterService.addCourtBuilding({ username: 'tommy' }, 'SHFCC', courtBuilding)
+
+      expect(newCourtBuilding).toEqual(courtBuilding)
+    })
+  })
 })
