@@ -77,7 +77,10 @@ export function courtBuildingContactMapper(contact: CourtBuildingContact): Court
   }
 }
 
-export function courtsPageMapper(courtsPage: CourtsPage, allCourtsFilter: AllCourtsFilter): CourtsPageView {
+export function courtsPageMapper(
+  courtsPage: CourtsPage,
+  allCourtsFilter: AllCourtsFilter
+): { courts: CourtDetail[]; pageMetaData: PageMetaData } {
   const courts = courtsPage.content.map((court: Court) => courtMapper(court))
   const pageMetaData = toPageMetaData(
     courtsPage.first,
@@ -90,11 +93,7 @@ export function courtsPageMapper(courtsPage: CourtsPage, allCourtsFilter: AllCou
     courtsPage.numberOfElements,
     `/court-register/paged?page=:page&${querystring.stringify(allCourtsFilter)}`
   )
-  const courtTypes: CourtType[] = [
-    { courtType: 'CRN', courtName: 'Crown' },
-    { courtType: 'COU', courtName: 'County' },
-  ]
-  return { courts, pageMetaData, allCourtsFilter, courtTypes }
+  return { courts, pageMetaData }
 }
 
 export type AllCourtsFilter = {
