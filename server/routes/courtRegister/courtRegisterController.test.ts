@@ -596,6 +596,42 @@ describe('Court Register controller', () => {
         })
       })
     })
+    describe('submitAddCourtBuilding', () => {
+      beforeEach(() => {
+        req.session.addCourtBuildingForm = {
+          courtId: 'SHFCC',
+          subCode: 'SHFAN',
+          addressline1: '1 High Street',
+          addressline2: 'Castle Market',
+          buildingname: 'Crown Square',
+          originalbuildingname: 'Crown Square',
+          addresstown: 'Sheffield',
+          addresspostcode: 'S1 2BJ',
+          addresscounty: 'South Yorkshire',
+          addresscountry: 'England',
+        }
+        req.body = {
+          ...req.session.addCourtBuildingForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with a valid form data', async () => {
+        await controller.submitAddCourtBuilding(req, res)
+        expect(courtRegisterService.addCourtBuilding).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+          subCode: 'SHFAN',
+          street: '1 High Street',
+          locality: 'Castle Market',
+          buildingName: 'Crown Square',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          county: 'South Yorkshire',
+          country: 'England',
+        })
+      })
+    })
   })
   describe('parseFilter', () => {
     it('should handle missing query parameters', () => {
