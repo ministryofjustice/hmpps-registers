@@ -9,6 +9,7 @@ context('Court register - court list navigation', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
+    cy.task('stubCourtTypes')
     cy.task('stubAllCourts', [sheffieldCrownCourt, sheffieldMagistratesCourt])
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
@@ -162,7 +163,7 @@ context('Court register - court list navigation', () => {
     page.nextPageLink().invoke('attr', 'href').should('contain', 'active=true')
     page.nextPageLink().invoke('attr', 'href').should('contain', 'courtTypeIds=COU')
   })
-  it.only('Will include the filter when retrieving another page from the server', () => {
+  it('Will include the filter when retrieving another page from the server', () => {
     // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
     IndexPage.verifyOnPage()
     cy.visit('/court-register/paged') // TODO and this will need removing
