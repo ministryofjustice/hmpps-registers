@@ -48,14 +48,22 @@ export default class CourtRegisterController {
   }
 
   parseFilter(req: Request): AllCourtsFilter {
-    const activeString: string = req.query.active as string
-    let active = null
-    if (activeString === 'true') active = true
-    else if (activeString === 'false') active = false
-    let courtTypeIds: string[] = req.query.courtTypeIds as string[]
-    if (courtTypeIds === undefined) courtTypeIds = null
-    else if (!Array.isArray(courtTypeIds)) courtTypeIds = [courtTypeIds]
-    return { active, courtTypeIds }
+    return {
+      active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
+      courtTypeIds: CourtRegisterController.parseStringArrayFromQuery(req.query.courtTypeIds as string[]),
+    }
+  }
+
+  private static parseBooleanFromQuery(boolAsString: string | undefined): boolean | null {
+    if (boolAsString === 'true') return true
+    if (boolAsString === 'false') return false
+    return null
+  }
+
+  private static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | null {
+    if (!stringArray) return null
+    if (typeof stringArray === 'string') return [stringArray]
+    return stringArray
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {

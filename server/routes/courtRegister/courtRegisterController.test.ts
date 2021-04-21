@@ -597,4 +597,46 @@ describe('Court Register controller', () => {
       })
     })
   })
+  describe('parseFilter', () => {
+    it('should handle missing query parameters', () => {
+      const request = ({
+        query: {},
+      } as unknown) as Request
+      controller = new CourtRegisterController(null)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ active: null, courtTypeIds: null })
+    })
+    it('should handle active query parameter', () => {
+      const request = ({
+        query: { active: 'true' },
+      } as unknown) as Request
+      controller = new CourtRegisterController(null)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ active: true, courtTypeIds: null })
+    })
+    it('should handle single courtTypeIds query parameter', () => {
+      const request = ({
+        query: { courtTypeIds: 'CRN' },
+      } as unknown) as Request
+      controller = new CourtRegisterController(null)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN'] })
+    })
+    it('should handle multiple courtTypeIds query parameter', () => {
+      const request = ({
+        query: { courtTypeIds: ['CRN', 'COU'] },
+      } as unknown) as Request
+      controller = new CourtRegisterController(null)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN', 'COU'] })
+    })
+  })
 })
