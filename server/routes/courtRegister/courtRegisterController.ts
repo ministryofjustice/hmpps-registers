@@ -16,9 +16,10 @@ import AmendCourtDetailsView from './amendCourtDetailsView'
 import amendCourtDetailsValidator from './amendCourtDetailsValidator'
 import AmendCourtBuildingView from './amendCourtBuildingView'
 import amendCourtBuildingValidator from './amendCourtBuildingValidator'
-import { UpdateCourtBuilding } from '../../@types/courtRegister'
+import { InsertCourtBuilding, UpdateCourtBuilding } from '../../@types/courtRegister'
 import { AllCourtsFilter } from './courtMapper'
 import AddCourtBuildingView from './addCourtBuildingView'
+import addCourtBuildingValidator from './addCourtBuildingValidator'
 
 function context(res: Response): Context {
   return {
@@ -260,6 +261,27 @@ export default class CourtRegisterController {
   }
 
   async submitAddCourtBuilding(req: Request, res: Response): Promise<void> {
-    res.redirect(`/court-register/details?id=${req.session.addCourtBuildingForm.courtId}&action=UPDATED`)
+    req.session.addCourtBuildingForm = { ...req.body }
+    res.redirect(
+      await addCourtBuildingValidator(
+        req.session.addCourtBuildingForm,
+        req,
+        form => {
+          const newBuilding: InsertCourtBuilding = {
+            buildingName: form.buildingname,
+            street: form.addressline1,
+            locality: form.addressline2,
+            town: form.addresstown,
+            county: form.addresscounty,
+            postcode: form.addresspostcode,
+            country: form.addresscountry,
+            subCode: form.subCode,
+          }
+          return this.courtRegisterService.addCourtBuilding(context(res), form.courtId, newBuilding)
+        },
+        subCode => this.courtRegisterService.findCourt(context(res), subCode),
+        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
+      )
+    )
   }
 }

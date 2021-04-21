@@ -35,7 +35,6 @@ declare module 'forms' {
     addresscountry?: string
   }
   export interface AddCourtBuildingForm {
-    id: string
     courtId?: string
     buildingname?: string
     subCode?: string

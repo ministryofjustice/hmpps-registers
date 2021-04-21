@@ -196,4 +196,10 @@ export default class CourtRegisterService {
       path: `/courts/id/${courtId}/buildings/id/${buildingId}`,
     })) as CourtBuilding
   }
+
+  addCourtBuilding(context: Context, courtId: string, newBuilding: InsertCourtBuilding): Promise<void> {
+    // TODO add court building
+    logger.info(`adding a building for court ${courtId} building ${newBuilding}`)
+    return null
+  }
 }
