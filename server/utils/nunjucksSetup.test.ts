@@ -347,7 +347,7 @@ describe('toCourtListFilter', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should show filter headings', () => {
-    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: null })
+    const result = njk.getFilter('toCourtListFilter')([], { active: null, courtTypeIds: [] })
     expect(result.heading.text).toBeTruthy()
     expect(result.selectedFilters.heading.text).toBeTruthy()
     expect(result.selectedFilters.clearLink.text).toBeTruthy()
@@ -358,8 +358,10 @@ describe('toCourtListFilter', () => {
         { courtType: 'CRN', courtName: 'Crown' },
         { courtType: 'COU', courtName: 'County' },
         { courtType: 'MAG', courtName: 'Magistrates' },
+        { courtType: 'CMT', courtName: 'Court Martial' },
+        { courtType: 'COM', courtName: 'Community' },
       ],
-      { courtTypeIds: ['CRN', 'MAG'], active: null }
+      { active: null, courtTypeIds: ['CRN', 'CMT', 'COU'] }
     )
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
@@ -369,12 +371,16 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '#',
+              href: '/court-register/paged?active=&courtTypeIds=CMT&courtTypeIds=COU',
               text: 'Crown',
             },
             {
-              href: '#',
-              text: 'Magistrates',
+              href: '/court-register/paged?active=&courtTypeIds=CRN&courtTypeIds=COU',
+              text: 'Court Martial',
+            },
+            {
+              href: '/court-register/paged?active=&courtTypeIds=CRN&courtTypeIds=CMT',
+              text: 'County',
             },
           ],
         }),
@@ -391,7 +397,7 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '#',
+              href: '/court-register/paged?',
               text: 'Open',
             },
           ],
@@ -409,7 +415,7 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '#',
+              href: '/court-register/paged?',
               text: 'Closed',
             },
           ],
