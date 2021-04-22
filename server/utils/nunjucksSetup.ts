@@ -1,6 +1,7 @@
 import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
+import querystring from 'querystring'
 import { PageMetaData } from './page'
 import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -144,28 +145,9 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
   njkEnv.addFilter(
     'toCourtListFilter',
     (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter, filterOptionsHtml: string) => {
-      const courtTypeItems = allCourtsFilter.courtTypeIds?.map(courtTypeId => {
-        return {
-          href: '#',
-          text: courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName,
-        }
-      })
-      let activeItems
-      if (allCourtsFilter.active === true) {
-        activeItems = [
-          {
-            href: '#',
-            text: 'Open',
-          },
-        ]
-      } else if (allCourtsFilter.active === false) {
-        activeItems = [
-          {
-            href: '#',
-            text: 'Closed',
-          },
-        ]
-      }
+      const hrefBase = '/court-register/paged?'
+      const cancelCourtTypeFilterTags = getCancelCourtTypeFilterTags(allCourtsFilter, hrefBase, courtTypes)
+      const cancelActiveFilterTags = getCancelActiveFilterTags(allCourtsFilter, hrefBase)
       return {
         heading: {
           text: 'Filter',
@@ -183,13 +165,13 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
               heading: {
                 text: 'Open or Closed',
               },
-              items: activeItems,
+              items: cancelActiveFilterTags,
             },
             {
               heading: {
                 text: 'Court Types',
               },
-              items: courtTypeItems,
+              items: cancelCourtTypeFilterTags,
             },
           ],
         },
@@ -197,6 +179,47 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       }
     }
   )
+
+  function getCancelCourtTypeFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string, courtTypes: CourtType[]) {
+    return allCourtsFilter.courtTypeIds?.map(courtTypeId => {
+      const newFilter = removeCourtTypeId(allCourtsFilter, courtTypeId)
+      return {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: findCourtTypeName(courtTypes, courtTypeId),
+      }
+    })
+  }
+
+  function removeCourtTypeId(allCourtsFilter: AllCourtsFilter, courtTypeId: string): AllCourtsFilter {
+    const courtTypeIds = allCourtsFilter.courtTypeIds.map(x => x)
+    courtTypeIds.splice(courtTypeIds.indexOf(courtTypeId), 1)
+    return { ...allCourtsFilter, courtTypeIds }
+  }
+
+  function findCourtTypeName(courtTypes: CourtType[], courtTypeId: string) {
+    return courtTypes.filter(courtType => courtType.courtType === courtTypeId)[0].courtName
+  }
+
+  function getCancelActiveFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
+    const newFilter = { courtTypeIds: allCourtsFilter.courtTypeIds }
+    if (allCourtsFilter.active === true) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Open',
+        },
+      ]
+    }
+    if (allCourtsFilter.active === false) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Closed',
+        },
+      ]
+    }
+    return null
+  }
 
   return njkEnv
 }
