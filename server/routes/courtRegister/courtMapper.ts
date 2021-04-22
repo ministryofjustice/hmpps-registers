@@ -91,7 +91,7 @@ export function courtsPageMapper(
     courtsPage.number + 1,
     courtsPage.size,
     courtsPage.numberOfElements,
-    `/court-register/paged?page=:page&${querystring.stringify(allCourtsFilter)}`
+    `/court-register?page=:page&${querystring.stringify(allCourtsFilter)}`
   )
   return { courts, pageMetaData }
 }

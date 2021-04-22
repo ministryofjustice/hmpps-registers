@@ -66,21 +66,6 @@ const stubPing = (): SuperAgentRequest =>
     },
   })
 
-const stubAllCourts = (courts: Array<Record<string, unknown>>): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      urlPattern: '/court-register/courts/all',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      jsonBody: courts,
-    },
-  })
-
 const stubPageOfCourts = (courtPage: Record<string, unknown>): SuperAgentRequest =>
   stubFor({
     request: {
@@ -287,7 +272,6 @@ const stubCourtTypes = (): SuperAgentRequest =>
   })
 
 export default {
-  stubAllCourts,
   stubPageOfCourts,
   stubPing,
   stubCourt,

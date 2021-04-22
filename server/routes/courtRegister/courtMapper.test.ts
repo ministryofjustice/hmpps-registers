@@ -97,7 +97,7 @@ describe('courtsPageMapper', () => {
     })
     it('will map hrefTemplate', () => {
       expect(courtsPageViewDetails.pageMetaData.hrefTemplate).toEqual(
-        '/court-register/paged?page=:page&active=&courtTypeIds='
+        '/court-register?page=:page&active=&courtTypeIds='
       )
     })
   })
@@ -105,7 +105,7 @@ describe('courtsPageMapper', () => {
     it('will include full filter in the hrefTemplate', () => {
       courtsPageViewDetails = courtsPageMapper(courtsPage, { active: true, courtTypeIds: ['CRN', 'COU'] })
       expect(courtsPageViewDetails.pageMetaData.hrefTemplate).toEqual(
-        '/court-register/paged?page=:page&active=true&courtTypeIds=CRN&courtTypeIds=COU'
+        '/court-register?page=:page&active=true&courtTypeIds=CRN&courtTypeIds=COU'
       )
     })
   })
