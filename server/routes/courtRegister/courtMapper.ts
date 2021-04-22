@@ -97,7 +97,8 @@ export function courtsPageMapper(
 }
 
 export function pageLinkMapper(allCourtsFilter: AllCourtsFilter, pageNumber: number): string {
-  return `/court-register?page=${pageNumber}&${querystring.stringify(allCourtsFilter)}`
+  const url = `/court-register?page=${pageNumber}&${querystring.stringify(allCourtsFilter)}`
+  return url.replace('?page=1&active=&courtTypeIds=', '')
 }
 
 export type AllCourtsFilter = {

@@ -22,7 +22,7 @@ describe('CourtDetailsView', () => {
     expect(view.renderArgs.action).toEqual('ACTIVATE')
   })
   it('will pass through back link', () => {
-    const view = new CourtDetailsView(data.court({}), 'ACTIVATE', 'http://go-back')
-    expect(view.renderArgs.backLink).toEqual('http://go-back')
+    const view = new CourtDetailsView(data.court({}), 'ACTIVATE', 'http://get-back')
+    expect(view.renderArgs.backLink).toEqual('http://get-back')
   })
 })

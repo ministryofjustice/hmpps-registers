@@ -67,7 +67,7 @@ describe('AddNewCourtDetailsView', () => {
     expect(view.renderArgs.form).toEqual({ id: 'SHFCC', description: 'Sheffield Crown Court' })
   })
   it('will pass through the back link', () => {
-    const view = new AddNewCourtDetailsView({}, [], 'http://go-back')
-    expect(view.renderArgs.backLink).toEqual('http://go-back')
+    const view = new AddNewCourtDetailsView({}, [], 'http://get-back')
+    expect(view.renderArgs.backLink).toEqual('http://get-back')
   })
 })

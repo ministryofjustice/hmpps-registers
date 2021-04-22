@@ -25,7 +25,7 @@ describe('AddNewCourtSummaryView', () => {
   })
 
   it('will pass through the back link', () => {
-    const view = new AddNewCourtSummaryView({}, [], 'http://go-back')
-    expect(view.renderArgs.backLink).toEqual('http://go-back')
+    const view = new AddNewCourtSummaryView({}, [], 'http://get-back')
+    expect(view.renderArgs.backLink).toEqual('http://get-back')
   })
 })
