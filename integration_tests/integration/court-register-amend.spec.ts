@@ -1,5 +1,5 @@
 import IndexPage from '../pages'
-import AllCourtsPage from '../pages/court-register/allCourts'
+import AllCourtsPagedPage from '../pages/court-register/allCourtsPaged'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
 import AmendCourtDetailsPage from '../pages/court-register/amendCourtDetails'
 import AmendCourtBuildingPage from '../pages/court-register/amendCourtBuilding'
@@ -16,7 +16,6 @@ context('Court register - amend existing court', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubAllCourts', [sheffieldCrownCourt, sheffieldMagistratesCourt])
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
       last: false,
@@ -41,7 +40,7 @@ context('Court register - amend existing court', () => {
   describe('amending a open court', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
-      AllCourtsPage.verifyOnPage().viewCourtLink('SHFCC').should('contain.text', 'Sheffield Crown Court').click()
+      AllCourtsPagedPage.verifyOnPage().viewCourtLink('SHFCC').should('contain.text', 'Sheffield Crown Court').click()
     })
     it('Can deactivate open court', () => {
       CourtDetailsPage.verifyOnPage('Sheffield Crown Court').markAsClosedButton().click()
@@ -51,7 +50,10 @@ context('Court register - amend existing court', () => {
   describe('amending a court', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
-      AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+      AllCourtsPagedPage.verifyOnPage()
+        .viewCourtLink('SHFMC')
+        .should('contain.text', 'Sheffield Magistrates Court')
+        .click()
     })
     it('Can activate closed court', () => {
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').markAsOpenButton().click()
@@ -98,7 +100,10 @@ context('Court register - amend existing court', () => {
   describe('amending a court building', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
-      AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+      AllCourtsPagedPage.verifyOnPage()
+        .viewCourtLink('SHFMC')
+        .should('contain.text', 'Sheffield Magistrates Court')
+        .click()
     })
     it('should show summary of court with link to amend each building', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
@@ -140,7 +145,10 @@ context('Court register - amend existing court', () => {
   describe('adding a court building', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
-      AllCourtsPage.verifyOnPage().viewCourtLink('SHFMC').should('contain.text', 'Sheffield Magistrates Court').click()
+      AllCourtsPagedPage.verifyOnPage()
+        .viewCourtLink('SHFMC')
+        .should('contain.text', 'Sheffield Magistrates Court')
+        .click()
     })
     it('should show summary of court with link to add a building', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')

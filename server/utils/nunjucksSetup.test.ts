@@ -371,15 +371,15 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '/court-register/paged?active=&courtTypeIds=CMT&courtTypeIds=COU',
+              href: '/court-register?active=&courtTypeIds=CMT&courtTypeIds=COU',
               text: 'Crown',
             },
             {
-              href: '/court-register/paged?active=&courtTypeIds=CRN&courtTypeIds=COU',
+              href: '/court-register?active=&courtTypeIds=CRN&courtTypeIds=COU',
               text: 'Court Martial',
             },
             {
-              href: '/court-register/paged?active=&courtTypeIds=CRN&courtTypeIds=CMT',
+              href: '/court-register?active=&courtTypeIds=CRN&courtTypeIds=CMT',
               text: 'County',
             },
           ],
@@ -397,7 +397,7 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '/court-register/paged?',
+              href: '/court-register?',
               text: 'Open',
             },
           ],
@@ -415,7 +415,7 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '/court-register/paged?',
+              href: '/court-register?',
               text: 'Closed',
             },
           ],

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import CourtRegisterService, { AddCourt, Context } from '../../services/courtRegisterService'
-import AllCourtsView from './allCourtsView'
 import type { Action } from './courtDetailsView'
 import CourtDetailsView from './courtDetailsView'
 import AddNewCourtDetailsView from './addNewCourtDetailsView'
@@ -29,14 +28,6 @@ function context(res: Response): Context {
 
 export default class CourtRegisterController {
   constructor(private readonly courtRegisterService: CourtRegisterService) {}
-
-  async showAllCourts(req: Request, res: Response): Promise<void> {
-    const courts = await this.courtRegisterService.getAllCourts(context(res))
-
-    const view = new AllCourtsView(courts)
-
-    res.render('pages/court-register/allCourts', view.renderArgs)
-  }
 
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
