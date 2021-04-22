@@ -5,6 +5,7 @@ import courtMapper, {
   courtBuildingMapper,
   CourtDetail,
   courtsPageMapper,
+  pageLinkMapper,
 } from './courtMapper'
 import data from '../testutils/mockData'
 import { PageMetaData } from '../../utils/page'
@@ -175,5 +176,18 @@ describe('courtBuildingContactMapper', () => {
   })
   it('will map number', () => {
     expect(contact.number).toEqual('0114 555 1234')
+  })
+})
+
+describe('pageLinkMapper', () => {
+  it('will handle null filters', () => {
+    expect(pageLinkMapper({ active: null, courtTypeIds: null }, 1)).toEqual(
+      '/court-register?page=1&active=&courtTypeIds='
+    )
+  })
+  it('will handle filter and page number', () => {
+    expect(pageLinkMapper({ active: true, courtTypeIds: ['COU', 'CRN'] }, 1)).toEqual(
+      '/court-register?page=1&active=true&courtTypeIds=COU&courtTypeIds=CRN'
+    )
   })
 })

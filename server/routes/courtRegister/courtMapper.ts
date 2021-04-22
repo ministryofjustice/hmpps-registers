@@ -96,6 +96,10 @@ export function courtsPageMapper(
   return { courts, pageMetaData }
 }
 
+export function pageLinkMapper(allCourtsFilter: AllCourtsFilter, pageNumber: number): string {
+  return `/court-register?page=${pageNumber}&${querystring.stringify(allCourtsFilter)}`
+}
+
 export type AllCourtsFilter = {
   courtTypeIds?: string[]
   active?: boolean

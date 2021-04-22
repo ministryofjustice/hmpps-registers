@@ -18,7 +18,7 @@ import { InsertCourtBuilding, UpdateCourtBuilding } from '../../@types/courtRegi
 import AddCourtBuildingView from './addCourtBuildingView'
 import addCourtBuildingValidator from './addCourtBuildingValidator'
 import AllCourtsPagedView from './allCourtsPagedView'
-import { AllCourtsFilter } from './courtMapper'
+import { AllCourtsFilter, pageLinkMapper } from './courtMapper'
 
 function context(res: Response): Context {
   return {
@@ -32,6 +32,7 @@ export default class CourtRegisterController {
   async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
     const filter = this.parseFilter(req)
+    req.session.courtListPageLink = pageLinkMapper(filter, page)
     const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40, filter)
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
@@ -85,7 +86,12 @@ export default class CourtRegisterController {
   async addNewCourtDetails(req: Request, res: Response): Promise<void> {
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
-    const view = new AddNewCourtDetailsView(req.session.addNewCourtForm, courtTypes, req.flash('errors'))
+    const view = new AddNewCourtDetailsView(
+      req.session.addNewCourtForm,
+      courtTypes,
+      req.session.courtListPageLink,
+      req.flash('errors')
+    )
 
     res.render('pages/court-register/addNewCourtDetails', view.renderArgs)
   }
