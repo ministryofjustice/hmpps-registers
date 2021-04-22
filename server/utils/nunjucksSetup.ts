@@ -145,7 +145,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
   njkEnv.addFilter(
     'toCourtListFilter',
     (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter, filterOptionsHtml: string) => {
-      const hrefBase = '/court-register/paged?'
+      const hrefBase = '/court-register?'
       const cancelCourtTypeFilterTags = getCancelCourtTypeFilterTags(allCourtsFilter, hrefBase, courtTypes)
       const cancelActiveFilterTags = getCancelActiveFilterTags(allCourtsFilter, hrefBase)
       return {
@@ -158,7 +158,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           },
           clearLink: {
             text: 'Clear filters',
-            href: '/court-register/paged',
+            href: '/court-register',
           },
           categories: [
             {

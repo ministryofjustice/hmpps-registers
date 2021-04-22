@@ -1,5 +1,4 @@
 import IndexPage from '../pages'
-import AllCourtsPage from '../pages/court-register/allCourts'
 import AllCourtsPagedPage from '../pages/court-register/allCourtsPaged'
 import { sheffieldCrownCourt, sheffieldMagistratesCourt, sheffieldYouthCourt } from '../mockApis/courtRegister'
 import { getRequests } from '../mockApis/wiremock'
@@ -10,7 +9,6 @@ context('Court register - court list navigation', () => {
     cy.task('stubLogin')
     cy.task('stubAuthUser')
     cy.task('stubCourtTypes')
-    cy.task('stubAllCourts', [sheffieldCrownCourt, sheffieldMagistratesCourt])
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
       last: false,
@@ -27,35 +25,8 @@ context('Court register - court list navigation', () => {
     cy.login()
   })
 
-  it('Can navigate to court registers', () => {
-    IndexPage.verifyOnPage().courtRegisterLink().should('contain.text', 'Court register').click()
-    AllCourtsPage.verifyOnPage()
-  })
-
-  it('Will display all courts', () => {
-    IndexPage.verifyOnPage().courtRegisterLink().click()
-    const courtRegisterPage = AllCourtsPage.verifyOnPage()
-
-    {
-      const { code, name, type, status } = courtRegisterPage.courts(0)
-      code().contains('SHFCC')
-      name().contains('Sheffield Crown Court')
-      type().contains('Crown')
-      status().contains('Active')
-    }
-    {
-      const { code, name, type, status } = courtRegisterPage.courts(1)
-      code().contains('SHFMC')
-      name().contains('Sheffield Magistrates Court')
-      type().contains('Magistrates')
-      status().contains('Closed')
-    }
-  })
-
   it('Will display a page of courts', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removing the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const courtRegisterPagedPage = AllCourtsPagedPage.verifyOnPage()
 
     {
@@ -81,20 +52,18 @@ context('Court register - court list navigation', () => {
     }
   })
   it('Will display pagination controls', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     page.pageLinks().then(items => {
       expect(items[0]).to.deep.equal({ href: undefined, text: '1', selected: true })
       expect(items[1]).to.deep.equal({
-        href: '/court-register/paged?page=2&active=&courtTypeIds=',
+        href: '/court-register?page=2&active=&courtTypeIds=',
         text: '2',
         selected: false,
       })
       expect(items[2]).to.deep.equal({
-        href: '/court-register/paged?page=2&active=&courtTypeIds=',
+        href: '/court-register?page=2&active=&courtTypeIds=',
         text: 'Next set of pages',
         selected: false,
       })
@@ -103,9 +72,7 @@ context('Court register - court list navigation', () => {
     page.pageResults().contains('Showing 1 to 3 of 4 results')
   })
   it('Will display filter', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     page.showFilterButton().click()
@@ -114,9 +81,7 @@ context('Court register - court list navigation', () => {
     page.mojFilter().should('not.be.visible')
   })
   it('Will change the active filter', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Check the filter defaults to all courts
@@ -134,9 +99,7 @@ context('Court register - court list navigation', () => {
     cy.url().should('include', 'active=true')
   })
   it('Will change the court type filter', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Check there is no filter on court type by default
@@ -155,9 +118,7 @@ context('Court register - court list navigation', () => {
     cy.url().should('include', 'courtTypeIds=COU')
   })
   it('Will include the filter on page links', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Filter on open courts and county courts
@@ -172,9 +133,7 @@ context('Court register - court list navigation', () => {
     page.nextPageLink().invoke('attr', 'href').should('contain', 'courtTypeIds=COU')
   })
   it('Will include the filter when retrieving another page from the server', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Filter on open courts and count courts
@@ -199,9 +158,7 @@ context('Court register - court list navigation', () => {
       })
   })
   it('Will remove the active filter when cancelling via the tag', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Filter on open courts
@@ -220,9 +177,7 @@ context('Court register - court list navigation', () => {
     cy.url().should('not.contain', 'active=true')
   })
   it('Will remove the court type filter when cancelling via the tag', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Filter on crown and county courts
@@ -243,9 +198,7 @@ context('Court register - court list navigation', () => {
     cy.url().should('contain', 'courtTypeIds=CRN')
   })
   it('Will remove one from a combination of filter tags', () => {
-    // IndexPage.verifyOnPage().courtRegisterLink().click()  -  TODO Will need this when plumbing in the paged court list and removign the all courts list
-    IndexPage.verifyOnPage()
-    cy.visit('/court-register/paged') // TODO and this will need removing
+    IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
 
     // Filter on open courts and crown courts

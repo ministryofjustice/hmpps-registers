@@ -31,6 +31,6 @@ const allCourtsPaged = {
   cancelCountyFilter: () => cy.get('.moj-filter-tags').contains('County'),
 }
 
-const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register Paged', allCourtsPaged)
+const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register', allCourtsPaged)
 
 export default { verifyOnPage }

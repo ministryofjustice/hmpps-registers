@@ -20,22 +20,6 @@ describe('Court Register controller', () => {
   } as unknown) as Response
 
   afterEach(jest.resetAllMocks)
-  describe('getAllCourts', () => {
-    beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
-      controller = new CourtRegisterController(courtRegisterService)
-      courtRegisterService.getAllCourts.mockResolvedValue({
-        courts: [data.court({ courtId: 'SHFCC' })],
-      })
-    })
-    it('will render all courts page with courts', async () => {
-      await controller.showAllCourts(req, res)
-
-      expect(res.render).toHaveBeenCalledWith('pages/court-register/allCourts', {
-        courts: [expect.objectContaining({ id: 'SHFCC' })],
-      })
-    })
-  })
   describe('getPageOfCourts', () => {
     beforeEach(() => {
       courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>

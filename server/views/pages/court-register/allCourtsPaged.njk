@@ -11,7 +11,7 @@
 {% set pageTitle = applicationName + " - Court Register" %}
 
 {% set filterOptionsHtml %}
-  <form id="filter-form" action="/court-register/paged" novalidate>
+  <form id="filter-form" action="/court-register" novalidate>
     {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
     {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
   </form>
@@ -28,7 +28,7 @@
     <main class="app-container govuk-body">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <h1 class="govuk-heading-xl">Court Register Paged</h1>
+          <h1 class="govuk-heading-xl">Court Register</h1>
         </div>
       </div>
 

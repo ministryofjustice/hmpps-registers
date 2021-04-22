@@ -1,5 +1,5 @@
 import IndexPage from '../pages'
-import AllCourtsPage from '../pages/court-register/allCourts'
+import AllCourtsPagedPage from '../pages/court-register/allCourtsPaged'
 import AddCourtDetailsPage from '../pages/court-register/addNewCourtDetails'
 import AddCourtBuildingPage from '../pages/court-register/addNewCourtBuilding'
 import AddCourtContactDetailsPage from '../pages/court-register/addNewCourtContactDetails'
@@ -12,7 +12,6 @@ context('Court register - Add new court', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubAllCourts', [sheffieldCrownCourt, sheffieldMagistratesCourt])
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
       last: false,
@@ -61,7 +60,7 @@ context('Court register - Add new court', () => {
     }
     beforeEach(() => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
-      AllCourtsPage.verifyOnPage().addNewCourtButton().click()
+      AllCourtsPagedPage.verifyOnPage().addNewCourtButton().click()
     })
     it('Can navigate to add new court page', () => {
       AddCourtDetailsPage.verifyOnPage()
