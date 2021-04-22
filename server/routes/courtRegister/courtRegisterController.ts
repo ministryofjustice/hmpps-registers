@@ -65,7 +65,7 @@ export default class CourtRegisterController {
 
     const court = await this.courtRegisterService.getCourt(context(res), id)
 
-    const view = new CourtDetailsView(court, (action || 'NONE') as Action)
+    const view = new CourtDetailsView(court, (action || 'NONE') as Action, req.session.courtListPageLink)
 
     res.render('pages/court-register/courtDetails', view.renderArgs)
   }
@@ -107,7 +107,11 @@ export default class CourtRegisterController {
   }
 
   addNewCourtBuilding(req: Request, res: Response): void {
-    const view = new AddNewCourtBuildingView(req.session.addNewCourtForm, req.flash('errors'))
+    const view = new AddNewCourtBuildingView(
+      req.session.addNewCourtForm,
+      req.session.courtListPageLink,
+      req.flash('errors')
+    )
 
     res.render('pages/court-register/addNewCourtBuilding', view.renderArgs)
   }
@@ -119,7 +123,11 @@ export default class CourtRegisterController {
   }
 
   addNewCourtContactDetails(req: Request, res: Response): void {
-    const view = new AddNewCourtContactDetailsView(req.session.addNewCourtForm, req.flash('errors'))
+    const view = new AddNewCourtContactDetailsView(
+      req.session.addNewCourtForm,
+      req.session.courtListPageLink,
+      req.flash('errors')
+    )
 
     res.render('pages/court-register/addNewCourtContactDetails', view.renderArgs)
   }
@@ -135,7 +143,7 @@ export default class CourtRegisterController {
 
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
-    const view = new AddNewCourtSummaryView(req.session.addNewCourtForm, courtTypes)
+    const view = new AddNewCourtSummaryView(req.session.addNewCourtForm, courtTypes, req.session.courtListPageLink)
 
     res.render('pages/court-register/addNewCourtSummary', view.renderArgs)
   }
@@ -150,7 +158,7 @@ export default class CourtRegisterController {
 
   addNewCourtFinished(req: Request, res: Response): void {
     const { id, name } = req.session.addNewCourtForm
-    res.render('pages/court-register/addNewCourtFinished', { id, name })
+    res.render('pages/court-register/addNewCourtFinished', { id, name, backLink: req.session.courtListPageLink })
   }
 
   async amendCourtDetailsStart(req: Request, res: Response): Promise<void> {
@@ -212,13 +220,21 @@ export default class CourtRegisterController {
       addresscountry: courtBuilding.country,
     }
 
-    const view = new AmendCourtBuildingView(req.session.amendCourtBuildingForm, req.flash('errors'))
+    const view = new AmendCourtBuildingView(
+      req.session.amendCourtBuildingForm,
+      req.session.courtListPageLink,
+      req.flash('errors')
+    )
 
     res.render('pages/court-register/amendCourtBuilding', view.renderArgs)
   }
 
   async amendCourtBuilding(req: Request, res: Response): Promise<void> {
-    const view = new AmendCourtBuildingView(req.session.amendCourtBuildingForm, req.flash('errors'))
+    const view = new AmendCourtBuildingView(
+      req.session.amendCourtBuildingForm,
+      req.session.courtListPageLink,
+      req.flash('errors')
+    )
 
     res.render('pages/court-register/amendCourtBuilding', view.renderArgs)
   }

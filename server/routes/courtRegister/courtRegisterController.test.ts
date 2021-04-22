@@ -112,6 +112,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
+        backLink: '/court-register?page=1&active=&courtTypeIds=',
         action: 'NONE',
       })
     })
@@ -122,6 +123,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
+        backLink: '/court-register?page=1&active=&courtTypeIds=',
         action: 'ACTIVATE',
       })
     })
@@ -251,6 +253,7 @@ describe('Court Register controller', () => {
             completed: true,
           },
           typeDescription: 'Crown Court',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
         })
       })
     })
@@ -437,6 +440,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -457,6 +461,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -494,6 +499,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -514,6 +520,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
