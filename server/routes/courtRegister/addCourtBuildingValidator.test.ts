@@ -115,6 +115,16 @@ describe('addCourtBuildingValidator', () => {
     })
 
     describe('sub-code', () => {
+      it('sub code must not be greater than 6 characters', async () => {
+        const form = { ...validForm, subCode: 'SHFACCX' }
+        await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+        expect(req.flash).toBeCalledWith('errors', [
+          {
+            href: '#subCode',
+            text: 'Enter a unique building code not greater than 6 characters',
+          },
+        ])
+      })
       it('should allow a unique sub code', async () => {
         courtLookupService = jest.fn().mockResolvedValue(null)
         courtBuildingLookupService = jest.fn().mockResolvedValue(null)
