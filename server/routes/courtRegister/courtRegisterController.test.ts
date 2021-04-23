@@ -49,20 +49,20 @@ describe('Court Register controller', () => {
       ])
     })
     it('will render all courts page with courts', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(res.render).toHaveBeenCalledWith(
-        'pages/court-register/allCourtsPaged',
+        'pages/court-register/allCourts',
         expect.objectContaining({
           courts: [expect.objectContaining({ id: 'SHFCC' })],
         })
       )
     })
     it('will map the page number to Springs zero based pages', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, expect.anything())
     })
     it('will parse an empty filter from the query parameters', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: null,
         courtTypeIds: null,
@@ -74,7 +74,7 @@ describe('Court Register controller', () => {
         session: {},
         flash: jest.fn(),
       } as unknown) as Request
-      await controller.showAllCourtsPaged(reqWithQueryParms, res)
+      await controller.showAllCourts(reqWithQueryParms, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: false,
         courtTypeIds: ['COU', 'CRO'],
@@ -86,7 +86,7 @@ describe('Court Register controller', () => {
         session: {},
         flash: jest.fn(),
       } as unknown) as Request
-      await controller.showAllCourtsPaged(reqWithQueryParms, res)
+      await controller.showAllCourts(reqWithQueryParms, res)
       expect(reqWithQueryParms.session.courtListPageLink).toEqual(
         '/court-register?page=2&active=false&courtTypeIds=COU&courtTypeIds=CRO'
       )

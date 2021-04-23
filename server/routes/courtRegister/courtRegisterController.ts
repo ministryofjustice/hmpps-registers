@@ -17,7 +17,7 @@ import amendCourtBuildingValidator from './amendCourtBuildingValidator'
 import { InsertCourtBuilding, UpdateCourtBuilding } from '../../@types/courtRegister'
 import AddCourtBuildingView from './addCourtBuildingView'
 import addCourtBuildingValidator from './addCourtBuildingValidator'
-import AllCourtsPagedView from './allCourtsPagedView'
+import AllCourtsView from './allCourtsView'
 import { AllCourtsFilter, pageLinkMapper } from './courtMapper'
 
 function context(res: Response): Context {
@@ -29,16 +29,16 @@ function context(res: Response): Context {
 export default class CourtRegisterController {
   constructor(private readonly courtRegisterService: CourtRegisterService) {}
 
-  async showAllCourtsPaged(req: Request, res: Response): Promise<void> {
+  async showAllCourts(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string, 10) || 1
     const filter = this.parseFilter(req)
     req.session.courtListPageLink = pageLinkMapper(filter, page)
     const courtsPage = await this.courtRegisterService.getPageOfCourts(context(res), page - 1, 40, filter)
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
-    const view = new AllCourtsPagedView(courtsPage, filter, courtTypes)
+    const view = new AllCourtsView(courtsPage, filter, courtTypes)
 
-    res.render('pages/court-register/allCourtsPaged', view.renderArgs)
+    res.render('pages/court-register/allCourts', view.renderArgs)
   }
 
   parseFilter(req: Request): AllCourtsFilter {
