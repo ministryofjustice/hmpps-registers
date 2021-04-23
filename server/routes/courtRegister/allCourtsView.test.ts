@@ -1,4 +1,4 @@
-import AllCourtsPagedView from './allCourtsPagedView'
+import AllCourtsView from './allCourtsView'
 import data from '../testutils/mockData'
 import { CourtDetail } from './courtMapper'
 import { CourtType } from '../../@types/courtRegister'
@@ -8,12 +8,12 @@ const courtTypes: CourtType[] = [
   { courtType: 'CRN', courtName: 'Crown' },
 ]
 
-describe('AllCourtsPagedView', () => {
-  let view: AllCourtsPagedView
+describe('AllCourtsView', () => {
+  let view: AllCourtsView
 
   describe('with no courts', () => {
     beforeEach(() => {
-      view = new AllCourtsPagedView(
+      view = new AllCourtsView(
         {
           content: [],
           first: true,
@@ -35,7 +35,7 @@ describe('AllCourtsPagedView', () => {
   })
   describe('with many courts', () => {
     beforeEach(() => {
-      view = new AllCourtsPagedView(
+      view = new AllCourtsView(
         {
           content: [
             data.court({

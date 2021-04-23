@@ -1,7 +1,7 @@
 import { CourtsPage, CourtType } from '../../@types/courtRegister'
 import { AllCourtsFilter, courtsPageMapper, CourtsPageView } from './courtMapper'
 
-export default class AllCourtsPagedView {
+export default class AllCourtsView {
   constructor(
     private readonly courtsPage: CourtsPage,
     private readonly allCourtsFilter: AllCourtsFilter,
@@ -14,7 +14,7 @@ export default class AllCourtsPagedView {
     return {
       ...this.courtsPageViewDetails,
       allCourtsFilter: this.allCourtsFilter,
-      courtTypes: AllCourtsPagedView.sortCourtTypesByName(this.courtTypes),
+      courtTypes: AllCourtsView.sortCourtTypesByName(this.courtTypes),
     }
   }
 
