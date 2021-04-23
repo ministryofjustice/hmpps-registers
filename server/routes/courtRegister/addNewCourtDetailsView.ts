@@ -24,13 +24,20 @@ export default class AddNewCourtDetailsView {
   constructor(
     private readonly addCourtForm: AddNewCourtForm,
     private readonly courtTypes: Array<CourtType>,
+    private readonly listPageLink: string,
     private readonly errors?: Array<Record<string, string>>
   ) {}
 
-  get renderArgs(): { form: AddNewCourtForm; courtTypes: Array<SelectItem>; errors: Array<Record<string, string>> } {
+  get renderArgs(): {
+    form: AddNewCourtForm
+    courtTypes: Array<SelectItem>
+    backLink: string
+    errors: Array<Record<string, string>>
+  } {
     return {
       form: this.addCourtForm,
       courtTypes: this.getCourtTypes(),
+      backLink: this.listPageLink,
       errors: this.errors || [],
     }
   }
