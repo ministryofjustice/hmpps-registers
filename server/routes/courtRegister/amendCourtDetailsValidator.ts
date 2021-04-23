@@ -1,24 +1,24 @@
 import { Request } from 'express'
 import type { AmendCourtDetailsForm } from 'forms'
+import { validate as validateSync } from '../../validation/validation'
 
 export default async function validate(
   form: AmendCourtDetailsForm,
   req: Request,
   updateService: (id: string, name: string, type: string, description: string) => Promise<void>
 ): Promise<string> {
-  const errors: Array<{ text: string; href: string }> = []
-
-  if (form.name.trim().length === 0) {
-    errors.push({ text: 'Enter a court name', href: '#name' })
-  } else if (form.name.trim().length < 2) {
-    errors.push({ text: 'Court name must be at least 2 characters', href: '#name' })
-  }
-  if (form.name.trim().length > 200) {
-    errors.push({ text: 'Court name must be 200 characters or fewer', href: '#name' })
-  }
-  if (form.type.trim().length === 0) {
-    errors.push({ text: 'Select a court type', href: '#type' })
-  }
+  const errors = await validateSync(
+    form,
+    {
+      name: ['required', 'between:2,200'],
+      type: 'required',
+    },
+    {
+      'required.name': 'Enter a court name',
+      'between.name': 'Enter a court name between 2 and 200 characters',
+      'required.type': 'Select a court type',
+    }
+  )
 
   if (errors.length > 0) {
     req.flash('errors', errors)
