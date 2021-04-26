@@ -336,7 +336,6 @@ export default class CourtRegisterController {
   }
 
   async submitAmendCourtBuildingContacts(req: Request, res: Response): Promise<void> {
-    const d = { ...req.body }
     req.session.amendCourtBuildingContactsForm = { ...req.body }
     res.redirect('/court-register/amend-court-building-contacts')
   }

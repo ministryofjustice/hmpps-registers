@@ -43,14 +43,14 @@
                                 <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
                                 {{ govukInput({
                                     id: 'contacts['+loop.index0+'].number',
-                                    name: 'contacts['+loop.index0+'].number',
+                                    name: 'contacts['+loop.index0+'][number]',
                                     label: {
                                         html: 'Number',
                                         classes: 'govuk-!-font-weight-bold'
                                     },
                                     classes: "govuk-input--width-10",
                                     attributes: {
-                                        'data-name': 'contacts[%index%].number',
+                                        'data-name': 'contacts[%index%][number]',
                                         'data-id': 'contacts[%index%].number'
                                     },
                                     value: form.contacts[loop.index0].number,
@@ -59,12 +59,12 @@
                                 }) }}
                                 {{ govukSelect({
                                     id: 'contacts['+loop.index0+'].type',
-                                    name: 'contacts['+loop.index0+'].type',
+                                    name: 'contacts['+loop.index0+'][type]',
                                     label: {
                                         text: "Contact type"
                                     },
                                     attributes: {
-                                        'data-name': 'contacts[%index%].type',
+                                        'data-name': 'contacts[%index%][type]',
                                         'data-id': 'contacts[%index%].type'
                                     },
                                     items: [
