@@ -181,7 +181,9 @@ describe('courtBuildingContactMapper', () => {
 
 describe('pageLinkMapper', () => {
   it('will handle null filters', () => {
-    expect(pageLinkMapper({ active: null, courtTypeIds: null }, 1)).toEqual('/court-register')
+    expect(pageLinkMapper({ active: null, courtTypeIds: null }, 1)).toEqual(
+      '/court-register?page=1&active=&courtTypeIds='
+    )
   })
   it('will handle filter and page number', () => {
     expect(pageLinkMapper({ active: true, courtTypeIds: ['COU', 'CRN'] }, 1)).toEqual(

@@ -49,20 +49,20 @@ describe('Court Register controller', () => {
       ])
     })
     it('will render all courts page with courts', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(res.render).toHaveBeenCalledWith(
-        'pages/court-register/allCourtsPaged',
+        'pages/court-register/allCourts',
         expect.objectContaining({
           courts: [expect.objectContaining({ id: 'SHFCC' })],
         })
       )
     })
     it('will map the page number to Springs zero based pages', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, expect.anything())
     })
     it('will parse an empty filter from the query parameters', async () => {
-      await controller.showAllCourtsPaged(req, res)
+      await controller.showAllCourts(req, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: null,
         courtTypeIds: null,
@@ -74,7 +74,7 @@ describe('Court Register controller', () => {
         session: {},
         flash: jest.fn(),
       } as unknown) as Request
-      await controller.showAllCourtsPaged(reqWithQueryParms, res)
+      await controller.showAllCourts(reqWithQueryParms, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: false,
         courtTypeIds: ['COU', 'CRO'],
@@ -86,7 +86,7 @@ describe('Court Register controller', () => {
         session: {},
         flash: jest.fn(),
       } as unknown) as Request
-      await controller.showAllCourtsPaged(reqWithQueryParms, res)
+      await controller.showAllCourts(reqWithQueryParms, res)
       expect(reqWithQueryParms.session.courtListPageLink).toEqual(
         '/court-register?page=2&active=false&courtTypeIds=COU&courtTypeIds=CRO'
       )
@@ -112,7 +112,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
-        backLink: '/court-register',
+        backLink: '/court-register?page=1&active=&courtTypeIds=',
         action: 'NONE',
       })
     })
@@ -123,7 +123,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
-        backLink: '/court-register',
+        backLink: '/court-register?page=1&active=&courtTypeIds=',
         action: 'ACTIVATE',
       })
     })
@@ -206,7 +206,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
             expect.objectContaining({ text: '', value: '' }),
           ]),
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -224,7 +224,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
           ]),
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -253,7 +253,7 @@ describe('Court Register controller', () => {
             completed: true,
           },
           typeDescription: 'Crown Court',
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
         })
       })
     })
@@ -440,7 +440,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -461,7 +461,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -499,7 +499,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
@@ -520,7 +520,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
-          backLink: '/court-register',
+          backLink: '/court-register?page=1&active=&courtTypeIds=',
           errors: [],
         })
       })
