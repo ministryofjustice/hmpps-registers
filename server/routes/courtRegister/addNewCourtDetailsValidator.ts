@@ -1,38 +1,31 @@
 import { Request } from 'express'
 import type { AddNewCourtForm } from 'forms'
 import { Court } from '../../@types/courtRegister'
+import { validateAsync } from '../../validation/validation'
 
 export default async function validate(
   form: AddNewCourtForm,
   req: Request,
   courtLookup: (id: string) => Promise<Court>
 ): Promise<string> {
-  const errors: Array<{ text: string; href: string }> = []
-
-  if (form.name.trim().length === 0) {
-    errors.push({ text: 'Enter a court name', href: '#name' })
-  } else if (form.name.trim().length < 2) {
-    errors.push({ text: 'Court name must be at least 2 characters', href: '#name' })
-  }
-  if (form.name.trim().length > 200) {
-    errors.push({ text: 'Court name must be 200 characters or fewer', href: '#name' })
-  }
-  if (form.id.trim().length === 0) {
-    errors.push({ text: 'Enter a court code', href: '#id' })
-  } else if (form.id.trim().length < 2) {
-    errors.push({ text: 'Court code must be at least 2 characters', href: '#id' })
-  } else {
-    const court = await courtLookup(form.id)
-    if (court) {
-      errors.push({ text: `${court.courtName} already has that code. Choose another code`, href: '#id' })
+  const errors = await validateAsync(
+    form,
+    {
+      name: ['required', 'between:2,200'],
+      id: ['required', 'between:2,12', 'unique-court-code'],
+      type: 'required',
+    },
+    {
+      'required.name': 'Enter a court name',
+      'between.name': 'Enter a court name between 2 and 200 characters',
+      'required.id': 'Enter a court code',
+      'between.id': 'Enter a court code between 2 and 12 characters',
+      'required.type': 'Select a court type',
+    },
+    {
+      courtLookup,
     }
-  }
-  if (form.id.trim().length > 12) {
-    errors.push({ text: 'Court code must be 12 characters or fewer', href: '#id' })
-  }
-  if (form.type.trim().length === 0) {
-    errors.push({ text: 'Select a court type', href: '#type' })
-  }
+  )
 
   if (errors.length > 0) {
     req.flash('errors', errors)

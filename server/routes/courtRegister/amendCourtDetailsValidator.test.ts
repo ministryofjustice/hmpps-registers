@@ -43,14 +43,16 @@ describe('amendCourtDetailsValidator', () => {
       const form = { ...validForm, name: 'A' }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#name', text: 'Court name must be at least 2 characters' }])
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
+      ])
     })
     it('name must be less or equal to 200 characters', async () => {
       const form = { ...validForm, name: 'A'.repeat(201) }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#name', text: 'Court name must be 200 characters or fewer' },
+        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
       ])
     })
     it('type must not be selected', async () => {

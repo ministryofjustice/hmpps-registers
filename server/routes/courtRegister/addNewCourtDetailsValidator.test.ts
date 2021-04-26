@@ -44,13 +44,17 @@ describe('addNewCourtDetailsValidator', () => {
       const form = { ...validForm, id: 'A' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#id', text: 'Court code must be at least 2 characters' }])
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#id', text: 'Enter a court code between 2 and 12 characters' },
+      ])
     })
     it('id must be less or equal to 12 characters', async () => {
       const form = { ...validForm, id: 'A'.repeat(13) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#id', text: 'Court code must be 12 characters or fewer' }])
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#id', text: 'Enter a court code between 2 and 12 characters' },
+      ])
     })
     it('id must not match an existing court', async () => {
       const court: Court = data.court({
@@ -75,14 +79,16 @@ describe('addNewCourtDetailsValidator', () => {
       const form = { ...validForm, name: 'A' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#name', text: 'Court name must be at least 2 characters' }])
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
+      ])
     })
     it('name must be less or equal to 200 characters', async () => {
       const form = { ...validForm, name: 'A'.repeat(201) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#name', text: 'Court name must be 200 characters or fewer' },
+        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
       ])
     })
     it('type must not be selected', async () => {
