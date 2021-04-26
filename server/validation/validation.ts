@@ -13,14 +13,15 @@ Validator.register(
   },
   'Enter a real postcode, like AA11AA'
 )
+type lookupFn<T> = (code: string) => Promise<T | null>
 
 export function validateAsync<T>(
   form: T,
   rules: Rules,
   customMessages: ErrorMessages,
   lookups: {
-    courtLookup: (subCode: string) => Promise<Court | null>
-    courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | null>
+    courtLookup?: lookupFn<Court>
+    courtBuildingLookup?: lookupFn<CourtBuilding>
   } = {
     courtLookup: () => null,
     courtBuildingLookup: () => null,
@@ -30,7 +31,7 @@ export function validateAsync<T>(
     'unique-subcode',
     async (value, allowedBuildingId, request, passes) => {
       if (typeof value === 'string') {
-        if (!isBlank(value)) {
+        if (isCourtOrBuildingCode(value)) {
           const existingCourt = await lookups.courtLookup(value)
           if (existingCourt) {
             passes(false, `${existingCourt.courtName} already has that code. Choose another code`)
@@ -45,6 +46,22 @@ export function validateAsync<T>(
               )
               return
             }
+          }
+        }
+      }
+      passes()
+    },
+    `The code is already used. Choose another code`
+  )
+  Validator.registerAsync(
+    'unique-court-code',
+    async (value, requirment, request, passes) => {
+      if (typeof value === 'string') {
+        if (isCourtOrBuildingCode(value)) {
+          const existingCourt = await lookups.courtLookup(value)
+          if (existingCourt) {
+            passes(false, `${existingCourt.courtName} already has that code. Choose another code`)
+            return
           }
         }
       }
@@ -83,8 +100,8 @@ const checkErrors = <T>(validation: Validator.Validator<T>): Array<{ text: strin
   return asErrors(validation.errors)
 }
 
-const isBlank = (text: string) => {
-  return !text || text.trim().length === 0
+const isCourtOrBuildingCode = (code: string) => {
+  return new Validator({ code }, { code: 'between:2,12' }).passes()
 }
 
 const asErrors = (errors: Validator.Errors) =>
