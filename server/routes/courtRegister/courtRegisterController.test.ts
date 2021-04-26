@@ -295,6 +295,22 @@ describe('Court Register controller', () => {
           county: 'South Yorkshire',
           country: 'England',
           subCode: 'SHFAN',
+          contacts: [
+            {
+              courtId: 'SHFCC',
+              buildingId: 1,
+              id: 1,
+              type: 'TEL',
+              detail: '0114 555 1234',
+            },
+            {
+              courtId: 'SHFCC',
+              buildingId: 1,
+              id: 2,
+              type: 'FAX',
+              detail: '0114 555 4321',
+            },
+          ],
         })
       )
       courtRegisterService.updateCourtDetails.mockResolvedValue(null)
@@ -637,6 +653,52 @@ describe('Court Register controller', () => {
           postcode: 'S1 2BJ',
           county: 'South Yorkshire',
           country: 'England',
+        })
+      })
+    })
+    describe('amendCourtBuildingContactsStart', () => {
+      beforeEach(() => {
+        req.query.courtId = 'SHFCC'
+        req.query.buildingId = '1'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will request court building', async () => {
+        await controller.amendCourtBuildingContactsStart(req, res)
+
+        expect(courtRegisterService.getCourtBuilding).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', '1')
+      })
+      it('will render court building contacts page', async () => {
+        await controller.amendCourtBuildingContactsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuildingContacts', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.amendCourtBuildingContactsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuildingContacts', {
+          form: {
+            courtId: 'SHFCC',
+            buildingId: 1,
+            buildingname: 'Crown Square',
+            contacts: [
+              {
+                id: 1,
+                type: 'TEL',
+                number: '0114 555 1234',
+              },
+              {
+                id: 2,
+                type: 'FAX',
+                number: '0114 555 4321',
+              },
+            ],
+          },
+          errors: [],
         })
       })
     })
