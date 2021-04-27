@@ -702,47 +702,59 @@ describe('Court Register controller', () => {
         })
       })
     })
-  })
-  describe('parseFilter', () => {
-    it('should handle missing query parameters', () => {
-      const request = ({
-        query: {},
-      } as unknown) as Request
-      controller = new CourtRegisterController(null)
+    describe('amendCourtBuildingContacts', () => {
+      beforeEach(() => {
+        res.locals.user = {
+          username: 'tom',
+        }
+        req.session.amendCourtBuildingContactsForm = {
+          courtId: 'SHFCC',
+          buildingId: '1',
+          buildingname: 'Crown Building',
+          contacts: [
+            {
+              id: '1',
+              type: 'TEL',
+              number: '0114 555 1234',
+            },
+            {
+              type: 'FAX',
+              number: '0114 555 4321',
+            },
+          ],
+        }
+        req.body = {
+          ...req.session.amendCourtBuildingContactsForm,
+        }
+      })
+      it('will not request court building', async () => {
+        await controller.amendCourtBuildingContacts(req, res)
 
-      const filter = controller.parseFilter(request)
+        expect(courtRegisterService.getCourtBuilding).toBeCalledTimes(0)
+      })
+      it('will pass form through to page', async () => {
+        await controller.amendCourtBuildingContacts(req, res)
 
-      expect(filter).toEqual({ active: null, courtTypeIds: null })
-    })
-    it('should handle active query parameter', () => {
-      const request = ({
-        query: { active: 'true' },
-      } as unknown) as Request
-      controller = new CourtRegisterController(null)
-
-      const filter = controller.parseFilter(request)
-
-      expect(filter).toEqual({ active: true, courtTypeIds: null })
-    })
-    it('should handle single courtTypeIds query parameter', () => {
-      const request = ({
-        query: { courtTypeIds: 'CRN' },
-      } as unknown) as Request
-      controller = new CourtRegisterController(null)
-
-      const filter = controller.parseFilter(request)
-
-      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN'] })
-    })
-    it('should handle multiple courtTypeIds query parameter', () => {
-      const request = ({
-        query: { courtTypeIds: ['CRN', 'COU'] },
-      } as unknown) as Request
-      controller = new CourtRegisterController(null)
-
-      const filter = controller.parseFilter(request)
-
-      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN', 'COU'] })
+        expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuildingContacts', {
+          form: {
+            courtId: 'SHFCC',
+            buildingId: '1',
+            buildingname: 'Crown Building',
+            contacts: [
+              {
+                id: '1',
+                type: 'TEL',
+                number: '0114 555 1234',
+              },
+              {
+                type: 'FAX',
+                number: '0114 555 4321',
+              },
+            ],
+          },
+          errors: [],
+        })
+      })
     })
   })
   describe('parseFilter', () => {

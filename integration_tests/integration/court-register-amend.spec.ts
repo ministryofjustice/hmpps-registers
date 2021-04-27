@@ -3,6 +3,7 @@ import AllCourtsPagedPage from '../pages/court-register/allCourtsPaged'
 import CourtDetailsPage from '../pages/court-register/courtDetails'
 import AmendCourtDetailsPage from '../pages/court-register/amendCourtDetails'
 import AmendCourtBuildingPage from '../pages/court-register/amendCourtBuilding'
+import AmendCourtBuildingContactsPage from '../pages/court-register/amendCourtBuildingContacts'
 import AddCourtBuildingPage from '../pages/court-register/addCourtBuilding'
 import {
   sheffieldCrownCourt,
@@ -185,6 +186,35 @@ context('Court register - amend existing court', () => {
       courtBuilding.addressCountry().check('England')
       courtBuilding.saveButton().click()
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+  })
+  describe('amending a court building contacts', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().courtRegisterLink().click()
+      AllCourtsPagedPage.verifyOnPage()
+        .viewCourtLink('SHFMC')
+        .should('contain.text', 'Sheffield Magistrates Court')
+        .click()
+    })
+    it('should show summary of court with link to amend each building', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.buildingDetailsSection('1').should('contain.text', 'Sheffield Courts')
+      courtDetailsPage.buildingDetailsSection('2').should('contain.text', 'Sheffield Court Annexe')
+      courtDetailsPage.amendBuildingContactsLink('1').should('contain.text', 'Change')
+      courtDetailsPage.amendBuildingContactsLink('2').should('contain.text', 'Change')
+    })
+    it('will display existing contact details with ability to remove a number', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.number(0).should('have.value', '0114 555 1234')
+      amendCourtBuildingContactsPage.type(0).should('have.value', 'TEL')
+      amendCourtBuildingContactsPage.removeButton(0)
+
+      amendCourtBuildingContactsPage.number(1).should('have.value', '0114 555 4321')
+      amendCourtBuildingContactsPage.type(1).should('have.value', 'FAX')
+      amendCourtBuildingContactsPage.removeButton(1)
     })
   })
 })

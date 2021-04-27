@@ -38,11 +38,12 @@
                                     text: "Contact details for this building?",
                                     classes: "moj-add-another__title govuk-fieldset__legend--m",
                                     isPageHeading: false
-                                }
+                                },
+                                attributes: { "data-qa": "contact-details-section-" + loop.index0}
                             }) %}
                                 <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
                                 {{ govukInput({
-                                    id: 'contacts['+loop.index0+'].number',
+                                    id: 'contacts['+loop.index0+'][number]',
                                     name: 'contacts['+loop.index0+'][number]',
                                     label: {
                                         html: 'Number',
@@ -51,27 +52,27 @@
                                     classes: "govuk-input--width-10",
                                     attributes: {
                                         'data-name': 'contacts[%index%][number]',
-                                        'data-id': 'contacts[%index%].number'
+                                        'data-id': 'contacts[%index%][number]'
                                     },
                                     value: form.contacts[loop.index0].number,
-                                    errorMessage: errors | findError('contacts['+loop.index0+'].number')
+                                    errorMessage: errors | findError('contacts['+loop.index0+'][number]')
 
                                 }) }}
                                 {{ govukSelect({
-                                    id: 'contacts['+loop.index0+'].type',
+                                    id: 'contacts['+loop.index0+'][type]',
                                     name: 'contacts['+loop.index0+'][type]',
                                     label: {
                                         text: "Contact type"
                                     },
                                     attributes: {
                                         'data-name': 'contacts[%index%][type]',
-                                        'data-id': 'contacts[%index%].type'
+                                        'data-id': 'contacts[%index%][type]'
                                     },
                                     items: [
                                         { value: 'TEL', text: 'Telephone'},
                                         { value: 'FAX', text: 'Fax'}
                                     ] | toSelect(form.contacts[loop.index0].type),
-                                    errorMessage: errors | findError('contacts['+loop.index0+'].type')
+                                    errorMessage: errors | findError('contacts['+loop.index0+'][type]')
                                 }) }}
                             {% endcall %}
                         {% endfor %}
