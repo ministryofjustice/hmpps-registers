@@ -59,7 +59,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       .filter(x => x !== null)
     return {
       results: {
-        from: (pageMetaData.pageNumber - 1) * pageMetaData.pageSize + 1,
+        from: (pageMetaData.pageNumber - 1) * pageMetaData.pageSize + (pageMetaData.totalElements > 0 ? 1 : 0),
         to: (pageMetaData.pageNumber - 1) * pageMetaData.pageSize + pageMetaData.elementsOnPage,
         count: pageMetaData.totalElements,
       },
