@@ -11,6 +11,8 @@ const courtDetails = {
   amendCourtDetailsLink: () => cy.get('[data-qa=amend-court-details-link]'),
   buildingDetailsSection: (buildingId: string) => cy.get(`[data-qa=building-summary-section-${buildingId}]`),
   amendBuildingDetailsLink: (buildingId: string) => cy.get(`[data-qa=amend-building-details-link-${buildingId}]`),
+  amendBuildingContactsLink: (buildingId: string) =>
+    cy.get(`[data-qa=building-summary-section-${buildingId}] [data-qa=change-contact-details-link]`),
   addBuildingLink: () => cy.get(`[data-qa=add-court-building-link]`),
 }
 const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)

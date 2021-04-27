@@ -83,6 +83,14 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }))
   })
 
+  njkEnv.addFilter('toSelect', (array, value) => {
+    return array.map((item: { value: string; text: string }) => ({
+      value: item.value,
+      text: item.text,
+      selected: item.value === value,
+    }))
+  })
+
   njkEnv.addFilter('toCourtTypeFilterCheckboxes', (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter) => {
     const courtTypeItems = courtTypes.map((courtType: CourtType) => {
       return {

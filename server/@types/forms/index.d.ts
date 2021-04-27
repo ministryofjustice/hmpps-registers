@@ -45,4 +45,15 @@ declare module 'forms' {
     addresspostcode?: string
     addresscountry?: string
   }
+
+  export interface AmendCourtBuildingContactsForm {
+    buildingname: string
+    buildingId: string
+    courtId: string
+    contacts: {
+      id?: string
+      type?: string
+      number?: string
+    }
+  }
 }

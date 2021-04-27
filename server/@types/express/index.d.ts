@@ -11,6 +11,7 @@ declare module 'express-session' {
     amendCourtDetailsForm: AmendCourtDetailsForm
     amendCourtBuildingForm: AmendCourtBuildingForm
     addCourtBuildingForm: AddCourtBuildingForm
+    amendCourtBuildingContactsForm: AmendCourtBuildingContactsForm
     courtListPageLink: string
   }
 }

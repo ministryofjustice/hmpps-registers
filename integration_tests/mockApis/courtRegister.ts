@@ -12,7 +12,22 @@ export const sheffieldMagistratesMainBuilding: CourtBuilding = {
   county: 'South Yorkshire',
   postcode: ' S3 8LU',
   country: 'England',
-  contacts: [],
+  contacts: [
+    {
+      id: 1,
+      courtId: 'SHFMC',
+      buildingId: 1,
+      type: 'TEL',
+      detail: '0114 555 1234',
+    },
+    {
+      id: 2,
+      courtId: 'SHFMC',
+      buildingId: 1,
+      type: 'FAX',
+      detail: '0114 555 4321',
+    },
+  ],
 }
 
 export const sheffieldMagistratesAnnexeBuilding: CourtBuilding = {
