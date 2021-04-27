@@ -210,11 +210,57 @@ context('Court register - amend existing court', () => {
 
       amendCourtBuildingContactsPage.number(0).should('have.value', '0114 555 1234')
       amendCourtBuildingContactsPage.type(0).should('have.value', 'TEL')
-      amendCourtBuildingContactsPage.removeButton(0)
+      amendCourtBuildingContactsPage.removeButton(0).should('contain.text', 'Remove')
 
       amendCourtBuildingContactsPage.number(1).should('have.value', '0114 555 4321')
       amendCourtBuildingContactsPage.type(1).should('have.value', 'FAX')
-      amendCourtBuildingContactsPage.removeButton(1)
+      amendCourtBuildingContactsPage.removeButton(1).should('contain.text', 'Remove')
+    })
+    it('should validate a changed number', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.number(0).clear()
+      amendCourtBuildingContactsPage.saveButton().click()
+
+      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      amendCourtBuildingContactsPageWithErrors.errorSummary().contains('Enter the number')
+    })
+    it('should validate a new number', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.addAnotherNumberButton().click()
+      amendCourtBuildingContactsPage.saveButton().click()
+
+      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      amendCourtBuildingContactsPageWithErrors.errorSummary().contains('Enter the number')
+    })
+    it('can a add new number but then remove it', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.addAnotherNumberButton().click()
+      amendCourtBuildingContactsPage.lastRemoveButton().click()
+      amendCourtBuildingContactsPage.saveButton().click()
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('can remove one of the numbers', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.removeButton(1).click()
+      amendCourtBuildingContactsPage.number(0).should('exist')
+      amendCourtBuildingContactsPage.type(0).should('exist')
+      amendCourtBuildingContactsPage.number(1).should('not.exist')
+      amendCourtBuildingContactsPage.type(1).should('not.exist')
+
+      amendCourtBuildingContactsPage.saveButton().click()
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
     })
   })
 })
