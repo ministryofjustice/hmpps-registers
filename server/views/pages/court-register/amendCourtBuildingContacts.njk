@@ -1,0 +1,97 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% set pageTitle = applicationName + " - Amend Court" %}
+
+{% block content %}
+
+    <!--suppress HtmlUnknownTarget -->
+    <main class="app-container govuk-body">
+        {% if errors.length > 0 %}
+            {{ govukErrorSummary({
+                titleText: 'There is a problem',
+                errorList: errors,
+                attributes: { 'data-qa-errors': true }
+            }) }}
+        {% endif %}
+        <div class="govuk-grid-row" data-module="moj-add-another">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">Amend court - contact details - {{ form.buildingname }}</h1>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <form action="/court-register/amend-court-building-contacts" method="post" novalidate>
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <input type="hidden" name="buildingId" value="{{ form.buildingId }}" />
+                    <input type="hidden" name="courtId" value="{{ form.courtId }}" />
+                    <input type="hidden" name="buildingname" value="{{ form.buildingname }}" />
+
+                        {% for contact in form.contacts %}
+
+                            {% call govukFieldset({
+                                classes: 'moj-add-another__item',
+                                legend: {
+                                    text: "Contact details for this building?",
+                                    classes: "moj-add-another__title govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                },
+                                attributes: { "data-qa": "contact-details-section-" + loop.index0}
+                            }) %}
+                                <input type="hidden" name="contacts[{{ loop.index0 }}][id]" value="{{ form.contacts[loop.index0].id }}" />
+                                <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                                {{ govukInput({
+                                    id: 'contacts['+loop.index0+'][number]',
+                                    name: 'contacts['+loop.index0+'][number]',
+                                    label: {
+                                        html: 'Number',
+                                        classes: 'govuk-!-font-weight-bold'
+                                    },
+                                    classes: "govuk-input--width-10",
+                                    attributes: {
+                                        'data-name': 'contacts[%index%][number]',
+                                        'data-id': 'contacts[%index%][number]'
+                                    },
+                                    value: form.contacts[loop.index0].number,
+                                    errorMessage: errors | findError('contacts['+loop.index0+'][number]')
+
+                                }) }}
+                                {{ govukSelect({
+                                    id: 'contacts['+loop.index0+'][type]',
+                                    name: 'contacts['+loop.index0+'][type]',
+                                    label: {
+                                        text: "Contact type"
+                                    },
+                                    attributes: {
+                                        'data-name': 'contacts[%index%][type]',
+                                        'data-id': 'contacts[%index%][type]'
+                                    },
+                                    items: [
+                                        { value: 'TEL', text: 'Telephone'},
+                                        { value: 'FAX', text: 'Fax'}
+                                    ] | toSelect(form.contacts[loop.index0].type),
+                                    errorMessage: errors | findError('contacts['+loop.index0+'][type]')
+                                }) }}
+                            {% endcall %}
+                        {% endfor %}
+                        <div class="moj-button-action">
+                            {{ govukButton({
+                                text: 'Add another number',
+                                classes: 'govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4'
+                            }) }}
+                        </div>
+                        <div class="govuk-button-group">
+                            {{ govukButton({
+                                text: "Save"
+                            }) }}
+                            <a class="govuk-link" href="/court-register/details?id={{ form.courtId }}">Cancel</a>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

@@ -19,6 +19,7 @@ import AddCourtBuildingView from './addCourtBuildingView'
 import addCourtBuildingValidator from './addCourtBuildingValidator'
 import AllCourtsView from './allCourtsView'
 import { AllCourtsFilter, pageLinkMapper } from './courtMapper'
+import AmendCourtBuildingContactsView from './amendCourtBuildingContactsView'
 
 function context(res: Response): Context {
   return {
@@ -305,5 +306,37 @@ export default class CourtRegisterController {
         subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
       )
     )
+  }
+
+  async amendCourtBuildingContactsStart(req: Request, res: Response): Promise<void> {
+    const { courtId, buildingId } = req.query as { courtId: string; buildingId: string }
+
+    const courtBuilding = await this.courtRegisterService.getCourtBuilding(context(res), courtId, buildingId)
+
+    req.session.amendCourtBuildingContactsForm = {
+      buildingname: courtBuilding.buildingName,
+      buildingId: courtBuilding.id,
+      courtId: courtBuilding.courtId,
+      contacts: courtBuilding.contacts.map(contact => ({
+        id: contact.id,
+        type: contact.type,
+        number: contact.detail,
+      })),
+    }
+
+    const view = new AmendCourtBuildingContactsView(req.session.amendCourtBuildingContactsForm, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtBuildingContacts', view.renderArgs)
+  }
+
+  async amendCourtBuildingContacts(req: Request, res: Response): Promise<void> {
+    const view = new AmendCourtBuildingContactsView(req.session.amendCourtBuildingContactsForm, req.flash('errors'))
+
+    res.render('pages/court-register/amendCourtBuildingContacts', view.renderArgs)
+  }
+
+  async submitAmendCourtBuildingContacts(req: Request, res: Response): Promise<void> {
+    req.session.amendCourtBuildingContactsForm = { ...req.body }
+    res.redirect('/court-register/amend-court-building-contacts')
   }
 }
