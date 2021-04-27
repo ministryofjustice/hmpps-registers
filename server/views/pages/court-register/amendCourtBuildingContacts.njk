@@ -41,6 +41,7 @@
                                 },
                                 attributes: { "data-qa": "contact-details-section-" + loop.index0}
                             }) %}
+                                <input type="hidden" name="contacts[{{ loop.index0 }}][id]" value="{{ form.contacts[loop.index0].id }}" />
                                 <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
                                 {{ govukInput({
                                     id: 'contacts['+loop.index0+'][number]',

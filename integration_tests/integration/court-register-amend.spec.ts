@@ -196,7 +196,7 @@ context('Court register - amend existing court', () => {
         .should('contain.text', 'Sheffield Magistrates Court')
         .click()
     })
-    it('should show summary of court with link to amend each building', () => {
+    it('should show summary of court with link to amend each set on contacts', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
       courtDetailsPage.buildingDetailsSection('1').should('contain.text', 'Sheffield Courts')
       courtDetailsPage.buildingDetailsSection('2').should('contain.text', 'Sheffield Court Annexe')
