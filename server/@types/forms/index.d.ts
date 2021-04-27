@@ -54,6 +54,6 @@ declare module 'forms' {
       id?: string
       type?: string
       number?: string
-    }
+    }[]
   }
 }
