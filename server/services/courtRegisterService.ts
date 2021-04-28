@@ -108,7 +108,7 @@ export default class CourtRegisterService {
       active: court.active,
       courtName,
       courtType,
-      courtDescription: courtDescription || null,
+      courtDescription: nullWhenAbsent(courtDescription),
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending court details for ${courtId}`)
@@ -125,7 +125,11 @@ export default class CourtRegisterService {
     logger.info(`Amending court ${courtId} building for ${buildingId}`)
     await CourtRegisterService.restClient(token).put({
       path: `/court-maintenance/id/${courtId}/buildings/${buildingId}`,
-      data: courtBuilding,
+      data: {
+        ...courtBuilding,
+        locality: nullWhenAbsent(courtBuilding.locality),
+        subCode: nullWhenAbsent(courtBuilding.subCode),
+      },
     })
   }
 
@@ -189,4 +193,8 @@ export default class CourtRegisterService {
       data: newBuilding,
     })
   }
+}
+
+function nullWhenAbsent(value: string): string | null {
+  return (value && value.trim().length > 0 && value) || null
 }

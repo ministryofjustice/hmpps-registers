@@ -436,6 +436,21 @@ describe('Court Register service', () => {
 
       expect(updatedCourtBuilding).toEqual(courtBuilding)
     })
+    it('will send null rather than blanks', async () => {
+      const buildingWithBlanks: UpdateCourtBuilding = { ...courtBuilding, locality: '', subCode: '  ' }
+      await courtRegisterService.updateCourtBuilding({ username: 'tommy' }, 'SHFCC', '1', buildingWithBlanks)
+
+      expect(updatedCourtBuilding).toEqual({
+        buildingName: 'Crown Square',
+        street: 'High Street',
+        locality: null,
+        town: 'Sheffield',
+        subCode: null,
+        postcode: 'S1 2BJ',
+        county: 'South Yorkshire',
+        country: 'England',
+      })
+    })
   })
   describe('getCourtTypes', () => {
     beforeEach(() => {
