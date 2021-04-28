@@ -151,13 +151,7 @@ export default class RestClient {
     }
   }
 
-  async delete({
-    path = null,
-    headers = {},
-    responseType = '',
-    data = {},
-    raw = false,
-  }: DeleteRequest = {}): Promise<unknown> {
+  async delete({ path = null, headers = {}, responseType = '', raw = false }: DeleteRequest = {}): Promise<unknown> {
     logger.info(`Delete using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
