@@ -20,7 +20,9 @@ import addCourtBuildingValidator from './addCourtBuildingValidator'
 import AllCourtsView from './allCourtsView'
 import { AllCourtsFilter, pageLinkMapper } from './courtMapper'
 import AmendCourtBuildingContactsView from './amendCourtBuildingContactsView'
-import amendCourtBuildingContactsValidator from './amendCourtBuildingContactsValidator'
+import amendCourtBuildingContactsValidator, {
+  amendCourtBuildingContactsFormCloneCleaner,
+} from './amendCourtBuildingContactsValidator'
 
 function context(res: Response): Context {
   return {
@@ -337,7 +339,7 @@ export default class CourtRegisterController {
   }
 
   async submitAmendCourtBuildingContacts(req: Request, res: Response): Promise<void> {
-    req.session.amendCourtBuildingContactsForm = { ...req.body }
+    req.session.amendCourtBuildingContactsForm = amendCourtBuildingContactsFormCloneCleaner(req.body)
     res.redirect(
       await amendCourtBuildingContactsValidator(req.session.amendCourtBuildingContactsForm, req, form => {
         return this.courtRegisterService.updateCourtBuildingContacts(

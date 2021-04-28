@@ -1,6 +1,6 @@
 import { AmendCourtBuildingContactsForm } from 'forms'
 import { Request } from 'express'
-import validate from './amendCourtBuildingContactsValidator'
+import validate, { amendCourtBuildingContactsFormCloneCleaner } from './amendCourtBuildingContactsValidator'
 
 describe('amendCourtBuildingContactsValidator', () => {
   const req = {
@@ -66,6 +66,86 @@ describe('amendCourtBuildingContactsValidator', () => {
         { href: '#contacts[0][number]', text: 'Enter the number' },
         { href: '#contacts[1][number]', text: 'Enter the number' },
       ])
+    })
+  })
+})
+
+describe('amendCourtBuildingContactsFormCloneCleaner', () => {
+  it('will clone the form unchanged when no duplicates', () => {
+    const originalForm: AmendCourtBuildingContactsForm = {
+      courtId: 'SHFCC',
+      buildingId: '1',
+      buildingname: 'Crown Square',
+      contacts: [
+        {
+          type: 'TEL',
+          number: ' ',
+          id: '1',
+        },
+        {
+          type: 'FAX',
+          number: ' ',
+        },
+      ],
+    }
+
+    const cleanedForm = amendCourtBuildingContactsFormCloneCleaner(originalForm)
+
+    expect(cleanedForm).toEqual({
+      courtId: 'SHFCC',
+      buildingId: '1',
+      buildingname: 'Crown Square',
+      contacts: [
+        {
+          type: 'TEL',
+          number: ' ',
+          id: '1',
+        },
+        {
+          type: 'FAX',
+          number: ' ',
+        },
+      ],
+    })
+  })
+  it('will remove orphaned contacts from form', () => {
+    const originalForm: AmendCourtBuildingContactsForm = {
+      courtId: 'SHFCC',
+      buildingId: '1',
+      buildingname: 'Crown Square',
+      contacts: [
+        {
+          type: 'TEL',
+          number: ' ',
+          id: '1',
+        },
+        {
+          type: 'FAX',
+          number: ' ',
+        },
+        {
+          id: '99',
+        },
+      ],
+    }
+
+    const cleanedForm = amendCourtBuildingContactsFormCloneCleaner(originalForm)
+
+    expect(cleanedForm).toEqual({
+      courtId: 'SHFCC',
+      buildingId: '1',
+      buildingname: 'Crown Square',
+      contacts: [
+        {
+          type: 'TEL',
+          number: ' ',
+          id: '1',
+        },
+        {
+          type: 'FAX',
+          number: ' ',
+        },
+      ],
     })
   })
 })
