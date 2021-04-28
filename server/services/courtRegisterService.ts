@@ -138,7 +138,7 @@ export default class CourtRegisterService {
     context: Context,
     courtId: string,
     buildingId: string,
-    contacts: UpdateCourtBuildingContact | { id?: string }[]
+    contacts: NewOrExistingContact[]
   ): Promise<void> {
     logger.info(`Amending contacts for court ${courtId} building for ${buildingId}`)
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
@@ -146,9 +146,55 @@ export default class CourtRegisterService {
       path: `/courts/id/${courtId}/buildings/id/${buildingId}`,
     })) as CourtBuilding
 
-    // TODO update each contact, add new ones and delete others
-    logger.info(`existing contacts ${building.contacts}`)
-    logger.info(`contacts to be updated ${contacts}`)
+    const same = (updatedContact: NewOrExistingContact, originalContact: CourtBuildingContact) =>
+      originalContact.id.toString(10) === updatedContact.id
+
+    const hasChanged = (updatedContact: NewOrExistingContact) => {
+      const originalContact = building.contacts.find(contact => same(updatedContact, contact))
+      return (
+        originalContact &&
+        (originalContact.type !== updatedContact.type || originalContact.detail !== updatedContact.detail)
+      )
+    }
+
+    const noLongerPresent = (originalContact: CourtBuildingContact) => {
+      return !contacts.find(contact => same(contact, originalContact))
+    }
+
+    // update ones that have changed
+    await Promise.all(
+      contacts
+        .filter(contact => contact.id)
+        .filter(hasChanged)
+        .map(contact => {
+          return CourtRegisterService.restClient(token).put({
+            path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts/${contact.id}`,
+            data: contact,
+          })
+        })
+    )
+
+    // insert new ones
+    await Promise.all(
+      contacts
+        .filter(contact => !contact.id)
+        .map(contact => {
+          return CourtRegisterService.restClient(token).post({
+            path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts`,
+            data: contact,
+          })
+        })
+    )
+
+    // delete old ones
+    await Promise.all(
+      building.contacts.filter(noLongerPresent).map(contact => {
+        return CourtRegisterService.restClient(token).delete({
+          path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts/${contact.id}`,
+          data: contact,
+        })
+      })
+    )
   }
 
   async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {
@@ -216,3 +262,5 @@ export default class CourtRegisterService {
 function nullWhenAbsent(value: string): string | null {
   return (value && value.trim().length > 0 && value) || null
 }
+
+type NewOrExistingContact = UpdateCourtBuildingContact & { id?: string }

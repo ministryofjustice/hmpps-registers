@@ -749,4 +749,172 @@ describe('Court Register service', () => {
       expect(newCourtBuilding).toEqual(courtBuilding)
     })
   })
+  describe('updateCourtBuildingContacts', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(200, data.courtBuilding({}))
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [])
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('should update existing contact when changed', async () => {
+      const scope = fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1')
+        .reply(200, data.courtBuildingContact({}))
+
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
+        200,
+        data.courtBuilding({
+          contacts: [
+            {
+              id: 1,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 1234',
+              type: 'TEL',
+            },
+          ],
+        })
+      )
+
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [
+        {
+          id: '1',
+          detail: '0114 555 1234',
+          type: 'FAX',
+        },
+      ])
+
+      expect(scope.isDone()).toBe(true)
+    })
+    it('should update nothing if existing contact has not changed', async () => {
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
+        200,
+        data.courtBuilding({
+          contacts: [
+            {
+              id: 1,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 1234',
+              type: 'TEL',
+            },
+          ],
+        })
+      )
+
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [
+        {
+          id: '1',
+          detail: '0114 555 1234',
+          type: 'TEL',
+        },
+      ])
+    })
+    it('should add contact when new', async () => {
+      const scope = fakeCourtRegister
+        .post('/court-maintenance/id/SHFCC/buildings/1/contacts')
+        .reply(200, data.courtBuildingContact({}))
+
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
+        200,
+        data.courtBuilding({
+          contacts: [],
+        })
+      )
+
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [
+        {
+          detail: '0114 555 1234',
+          type: 'FAX',
+        },
+      ])
+
+      expect(scope.isDone()).toBe(true)
+    })
+    it('should delete contact when no longer present', async () => {
+      const scope = fakeCourtRegister
+        .delete('/court-maintenance/id/SHFCC/buildings/1/contacts/1')
+        .reply(200, data.courtBuildingContact({}))
+
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
+        200,
+        data.courtBuilding({
+          contacts: [
+            {
+              id: 1,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 1234',
+              type: 'TEL',
+            },
+          ],
+        })
+      )
+
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [])
+
+      expect(scope.isDone()).toBe(true)
+    })
+    it('can delete, insert and update all in one go', async () => {
+      const scope = fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1')
+        .reply(200, data.courtBuildingContact({}))
+        .post('/court-maintenance/id/SHFCC/buildings/1/contacts')
+        .reply(200, data.courtBuildingContact({}))
+        .delete('/court-maintenance/id/SHFCC/buildings/1/contacts/2')
+        .reply(200, data.courtBuildingContact({}))
+
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
+        200,
+        data.courtBuilding({
+          contacts: [
+            {
+              id: 1,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 1111',
+              type: 'TEL',
+            },
+            {
+              id: 2,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 2222',
+              type: 'TEL',
+            },
+            {
+              id: 3,
+              courtId: 'SHFCC',
+              buildingId: 1,
+              detail: '0114 555 3333',
+              type: 'TEL',
+            },
+          ],
+        })
+      )
+
+      await courtRegisterService.updateCourtBuildingContacts({ username: 'tommy' }, 'SHFCC', '1', [
+        {
+          id: '1',
+          detail: '0114 999 1111',
+          type: 'TEL',
+        },
+        {
+          detail: '0114 999 2222',
+          type: 'TEL',
+        },
+        {
+          id: '3',
+          detail: '0114 555 3333',
+          type: 'TEL',
+        },
+      ])
+
+      expect(scope.isDone()).toBe(true)
+    })
+  })
 })
