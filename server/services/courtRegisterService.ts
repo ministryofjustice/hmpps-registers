@@ -10,6 +10,7 @@ import type {
   CourtBuilding,
   CourtBuildingContact,
   UpdateCourtBuilding,
+  UpdateCourtBuildingContact,
 } from '../@types/courtRegister'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
@@ -131,6 +132,23 @@ export default class CourtRegisterService {
         subCode: nullWhenAbsent(courtBuilding.subCode),
       },
     })
+  }
+
+  async updateCourtBuildingContacts(
+    context: Context,
+    courtId: string,
+    buildingId: string,
+    contacts: UpdateCourtBuildingContact | { id?: string }[]
+  ): Promise<void> {
+    logger.info(`Amending contacts for court ${courtId} building for ${buildingId}`)
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const building = (await CourtRegisterService.restClient(token).get({
+      path: `/courts/id/${courtId}/buildings/id/${buildingId}`,
+    })) as CourtBuilding
+
+    // TODO update each contact, add new ones and delete others
+    logger.info(`existing contacts ${building.contacts}`)
+    logger.info(`contacts to be updated ${contacts}`)
   }
 
   async addCourt(context: Context, addCourt: AddCourt): Promise<AddUpdateResponse> {

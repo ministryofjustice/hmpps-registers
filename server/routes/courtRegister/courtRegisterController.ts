@@ -338,6 +338,21 @@ export default class CourtRegisterController {
 
   async submitAmendCourtBuildingContacts(req: Request, res: Response): Promise<void> {
     req.session.amendCourtBuildingContactsForm = { ...req.body }
-    res.redirect(amendCourtBuildingContactsValidator(req.session.amendCourtBuildingContactsForm, req))
+    res.redirect(
+      await amendCourtBuildingContactsValidator(req.session.amendCourtBuildingContactsForm, req, form => {
+        return this.courtRegisterService.updateCourtBuildingContacts(
+          context(res),
+          form.courtId,
+          form.buildingId,
+          form.contacts.map(contact => {
+            return {
+              type: contact.type,
+              detail: contact.number,
+              id: contact.id || null,
+            }
+          })
+        )
+      })
+    )
   }
 }

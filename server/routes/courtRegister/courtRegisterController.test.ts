@@ -756,6 +756,63 @@ describe('Court Register controller', () => {
         })
       })
     })
+    describe('submitAmendCourtBuildingContacts', () => {
+      beforeEach(() => {
+        req.session.amendCourtBuildingContactsForm = {
+          courtId: 'SHFCC',
+          buildingId: '1',
+          contacts: [
+            {
+              type: 'TEL',
+              number: '0114 555 1234',
+              id: '1',
+            },
+            {
+              type: 'FAX',
+              number: '0114 555 4321',
+              id: '2',
+            },
+            {
+              type: 'TEL',
+              number: '0114 555 9999',
+              id: '',
+            },
+          ],
+        }
+        req.body = {
+          ...req.session.amendCourtBuildingContactsForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with each new and amended contact', async () => {
+        await controller.submitAmendCourtBuildingContacts(req, res)
+        expect(courtRegisterService.updateCourtBuildingContacts).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'SHFCC',
+          '1',
+          [
+            {
+              type: 'TEL',
+              detail: '0114 555 1234',
+              id: '1',
+            },
+            {
+              type: 'FAX',
+              detail: '0114 555 4321',
+              id: '2',
+            },
+            {
+              type: 'TEL',
+              detail: '0114 555 9999',
+              id: null,
+            },
+          ]
+        )
+      })
+    })
   })
   describe('parseFilter', () => {
     it('should handle missing query parameters', () => {
