@@ -52,7 +52,7 @@ declare module 'forms' {
     courtId: string
     contacts: {
       id?: string
-      type?: string
+      type?: 'TEL' | 'FAX'
       number?: string
     }[]
   }

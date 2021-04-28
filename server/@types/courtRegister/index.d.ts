@@ -10,3 +10,4 @@ export type InsertCourtBuildingContact = components['schemas']['UpdateContactDto
 export type CourtBuilding = components['schemas']['BuildingDto']
 export type CourtBuildingContact = components['schemas']['ContactDto']
 export type UpdateCourtBuilding = components['schemas']['UpdateBuildingDto']
+export type UpdateCourtBuildingContact = components['schemas']['UpdateContactDto']

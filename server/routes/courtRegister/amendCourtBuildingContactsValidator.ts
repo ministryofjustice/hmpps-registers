@@ -18,7 +18,11 @@ function fixupArrayNotation({ text, href }: { text: string; href: string }) {
   return { text, href: toArrayNotation(href) }
 }
 
-export default function validate(form: AmendCourtBuildingContactsForm, req: Request): string {
+export default async function validate(
+  form: AmendCourtBuildingContactsForm,
+  req: Request,
+  updateService: (courtBuildingContactsForm: AmendCourtBuildingContactsForm) => Promise<void>
+): Promise<string> {
   const errors = validateSync(
     form,
     {
@@ -33,5 +37,8 @@ export default function validate(form: AmendCourtBuildingContactsForm, req: Requ
     req.flash('errors', errors)
     return '/court-register/amend-court-building-contacts'
   }
+
+  await updateService(form)
+
   return `/court-register/details?id=${form.courtId}&action=UPDATED`
 }
