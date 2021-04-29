@@ -11,6 +11,10 @@ import {
   sheffieldMagistratesMainBuilding,
   sheffieldYouthCourt,
 } from '../mockApis/courtRegister'
+import { getRequests } from '../mockApis/wiremock'
+
+type WireMockRequest = { request: { url: string; method: string; body: string } }
+type AllWireMockRequest = { requests: WireMockRequest[] }
 
 context('Court register - amend existing court', () => {
   beforeEach(() => {
@@ -251,6 +255,7 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingContactsPage.saveButton().click()
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
     })
+
     it('can remove one of the numbers', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
       courtDetailsPage.amendBuildingContactsLink('1').click()
@@ -262,8 +267,79 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingContactsPage.number(1).should('not.exist')
       amendCourtBuildingContactsPage.type(1).should('not.exist')
 
-      amendCourtBuildingContactsPage.saveButton().click()
+      amendCourtBuildingContactsPage
+        .saveButton()
+        .click()
+        .then(deleteContactRequests)
+        .then(requests => {
+          expect(requests).to.have.lengthOf(1)
+          expect(requests[0].request.url).to.equal('/court-register/court-maintenance/id/SHFMC/buildings/1/contacts/2')
+        })
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('can amend one of the numbers', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.type(0).select('FAX')
+      amendCourtBuildingContactsPage.number(0).clear().type('0114 555 999')
+
+      amendCourtBuildingContactsPage
+        .saveButton()
+        .click()
+        .then(amendContactRequests)
+        .then(requests => {
+          expect(requests).to.have.lengthOf(1)
+          expect(requests[0].request.url).to.equal('/court-register/court-maintenance/id/SHFMC/buildings/1/contacts/1')
+          expect(JSON.parse(requests[0].request.body)).to.eqls({
+            type: 'FAX',
+            detail: '0114 555 999',
+          })
+        })
+      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('can add a new number', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      courtDetailsPage.amendBuildingContactsLink('1').click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+
+      amendCourtBuildingContactsPage.addAnotherNumberButton().click()
+
+      amendCourtBuildingContactsPage.number(2).type('0114 555 999')
+      amendCourtBuildingContactsPage.type(2).select('FAX')
+
+      amendCourtBuildingContactsPage
+        .saveButton()
+        .click()
+        .then(addContactRequests)
+        .then(requests => {
+          expect(requests).to.have.lengthOf(1)
+          expect(requests[0].request.url).to.equal('/court-register/court-maintenance/id/SHFMC/buildings/1/contacts')
+          expect(JSON.parse(requests[0].request.body)).to.eqls({
+            type: 'FAX',
+            detail: '0114 555 999',
+          })
+        })
       CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
     })
   })
 })
+
+const isDeleteContactRequest = (request: WireMockRequest) =>
+  request.request.url.match('/court-maintenance/id/.*/buildings/.*/contacts/.*') && request.request.method === 'DELETE'
+
+const isAmendContactRequest = (request: WireMockRequest) =>
+  request.request.url.match('/court-maintenance/id/.*/buildings/.*/contacts/.*') && request.request.method === 'PUT'
+
+const isAddContactRequest = (request: WireMockRequest) =>
+  request.request.url.match('/court-maintenance/id/.*/buildings/.*/contacts') && request.request.method === 'POST'
+
+const deleteContactRequests = () =>
+  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isDeleteContactRequest))
+
+const amendContactRequests = () =>
+  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isAmendContactRequest))
+
+const addContactRequests = () =>
+  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isAddContactRequest))
