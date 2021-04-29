@@ -7,6 +7,7 @@ import AmendCourtBuildingContactsPage from '../pages/court-register/amendCourtBu
 import AddCourtBuildingPage from '../pages/court-register/addCourtBuilding'
 import {
   sheffieldCrownCourt,
+  sheffieldMagistratesAnnexeBuilding,
   sheffieldMagistratesCourt,
   sheffieldMagistratesMainBuilding,
   sheffieldYouthCourt,
@@ -39,6 +40,7 @@ context('Court register - amend existing court', () => {
     cy.task('stubCourtTypes')
     cy.login()
     cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)
+    cy.task('stubCourtBuilding', sheffieldMagistratesAnnexeBuilding)
     cy.task('stubAddCourtBuilding')
     cy.task('stubAddCourtBuildingContact')
     cy.task('stubUpdateCourtBuildingContact')
@@ -60,31 +62,31 @@ context('Court register - amend existing court', () => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
       AllCourtsPagedPage.verifyOnPage()
         .viewCourtLink('SHFMC')
-        .should('contain.text', 'Sheffield Magistrates Court')
+        .should('contain.text', sheffieldMagistratesCourt.courtName)
         .click()
     })
     it('Can activate closed court', () => {
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').markAsOpenButton().click()
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').activatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsOpenButton().click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).activatedConfirmationBlock().should('exist')
     })
     it('should show summary of court with link to amend', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.courtDetailsSection().should('contain.text', 'Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.courtDetailsSection().should('contain.text', sheffieldMagistratesCourt.courtName)
       courtDetailsPage.courtDetailsSection().should('contain.text', 'Sheffield Secondary Court - Yorkshire')
       courtDetailsPage.amendCourtDetailsLink().should('contain.text', 'Change')
     })
     it('can navigate to amend court details page', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendCourtDetailsLink().click()
       const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
 
-      amendCourtDetailsPage.name().should('have.value', 'Sheffield Magistrates Court')
+      amendCourtDetailsPage.name().should('have.value', sheffieldMagistratesCourt.courtName)
       amendCourtDetailsPage.description().should('have.value', 'Sheffield Secondary Court - Yorkshire')
       amendCourtDetailsPage.type().should('have.value', 'MAG')
       amendCourtDetailsPage.saveButton()
     })
     it('will validate court details page', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendCourtDetailsLink().click()
       const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
 
@@ -95,14 +97,14 @@ context('Court register - amend existing court', () => {
       courtDetailsWithErrors.errorSummary().contains('Enter a court name between 2 and 200 characters')
     })
     it('will return to court details page with success message after saving', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendCourtDetailsLink().click()
       const amendCourtDetailsPage = AmendCourtDetailsPage.verifyOnPage('SHFMC')
 
       amendCourtDetailsPage.name().clear().type('Sheffield Magistrates New Court')
       amendCourtDetailsPage.saveButton().click()
 
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
   })
   describe('amending a court building', () => {
@@ -110,20 +112,22 @@ context('Court register - amend existing court', () => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
       AllCourtsPagedPage.verifyOnPage()
         .viewCourtLink('SHFMC')
-        .should('contain.text', 'Sheffield Magistrates Court')
+        .should('contain.text', sheffieldMagistratesCourt.courtName)
         .click()
     })
     it('should show summary of court with link to amend each building', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.buildingDetailsSection('1').should('contain.text', 'Sheffield Courts')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.buildingDetailsSection('1').should('contain.text', sheffieldMagistratesMainBuilding.buildingName)
       courtDetailsPage.buildingDetailsSection('2').should('contain.text', 'Sheffield Court Annexe')
       courtDetailsPage.amendBuildingDetailsLink('1').should('contain.text', 'Change')
       courtDetailsPage.amendBuildingDetailsLink('2').should('contain.text', 'Change')
     })
     it('will validate court building details page', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingDetailsLink('1').click()
-      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingDetailPage.buildingName().clear()
       amendCourtBuildingDetailPage.addressLine1().clear()
@@ -132,7 +136,9 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingDetailPage.addressPostcode().clear()
       amendCourtBuildingDetailPage.saveButton().click()
 
-      const amendCourtBuildingDetailPageWithErrors = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingDetailPageWithErrors = AmendCourtBuildingPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
       amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the building name')
       amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the first line of the address')
       amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the town or city')
@@ -140,14 +146,16 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingDetailPageWithErrors.errorSummary().contains('Enter the county')
     })
     it('will return to court details page with success message after saving', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingDetailsLink('1').click()
-      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingDetailPage = AmendCourtBuildingPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingDetailPage.addressLine1().type('67 Castle Street')
       amendCourtBuildingDetailPage.saveButton().click()
 
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
   })
   describe('adding a court building', () => {
@@ -155,16 +163,16 @@ context('Court register - amend existing court', () => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
       AllCourtsPagedPage.verifyOnPage()
         .viewCourtLink('SHFMC')
-        .should('contain.text', 'Sheffield Magistrates Court')
+        .should('contain.text', sheffieldMagistratesCourt.courtName)
         .click()
     })
     it('should show summary of court with link to add a building', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.addBuildingLink().click()
       AddCourtBuildingPage.verifyOnPage()
     })
     it('Entering invalid data keeps you on page with error messages', () => {
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').addBuildingLink().click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).addBuildingLink().click()
       const courtBuilding = AddCourtBuildingPage.verifyOnPage()
       courtBuilding.buildingName().type(' ')
       courtBuilding.addressLine1().type(' ')
@@ -182,7 +190,7 @@ context('Court register - amend existing court', () => {
       courtBuildingWithErrors.errorSummary().contains('Select the country')
     })
     it('should return to court details page with success message', () => {
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').addBuildingLink().click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).addBuildingLink().click()
       const courtBuilding = AddCourtBuildingPage.verifyOnPage()
       courtBuilding.buildingName().type('Main building')
       courtBuilding.addressLine1().type('Crown Square')
@@ -192,7 +200,7 @@ context('Court register - amend existing court', () => {
       courtBuilding.addressPostcode().type('S1 2BJ')
       courtBuilding.addressCountry().check('England')
       courtBuilding.saveButton().click()
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
   })
   describe('amending a court building contacts', () => {
@@ -200,20 +208,30 @@ context('Court register - amend existing court', () => {
       IndexPage.verifyOnPage().courtRegisterLink().click()
       AllCourtsPagedPage.verifyOnPage()
         .viewCourtLink('SHFMC')
-        .should('contain.text', 'Sheffield Magistrates Court')
+        .should('contain.text', sheffieldMagistratesCourt.courtName)
         .click()
     })
     it('should show summary of court with link to amend each set on contacts', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.buildingDetailsSection('1').should('contain.text', 'Sheffield Courts')
-      courtDetailsPage.buildingDetailsSection('2').should('contain.text', 'Sheffield Court Annexe')
-      courtDetailsPage.amendBuildingContactsLink('1').should('contain.text', 'Change')
-      courtDetailsPage.amendBuildingContactsLink('2').should('contain.text', 'Change')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage
+        .buildingDetailsSection(sheffieldMagistratesMainBuilding.id.toString())
+        .should('contain.text', sheffieldMagistratesMainBuilding.buildingName)
+      courtDetailsPage
+        .buildingDetailsSection(sheffieldMagistratesAnnexeBuilding.id.toString())
+        .should('contain.text', sheffieldMagistratesAnnexeBuilding.buildingName)
+      courtDetailsPage
+        .amendBuildingContactsLink(sheffieldMagistratesMainBuilding.id.toString())
+        .should('contain.text', 'Change')
+      courtDetailsPage
+        .amendBuildingContactsLink(sheffieldMagistratesAnnexeBuilding.id.toString())
+        .should('contain.text', 'Change')
     })
     it('will display existing contact details with ability to remove a number', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesMainBuilding.id.toString()).click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.number(0).should('have.value', '0114 555 1234')
       amendCourtBuildingContactsPage.type(0).should('have.value', 'TEL')
@@ -224,42 +242,54 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingContactsPage.removeButton(1).should('contain.text', 'Remove')
     })
     it('should validate a changed number', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesMainBuilding.id.toString()).click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.number(0).clear()
       amendCourtBuildingContactsPage.saveButton().click()
 
-      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
       amendCourtBuildingContactsPageWithErrors.errorSummary().contains('Enter the number')
     })
     it('should validate a new number', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesMainBuilding.id.toString()).click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.addAnotherNumberButton().click()
       amendCourtBuildingContactsPage.saveButton().click()
 
-      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingContactsPageWithErrors = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
       amendCourtBuildingContactsPageWithErrors.errorSummary().contains('Enter the number')
     })
     it('can a add new number but then remove it', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.addAnotherNumberButton().click()
       amendCourtBuildingContactsPage.lastRemoveButton().click()
       amendCourtBuildingContactsPage.saveButton().click()
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
 
     it('can remove one of the numbers', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.removeButton(1).click()
       amendCourtBuildingContactsPage.number(0).should('exist')
@@ -273,14 +303,18 @@ context('Court register - amend existing court', () => {
         .then(deleteContactRequests)
         .then(requests => {
           expect(requests).to.have.lengthOf(1)
-          expect(requests[0].request.url).to.equal('/court-register/court-maintenance/id/SHFMC/buildings/1/contacts/2')
+          expect(requests[0].request.url).to.equal(
+            `/court-register/court-maintenance/id/${sheffieldMagistratesCourt.courtId}/buildings/${sheffieldMagistratesMainBuilding.id}/contacts/2`
+          )
         })
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
     it('can amend one of the numbers', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.type(0).select('FAX')
       amendCourtBuildingContactsPage.number(0).clear().type('0114 555 999')
@@ -297,12 +331,14 @@ context('Court register - amend existing court', () => {
             detail: '0114 555 999',
           })
         })
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
     it('can add a new number', () => {
-      const courtDetailsPage = CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court')
-      courtDetailsPage.amendBuildingContactsLink('1').click()
-      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage('Sheffield Courts')
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesMainBuilding.id.toString()).click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesMainBuilding.buildingName
+      )
 
       amendCourtBuildingContactsPage.addAnotherNumberButton().click()
 
@@ -315,16 +351,52 @@ context('Court register - amend existing court', () => {
         .then(addContactRequests)
         .then(requests => {
           expect(requests).to.have.lengthOf(1)
-          expect(requests[0].request.url).to.equal('/court-register/court-maintenance/id/SHFMC/buildings/1/contacts')
+          expect(requests[0].request.url).to.equal(
+            `/court-register/court-maintenance/id/${sheffieldMagistratesCourt.courtId}/buildings/${sheffieldMagistratesMainBuilding.id}/contacts`
+          )
+
           expect(JSON.parse(requests[0].request.body)).to.eqls({
             type: 'FAX',
             detail: '0114 555 999',
           })
         })
-      CourtDetailsPage.verifyOnPage('Sheffield Magistrates Court').courtUpdatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('can add a new number when none are present to begin with', () => {
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesAnnexeBuilding.id.toString()).click()
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldMagistratesAnnexeBuilding.buildingName
+      )
+
+      // will display empty fields defaulted to telephone
+      amendCourtBuildingContactsPage.number(0).should('have.value', '')
+      amendCourtBuildingContactsPage.type(0).should('have.value', 'TEL')
+
+      amendCourtBuildingContactsPage.number(0).type('0114 555 999')
+      amendCourtBuildingContactsPage.type(0).select('FAX')
+
+      amendCourtBuildingContactsPage
+        .saveButton()
+        .click()
+        .then(addContactRequests)
+        .then(requests => {
+          expect(requests).to.have.lengthOf(1)
+          expect(requests[0].request.url).to.equal(
+            `/court-register/court-maintenance/id/${sheffieldMagistratesCourt.courtId}/buildings/${sheffieldMagistratesAnnexeBuilding.id}/contacts`
+          )
+          expect(JSON.parse(requests[0].request.body)).to.eqls({
+            type: 'FAX',
+            detail: '0114 555 999',
+          })
+        })
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
   })
 })
+
+const geRequestsFor = (filter: (request: WireMockRequest) => boolean) =>
+  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(filter))
 
 const isDeleteContactRequest = (request: WireMockRequest) =>
   request.request.url.match('/court-maintenance/id/.*/buildings/.*/contacts/.*') && request.request.method === 'DELETE'
@@ -335,11 +407,8 @@ const isAmendContactRequest = (request: WireMockRequest) =>
 const isAddContactRequest = (request: WireMockRequest) =>
   request.request.url.match('/court-maintenance/id/.*/buildings/.*/contacts') && request.request.method === 'POST'
 
-const deleteContactRequests = () =>
-  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isDeleteContactRequest))
+const deleteContactRequests = () => geRequestsFor(isDeleteContactRequest)
 
-const amendContactRequests = () =>
-  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isAmendContactRequest))
+const amendContactRequests = () => geRequestsFor(isAmendContactRequest)
 
-const addContactRequests = () =>
-  getRequests().then((response: { body: AllWireMockRequest }) => response.body.requests.filter(isAddContactRequest))
+const addContactRequests = () => geRequestsFor(isAddContactRequest)

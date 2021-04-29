@@ -29,6 +29,50 @@
                     <input type="hidden" name="buildingId" value="{{ form.buildingId }}" />
                     <input type="hidden" name="courtId" value="{{ form.courtId }}" />
                     <input type="hidden" name="buildingname" value="{{ form.buildingname }}" />
+                        {% if  form.contacts.length === 0 %}
+                            {% call govukFieldset({
+                                classes: 'moj-add-another__item',
+                                legend: {
+                                    text: "Contact details for this building?",
+                                    classes: "moj-add-another__title govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                },
+                                attributes: { "data-qa": "contact-details-section-0"}
+                            }) %}
+                                {{ govukInput({
+                                    id: 'contacts[0][number]',
+                                    name: 'contacts[0][number]',
+                                    label: {
+                                        html: 'Number',
+                                        classes: 'govuk-!-font-weight-bold'
+                                    },
+                                    classes: "govuk-input--width-10",
+                                    attributes: {
+                                        'data-name': 'contacts[%index%][number]',
+                                        'data-id': 'contacts[%index%][number]'
+                                    },
+                                    value: '',
+                                    errorMessage: errors | findError('contacts[0][number]')
+
+                                }) }}
+                                {{ govukSelect({
+                                    id: 'contacts[0][type]',
+                                    name: 'contacts[0][type]',
+                                    label: {
+                                        text: "Contact type"
+                                    },
+                                    attributes: {
+                                        'data-name': 'contacts[%index%][type]',
+                                        'data-id': 'contacts[%index%][type]'
+                                    },
+                                    items: [
+                                        { value: 'TEL', text: 'Telephone'},
+                                        { value: 'FAX', text: 'Fax'}
+                                    ] | toSelect('TEL'),
+                                    errorMessage: errors | findError('contacts[0][type]')
+                                }) }}
+                            {% endcall %}
+                        {% endif %}
 
                         {% for contact in form.contacts %}
                             <input type="hidden" name="contacts[{{ loop.index0 }}][id]" value="{{ form.contacts[loop.index0].id }}" />
