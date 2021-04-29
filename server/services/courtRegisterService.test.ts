@@ -762,7 +762,10 @@ describe('Court Register service', () => {
     })
     it('should update existing contact when changed', async () => {
       const scope = fakeCourtRegister
-        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1')
+        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1', {
+          detail: '0114 555 1234',
+          type: 'FAX',
+        })
         .reply(200, data.courtBuildingContact({}))
 
       fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
@@ -813,10 +816,13 @@ describe('Court Register service', () => {
           type: 'TEL',
         },
       ])
+
+      // expect no updates/deletes/inserts
+      expect(fakeCourtRegister.isDone()).toBe(true)
     })
     it('should add contact when new', async () => {
       const scope = fakeCourtRegister
-        .post('/court-maintenance/id/SHFCC/buildings/1/contacts')
+        .post('/court-maintenance/id/SHFCC/buildings/1/contacts', { detail: '0114 555 1234', type: 'FAX' })
         .reply(200, data.courtBuildingContact({}))
 
       fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/1').reply(
@@ -861,9 +867,12 @@ describe('Court Register service', () => {
     })
     it('can delete, insert and update all in one go', async () => {
       const scope = fakeCourtRegister
-        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1')
+        .put('/court-maintenance/id/SHFCC/buildings/1/contacts/1', { detail: '0114 999 1111', type: 'TEL' })
         .reply(200, data.courtBuildingContact({}))
-        .post('/court-maintenance/id/SHFCC/buildings/1/contacts')
+        .post('/court-maintenance/id/SHFCC/buildings/1/contacts', {
+          detail: '0114 999 2222',
+          type: 'TEL',
+        })
         .reply(200, data.courtBuildingContact({}))
         .delete('/court-maintenance/id/SHFCC/buildings/1/contacts/2')
         .reply(200, data.courtBuildingContact({}))

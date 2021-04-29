@@ -90,6 +90,9 @@ jobs:
       - attach_workspace:
           at: ~/app
       - run:
+          name: Type check
+          command: npm run typecheck
+      - run:
           name: Install missing OS dependency
           command: sudo apt-get install libxss1
       - run:
@@ -99,9 +102,6 @@ jobs:
           name: Run wiremock
           command: java -jar wiremock.jar --port 9091
           background: true
-      - run:
-          name: Type check
-          command: npm run typecheck
       - run:
           name: Run the node app.
           command: npm run start-feature

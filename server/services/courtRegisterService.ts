@@ -147,7 +147,7 @@ export default class CourtRegisterService {
     })) as CourtBuilding
 
     const same = (updatedContact: NewOrExistingContact, originalContact: CourtBuildingContact) =>
-      originalContact.id.toString(10) === updatedContact.id
+      originalContact.id.toString() === updatedContact.id
 
     const hasChanged = (updatedContact: NewOrExistingContact) => {
       const originalContact = building.contacts.find(contact => same(updatedContact, contact))
@@ -169,7 +169,7 @@ export default class CourtRegisterService {
         .map(contact => {
           return CourtRegisterService.restClient(token).put({
             path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts/${contact.id}`,
-            data: contact,
+            data: { type: contact.type, detail: contact.detail },
           })
         })
     )
@@ -181,7 +181,7 @@ export default class CourtRegisterService {
         .map(contact => {
           return CourtRegisterService.restClient(token).post({
             path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts`,
-            data: contact,
+            data: { type: contact.type, detail: contact.detail },
           })
         })
     )
