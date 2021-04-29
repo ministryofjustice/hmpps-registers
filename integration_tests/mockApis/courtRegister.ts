@@ -217,6 +217,42 @@ const stubAddCourtBuildingContact = (): SuperAgentRequest =>
       },
     },
   })
+const stubUpdateCourtBuildingContact = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/court-register/court-maintenance/id/.*/buildings/.*/contacts/.*`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        id: 99,
+        buildingId: 99,
+        courtId: 'SHFCC',
+      },
+    },
+  })
+const stubDeleteCourtBuildingContact = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'DELETE',
+      urlPattern: `/court-register/court-maintenance/id/.*/buildings/.*/contacts/.*`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: {
+        id: 99,
+        buildingId: 99,
+        courtId: 'SHFCC',
+      },
+    },
+  })
 
 const stubCourtTypes = (): SuperAgentRequest =>
   stubFor({
@@ -296,5 +332,7 @@ export default {
   stubAddCourt,
   stubAddCourtBuilding,
   stubAddCourtBuildingContact,
+  stubUpdateCourtBuildingContact,
+  stubDeleteCourtBuildingContact,
   stubCourtBuilding,
 }

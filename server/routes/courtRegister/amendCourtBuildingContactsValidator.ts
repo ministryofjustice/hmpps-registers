@@ -18,6 +18,18 @@ function fixupArrayNotation({ text, href }: { text: string; href: string }) {
   return { text, href: toArrayNotation(href) }
 }
 
+function notOrphanedContact(contact: { id?: string; type?: string; number?: string }) {
+  // a removed contact will only have an ID due to constraints in MOJ "add another" pattern
+  // so we have to manually remove these from the form
+  return typeof contact.type !== 'undefined' || typeof contact.number !== 'undefined'
+}
+
+export function amendCourtBuildingContactsFormCloneCleaner(
+  form: AmendCourtBuildingContactsForm
+): AmendCourtBuildingContactsForm {
+  return { ...form, contacts: form.contacts.filter(notOrphanedContact) }
+}
+
 export default async function validate(
   form: AmendCourtBuildingContactsForm,
   req: Request,

@@ -36,6 +36,9 @@ context('Court register - amend existing court', () => {
     cy.login()
     cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)
     cy.task('stubAddCourtBuilding')
+    cy.task('stubAddCourtBuildingContact')
+    cy.task('stubUpdateCourtBuildingContact')
+    cy.task('stubDeleteCourtBuildingContact')
   })
 
   describe('amending a open court', () => {
