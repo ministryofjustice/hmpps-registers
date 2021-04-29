@@ -21,7 +21,7 @@ function fixupArrayNotation({ text, href }: { text: string; href: string }) {
 function notOrphanedContact(contact: { id?: string; type?: string; number?: string }) {
   // a removed contact will only have an ID due to constraints in MOJ "add another" pattern
   // so we have to manually remove these from the form
-  return contact.type || contact.number
+  return typeof contact.type !== 'undefined' || typeof contact.number !== 'undefined'
 }
 
 export function amendCourtBuildingContactsFormCloneCleaner(
