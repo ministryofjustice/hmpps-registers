@@ -254,7 +254,11 @@ export default class CourtRegisterService {
     logger.info(`adding a building for court ${courtId} building ${newBuilding.buildingName}`)
     await CourtRegisterService.restClient(token).post({
       path: `/court-maintenance/id/${courtId}/buildings`,
-      data: newBuilding,
+      data: {
+        ...newBuilding,
+        locality: nullWhenAbsent(newBuilding.locality),
+        subCode: nullWhenAbsent(newBuilding.subCode),
+      },
     })
   }
 }
