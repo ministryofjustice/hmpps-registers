@@ -7,6 +7,7 @@ import AmendCourtBuildingContactsPage from '../pages/court-register/amendCourtBu
 import AddCourtBuildingPage from '../pages/court-register/addCourtBuilding'
 import {
   sheffieldCrownCourt,
+  sheffieldCrownMainBuilding,
   sheffieldMagistratesAnnexeBuilding,
   sheffieldMagistratesCourt,
   sheffieldMagistratesMainBuilding,
@@ -41,6 +42,7 @@ context('Court register - amend existing court', () => {
     cy.login()
     cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)
     cy.task('stubCourtBuilding', sheffieldMagistratesAnnexeBuilding)
+    cy.task('stubCourtBuilding', sheffieldCrownMainBuilding)
     cy.task('stubAddCourtBuilding')
     cy.task('stubAddCourtBuildingContact')
     cy.task('stubUpdateCourtBuildingContact')
@@ -391,6 +393,22 @@ context('Court register - amend existing court', () => {
           })
         })
       CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('cannot remove last number', () => {
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).backLink().click()
+      AllCourtsPagedPage.verifyOnPage()
+        .viewCourtLink(sheffieldCrownCourt.courtId)
+        .should('contain.text', sheffieldCrownCourt.courtName)
+        .click()
+
+      const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldCrownCourt.courtName)
+      courtDetailsPage.amendBuildingContactsLink(sheffieldCrownMainBuilding.id.toString()).click()
+
+      const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
+        sheffieldCrownMainBuilding.buildingName
+      )
+
+      amendCourtBuildingContactsPage.anyRemoveButton().should('not.exist')
     })
   })
 })

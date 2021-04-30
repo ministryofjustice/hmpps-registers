@@ -44,13 +44,34 @@ export const sheffieldMagistratesAnnexeBuilding: CourtBuilding = {
   contacts: [],
 }
 
+export const sheffieldCrownMainBuilding: CourtBuilding = {
+  id: 3,
+  courtId: 'SHFCC',
+  buildingName: 'Sheffield Crown Main Building',
+  street: '25 Castle Street',
+  locality: 'Sheffield City Centre',
+  town: 'Sheffield',
+  county: 'South Yorkshire',
+  postcode: ' S3 8LU',
+  country: 'England',
+  contacts: [
+    {
+      id: 3,
+      courtId: 'SHFMC',
+      buildingId: 2,
+      type: 'FAX',
+      detail: '0114 555 4321',
+    },
+  ],
+}
+
 export const sheffieldCrownCourt: Court = {
   courtId: 'SHFCC',
   courtName: 'Sheffield Crown Court',
   courtDescription: 'Sheffield Main Court - Yorkshire',
   type: { courtType: 'CRN', courtName: 'Crown' },
   active: true,
-  buildings: [],
+  buildings: [sheffieldCrownMainBuilding],
 }
 export const sheffieldMagistratesCourt: Court = {
   courtId: 'SHFMC',

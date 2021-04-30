@@ -14,6 +14,7 @@ const courtDetails = {
   amendBuildingContactsLink: (buildingId: string) =>
     cy.get(`[data-qa=building-summary-section-${buildingId}] [data-qa=change-contact-details-link]`),
   addBuildingLink: () => cy.get(`[data-qa=add-court-building-link]`),
+  backLink: () => cy.contains('Back'),
 }
 const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)
 

@@ -5,6 +5,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% set pageTitle = applicationName + " - Amend Court" %}
 
@@ -24,6 +25,10 @@
                 <h1 class="govuk-heading-xl">Amend court - contact details - {{ form.buildingname }}</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
+                {{ govukDetails({
+                    summaryText: "What contact details should I add?",
+                    text: "There should always be at least one way to contact a court. So enter a telephone number and optional a fax number"
+                }) }}
                 <form action="/court-register/amend-court-building-contacts" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     <input type="hidden" name="buildingId" value="{{ form.buildingId }}" />
@@ -86,7 +91,9 @@
                                 },
                                 attributes: { "data-qa": "contact-details-section-" + loop.index0}
                             }) %}
+                                {% if  form.contacts.length > 1 %}
                                 <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                                {% endif %}
                                 {{ govukInput({
                                     id: 'contacts['+loop.index0+'][number]',
                                     name: 'contacts['+loop.index0+'][number]',
