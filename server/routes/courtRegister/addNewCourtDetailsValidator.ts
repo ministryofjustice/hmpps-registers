@@ -6,7 +6,7 @@ import { validateAsync } from '../../validation/validation'
 export default async function validate(
   form: AddNewCourtForm,
   req: Request,
-  courtLookup: (id: string) => Promise<Court>
+  courtLookup: (id: string) => Promise<Court | undefined>
 ): Promise<string> {
   const errors = await validateAsync(
     form,

@@ -7,8 +7,8 @@ export default async function validate(
   form: AmendCourtBuildingForm,
   req: Request,
   updateService: (courtBuildingForm: AmendCourtBuildingForm) => Promise<void>,
-  courtLookup: (subCode: string) => Promise<Court | null>,
-  courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | null>
+  courtLookup: (subCode: string) => Promise<Court | undefined>,
+  courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | undefined>
 ): Promise<string> {
   const errors = await validateAsync(
     form,

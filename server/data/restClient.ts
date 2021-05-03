@@ -53,21 +53,21 @@ export default class RestClient {
     logger.warn(sanitiseError(error), `Error calling ${this.name}`)
   }
 
-  async get({
+  async get<T>({
     path = null,
     query = '',
     headers = {},
     responseType = '',
     raw = false,
     additionalStatusChecker = () => false,
-  }: GetRequest): Promise<unknown> {
+  }: GetRequest): Promise<T> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
         .get(`${this.apiUrl()}${path}`)
         .ok(res => (res.status >= 200 && res.status < 300) || additionalStatusChecker(res.status))
         .agent(this.agent)
-        .retry(2, (err, res) => {
+        .retry(2, err => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
@@ -78,7 +78,7 @@ export default class RestClient {
         .timeout(this.timeoutConfig())
 
       if (result.notFound) {
-        return null
+        return undefined
       }
 
       return raw ? result : result.body
@@ -89,14 +89,14 @@ export default class RestClient {
     }
   }
 
-  async post({
+  async post<T>({
     path = null,
     headers = {},
     responseType = '',
     data = {},
     raw = false,
     additionalStatusChecker = () => false,
-  }: PostRequest = {}): Promise<unknown> {
+  }: PostRequest = {}): Promise<T> {
     logger.info(`Post using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
@@ -104,7 +104,7 @@ export default class RestClient {
         .send(data)
         .ok(res => (res.status >= 200 && res.status < 300) || additionalStatusChecker(res.status))
         .agent(this.agent)
-        .retry(2, (err, res) => {
+        .retry(2, err => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
@@ -134,7 +134,7 @@ export default class RestClient {
         .put(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(2, (err, res) => {
+        .retry(2, err => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
@@ -157,7 +157,7 @@ export default class RestClient {
       const result = await superagent
         .delete(`${this.apiUrl()}${path}`)
         .agent(this.agent)
-        .retry(2, (err, res) => {
+        .retry(2, err => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
@@ -185,7 +185,7 @@ export default class RestClient {
         .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
         .auth(this.token, { type: 'bearer' })
-        .retry(2, (err, res) => {
+        .retry(2, err => {
           if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message}`)
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
