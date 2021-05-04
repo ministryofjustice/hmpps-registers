@@ -283,7 +283,7 @@ describe('Court Register service', () => {
 
       expect(court.courtId).toEqual('SHFCC')
     })
-    it('will null when court not found', async () => {
+    it('will be undefined when court not found', async () => {
       fakeCourtRegister.get('/courts/id/SHFCC').reply(404, {
         status: 404,
         developerMessage: 'Court SHFCC not found',
@@ -322,7 +322,7 @@ describe('Court Register service', () => {
       expect(courtBuilding.id).toEqual(1)
       expect(courtBuilding.subCode).toEqual('SHFAN')
     })
-    it('will null when court building not found', async () => {
+    it('will be undefined when court building not found', async () => {
       fakeCourtRegister.get('/courts/buildings/sub-code/SHFAN').reply(404, {
         status: 404,
         developerMessage: 'Building SHFAN not found',

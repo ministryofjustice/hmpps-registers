@@ -20,8 +20,8 @@ export function validateAsync<T>(
   rules: Rules,
   customMessages: ErrorMessages,
   lookups: {
-    courtLookup?: lookupFn<Court>
-    courtBuildingLookup?: lookupFn<CourtBuilding>
+    courtLookup?: lookupFn<Court | undefined>
+    courtBuildingLookup?: lookupFn<CourtBuilding | undefined>
   } = {
     courtLookup: () => null,
     courtBuildingLookup: () => null,
