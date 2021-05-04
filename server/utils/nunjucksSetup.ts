@@ -134,7 +134,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
         {
           value: '',
           text: 'All',
-          checked: allCourtsFilter.active === null,
+          checked: allCourtsFilter.active === undefined,
         },
         {
           value: true,
@@ -199,7 +199,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
   }
 
   function removeCourtTypeId(allCourtsFilter: AllCourtsFilter, courtTypeId: string): AllCourtsFilter {
-    const courtTypeIds = allCourtsFilter.courtTypeIds.map(x => x)
+    const courtTypeIds = allCourtsFilter.courtTypeIds?.map(x => x) || []
     courtTypeIds.splice(courtTypeIds.indexOf(courtTypeId), 1)
     return { ...allCourtsFilter, courtTypeIds }
   }

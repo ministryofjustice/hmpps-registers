@@ -76,7 +76,7 @@ export default class CourtRegisterService {
   async findCourt(context: Context, courtId: string): Promise<Court | undefined> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`finding details for court ${courtId}`)
-    return CourtRegisterService.restClient(token).get<Court>({
+    return CourtRegisterService.restClient(token).get<Court | undefined>({
       path: `/courts/id/${courtId}`,
       additionalStatusChecker: status => status === 404,
     })
@@ -85,7 +85,7 @@ export default class CourtRegisterService {
   async findCourtBuilding(context: Context, subCode: string): Promise<CourtBuilding | undefined> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`finding details for court building ${subCode}`)
-    return CourtRegisterService.restClient(token).get<CourtBuilding>({
+    return CourtRegisterService.restClient(token).get<CourtBuilding | undefined>({
       path: `/courts/buildings/sub-code/${subCode}`,
       additionalStatusChecker: status => status === 404,
     })
@@ -113,7 +113,7 @@ export default class CourtRegisterService {
       active: court.active,
       courtName,
       courtType,
-      courtDescription: nullWhenAbsent(courtDescription),
+      courtDescription: undefinedWhenAbsent(courtDescription),
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending court details for ${courtId}`)
@@ -132,8 +132,8 @@ export default class CourtRegisterService {
       path: `/court-maintenance/id/${courtId}/buildings/${buildingId}`,
       data: {
         ...courtBuilding,
-        locality: nullWhenAbsent(courtBuilding.locality),
-        subCode: nullWhenAbsent(courtBuilding.subCode),
+        locality: undefinedWhenAbsent(courtBuilding.locality),
+        subCode: undefinedWhenAbsent(courtBuilding.subCode),
       },
     })
   }
@@ -154,7 +154,7 @@ export default class CourtRegisterService {
       originalContact.id.toString() === updatedContact.id
 
     const hasChanged = (updatedContact: NewOrExistingContact) => {
-      const originalContact = building.contacts.find(contact => same(updatedContact, contact))
+      const originalContact = building.contacts?.find(contact => same(updatedContact, contact))
       return (
         originalContact &&
         (originalContact.type !== updatedContact.type || originalContact.detail !== updatedContact.detail)
@@ -192,12 +192,12 @@ export default class CourtRegisterService {
 
     // delete old ones
     await Promise.all(
-      building.contacts.filter(noLongerPresent).map(contact => {
+      building.contacts?.filter(noLongerPresent).map(contact => {
         return CourtRegisterService.restClient(token).delete({
           path: `/court-maintenance/id/${courtId}/buildings/${buildingId}/contacts/${contact.id}`,
           data: contact,
         })
-      })
+      }) || []
     )
   }
 
@@ -260,11 +260,12 @@ export default class CourtRegisterService {
       path: `/court-maintenance/id/${courtId}/buildings`,
       data: {
         ...newBuilding,
-        locality: nullWhenAbsent(newBuilding.locality),
-        subCode: nullWhenAbsent(newBuilding.subCode),
+        locality: undefinedWhenAbsent(newBuilding.locality),
+        subCode: undefinedWhenAbsent(newBuilding.subCode),
       },
     })
   }
 }
 
-const nullWhenAbsent = (value: string): string | null => (value && value.trim().length > 0 && value) || null
+const undefinedWhenAbsent = (value: string | undefined): string | undefined =>
+  (value && value.trim().length > 0 && value) || undefined

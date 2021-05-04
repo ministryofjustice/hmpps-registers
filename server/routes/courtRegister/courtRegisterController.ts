@@ -52,14 +52,14 @@ export default class CourtRegisterController {
     }
   }
 
-  private static parseBooleanFromQuery(boolAsString: string | undefined): boolean | null {
+  private static parseBooleanFromQuery(boolAsString: string | undefined): boolean | undefined {
     if (boolAsString === 'true') return true
     if (boolAsString === 'false') return false
-    return null
+    return undefined
   }
 
-  private static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | null {
-    if (!stringArray) return null
+  private static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | undefined {
+    if (!stringArray) return undefined
     if (typeof stringArray === 'string') return [stringArray]
     return stringArray
   }
@@ -69,7 +69,7 @@ export default class CourtRegisterController {
 
     const court = await this.courtRegisterService.getCourt(context(res), id)
 
-    const view = new CourtDetailsView(court, (action || 'NONE') as Action, req.session.courtListPageLink)
+    const view = new CourtDetailsView(court, (action || 'NONE') as Action, req.session.courtListPageLink as string)
 
     res.render('pages/court-register/courtDetails', view.renderArgs)
   }
@@ -93,7 +93,7 @@ export default class CourtRegisterController {
     const view = new AddNewCourtDetailsView(
       req.session.addNewCourtForm,
       courtTypes,
-      req.session.courtListPageLink,
+      req.session.courtListPageLink as string,
       req.flash('errors')
     )
 
@@ -113,7 +113,7 @@ export default class CourtRegisterController {
   addNewCourtBuilding(req: Request, res: Response): void {
     const view = new AddNewCourtBuildingView(
       req.session.addNewCourtForm,
-      req.session.courtListPageLink,
+      req.session.courtListPageLink as string,
       req.flash('errors')
     )
 
@@ -129,7 +129,7 @@ export default class CourtRegisterController {
   addNewCourtContactDetails(req: Request, res: Response): void {
     const view = new AddNewCourtContactDetailsView(
       req.session.addNewCourtForm,
-      req.session.courtListPageLink,
+      req.session.courtListPageLink as string,
       req.flash('errors')
     )
 
@@ -147,7 +147,11 @@ export default class CourtRegisterController {
 
     const courtTypes = await this.courtRegisterService.getCourtTypes(context(res))
 
-    const view = new AddNewCourtSummaryView(req.session.addNewCourtForm, courtTypes, req.session.courtListPageLink)
+    const view = new AddNewCourtSummaryView(
+      req.session.addNewCourtForm,
+      courtTypes,
+      req.session.courtListPageLink as string
+    )
 
     res.render('pages/court-register/addNewCourtSummary', view.renderArgs)
   }
@@ -226,7 +230,7 @@ export default class CourtRegisterController {
 
     const view = new AmendCourtBuildingView(
       req.session.amendCourtBuildingForm,
-      req.session.courtListPageLink,
+      req.session.courtListPageLink as string,
       req.flash('errors')
     )
 
@@ -236,7 +240,7 @@ export default class CourtRegisterController {
   async amendCourtBuilding(req: Request, res: Response): Promise<void> {
     const view = new AmendCourtBuildingView(
       req.session.amendCourtBuildingForm,
-      req.session.courtListPageLink,
+      req.session.courtListPageLink as string,
       req.flash('errors')
     )
 
@@ -260,7 +264,12 @@ export default class CourtRegisterController {
             country: form.addresscountry,
             subCode: form.subCode,
           }
-          return this.courtRegisterService.updateCourtBuilding(context(res), form.courtId, form.id, updatedBuilding)
+          return this.courtRegisterService.updateCourtBuilding(
+            context(res),
+            form.courtId as string,
+            form.id,
+            updatedBuilding
+          )
         },
         subCode => this.courtRegisterService.findCourt(context(res), subCode),
         subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
@@ -303,7 +312,7 @@ export default class CourtRegisterController {
             country: form.addresscountry,
             subCode: form.subCode,
           }
-          return this.courtRegisterService.addCourtBuilding(context(res), form.courtId, newBuilding)
+          return this.courtRegisterService.addCourtBuilding(context(res), form.courtId as string, newBuilding)
         },
         subCode => this.courtRegisterService.findCourt(context(res), subCode),
         subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
@@ -320,7 +329,7 @@ export default class CourtRegisterController {
       buildingname: courtBuilding.buildingName,
       buildingId: courtBuilding.id,
       courtId: courtBuilding.courtId,
-      contacts: courtBuilding.contacts.map(contact => ({
+      contacts: courtBuilding.contacts?.map(contact => ({
         id: contact.id,
         type: contact.type,
         number: contact.detail,
@@ -347,10 +356,13 @@ export default class CourtRegisterController {
           form.courtId,
           form.buildingId,
           form.contacts.map(contact => {
+            const type = contact.type as 'FAX' | 'TEL'
+            const detail: string = contact.number as string
+
             return {
-              type: contact.type,
-              detail: contact.number,
-              id: contact.id || null,
+              type,
+              detail,
+              id: contact.id || undefined,
             }
           })
         )

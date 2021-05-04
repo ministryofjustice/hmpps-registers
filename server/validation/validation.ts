@@ -13,7 +13,7 @@ Validator.register(
   },
   'Enter a real postcode, like AA11AA'
 )
-type lookupFn<T> = (code: string) => Promise<T | null>
+type lookupFn<T> = (code: string) => Promise<T | undefined>
 
 export function validateAsync<T>(
   form: T,
@@ -23,14 +23,18 @@ export function validateAsync<T>(
     courtLookup?: lookupFn<Court | undefined>
     courtBuildingLookup?: lookupFn<CourtBuilding | undefined>
   } = {
-    courtLookup: () => null,
-    courtBuildingLookup: () => null,
+    courtLookup: () => Promise.resolve(undefined),
+    courtBuildingLookup: () => Promise.resolve(undefined),
   }
 ): Promise<Array<{ text: string; href: string }>> {
   Validator.registerAsync(
     'unique-subcode',
     async (value, allowedBuildingId, request, passes) => {
-      if (typeof value === 'string') {
+      if (
+        typeof value === 'string' &&
+        typeof lookups.courtLookup === 'function' &&
+        typeof lookups.courtBuildingLookup === 'function'
+      ) {
         if (isCourtOrBuildingCode(value)) {
           const existingCourt = await lookups.courtLookup(value)
           if (existingCourt) {
@@ -56,7 +60,7 @@ export function validateAsync<T>(
   Validator.registerAsync(
     'unique-court-code',
     async (value, requirment, request, passes) => {
-      if (typeof value === 'string') {
+      if (typeof value === 'string' && typeof lookups.courtLookup === 'function') {
         if (isCourtOrBuildingCode(value)) {
           const existingCourt = await lookups.courtLookup(value)
           if (existingCourt) {

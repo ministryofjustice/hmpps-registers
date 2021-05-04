@@ -54,7 +54,7 @@ export default class RestClient {
   }
 
   async get<T>({
-    path = null,
+    path,
     query = '',
     headers = {},
     responseType = '',
@@ -78,7 +78,7 @@ export default class RestClient {
         .timeout(this.timeoutConfig())
 
       if (result.notFound) {
-        return undefined
+        return (undefined as unknown) as T
       }
 
       return raw ? result : result.body
@@ -90,7 +90,7 @@ export default class RestClient {
   }
 
   async post<T>({
-    path = null,
+    path,
     headers = {},
     responseType = '',
     data = {},
@@ -121,13 +121,7 @@ export default class RestClient {
     }
   }
 
-  async put({
-    path = null,
-    headers = {},
-    responseType = '',
-    data = {},
-    raw = false,
-  }: PutRequest = {}): Promise<unknown> {
+  async put({ path, headers = {}, responseType = '', data = {}, raw = false }: PutRequest = {}): Promise<unknown> {
     logger.info(`Put using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
@@ -151,7 +145,7 @@ export default class RestClient {
     }
   }
 
-  async delete({ path = null, headers = {}, responseType = '', raw = false }: DeleteRequest = {}): Promise<unknown> {
+  async delete({ path, headers = {}, responseType = '', raw = false }: DeleteRequest = {}): Promise<unknown> {
     logger.info(`Delete using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
@@ -174,11 +168,7 @@ export default class RestClient {
     }
   }
 
-  async stream({
-    path = null,
-    headers = {},
-    errorLogger = this.defaultErrorLogger,
-  }: StreamRequest = {}): Promise<unknown> {
+  async stream({ path, headers = {}, errorLogger = this.defaultErrorLogger }: StreamRequest = {}): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path}`)
     return new Promise((resolve, reject) => {
       superagent

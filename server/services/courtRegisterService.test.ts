@@ -12,6 +12,7 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import CourtRegisterService, { AddCourt } from './courtRegisterService'
 import config from '../config'
 import data from '../routes/testutils/mockData'
+import TokenStore from '../data/tokenStore'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -30,7 +31,7 @@ describe('Court Register service', () => {
 
   describe('getAllCourts', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -64,7 +65,7 @@ describe('Court Register service', () => {
   })
   describe('getPageOfCourts', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -224,7 +225,7 @@ describe('Court Register service', () => {
   })
   describe('getCourt', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -261,7 +262,7 @@ describe('Court Register service', () => {
   })
   describe('findCourt', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -281,7 +282,7 @@ describe('Court Register service', () => {
 
       const court = await courtRegisterService.findCourt({}, 'SHFCC')
 
-      expect(court.courtId).toEqual('SHFCC')
+      expect(court?.courtId).toEqual('SHFCC')
     })
     it('will be undefined when court not found', async () => {
       fakeCourtRegister.get('/courts/id/SHFCC').reply(404, {
@@ -296,7 +297,7 @@ describe('Court Register service', () => {
   })
   describe('findCourtBuilding', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -318,9 +319,9 @@ describe('Court Register service', () => {
 
       const courtBuilding = await courtRegisterService.findCourtBuilding({}, 'SHFAN')
 
-      expect(courtBuilding.courtId).toEqual('SHFCC')
-      expect(courtBuilding.id).toEqual(1)
-      expect(courtBuilding.subCode).toEqual('SHFAN')
+      expect(courtBuilding?.courtId).toEqual('SHFCC')
+      expect(courtBuilding?.id).toEqual(1)
+      expect(courtBuilding?.subCode).toEqual('SHFAN')
     })
     it('will be undefined when court building not found', async () => {
       fakeCourtRegister.get('/courts/buildings/sub-code/SHFAN').reply(404, {
@@ -336,7 +337,7 @@ describe('Court Register service', () => {
   describe('updateActiveMarker', () => {
     let updatedCourt: UpdateCourt
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
       fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({}))
       fakeCourtRegister
@@ -376,7 +377,7 @@ describe('Court Register service', () => {
   describe('updateCourtDetails', () => {
     let updatedCourt: UpdateCourt
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
       fakeCourtRegister.get('/courts/id/SHFCC').reply(200, data.court({ active: false }))
       fakeCourtRegister
@@ -399,7 +400,6 @@ describe('Court Register service', () => {
           courtName: 'Sheffield Crown Court',
           courtType: 'CRN',
           active: false,
-          courtDescription: null,
         })
       )
     })
@@ -417,7 +417,7 @@ describe('Court Register service', () => {
       country: 'England',
     }
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
       fakeCourtRegister
         .put('/court-maintenance/id/SHFCC/buildings/1', body => {
@@ -436,16 +436,14 @@ describe('Court Register service', () => {
 
       expect(updatedCourtBuilding).toEqual(courtBuilding)
     })
-    it('will send null rather than blanks', async () => {
+    it('will send no attribute rather than blanks', async () => {
       const buildingWithBlanks: UpdateCourtBuilding = { ...courtBuilding, locality: '', subCode: '  ' }
       await courtRegisterService.updateCourtBuilding({ username: 'tommy' }, 'SHFCC', '1', buildingWithBlanks)
 
       expect(updatedCourtBuilding).toEqual({
         buildingName: 'Crown Square',
         street: 'High Street',
-        locality: null,
         town: 'Sheffield',
-        subCode: null,
         postcode: 'S1 2BJ',
         county: 'South Yorkshire',
         country: 'England',
@@ -454,7 +452,7 @@ describe('Court Register service', () => {
   })
   describe('getCourtTypes', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -485,7 +483,7 @@ describe('Court Register service', () => {
     let addCourtRequest: AddCourt
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
       addCourtRequest = {
         court: {
@@ -555,10 +553,10 @@ describe('Court Register service', () => {
     })
 
     describe('on success', () => {
-      let newAddedCourt: InsertCourt
-      let newAddedBuilding: InsertCourtBuilding
-      let newAddedBuildingContactTelephone: InsertCourtBuildingContact
-      let newAddedBuildingContactFax: InsertCourtBuildingContact
+      let newAddedCourt: InsertCourt | null
+      let newAddedBuilding: InsertCourtBuilding | null
+      let newAddedBuildingContactTelephone: InsertCourtBuildingContact | null
+      let newAddedBuildingContactFax: InsertCourtBuildingContact | null
       beforeEach(() => {
         addCourtRequest = {
           court: {
@@ -683,7 +681,7 @@ describe('Court Register service', () => {
   })
   describe('getCourtBuilding', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
@@ -729,7 +727,7 @@ describe('Court Register service', () => {
       country: 'England',
     }
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
       fakeCourtRegister
         .post('/court-maintenance/id/SHFCC/buildings', body => {
@@ -748,16 +746,14 @@ describe('Court Register service', () => {
 
       expect(newCourtBuilding).toEqual(courtBuilding)
     })
-    it('will send null rather than blanks', async () => {
+    it('will not send attribute rather than blanks', async () => {
       const buildingWithBlanks: InsertCourtBuilding = { ...courtBuilding, locality: '', subCode: '  ' }
       await courtRegisterService.addCourtBuilding({ username: 'tommy' }, 'SHFCC', buildingWithBlanks)
 
       expect(newCourtBuilding).toEqual({
         buildingName: 'Crown Square',
         street: 'High Street',
-        locality: null,
         town: 'Sheffield',
-        subCode: null,
         postcode: 'S1 2BJ',
         county: 'South Yorkshire',
         country: 'England',
@@ -766,7 +762,7 @@ describe('Court Register service', () => {
   })
   describe('updateCourtBuildingContacts', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)
     })
     it('username will be used by client', async () => {

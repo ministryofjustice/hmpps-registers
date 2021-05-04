@@ -61,7 +61,7 @@ describe('courtsPageMapper', () => {
   }
   describe('empty filter', () => {
     beforeEach(() => {
-      courtsPageViewDetails = courtsPageMapper(courtsPage, { active: null, courtTypeIds: null })
+      courtsPageViewDetails = courtsPageMapper(courtsPage, { active: undefined, courtTypeIds: undefined })
     })
     it('will map court id', () => {
       expect(courtsPageViewDetails.courts[0].id).toEqual('SHFCC')
@@ -181,7 +181,7 @@ describe('courtBuildingContactMapper', () => {
 
 describe('pageLinkMapper', () => {
   it('will handle null filters', () => {
-    expect(pageLinkMapper({ active: null, courtTypeIds: null }, 1)).toEqual(
+    expect(pageLinkMapper({ active: undefined, courtTypeIds: undefined }, 1)).toEqual(
       '/court-register?page=1&active=&courtTypeIds='
     )
   })
