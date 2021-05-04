@@ -85,6 +85,12 @@ describe('addNewCourtBuildingValidator', () => {
       expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
+    it('addresspostcode with mixed case is ok', () => {
+      const form = { ...validForm, addresspostcode: 's1 2B j' }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
+      expect(req.flash).toHaveBeenCalledTimes(0)
+    })
     it('addresspostcode with common punctuation anywhere is ok', () => {
       const form = { ...validForm, addresspostcode: 'S1-(2BJ)' }
       const nextPage = validate(form, req)

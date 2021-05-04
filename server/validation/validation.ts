@@ -6,7 +6,7 @@ Validator.register(
   value => {
     if (typeof value === 'string') {
       return Boolean(
-        value.replace(/[\s.,/=\-_`()]/g, '').match(/^[A-Z]{1,2}[0-9R][0-9A-Z]?[0-9][ABD-HJLNP-UW-Z]{2}$/)
+        value.replace(/[\s.,/=\-_`()]/g, '').match(/^[A-Z]{1,2}[0-9R][0-9A-Z]?[0-9][ABD-HJLNP-UW-Z]{2}$/i)
       ).valueOf()
     }
     return false
