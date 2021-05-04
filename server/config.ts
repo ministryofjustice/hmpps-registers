@@ -37,30 +37,30 @@ export default {
   staticResourceCacheDuration: 20,
   redis: {
     host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    port: (process.env.REDIS_PORT && parseInt(process.env.REDIS_PORT, 10)) || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },
   session: {
-    secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
+    secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction) as string,
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120')),
   },
   apis: {
     hmppsAuth: {
-      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
+      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction) as string,
       externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
       },
       agent: new AgentConfig(),
-      apiClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
-      systemClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction),
-      systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+      apiClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction) as string,
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
+      systemClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction) as string,
+      systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
     },
     tokenVerification: {
-      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
+      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction) as string,
       timeout: {
         response: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_DEADLINE', 5000)),
@@ -69,7 +69,7 @@ export default {
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
     courtRegister: {
-      url: get('COURT_REGISTER_API_URL', 'http://localhost:8101', requiredInProduction),
+      url: get('COURT_REGISTER_API_URL', 'http://localhost:8101', requiredInProduction) as string,
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
@@ -77,5 +77,5 @@ export default {
       agent: new AgentConfig(),
     },
   },
-  domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
+  domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction) as string,
 }

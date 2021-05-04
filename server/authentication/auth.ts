@@ -5,6 +5,7 @@ import type { RequestHandler } from 'express'
 import config from '../config'
 import generateOauthClientToken from './clientCredentials'
 import type { TokenVerifier } from '../data/tokenVerification'
+import { User } from '../data/hmppsAuthClient'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -13,7 +14,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((user, done) => {
   // Not used but required for Passport
-  done(null, user)
+  done(null, user as User)
 })
 
 export type AuthenticationMiddleware = (tokenVerifier: TokenVerifier) => RequestHandler

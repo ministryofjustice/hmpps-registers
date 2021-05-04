@@ -1,9 +1,6 @@
 import convertToTitleCase from './utils'
 
 describe('Convert to title case', () => {
-  it('null string', () => {
-    expect(convertToTitleCase(null)).toEqual('')
-  })
   it('empty string', () => {
     expect(convertToTitleCase('')).toEqual('')
   })

@@ -28,7 +28,7 @@ export default {
     county = 'South Yorkshire',
     country = 'England',
     courtId = 'SHFCC',
-    subCode = null,
+    subCode = undefined,
   }: Partial<CourtBuilding>): CourtBuilding =>
     ({
       id,

@@ -1,9 +1,10 @@
 import CourtRegisterService from '../../services/courtRegisterService'
 import data from './mockData'
+import HmppsAuthClient from '../../data/hmppsAuthClient'
 
 jest.mock('../../services/courtRegisterService')
 
-const courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+const courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
 courtRegisterService.getPageOfCourts.mockResolvedValue({
   content: [
     data.court({

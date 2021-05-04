@@ -1,4 +1,5 @@
 import UserService, { UserDetails } from '../../services/userService'
+import HmppsAuthClient from '../../data/hmppsAuthClient'
 
 const user = {
   name: 'john smith',
@@ -10,7 +11,7 @@ const user = {
 
 export default class MockUserService extends UserService {
   constructor() {
-    super(undefined)
+    super({} as HmppsAuthClient)
   }
 
   async getUser(token: string): Promise<UserDetails> {

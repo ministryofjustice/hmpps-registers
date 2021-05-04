@@ -22,8 +22,8 @@ describe('amendCourtBuildingValidator', () => {
 
   describe('validate', () => {
     let updateService: jest.Mocked<(form: AmendCourtBuildingForm) => Promise<void>>
-    let courtLookupService: jest.Mocked<(subCode: string) => Promise<Court | null>>
-    let courtBuildingLookupService: jest.Mocked<(subCode: string) => Promise<CourtBuilding | null>>
+    let courtLookupService: jest.Mocked<(subCode: string) => Promise<Court | undefined>>
+    let courtBuildingLookupService: jest.Mocked<(subCode: string) => Promise<CourtBuilding | undefined>>
     beforeEach(() => {
       updateService = jest.fn().mockResolvedValue(null)
       courtLookupService = jest.fn().mockResolvedValue(null)

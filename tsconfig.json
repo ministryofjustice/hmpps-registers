@@ -16,7 +16,8 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "typeRoots": ["./server/@types", "./node_modules/@types"],
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist"],
   "include": ["**/*.js", "**/*.ts"]
