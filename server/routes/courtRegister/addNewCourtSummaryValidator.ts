@@ -8,7 +8,7 @@ export default async function validate(
   req: Request,
   addCourtService: (addCourt: AddCourt) => Promise<AddUpdateResponse>
 ): Promise<string> {
-  const errors: Array<{ text: string; href?: string }> = []
+  const errors: Array<{ text?: string; href?: string }> = []
 
   const response = await addCourtService(asAddCourt(form))
   if (!response.success) {
@@ -25,15 +25,15 @@ function asAddCourt(form: AddNewCourtForm): AddCourt {
   const contacts: InsertCourtBuildingContact[] = [
     {
       type: 'TEL',
-      detail: form.telephonenumber,
+      detail: form.telephonenumber as string,
     },
   ]
 
   const addCourt: AddCourt = {
     court: {
-      courtId: form.id,
-      courtName: form.name,
-      courtType: form.type,
+      courtId: form.id as string,
+      courtName: form.name as string,
+      courtType: form.type as string,
       active: true,
     },
     building: {

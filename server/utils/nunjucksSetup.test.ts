@@ -283,7 +283,7 @@ describe('toActiveFilterRadioButtons', () => {
     expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
   })
   it('should map null to all courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: undefined })
     expect(result.items).toEqual([
       {
         value: '',

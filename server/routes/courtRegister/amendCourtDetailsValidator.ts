@@ -5,7 +5,7 @@ import { validate as validateSync } from '../../validation/validation'
 export default async function validate(
   form: AmendCourtDetailsForm,
   req: Request,
-  updateService: (id: string, name: string, type: string, description: string) => Promise<void>
+  updateService: (id: string, name: string, type: string, description?: string) => Promise<void>
 ): Promise<string> {
   const errors = await validateSync(
     form,
@@ -25,7 +25,7 @@ export default async function validate(
     return `/court-register/amend-court-details`
   }
 
-  await updateService(form.id, form.name, form.type, form.description)
+  await updateService(form.id, form.name as string, form.type, form.description)
 
   return `/court-register/details?id=${form.id}&action=UPDATED`
 }

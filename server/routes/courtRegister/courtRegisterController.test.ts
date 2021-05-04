@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import CourtRegisterService from '../../services/courtRegisterService'
 import CourtRegisterController from './courtRegisterController'
 import data from '../testutils/mockData'
+import HmppsAuthClient from '../../data/hmppsAuthClient'
 
 jest.mock('../../services/courtRegisterService')
 
@@ -22,7 +23,7 @@ describe('Court Register controller', () => {
   afterEach(jest.resetAllMocks)
   describe('getPageOfCourts', () => {
     beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
       controller = new CourtRegisterController(courtRegisterService)
       courtRegisterService.getPageOfCourts.mockResolvedValue({
         content: [
@@ -63,10 +64,7 @@ describe('Court Register controller', () => {
     })
     it('will parse an empty filter from the query parameters', async () => {
       await controller.showAllCourts(req, res)
-      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
-        active: null,
-        courtTypeIds: null,
-      })
+      expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {})
     })
     it('will parse a filter from the query parameters', async () => {
       const reqWithQueryParms = ({
@@ -94,7 +92,7 @@ describe('Court Register controller', () => {
   })
   describe('viewCourt', () => {
     beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
       controller = new CourtRegisterController(courtRegisterService)
       courtRegisterService.getCourt.mockResolvedValue(data.court({ courtId: 'SHFCC' }))
     })
@@ -130,7 +128,7 @@ describe('Court Register controller', () => {
   })
   describe('toggleCourtActive', () => {
     beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
       controller = new CourtRegisterController(courtRegisterService)
       req.body = {
         id: 'SHFCC',
@@ -163,7 +161,7 @@ describe('Court Register controller', () => {
   })
   describe('Add new court flow', () => {
     beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
       controller = new CourtRegisterController(courtRegisterService)
       courtRegisterService.getCourtTypes.mockResolvedValue([
         {
@@ -260,7 +258,7 @@ describe('Court Register controller', () => {
   })
   describe('Amend court flow', () => {
     beforeEach(() => {
-      courtRegisterService = new CourtRegisterService(null) as jest.Mocked<CourtRegisterService>
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
       controller = new CourtRegisterController(courtRegisterService)
       courtRegisterService.getCourt.mockResolvedValue(
         data.court({
@@ -313,8 +311,8 @@ describe('Court Register controller', () => {
           ],
         })
       )
-      courtRegisterService.updateCourtDetails.mockResolvedValue(null)
-      courtRegisterService.updateCourtBuilding.mockResolvedValue(null)
+      courtRegisterService.updateCourtDetails.mockResolvedValue(undefined)
+      courtRegisterService.updateCourtBuilding.mockResolvedValue(undefined)
     })
     describe('amendCourtDetailsStart', () => {
       beforeEach(() => {
@@ -807,7 +805,7 @@ describe('Court Register controller', () => {
             {
               type: 'TEL',
               detail: '0114 555 9999',
-              id: null,
+              id: undefined,
             },
           ]
         )
@@ -819,41 +817,41 @@ describe('Court Register controller', () => {
       const request = ({
         query: {},
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: null, courtTypeIds: null })
+      expect(filter).toEqual({ active: undefined, courtTypeIds: undefined })
     })
     it('should handle active query parameter', () => {
       const request = ({
         query: { active: 'true' },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: true, courtTypeIds: null })
+      expect(filter).toEqual({ active: true, courtTypeIds: undefined })
     })
     it('should handle single courtTypeIds query parameter', () => {
       const request = ({
         query: { courtTypeIds: 'CRN' },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN'] })
+      expect(filter).toEqual({ active: undefined, courtTypeIds: ['CRN'] })
     })
     it('should handle multiple courtTypeIds query parameter', () => {
       const request = ({
         query: { courtTypeIds: ['CRN', 'COU'] },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: null, courtTypeIds: ['CRN', 'COU'] })
+      expect(filter).toEqual({ active: undefined, courtTypeIds: ['CRN', 'COU'] })
     })
   })
 })
