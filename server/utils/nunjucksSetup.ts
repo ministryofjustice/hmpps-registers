@@ -134,7 +134,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
         {
           value: '',
           text: 'All',
-          checked: allCourtsFilter.active === null,
+          checked: allCourtsFilter.active === undefined,
         },
         {
           value: true,

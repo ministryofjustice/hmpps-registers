@@ -76,7 +76,7 @@ export default class CourtRegisterService {
   async findCourt(context: Context, courtId: string): Promise<Court | undefined> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`finding details for court ${courtId}`)
-    return CourtRegisterService.restClient(token).get<Court>({
+    return CourtRegisterService.restClient(token).get<Court | undefined>({
       path: `/courts/id/${courtId}`,
       additionalStatusChecker: status => status === 404,
     })
@@ -85,7 +85,7 @@ export default class CourtRegisterService {
   async findCourtBuilding(context: Context, subCode: string): Promise<CourtBuilding | undefined> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`finding details for court building ${subCode}`)
-    return CourtRegisterService.restClient(token).get<CourtBuilding>({
+    return CourtRegisterService.restClient(token).get<CourtBuilding | undefined>({
       path: `/courts/buildings/sub-code/${subCode}`,
       additionalStatusChecker: status => status === 404,
     })
