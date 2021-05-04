@@ -343,6 +343,19 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
 })
+
+describe('toTextSearchInput', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create text search metadata', () => {
+    const result = njk.getFilter('toTextSearchInput')()
+    expect(result.label.text).toBeTruthy()
+    expect(result.label.classes).toContain('govuk-label')
+    expect(result.id).toEqual('textSearch')
+    expect(result.name).toEqual('textSearch')
+  })
+})
+
 describe('toCourtListFilter', () => {
   const app = express()
   const njk = nunjucksSetup(app)
@@ -352,7 +365,7 @@ describe('toCourtListFilter', () => {
     expect(result.selectedFilters.heading.text).toBeTruthy()
     expect(result.selectedFilters.clearLink.text).toBeTruthy()
   })
-  it('should show selected court types', () => {
+  it('should show selected court types cancel tags', () => {
     const result = njk.getFilter('toCourtListFilter')(
       [
         { courtType: 'CRN', courtName: 'Crown' },
@@ -387,7 +400,7 @@ describe('toCourtListFilter', () => {
       ])
     )
   })
-  it('should show active Open', () => {
+  it('should show active Open cancel tag', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: true })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
@@ -405,7 +418,7 @@ describe('toCourtListFilter', () => {
       ])
     )
   })
-  it('should show active Closed', () => {
+  it('should show active Closed cancel tag', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
@@ -417,6 +430,24 @@ describe('toCourtListFilter', () => {
             {
               href: '/court-register?',
               text: 'Closed',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+  it('should show textSearch cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { textSearch: 'some-text-search' })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'some-text-search',
             },
           ],
         }),

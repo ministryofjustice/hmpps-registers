@@ -1,7 +1,7 @@
 import nunjucks from 'nunjucks'
 import express from 'express'
 import path from 'path'
-import querystring from 'querystring'
+import querystring, { ParsedUrlQueryInput } from 'querystring'
 import { PageMetaData } from './page'
 import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -150,12 +150,27 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
+  njkEnv.addFilter('toTextSearchInput', () => {
+    return {
+      label: {
+        text: 'Search',
+        classes: 'govuk-label--m',
+      },
+      id: 'textSearch',
+      name: 'textSearch',
+      hint: {
+        text: 'Search for any text saved against a court, its buildings or its contacts',
+      },
+    }
+  })
+
   njkEnv.addFilter(
     'toCourtListFilter',
     (courtTypes: CourtType[], allCourtsFilter: AllCourtsFilter, filterOptionsHtml: string) => {
       const hrefBase = '/court-register?'
       const cancelCourtTypeFilterTags = getCancelCourtTypeFilterTags(allCourtsFilter, hrefBase, courtTypes)
       const cancelActiveFilterTags = getCancelActiveFilterTags(allCourtsFilter, hrefBase)
+      const textSearchFilterTags = getTextSearchFilterTags(allCourtsFilter, hrefBase)
       return {
         heading: {
           text: 'Filter',
@@ -169,6 +184,12 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
             href: '/court-register',
           },
           categories: [
+            {
+              heading: {
+                text: 'Search',
+              },
+              items: textSearchFilterTags,
+            },
             {
               heading: {
                 text: 'Open or Closed',
@@ -187,6 +208,16 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       }
     }
   )
+
+  function getTextSearchFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
+    const { textSearch, ...newFilter }: ParsedUrlQueryInput = allCourtsFilter
+    return [
+      {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: allCourtsFilter.textSearch,
+      },
+    ]
+  }
 
   function getCancelCourtTypeFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string, courtTypes: CourtType[]) {
     return allCourtsFilter.courtTypeIds?.map(courtTypeId => {
@@ -209,7 +240,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
   }
 
   function getCancelActiveFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
-    const newFilter = { courtTypeIds: allCourtsFilter.courtTypeIds }
+    const { active, ...newFilter }: ParsedUrlQueryInput = allCourtsFilter
     if (allCourtsFilter.active === true) {
       return [
         {

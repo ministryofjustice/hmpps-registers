@@ -103,4 +103,5 @@ export function pageLinkMapper(allCourtsFilter: AllCourtsFilter, pageNumber: num
 export type AllCourtsFilter = {
   courtTypeIds?: string[]
   active?: boolean
+  textSearch?: string
 }
