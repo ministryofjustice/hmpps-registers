@@ -364,7 +364,7 @@ context('Court register - amend existing court', () => {
         })
       CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
-    it('can add a new number when none are present to begin with', () => {
+    it('can add a new (trimmed) number when none are present to begin with', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
       courtDetailsPage.amendBuildingContactsLink(sheffieldMagistratesAnnexeBuilding.id.toString()).click()
       const amendCourtBuildingContactsPage = AmendCourtBuildingContactsPage.verifyOnPage(
@@ -375,7 +375,7 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingContactsPage.number(0).should('have.value', '')
       amendCourtBuildingContactsPage.type(0).should('have.value', 'TEL')
 
-      amendCourtBuildingContactsPage.number(0).type('0114 555 999')
+      amendCourtBuildingContactsPage.number(0).type('0114 555 999   ')
       amendCourtBuildingContactsPage.type(0).select('FAX')
 
       amendCourtBuildingContactsPage
@@ -387,6 +387,7 @@ context('Court register - amend existing court', () => {
           expect(requests[0].request.url).to.equal(
             `/court-register/court-maintenance/id/${sheffieldMagistratesCourt.courtId}/buildings/${sheffieldMagistratesAnnexeBuilding.id}/contacts`
           )
+          expect(JSON.parse(requests[0].request.body).detail).to.equal('0114 555 999')
           expect(JSON.parse(requests[0].request.body)).to.eqls({
             type: 'FAX',
             detail: '0114 555 999',

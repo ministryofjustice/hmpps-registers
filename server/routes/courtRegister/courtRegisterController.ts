@@ -101,7 +101,7 @@ export default class CourtRegisterController {
   }
 
   async submitNewCourtDetails(req: Request, res: Response): Promise<void> {
-    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
+    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...trim(req.body) }
 
     res.redirect(
       await addNewCourtDetailsValidator(req.session.addNewCourtForm, req, (id: string) =>
@@ -121,7 +121,7 @@ export default class CourtRegisterController {
   }
 
   submitNewCourtNewBuilding(req: Request, res: Response): void {
-    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
+    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...trim(req.body) }
 
     res.redirect(addNewCourtBuildingValidator(req.session.addNewCourtForm, req))
   }
@@ -137,7 +137,7 @@ export default class CourtRegisterController {
   }
 
   submitNewCourtContactDetails(req: Request, res: Response): void {
-    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...req.body }
+    req.session.addNewCourtForm = { ...req.session.addNewCourtForm, ...trim(req.body) }
 
     res.redirect(addNewCourtContactDetailsValidator(req.session.addNewCourtForm, req))
   }
@@ -198,7 +198,7 @@ export default class CourtRegisterController {
   }
 
   async submitAmendCourtDetails(req: Request, res: Response): Promise<void> {
-    req.session.amendCourtDetailsForm = { ...req.body }
+    req.session.amendCourtDetailsForm = { ...trim(req.body) }
     res.redirect(
       await amendCourtDetailsValidator(
         req.session.amendCourtDetailsForm,
@@ -248,7 +248,7 @@ export default class CourtRegisterController {
   }
 
   async submitAmendCourtBuilding(req: Request, res: Response): Promise<void> {
-    req.session.amendCourtBuildingForm = { ...req.body }
+    req.session.amendCourtBuildingForm = { ...trim(req.body) }
     res.redirect(
       await amendCourtBuildingValidator(
         req.session.amendCourtBuildingForm,
@@ -296,7 +296,7 @@ export default class CourtRegisterController {
   }
 
   async submitAddCourtBuilding(req: Request, res: Response): Promise<void> {
-    req.session.addCourtBuildingForm = { ...req.body }
+    req.session.addCourtBuildingForm = { ...trim(req.body) }
     res.redirect(
       await addCourtBuildingValidator(
         req.session.addCourtBuildingForm,
@@ -369,4 +369,16 @@ export default class CourtRegisterController {
       })
     )
   }
+}
+
+function trim(form: Record<string, unknown>): Record<string, unknown> {
+  return Object.keys(form).reduce((acc, curr) => {
+    const value = form[curr]
+    if (typeof value === 'string') {
+      acc[curr] = value.trim()
+    } else {
+      acc[curr] = form[curr]
+    }
+    return acc
+  }, {})
 }
