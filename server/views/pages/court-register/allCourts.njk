@@ -7,11 +7,13 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% set pageTitle = applicationName + " - Court Register" %}
 
 {% set filterOptionsHtml %}
   <form id="filter-form" action="/court-register" novalidate>
+    {{ govukInput( allCourtsFilter | toTextSearchInput ) }}
     {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
     {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
   </form>

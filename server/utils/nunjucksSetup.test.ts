@@ -196,7 +196,7 @@ describe('toCourtTypeFilterCheckboxes', () => {
         { courtType: 'COU', courtName: 'County' },
         { courtType: 'MAG', courtName: 'Magistrates' },
       ],
-      { courtTypeIds: [], active: null }
+      {}
     )
     expect(result.items).toEqual([
       {
@@ -223,7 +223,7 @@ describe('toCourtTypeFilterCheckboxes', () => {
         { courtType: 'COU', courtName: 'County' },
         { courtType: 'MAG', courtName: 'Magistrates' },
       ],
-      { courtTypeIds: ['CRN'], active: null }
+      { courtTypeIds: ['CRN'] }
     )
     expect(result.items).toEqual([
       {
@@ -250,7 +250,7 @@ describe('toCourtTypeFilterCheckboxes', () => {
         { courtType: 'COU', courtName: 'County' },
         { courtType: 'MAG', courtName: 'Magistrates' },
       ],
-      { courtTypeIds: ['COU', 'MAG'], active: null }
+      { courtTypeIds: ['COU', 'MAG'] }
     )
     expect(result.items).toEqual([
       {
@@ -283,7 +283,7 @@ describe('toActiveFilterRadioButtons', () => {
     expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
   })
   it('should map null to all courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: undefined })
+    const result = njk.getFilter('toActiveFilterRadioButtons')({})
     expect(result.items).toEqual([
       {
         value: '',
@@ -303,7 +303,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map true to open courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: true })
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: true })
     expect(result.items).toEqual([
       {
         value: '',
@@ -323,7 +323,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map false to closed courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: false })
+    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: false })
     expect(result.items).toEqual([
       {
         value: '',
@@ -343,16 +343,29 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
 })
+
+describe('toTextSearchInput', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create text search metadata', () => {
+    const result = njk.getFilter('toTextSearchInput')()
+    expect(result.label.text).toBeTruthy()
+    expect(result.label.classes).toContain('govuk-label')
+    expect(result.id).toEqual('textSearch')
+    expect(result.name).toEqual('textSearch')
+  })
+})
+
 describe('toCourtListFilter', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should show filter headings', () => {
-    const result = njk.getFilter('toCourtListFilter')([], { active: null, courtTypeIds: [] })
+    const result = njk.getFilter('toCourtListFilter')([], {})
     expect(result.heading.text).toBeTruthy()
     expect(result.selectedFilters.heading.text).toBeTruthy()
     expect(result.selectedFilters.clearLink.text).toBeTruthy()
   })
-  it('should show selected court types', () => {
+  it('should show selected court types cancel tags', () => {
     const result = njk.getFilter('toCourtListFilter')(
       [
         { courtType: 'CRN', courtName: 'Crown' },
@@ -361,7 +374,7 @@ describe('toCourtListFilter', () => {
         { courtType: 'CMT', courtName: 'Court Martial' },
         { courtType: 'COM', courtName: 'Community' },
       ],
-      { active: null, courtTypeIds: ['CRN', 'CMT', 'COU'] }
+      { courtTypeIds: ['CRN', 'CMT', 'COU'] }
     )
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
@@ -371,15 +384,15 @@ describe('toCourtListFilter', () => {
           },
           items: [
             {
-              href: '/court-register?active=&courtTypeIds=CMT&courtTypeIds=COU',
+              href: '/court-register?courtTypeIds=CMT&courtTypeIds=COU',
               text: 'Crown',
             },
             {
-              href: '/court-register?active=&courtTypeIds=CRN&courtTypeIds=COU',
+              href: '/court-register?courtTypeIds=CRN&courtTypeIds=COU',
               text: 'Court Martial',
             },
             {
-              href: '/court-register?active=&courtTypeIds=CRN&courtTypeIds=CMT',
+              href: '/court-register?courtTypeIds=CRN&courtTypeIds=CMT',
               text: 'County',
             },
           ],
@@ -387,8 +400,8 @@ describe('toCourtListFilter', () => {
       ])
     )
   })
-  it('should show active Open', () => {
-    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: true })
+  it('should show active Open cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { active: true })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -405,8 +418,8 @@ describe('toCourtListFilter', () => {
       ])
     )
   })
-  it('should show active Closed', () => {
-    const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false })
+  it('should show active Closed cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { active: false })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -419,6 +432,37 @@ describe('toCourtListFilter', () => {
               text: 'Closed',
             },
           ],
+        }),
+      ])
+    )
+  })
+  it('should show textSearch cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { textSearch: 'some-text-search' })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'some-text-search',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+  it('should NOT show textSearch cancel tag if no text search', () => {
+    const result = njk.getFilter('toCourtListFilter')([], {})
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: undefined,
         }),
       ])
     )

@@ -91,16 +91,23 @@ export function courtsPageMapper(
     (courtsPage.number as number) + 1,
     courtsPage.size as number,
     courtsPage.numberOfElements as number,
-    `/court-register?page=:page&${querystring.stringify(allCourtsFilter)}`
+    `/court-register?page=:page${toFilterQueryString(allCourtsFilter)}`
   )
   return { courts, pageMetaData }
 }
 
+function toFilterQueryString(allCourtsFilter: AllCourtsFilter): string {
+  const filterQuery = querystring.stringify(allCourtsFilter)
+  if (filterQuery) return `&${filterQuery}`
+  return ''
+}
+
 export function pageLinkMapper(allCourtsFilter: AllCourtsFilter, pageNumber: number): string {
-  return `/court-register?page=${pageNumber}&${querystring.stringify(allCourtsFilter)}`
+  return `/court-register?page=${pageNumber}${toFilterQueryString(allCourtsFilter)}`
 }
 
 export type AllCourtsFilter = {
   courtTypeIds?: string[]
   active?: boolean
+  textSearch?: string
 }

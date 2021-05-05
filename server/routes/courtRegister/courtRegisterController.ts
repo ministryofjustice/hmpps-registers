@@ -47,10 +47,18 @@ export default class CourtRegisterController {
   }
 
   parseFilter(req: Request): AllCourtsFilter {
-    return {
+    const filter = {
       active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
       courtTypeIds: CourtRegisterController.parseStringArrayFromQuery(req.query.courtTypeIds as string[]),
+      textSearch: req.query.textSearch as string | undefined,
     }
+    return CourtRegisterController.removeEmptyValues(filter)
+  }
+
+  private static removeEmptyValues(obj: Record<string, unknown>) {
+    return Object.keys(obj)
+      .filter(k => obj[k] != null && obj[k] !== '')
+      .reduce((a, k) => ({ ...a, [k]: obj[k] }), {})
   }
 
   private static parseBooleanFromQuery(boolAsString: string | undefined): boolean | undefined {

@@ -68,7 +68,7 @@ describe('Court Register controller', () => {
     })
     it('will parse a filter from the query parameters', async () => {
       const reqWithQueryParms = ({
-        query: { active: 'false', courtTypeIds: ['COU', 'CRO'] },
+        query: { active: 'false', courtTypeIds: ['COU', 'CRO'], textSearch: 'some-search-text' },
         session: {},
         flash: jest.fn(),
       } as unknown) as Request
@@ -76,6 +76,7 @@ describe('Court Register controller', () => {
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: false,
         courtTypeIds: ['COU', 'CRO'],
+        textSearch: 'some-search-text',
       })
     })
     it('will set the list page link in the session', async () => {
@@ -110,7 +111,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
-        backLink: '/court-register?page=1&active=&courtTypeIds=',
+        backLink: '/court-register?page=1',
         action: 'NONE',
       })
     })
@@ -121,7 +122,7 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/court-register/courtDetails', {
         courtDetails: expect.objectContaining({ id: 'SHFCC' }),
-        backLink: '/court-register?page=1&active=&courtTypeIds=',
+        backLink: '/court-register?page=1',
         action: 'ACTIVATE',
       })
     })
@@ -204,7 +205,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
             expect.objectContaining({ text: '', value: '' }),
           ]),
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -222,7 +223,7 @@ describe('Court Register controller', () => {
             expect.objectContaining({ text: 'Crown Court', value: 'CRN' }),
             expect.objectContaining({ text: 'Magistrates Court', value: 'MAG' }),
           ]),
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -251,7 +252,7 @@ describe('Court Register controller', () => {
             completed: true,
           },
           typeDescription: 'Crown Court',
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
         })
       })
     })
@@ -454,7 +455,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -475,7 +476,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -513,7 +514,7 @@ describe('Court Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/court-register/amendCourtBuilding', {
           form: expect.objectContaining({}),
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -534,7 +535,7 @@ describe('Court Register controller', () => {
             addresscounty: 'South Yorkshire',
             addresscountry: 'England',
           },
-          backLink: '/court-register?page=1&active=&courtTypeIds=',
+          backLink: '/court-register?page=1',
           errors: [],
         })
       })
@@ -821,7 +822,7 @@ describe('Court Register controller', () => {
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: undefined, courtTypeIds: undefined })
+      expect(filter).toEqual({})
     })
     it('should handle active query parameter', () => {
       const request = ({
@@ -831,7 +832,7 @@ describe('Court Register controller', () => {
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: true, courtTypeIds: undefined })
+      expect(filter).toEqual({ active: true })
     })
     it('should handle single courtTypeIds query parameter', () => {
       const request = ({
@@ -841,7 +842,7 @@ describe('Court Register controller', () => {
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: undefined, courtTypeIds: ['CRN'] })
+      expect(filter).toEqual({ courtTypeIds: ['CRN'] })
     })
     it('should handle multiple courtTypeIds query parameter', () => {
       const request = ({
@@ -851,7 +852,37 @@ describe('Court Register controller', () => {
 
       const filter = controller.parseFilter(request)
 
-      expect(filter).toEqual({ active: undefined, courtTypeIds: ['CRN', 'COU'] })
+      expect(filter).toEqual({ courtTypeIds: ['CRN', 'COU'] })
+    })
+    it('should handle text search query parameter', () => {
+      const request = ({
+        query: { textSearch: 'some-search-text' },
+      } as unknown) as Request
+      controller = new CourtRegisterController(courtRegisterService)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ textSearch: 'some-search-text' })
+    })
+    it('should handle text search query parameter as empty string ', () => {
+      const request = ({
+        query: { textSearch: '' },
+      } as unknown) as Request
+      controller = new CourtRegisterController(courtRegisterService)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({})
+    })
+    it('should handle combination of query parameters', () => {
+      const request = ({
+        query: { textSearch: 'some-search-text', courtTypeIds: ['CRN', 'COU'], active: 'true' },
+      } as unknown) as Request
+      controller = new CourtRegisterController(courtRegisterService)
+
+      const filter = controller.parseFilter(request)
+
+      expect(filter).toEqual({ textSearch: 'some-search-text', courtTypeIds: ['CRN', 'COU'], active: true })
     })
   })
 })
