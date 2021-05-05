@@ -858,7 +858,7 @@ describe('Court Register controller', () => {
       const request = ({
         query: { textSearch: 'some-search-text' },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
@@ -868,7 +868,7 @@ describe('Court Register controller', () => {
       const request = ({
         query: { textSearch: '' },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 
@@ -878,7 +878,7 @@ describe('Court Register controller', () => {
       const request = ({
         query: { textSearch: 'some-search-text', courtTypeIds: ['CRN', 'COU'], active: 'true' },
       } as unknown) as Request
-      controller = new CourtRegisterController(null)
+      controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
 

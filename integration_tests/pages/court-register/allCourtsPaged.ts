@@ -24,11 +24,13 @@ const allCourtsPaged = {
   closedFilter: () => cy.contains('label', 'Closed').prev(),
   crownFilter: () => cy.get('input[value="CRN"]'),
   countyFilter: () => cy.get('input[value="COU"]'),
+  textSearchFilter: () => cy.get('#textSearch'),
   page2Link: () => cy.get('.moj-pagination__link').get('a').contains('2'),
   nextPageLink: () => cy.get('.moj-pagination__link').contains('Next'),
   cancelOpenFilter: () => cy.get('.moj-filter-tags').contains('Open'),
   cancelCrownFilter: () => cy.get('.moj-filter-tags').contains('Crown'),
   cancelCountyFilter: () => cy.get('.moj-filter-tags').contains('County'),
+  cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
 }
 
 const verifyOnPage = (): typeof allCourtsPaged & Page => page('Court Register', allCourtsPaged)

@@ -55,7 +55,7 @@ export default class CourtRegisterController {
     return CourtRegisterController.removeEmptyValues(filter)
   }
 
-  private static removeEmptyValues(obj: unknown) {
+  private static removeEmptyValues(obj: Record<string, unknown>) {
     return Object.keys(obj)
       .filter(k => obj[k] != null && obj[k] !== '')
       .reduce((a, k) => ({ ...a, [k]: obj[k] }), {})

@@ -82,6 +82,8 @@ export function courtsPageMapper(
   allCourtsFilter: AllCourtsFilter
 ): { courts: CourtDetail[]; pageMetaData: PageMetaData } {
   const courts = courtsPage.content?.map((court: Court) => courtMapper(court)) || []
+  let filterQuery = querystring.stringify(allCourtsFilter)
+  if (filterQuery) filterQuery = `&${filterQuery}`
   const pageMetaData = toPageMetaData(
     courtsPage.first as boolean,
     courtsPage.last as boolean,
@@ -91,7 +93,7 @@ export function courtsPageMapper(
     (courtsPage.number as number) + 1,
     courtsPage.size as number,
     courtsPage.numberOfElements as number,
-    `/court-register?page=:page&${querystring.stringify(allCourtsFilter)}`
+    `/court-register?page=:page${filterQuery}`
   )
   return { courts, pageMetaData }
 }

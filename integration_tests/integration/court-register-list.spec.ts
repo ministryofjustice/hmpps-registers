@@ -58,12 +58,12 @@ context('Court register - court list navigation', () => {
     page.pageLinks().then(items => {
       expect(items[0]).to.deep.equal({ href: undefined, text: '1', selected: true })
       expect(items[1]).to.deep.equal({
-        href: '/court-register?page=2&active=&courtTypeIds=',
+        href: '/court-register?page=2',
         text: '2',
         selected: false,
       })
       expect(items[2]).to.deep.equal({
-        href: '/court-register?page=2&active=&courtTypeIds=',
+        href: '/court-register?page=2',
         text: 'Next set of pages',
         selected: false,
       })
@@ -117,6 +117,21 @@ context('Court register - court list navigation', () => {
     cy.url().should('include', 'courtTypeIds=CRN')
     cy.url().should('include', 'courtTypeIds=COU')
   })
+  it('Will change the text search filter', () => {
+    IndexPage.verifyOnPage().courtRegisterLink().click()
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    // Check there is no filter on text search by default
+    page.showFilterButton().click()
+    page.textSearchFilter().should('be.empty')
+    // Filter on search text
+    page.textSearchFilter().type('Sheffield')
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check the filter has been applied
+    page.textSearchFilter().should('have.value', 'Sheffield')
+    cy.url().should('include', 'textSearch=Sheffield')
+  })
   it('Will include the filter on page links', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
@@ -125,12 +140,15 @@ context('Court register - court list navigation', () => {
     page.showFilterButton().click()
     page.openFilter().click()
     page.countyFilter().click()
+    page.textSearchFilter().type('Sheffield')
     page.applyFilterButton().click()
     // Check the page links will retain the filter
     page.page2Link().invoke('attr', 'href').should('contain', 'active=true')
     page.page2Link().invoke('attr', 'href').should('contain', 'courtTypeIds=COU')
+    page.page2Link().invoke('attr', 'href').should('contain', 'textSearch=Sheffield')
     page.nextPageLink().invoke('attr', 'href').should('contain', 'active=true')
     page.nextPageLink().invoke('attr', 'href').should('contain', 'courtTypeIds=COU')
+    page.nextPageLink().invoke('attr', 'href').should('contain', 'textSearch=Sheffield')
   })
   it('Will include the filter when retrieving another page from the server', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()
@@ -140,6 +158,7 @@ context('Court register - court list navigation', () => {
     page.showFilterButton().click()
     page.openFilter().click()
     page.countyFilter().click()
+    page.textSearchFilter().type('Sheffield')
     page.applyFilterButton().click()
     // Click on the page 2 link
     page
@@ -155,6 +174,7 @@ context('Court register - court list navigation', () => {
         expect(page1Requests).to.have.length(1)
         expect(page1Requests[0].request.url).to.contain('active=true')
         expect(page1Requests[0].request.url).to.contain('courtTypeIds=COU')
+        expect(page1Requests[0].request.url).to.contain('textSearch=Sheffield')
       })
   })
   it('Will remove the active filter when cancelling via the tag', () => {
@@ -197,6 +217,23 @@ context('Court register - court list navigation', () => {
     cy.url().should('not.contain', 'courtTypeIds=COU')
     cy.url().should('contain', 'courtTypeIds=CRN')
   })
+  it('Will remove the text search filter when cancelling via the tag', () => {
+    IndexPage.verifyOnPage().courtRegisterLink().click()
+    const page = AllCourtsPagedPage.verifyOnPage()
+
+    // Filter on text search
+    page.showFilterButton().click()
+    page.textSearchFilter().type('Sheffield')
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Cancel the text search filter by clicking on the filter tag
+    page.cancelTextSearchFilter('Sheffield').click()
+    page.showFilterButton().click()
+    // Check we are now only filtered on crown courts
+    page.cancelTextSearchFilter('Sheffield').should('not.exist')
+    page.textSearchFilter().should('be.empty')
+    cy.url().should('not.contain', 'textSearch=Sheffield')
+  })
   it('Will remove one from a combination of filter tags', () => {
     IndexPage.verifyOnPage().courtRegisterLink().click()
     const page = AllCourtsPagedPage.verifyOnPage()
@@ -205,20 +242,25 @@ context('Court register - court list navigation', () => {
     page.showFilterButton().click()
     page.openFilter().click()
     page.crownFilter().click()
+    page.textSearchFilter().type('Sheffield')
     page.applyFilterButton().click()
     page.showFilterButton().click()
     // Check the filter has been applied
     page.openFilter().should('be.checked')
     page.crownFilter().should('be.checked')
+    page.textSearchFilter().should('have.value', 'Sheffield')
     cy.url().should('contain', 'active=true')
     cy.url().should('contain', 'courtTypeIds=CRN')
+    cy.url().should('contain', 'textSearch=Sheffield')
     // Cancel the open courts filter by clicking on the filter tag
     page.cancelOpenFilter().click()
     page.showFilterButton().click()
     // Check we are now only filtered on crown courts
     page.openFilter().should('not.be.checked')
     page.crownFilter().should('be.checked')
+    page.textSearchFilter().should('have.value', 'Sheffield')
     cy.url().should('not.contain', 'active=true')
     cy.url().should('contain', 'courtTypeIds=CRN')
+    cy.url().should('contain', 'textSearch=Sheffield')
   })
 })
