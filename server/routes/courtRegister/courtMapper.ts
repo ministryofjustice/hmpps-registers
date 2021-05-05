@@ -82,8 +82,6 @@ export function courtsPageMapper(
   allCourtsFilter: AllCourtsFilter
 ): { courts: CourtDetail[]; pageMetaData: PageMetaData } {
   const courts = courtsPage.content?.map((court: Court) => courtMapper(court)) || []
-  let filterQuery = querystring.stringify(allCourtsFilter)
-  if (filterQuery) filterQuery = `&${filterQuery}`
   const pageMetaData = toPageMetaData(
     courtsPage.first as boolean,
     courtsPage.last as boolean,
@@ -93,15 +91,19 @@ export function courtsPageMapper(
     (courtsPage.number as number) + 1,
     courtsPage.size as number,
     courtsPage.numberOfElements as number,
-    `/court-register?page=:page${filterQuery}`
+    `/court-register?page=:page${toFilterQueryString(allCourtsFilter)}`
   )
   return { courts, pageMetaData }
 }
 
+function toFilterQueryString(allCourtsFilter: AllCourtsFilter): string {
+  const filterQuery = querystring.stringify(allCourtsFilter)
+  if (filterQuery) return `&${filterQuery}`
+  return ''
+}
+
 export function pageLinkMapper(allCourtsFilter: AllCourtsFilter, pageNumber: number): string {
-  let filterQueryString = querystring.stringify(allCourtsFilter)
-  if (filterQueryString) filterQueryString = `&${filterQueryString}`
-  return `/court-register?page=${pageNumber}${filterQueryString}`
+  return `/court-register?page=${pageNumber}${toFilterQueryString(allCourtsFilter)}`
 }
 
 export type AllCourtsFilter = {
