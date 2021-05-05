@@ -549,9 +549,9 @@ describe('Court Register controller', () => {
           addressline2: 'Castle Market',
           buildingname: 'Crown Square',
           originalbuildingname: 'Crown Square',
-          addresstown: 'Sheffield',
+          addresstown: 'Sheffield ',
           addresspostcode: 'S1 2BJ',
-          addresscounty: 'South Yorkshire',
+          addresscounty: 'South Yorkshire ',
           addresscountry: 'England',
         }
         req.body = {
@@ -762,7 +762,7 @@ describe('Court Register controller', () => {
           contacts: [
             {
               type: 'TEL',
-              number: '0114 555 1234',
+              number: '0114 555 1234   ',
               id: '1',
             },
             {
