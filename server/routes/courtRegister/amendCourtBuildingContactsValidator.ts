@@ -39,9 +39,11 @@ export default async function validate(
     form,
     {
       'contacts.*.number': 'required:true',
+      'contacts.*.type': 'required:true',
     },
     {
       'required.contacts.*.number': 'Enter the number',
+      'required.contacts.*.type': 'Select the type of number',
     }
   ).map(error => fixupArrayNotation(error))
 
