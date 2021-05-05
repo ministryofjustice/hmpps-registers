@@ -13,7 +13,7 @@
 
 {% set filterOptionsHtml %}
   <form id="filter-form" action="/court-register" novalidate>
-    {{ govukInput( toTextSearchInput ) }}
+    {{ govukInput( allCourtsFilter | toTextSearchInput ) }}
     {{ govukRadios( allCourtsFilter | toActiveFilterRadioButtons ) }}
     {{ govukCheckboxes( courtTypes | toCourtTypeFilterCheckboxes(allCourtsFilter) ) }}
   </form>

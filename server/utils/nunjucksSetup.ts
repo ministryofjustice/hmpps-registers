@@ -96,7 +96,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       return {
         value: courtType.courtType,
         text: courtType.courtName,
-        checked: allCourtsFilter.courtTypeIds?.includes(courtType.courtType),
+        checked: allCourtsFilter.courtTypeIds?.includes(courtType.courtType) || false,
       }
     })
     return {
@@ -150,7 +150,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toTextSearchInput', () => {
+  njkEnv.addFilter('toTextSearchInput', (allCourtsFilter: AllCourtsFilter) => {
     return {
       label: {
         text: 'Search',
@@ -161,6 +161,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       hint: {
         text: 'Search for any text saved against a court, its buildings or its contacts',
       },
+      value: allCourtsFilter?.textSearch,
     }
   })
 
@@ -211,12 +212,15 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
 
   function getTextSearchFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string) {
     const { textSearch, ...newFilter }: ParsedUrlQueryInput = allCourtsFilter
-    return [
-      {
-        href: `${hrefBase}${querystring.stringify(newFilter)}`,
-        text: allCourtsFilter.textSearch,
-      },
-    ]
+    if (textSearch) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: allCourtsFilter.textSearch,
+        },
+      ]
+    }
+    return undefined
   }
 
   function getCancelCourtTypeFilterTags(allCourtsFilter: AllCourtsFilter, hrefBase: string, courtTypes: CourtType[]) {
