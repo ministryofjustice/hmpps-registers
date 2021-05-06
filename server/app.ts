@@ -146,6 +146,12 @@ export default function createApp(
     })
   })
 
+  app.get('/ping', (req, res) =>
+    res.send({
+      status: 'UP',
+    })
+  )
+
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'HMPPS Registers'
