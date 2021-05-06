@@ -38,12 +38,13 @@ export default async function validate(
   const errors = validateSync(
     form,
     {
-      'contacts.*.number': 'required:true',
+      'contacts.*.number': ['required:true', 'between:0,80'],
       'contacts.*.type': 'required:true',
     },
     {
       'required.contacts.*.number': 'Enter the number',
       'required.contacts.*.type': 'Select the type of number',
+      'between.contacts.*.number': 'Enter the number not greater than 80 characters',
     }
   ).map(error => fixupArrayNotation(error))
 

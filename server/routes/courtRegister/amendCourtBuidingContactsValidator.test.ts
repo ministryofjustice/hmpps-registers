@@ -67,6 +67,30 @@ describe('amendCourtBuildingContactsValidator', () => {
         { href: '#contacts[1][number]', text: 'Enter the number' },
       ])
     })
+    it('none of the numbers can exceed 80 characters', async () => {
+      const form: AmendCourtBuildingContactsForm = {
+        courtId: 'SHFCC',
+        buildingId: '1',
+        buildingname: 'Crown Square',
+        contacts: [
+          {
+            type: 'TEL',
+            number: '1'.repeat(81),
+            id: '1',
+          },
+          {
+            type: 'FAX',
+            number: '1'.repeat(81),
+          },
+        ],
+      }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/amend-court-building-contacts')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#contacts[0][number]', text: 'Enter the number not greater than 80 characters' },
+        { href: '#contacts[1][number]', text: 'Enter the number not greater than 80 characters' },
+      ])
+    })
     it('none of the phone types can be be a blank', async () => {
       const form: AmendCourtBuildingContactsForm = {
         courtId: 'SHFCC',

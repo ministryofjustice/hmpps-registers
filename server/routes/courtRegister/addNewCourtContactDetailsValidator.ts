@@ -6,10 +6,13 @@ export default function validate(form: AddNewCourtForm, req: Request): string {
   const errors = validateSync(
     form,
     {
-      telephonenumber: 'required',
+      telephonenumber: ['required', 'between:0,80'],
+      faxnumber: 'between:0,80',
     },
     {
       'required.telephonenumber': 'Enter the telephone number',
+      'between.telephonenumber': 'Enter the telephone number not greater than 80 characters',
+      'between.faxnumber': 'Enter the fax number not greater than 80 characters',
     }
   )
   if (errors.length > 0) {

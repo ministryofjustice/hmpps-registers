@@ -32,5 +32,26 @@ describe('addNewCourtContactDetailsValidator', () => {
       expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#telephonenumber', text: 'Enter the telephone number' }])
     })
+    it('telephonenumber must not be greater than 80 characters', () => {
+      const form: AddNewCourtForm = {
+        telephonenumber: '1'.repeat(81),
+      }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#telephonenumber', text: 'Enter the telephone number not greater than 80 characters' },
+      ])
+    })
+    it('faxnumber must not be greater than 80 characters', () => {
+      const form: AddNewCourtForm = {
+        telephonenumber: '0114 123 4567',
+        faxnumber: '1'.repeat(81),
+      }
+      const nextPage = validate(form, req)
+      expect(nextPage).toEqual('/court-register/add-new-court-contact-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#faxnumber', text: 'Enter the fax number not greater than 80 characters' },
+      ])
+    })
   })
 })
