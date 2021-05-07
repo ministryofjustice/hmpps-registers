@@ -18,6 +18,7 @@ describe('amendCourtDetailsValidator', () => {
   describe('validate', () => {
     let updateService: jest.Mocked<(id: string) => Promise<void>>
     beforeEach(() => {
+      jest.resetAllMocks()
       updateService = jest.fn().mockResolvedValue(null)
     })
 
@@ -44,16 +45,38 @@ describe('amendCourtDetailsValidator', () => {
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
+        { href: '#name', text: 'Enter a court name between 2 and 80 characters' },
       ])
     })
-    it('name must be less or equal to 200 characters', async () => {
-      const form = { ...validForm, name: 'A'.repeat(201) }
+    it('name must be less or equal to 80 characters', async () => {
+      const form = { ...validForm, name: 'A'.repeat(81) }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/court-register/amend-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#name', text: 'Enter a court name between 2 and 200 characters' },
+        { href: '#name', text: 'Enter a court name between 2 and 80 characters' },
       ])
+    })
+    it('description must be less or equal to 200 characters when entered', async () => {
+      const form = { ...validForm, description: 'A'.repeat(201) }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/amend-court-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#description', text: 'Enter a court description between 2 and 200 characters' },
+      ])
+    })
+    it('description must be more or equal to 2 characters when entered', async () => {
+      const form = { ...validForm, description: 'A' }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/amend-court-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#description', text: 'Enter a court description between 2 and 200 characters' },
+      ])
+    })
+    it('description is optional', async () => {
+      const form = { ...validForm, description: '' }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.flash).toHaveBeenCalledTimes(0)
     })
     it('type must not be selected', async () => {
       const form = { ...validForm, type: '  ' }

@@ -10,12 +10,14 @@ export default async function validate(
   const errors = await validateSync(
     form,
     {
-      name: ['required', 'between:2,200'],
+      name: ['required', 'between:2,80'],
+      description: 'between:2,200',
       type: 'required',
     },
     {
       'required.name': 'Enter a court name',
-      'between.name': 'Enter a court name between 2 and 200 characters',
+      'between.name': 'Enter a court name between 2 and 80 characters',
+      'between.description': 'Enter a court description between 2 and 200 characters',
       'required.type': 'Select a court type',
     }
   )

@@ -96,7 +96,7 @@ context('Court register - amend existing court', () => {
       amendCourtDetailsPage.saveButton().click()
 
       const courtDetailsWithErrors = AmendCourtDetailsPage.verifyOnPage('SHFMC')
-      courtDetailsWithErrors.errorSummary().contains('Enter a court name between 2 and 200 characters')
+      courtDetailsWithErrors.errorSummary().contains('Enter a court name between 2 and 80 characters')
     })
     it('will return to court details page with success message after saving', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)

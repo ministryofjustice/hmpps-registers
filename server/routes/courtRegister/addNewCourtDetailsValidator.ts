@@ -11,13 +11,15 @@ export default async function validate(
   const errors = await validateAsync(
     form,
     {
-      name: ['required', 'between:2,200'],
+      name: ['required', 'between:2,80'],
+      description: 'between:2,200',
       id: ['required', 'between:2,12', 'unique-court-code'],
       type: 'required',
     },
     {
       'required.name': 'Enter a court name',
-      'between.name': 'Enter a court name between 2 and 200 characters',
+      'between.name': 'Enter a court name between 2 and 80 characters',
+      'between.description': 'Enter a court description between 2 and 200 characters',
       'required.id': 'Enter a court code',
       'between.id': 'Enter a court code between 2 and 12 characters',
       'required.type': 'Select a court type',

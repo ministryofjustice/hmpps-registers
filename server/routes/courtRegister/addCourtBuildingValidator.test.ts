@@ -47,6 +47,14 @@ describe('addCourtBuildingValidator', () => {
       expect(nextPage).toEqual('/court-register/add-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#buildingname', text: 'Enter the building name' }])
     })
+    it('buildingname must not be greater than 50 characters', async () => {
+      const form = { ...validForm, buildingname: 'A'.repeat(51) }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#buildingname', text: 'Enter the building name not greater than 50 characters' },
+      ])
+    })
     it('addressline1 must not be a blank', async () => {
       const form = { ...validForm, addressline1: '  ' }
       const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
@@ -55,11 +63,35 @@ describe('addCourtBuildingValidator', () => {
         { href: '#addressline1', text: 'Enter the first line of the address' },
       ])
     })
+    it('addressline1 must not be greater than 80 characters', async () => {
+      const form = { ...validForm, addressline1: 'A'.repeat(81) }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#addressline1', text: 'Enter the first line of the address not greater than 80 characters' },
+      ])
+    })
+    it('addressline2 must not be greater than 80 characters', async () => {
+      const form = { ...validForm, addressline2: 'A'.repeat(81) }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#addressline2', text: 'Enter the second line of the address not greater than 80 characters' },
+      ])
+    })
     it('addresstown must not be a blank', async () => {
       const form = { ...validForm, addresstown: '  ' }
       const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
       expect(nextPage).toEqual('/court-register/add-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#addresstown', text: 'Enter the town or city' }])
+    })
+    it('addresstown must not be greater than 80 characters', async () => {
+      const form = { ...validForm, addresstown: 'A'.repeat(81) }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#addresstown', text: 'Enter the town or city not greater than 80 characters' },
+      ])
     })
     it('addresscounty must not be a blank', async () => {
       const form = { ...validForm, addresscounty: '  ' }
@@ -67,8 +99,27 @@ describe('addCourtBuildingValidator', () => {
       expect(nextPage).toEqual('/court-register/add-court-building')
       expect(req.flash).toBeCalledWith('errors', [{ href: '#addresscounty', text: 'Enter the county' }])
     })
+    it('addresscounty must not be greater than 80 characters', async () => {
+      const form = { ...validForm, addresscounty: 'A'.repeat(81) }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#addresscounty', text: 'Enter the county not greater than 80 characters' },
+      ])
+    })
     it('addresspostcode must not be a blank', async () => {
       const form = { ...validForm, addresspostcode: '  ' }
+      const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
+      expect(nextPage).toEqual('/court-register/add-court-building')
+      expect(req.flash).toBeCalledWith('errors', [
+        {
+          href: '#addresspostcode',
+          text: 'Enter the postcode, like AA11AA',
+        },
+      ])
+    })
+    it('addresspostcode must not be greater than 8 characters', async () => {
+      const form = { ...validForm, addresspostcode: 'S1----2BJ' }
       const nextPage = await validate(form, req, updateService, courtLookupService, courtBuildingLookupService)
       expect(nextPage).toEqual('/court-register/add-court-building')
       expect(req.flash).toBeCalledWith('errors', [
