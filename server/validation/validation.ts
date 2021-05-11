@@ -1,6 +1,5 @@
 import Validator, { ErrorMessages, Rules } from 'validatorjs'
 import { Court, CourtBuilding } from '../@types/courtRegister'
-import logger from '../../logger'
 
 Validator.register(
   'postcode',
