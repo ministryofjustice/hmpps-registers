@@ -1,5 +1,6 @@
 import Validator, { ErrorMessages, Rules } from 'validatorjs'
 import { Court, CourtBuilding } from '../@types/courtRegister'
+import logger from '../../logger'
 
 Validator.register(
   'postcode',
@@ -22,9 +23,11 @@ export function validateAsync<T>(
   lookups: {
     courtLookup?: lookupFn<Court | undefined>
     courtBuildingLookup?: lookupFn<CourtBuilding | undefined>
+    courtMainBuildingLookup?: lookupFn<CourtBuilding | undefined>
   } = {
     courtLookup: () => Promise.resolve(undefined),
     courtBuildingLookup: () => Promise.resolve(undefined),
+    courtMainBuildingLookup: () => Promise.resolve(undefined),
   }
 ): Promise<Array<{ text: string; href: string }>> {
   Validator.registerAsync(
@@ -56,6 +59,24 @@ export function validateAsync<T>(
       passes()
     },
     `The code is already used. Choose another code`
+  )
+  Validator.registerAsyncImplicit(
+    'single-main-building',
+    async (subCode, courtId, request, passes) => {
+      logger.info(`in single-main-building validator for subcode=${subCode}, courtId=${courtId}`)
+      if (subCode === '' && typeof lookups.courtMainBuildingLookup === 'function') {
+        const existingBuildingWithNullSubCode = await lookups.courtMainBuildingLookup(courtId)
+        if (existingBuildingWithNullSubCode) {
+          passes(
+            false,
+            `The building ${existingBuildingWithNullSubCode.buildingName} is already saved as the main building (with blank code). Please enter a code.`
+          )
+          return
+        }
+      }
+      passes()
+    },
+    'A main building already exists for this court'
   )
   Validator.registerAsync(
     'unique-court-code',

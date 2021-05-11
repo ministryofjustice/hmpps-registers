@@ -91,6 +91,15 @@ export default class CourtRegisterService {
     })
   }
 
+  async findMainCourtBuilding(context: Context, courtId: string): Promise<CourtBuilding | undefined> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`finding main building for court ${courtId}`)
+    return CourtRegisterService.restClient(token).get<CourtBuilding | undefined>({
+      path: `/courts/id/${courtId}/buildings/main`,
+      additionalStatusChecker: status => status === 404,
+    })
+  }
+
   async updateActiveMarker(context: Context, courtId: string, active: boolean): Promise<void> {
     const court: Court = await this.getCourt(context, courtId)
     const { courtName, courtDescription } = court
