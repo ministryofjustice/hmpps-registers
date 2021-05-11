@@ -8,7 +8,8 @@ export default async function validate(
   req: Request,
   updateService: (courtBuildingForm: AmendCourtBuildingForm) => Promise<void>,
   courtLookup: (subCode: string) => Promise<Court | undefined>,
-  courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | undefined>
+  courtBuildingLookup: (subCode: string) => Promise<CourtBuilding | undefined>,
+  courtMainBuildingLookup: (courtId: string) => Promise<CourtBuilding | undefined>
 ): Promise<string> {
   const errors = await validateAsync(
     form,
@@ -20,7 +21,7 @@ export default async function validate(
       addresscounty: ['required', 'between:0,80'],
       addresspostcode: ['required', 'postcode', 'between:0,8'],
       addresscountry: 'required',
-      subCode: ['between:0,6', `unique-subcode:${form.id}`],
+      subCode: ['between:0,6', `unique-subcode:${form.id}`, `single-main-building:${form.courtId}`],
     },
     {
       'required.buildingname': 'Enter the building name',
@@ -40,6 +41,7 @@ export default async function validate(
     {
       courtLookup,
       courtBuildingLookup,
+      courtMainBuildingLookup,
     }
   )
 

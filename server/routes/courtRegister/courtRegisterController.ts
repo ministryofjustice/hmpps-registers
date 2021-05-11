@@ -281,7 +281,8 @@ export default class CourtRegisterController {
           )
         },
         subCode => this.courtRegisterService.findCourt(context(res), subCode),
-        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
+        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode),
+        () => this.courtRegisterService.findMainCourtBuilding(context(res), req.session.amendCourtBuildingForm.courtId)
       )
     )
   }
@@ -324,7 +325,8 @@ export default class CourtRegisterController {
           return this.courtRegisterService.addCourtBuilding(context(res), form.courtId as string, newBuilding)
         },
         subCode => this.courtRegisterService.findCourt(context(res), subCode),
-        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode)
+        subCode => this.courtRegisterService.findCourtBuilding(context(res), subCode),
+        () => this.courtRegisterService.findMainCourtBuilding(context(res), req.session.addCourtBuildingForm.courtId)
       )
     )
   }
