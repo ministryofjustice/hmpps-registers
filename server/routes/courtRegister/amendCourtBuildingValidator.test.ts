@@ -377,6 +377,28 @@ describe('amendCourtBuildingValidator', () => {
           },
         ])
       })
+      it('should not reject a blank code where we are updating the main building', async () => {
+        courtMainBuildingLookupService = jest
+          .fn()
+          .mockResolvedValue(data.courtBuilding({ id: 100, buildingName: 'Crown Square' }))
+
+        const form = { ...validForm, id: '100', subCode: '' }
+        await validate(
+          form,
+          req,
+          updateService,
+          courtLookupService,
+          courtBuildingLookupService,
+          courtMainBuildingLookupService
+        )
+        expect(req.flash).not.toBeCalledWith('errors', [
+          {
+            href: '#subCode',
+            text:
+              'The building Crown Square is already saved as the main building (with blank code). Please enter a code.',
+          },
+        ])
+      })
       it('should not reject a non-blank code where the court already has a main building', async () => {
         courtMainBuildingLookupService = jest
           .fn()
