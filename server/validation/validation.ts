@@ -66,7 +66,7 @@ export function validateAsync<T>(
       if (subCode === '' && typeof lookups.courtMainBuildingLookup === 'function') {
         const existingBuildingWithNullSubCode = await lookups.courtMainBuildingLookup(courtId)
         if (existingBuildingWithNullSubCode) {
-          if (existingBuildingWithNullSubCode.id !== Number.parseInt(allowedBuildingId, 10)) {
+          if (!allowedBuildingId || existingBuildingWithNullSubCode.id !== Number.parseInt(allowedBuildingId, 10)) {
             passes(
               false,
               `The building ${existingBuildingWithNullSubCode.buildingName} is already saved as the main building (with blank code). Please enter a code.`
