@@ -334,7 +334,7 @@ describe('Court Register service', () => {
       expect(court).toBeFalsy()
     })
   })
-  describe('findCourtMainBuilding', () => {
+  describe('findMainCourtBuilding', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       courtRegisterService = new CourtRegisterService(hmppsAuthClient)

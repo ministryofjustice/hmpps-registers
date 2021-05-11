@@ -63,7 +63,6 @@ export function validateAsync<T>(
   Validator.registerAsyncImplicit(
     'single-main-building',
     async (subCode, courtId, request, passes) => {
-      logger.info(`in single-main-building validator for subcode=${subCode}, courtId=${courtId}`)
       if (subCode === '' && typeof lookups.courtMainBuildingLookup === 'function') {
         const existingBuildingWithNullSubCode = await lookups.courtMainBuildingLookup(courtId)
         if (existingBuildingWithNullSubCode) {
