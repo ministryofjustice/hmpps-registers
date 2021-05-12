@@ -46,15 +46,15 @@ describe('addNewCourtDetailsValidator', () => {
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#id', text: 'Enter a court code between 2 and 12 characters' },
+        { href: '#id', text: 'Enter a court code between 2 and 6 characters' },
       ])
     })
-    it('id must be less or equal to 12 characters', async () => {
-      const form = { ...validForm, id: 'A'.repeat(13) }
+    it('id must be less or equal to 6 characters', async () => {
+      const form = { ...validForm, id: 'A'.repeat(7) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/court-register/add-new-court-details')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#id', text: 'Enter a court code between 2 and 12 characters' },
+        { href: '#id', text: 'Enter a court code between 2 and 6 characters' },
       ])
     })
     it('id must not match an existing court', async () => {

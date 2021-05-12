@@ -151,7 +151,7 @@ context('Court register - Add new court', () => {
         summaryPage.changeCourtDetailsLink().click()
 
         const courtDetails = AddCourtDetailsPage.verifyOnPage()
-        courtDetails.id().type('SHFXX')
+        courtDetails.id().clear().type('SHFXX')
         courtDetails.continueButton().click()
 
         const summaryPageAfterChange = AddCourtSummaryPage.verifyOnPage()
