@@ -61,15 +61,18 @@ export function validateAsync<T>(
   )
   Validator.registerAsyncImplicit(
     'single-main-building',
-    async (subCode, courtId, request, passes) => {
+    async (subCode, requirement, request, passes) => {
+      const [courtId, allowedBuildingId]: [string, string] = requirement.split(',') as [string, string]
       if (subCode === '' && typeof lookups.courtMainBuildingLookup === 'function') {
         const existingBuildingWithNullSubCode = await lookups.courtMainBuildingLookup(courtId)
         if (existingBuildingWithNullSubCode) {
-          passes(
-            false,
-            `The building ${existingBuildingWithNullSubCode.buildingName} is already saved as the main building (with blank code). Please enter a code.`
-          )
-          return
+          if (!allowedBuildingId || existingBuildingWithNullSubCode.id !== Number.parseInt(allowedBuildingId, 10)) {
+            passes(
+              false,
+              `The building ${existingBuildingWithNullSubCode.buildingName} is already saved as the main building (with blank code). Please enter a code.`
+            )
+            return
+          }
         }
       }
       passes()

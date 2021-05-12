@@ -21,7 +21,7 @@ export default async function validate(
       addresscounty: ['required', 'between:0,80'],
       addresspostcode: ['required', 'postcode', 'between:0,8'],
       addresscountry: 'required',
-      subCode: ['between:0,6', `unique-subcode:${form.id}`, `single-main-building:${form.courtId}`],
+      subCode: ['between:0,6', `unique-subcode:${form.id}`, `single-main-building:${form.courtId},${form.id}`],
     },
     {
       'required.buildingname': 'Enter the building name',
