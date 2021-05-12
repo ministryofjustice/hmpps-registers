@@ -13,7 +13,7 @@ export default async function validate(
     {
       name: ['required', 'between:2,80'],
       description: 'between:2,200',
-      id: ['required', 'between:2,12', 'unique-court-code'],
+      id: ['required', 'between:2,6', 'unique-court-code'],
       type: 'required',
     },
     {
@@ -21,7 +21,7 @@ export default async function validate(
       'between.name': 'Enter a court name between 2 and 80 characters',
       'between.description': 'Enter a court description between 2 and 200 characters',
       'required.id': 'Enter a court code',
-      'between.id': 'Enter a court code between 2 and 12 characters',
+      'between.id': 'Enter a court code between 2 and 6 characters',
       'required.type': 'Select a court type',
     },
     {
