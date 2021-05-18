@@ -161,6 +161,18 @@ context('Court register - amend existing court', () => {
 
       CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
     })
+    it('Can deactivate open building', () => {
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsClosedButton('1').click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+        .deactivatedConfirmationBlock('building')
+        .should('exist')
+    })
+    it('Can activate closed building', () => {
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsOpenButton('2').click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+        .activatedConfirmationBlock('building')
+        .should('exist')
+    })
   })
   describe('adding a court building', () => {
     beforeEach(() => {
