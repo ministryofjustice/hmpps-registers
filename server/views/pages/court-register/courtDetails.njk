@@ -94,14 +94,14 @@
           <input type="hidden" name="active" value="false">
           {{ govukButton({
             text: "Mark court closed",
-            classes: "govuk-button",
+            classes: "govuk-button govuk-button--secondary",
             attributes: { "data-qa": "mark-as-closed"}
           }) }}
         {% else %}
           <input type="hidden" name="active" value="true">
           {{ govukButton({
             text: "Mark court open",
-            classes: "govuk-button",
+            classes: "govuk-button govuk-button--secondary",
             attributes: { "data-qa": "mark-as-open"}
           }) }}
         {% endif %}
@@ -144,14 +144,14 @@
             <input type="hidden" name="active" value="false">
             {{ govukButton({
               text: "Mark building closed",
-              classes: "govuk-button",
+              classes: "govuk-button govuk-button--secondary",
               attributes: { "data-qa": "mark-as-closed"}
             }) }}
           {% else %}
             <input type="hidden" name="active" value="true">
             {{ govukButton({
               text: "Mark building open",
-              classes: "govuk-button",
+              classes: "govuk-button govuk-button--secondary",
               attributes: { "data-qa": "mark-as-open"}
             }) }}
           {% endif %}
