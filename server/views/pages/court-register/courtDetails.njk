@@ -84,8 +84,8 @@
     {% endif %}
 
     <div>
-      <h2 class="court-detail-header govuk-heading-m govuk-grid-column-one-half">Court details</h2>
-      <form class="court-detail-header-button govuk-grid-column-one-half" action="/court-register/toggle-court-active"
+      <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Court details</h2>
+      <form class="flush-right govuk-grid-column-one-half" action="/court-register/toggle-court-active"
             method="post"
             novalidate="">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
@@ -134,8 +134,8 @@
 
     {% for building in courtDetails.buildings %}
       <div>
-        <h2 class="court-detail-header govuk-heading-m govuk-grid-column-one-half">{{ building.name }}</h2>
-        <form class="court-detail-header-button govuk-grid-column-one-half" action="/court-register/toggle-building-active" method="post"
+        <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">{{ building.name }}</h2>
+        <form class="flush-right govuk-grid-column-one-half" action="/court-register/toggle-building-active" method="post"
               novalidate="">
           <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
           <input type="hidden" name="courtId" value="{{ courtDetails.id }}">

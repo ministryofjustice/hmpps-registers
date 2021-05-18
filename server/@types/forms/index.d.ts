@@ -33,7 +33,7 @@ declare module 'forms' {
     addresscounty?: string
     addresspostcode?: string
     addresscountry?: string
-    active?: boolean
+    active: boolean
   }
   export interface AddCourtBuildingForm {
     courtId?: string

@@ -280,7 +280,7 @@ export default class CourtRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
             subCode: form.subCode,
-            active: form.active as boolean,
+            active: form.active,
           }
           return this.courtRegisterService.updateCourtBuilding(
             context(res),
