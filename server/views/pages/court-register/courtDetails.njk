@@ -68,16 +68,16 @@
     <h1 class="govuk-heading-l">{{ courtDetails.name }}</h1>
 
     {% if action == 'ACTIVATE-COURT' %}
-      {{ confirmationPanel('Court has been successfully activated', 'confirm-activation') }}
+      {{ confirmationPanel('Court has been successfully activated', 'confirm-court-activation') }}
     {% endif %}
     {% if action == 'DEACTIVATE-COURT' %}
-      {{ confirmationPanel('Court has been successfully marked as closed', 'confirm-deactivation') }}
+      {{ confirmationPanel('Court has been successfully marked as closed', 'confirm-court-deactivation') }}
     {% endif %}
     {% if action == 'ACTIVATE-BUILDING' %}
-      {{ confirmationPanel('Building has been successfully activated', 'confirm-activation') }}
+      {{ confirmationPanel('Building has been successfully activated', 'confirm-building-activation') }}
     {% endif %}
     {% if action == 'DEACTIVATE-BUILDING' %}
-      {{ confirmationPanel('Building has been successfully marked as closed', 'confirm-deactivation') }}
+      {{ confirmationPanel('Building has been successfully marked as closed', 'confirm-building-deactivation') }}
     {% endif %}
     {% if action == 'UPDATED' %}
       {{ confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
@@ -95,14 +95,14 @@
           {{ govukButton({
             text: "Mark court closed",
             classes: "govuk-button govuk-button--secondary",
-            attributes: { "data-qa": "mark-as-closed"}
+            attributes: { "data-qa": "mark-as-closed-" + courtDetails.id }
           }) }}
         {% else %}
           <input type="hidden" name="active" value="true">
           {{ govukButton({
             text: "Mark court open",
             classes: "govuk-button govuk-button--secondary",
-            attributes: { "data-qa": "mark-as-open"}
+            attributes: { "data-qa": "mark-as-open-" + courtDetails.id }
           }) }}
         {% endif %}
       </form>
@@ -145,14 +145,14 @@
             {{ govukButton({
               text: "Mark building closed",
               classes: "govuk-button govuk-button--secondary",
-              attributes: { "data-qa": "mark-as-closed"}
+              attributes: { "data-qa": "mark-as-closed-" + building.id }
             }) }}
           {% else %}
             <input type="hidden" name="active" value="true">
             {{ govukButton({
               text: "Mark building open",
               classes: "govuk-button govuk-button--secondary",
-              attributes: { "data-qa": "mark-as-open"}
+              attributes: { "data-qa": "mark-as-open-" + building.id }
             }) }}
           {% endif %}
         </form>
