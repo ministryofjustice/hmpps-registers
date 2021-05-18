@@ -692,6 +692,7 @@ describe('Court Register controller', () => {
           postcode: 'S1 2BJ',
           county: 'South Yorkshire',
           country: 'England',
+          active: true,
         })
       })
     })

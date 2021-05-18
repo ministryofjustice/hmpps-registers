@@ -45,7 +45,6 @@ declare module 'forms' {
     addresscounty?: string
     addresspostcode?: string
     addresscountry?: string
-    active?: boolean
   }
 
   export interface AmendCourtBuildingContactsForm {
