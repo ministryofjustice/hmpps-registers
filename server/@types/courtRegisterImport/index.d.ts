@@ -82,7 +82,7 @@ export interface components {
       courtType: string
       /** Whether the court is still active */
       active: boolean
-    } & { [key: string]: any }
+    }
     /** Building */
     BuildingDto: {
       /** Unique ID of the building */
@@ -109,7 +109,7 @@ export interface components {
       contacts?: components['schemas']['ContactDto'][]
       /** Whether the building is active */
       active: boolean
-    } & { [key: string]: any }
+    }
     /** Contact */
     ContactDto: {
       /** Unique ID of the contact */
@@ -122,7 +122,7 @@ export interface components {
       type: 'TEL' | 'FAX'
       /** Details of the contact */
       detail?: string
-    } & { [key: string]: any }
+    }
     /** Court Information */
     CourtDto: {
       /** Court ID */
@@ -136,14 +136,14 @@ export interface components {
       active: boolean
       /** List of buildings for this court entity */
       buildings?: components['schemas']['BuildingDto'][]
-    } & { [key: string]: any }
+    }
     /** Court Type */
     CourtTypeDto: {
       /** Type of court */
       courtType: string
       /** Description of the type of court */
       courtName: string
-    } & { [key: string]: any }
+    }
     ErrorResponse: {
       status: number
       errorCode?: number
@@ -151,7 +151,7 @@ export interface components {
       developerMessage?: string
       moreInfo?: string
       errors?: string[]
-    } & { [key: string]: any }
+    }
     /** Building Update Record */
     UpdateBuildingDto: {
       /** Building Name */
@@ -172,14 +172,14 @@ export interface components {
       subCode?: string
       /** Whether the building is active */
       active: boolean
-    } & { [key: string]: any }
+    }
     /** Contact */
     UpdateContactDto: {
       /** Type of contact */
       type: 'TEL' | 'FAX'
       /** Details of the contact */
       detail: string
-    } & { [key: string]: any }
+    }
     /** Court Insert Record */
     InsertCourtDto: {
       /** Court ID */
@@ -192,7 +192,7 @@ export interface components {
       courtType: string
       /** Whether the court is still active */
       active: boolean
-    } & { [key: string]: any }
+    }
     CourtDtoPage: {
       content?: components['schemas']['CourtDto'][]
       pageable?: components['schemas']['Pageable']
@@ -205,17 +205,17 @@ export interface components {
       first?: boolean
       numberOfElements?: number
       empty?: boolean
-    } & { [key: string]: any }
+    }
     Pageable: {
       page?: number
       size?: number
       sort?: string[]
-    } & { [key: string]: any }
+    }
     Sort: {
       sorted?: boolean
       unsorted?: boolean
       empty?: boolean
-    } & { [key: string]: any }
+    }
   }
 }
 
