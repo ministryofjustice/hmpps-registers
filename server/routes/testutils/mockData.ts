@@ -29,6 +29,7 @@ export default {
     country = 'England',
     courtId = 'SHFCC',
     subCode = undefined,
+    active = true,
   }: Partial<CourtBuilding>): CourtBuilding =>
     ({
       id,
@@ -42,6 +43,7 @@ export default {
       country,
       courtId,
       subCode,
+      active,
     } as CourtBuilding),
 
   courtBuildingContact: ({

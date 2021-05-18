@@ -46,6 +46,7 @@ describe('addNewCourtSummaryValidator', () => {
           county: 'South Yorkshire',
           postcode: 'S1 2BJ',
           country: 'England',
+          active: true,
         },
         contacts: [
           {

@@ -18,11 +18,11 @@ describe('CourtDetailsView', () => {
     expect(view.renderArgs.courtDetails.type).toEqual('Crown')
   })
   it('will pass through action', () => {
-    const view = new CourtDetailsView(data.court({}), 'ACTIVATE', '')
-    expect(view.renderArgs.action).toEqual('ACTIVATE')
+    const view = new CourtDetailsView(data.court({}), 'ACTIVATE-COURT', '')
+    expect(view.renderArgs.action).toEqual('ACTIVATE-COURT')
   })
   it('will pass through back link', () => {
-    const view = new CourtDetailsView(data.court({}), 'ACTIVATE', 'http://get-back')
+    const view = new CourtDetailsView(data.court({}), 'ACTIVATE-COURT', 'http://get-back')
     expect(view.renderArgs.backLink).toEqual('http://get-back')
   })
 })

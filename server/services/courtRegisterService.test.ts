@@ -2,6 +2,7 @@ import nock from 'nock'
 
 import {
   Court,
+  CourtBuilding,
   InsertCourt,
   InsertCourtBuilding,
   InsertCourtBuildingContact,
@@ -371,7 +372,7 @@ describe('Court Register service', () => {
       expect(court).toBeFalsy()
     })
   })
-  describe('updateActiveMarker', () => {
+  describe('updateActiveCourtMarker', () => {
     let updatedCourt: UpdateCourt
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
@@ -385,7 +386,7 @@ describe('Court Register service', () => {
         .reply(200, data.court({}))
     })
     it('username will be used by client', async () => {
-      await courtRegisterService.updateActiveMarker({ username: 'tommy' }, 'SHFCC', true)
+      await courtRegisterService.updateActiveCourtMarker({ username: 'tommy' }, 'SHFCC', true)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -399,13 +400,46 @@ describe('Court Register service', () => {
       })
       fakeCourtRegister.get('/courts/id/SHFCC').reply(200, courtBeforeUpdate)
 
-      await courtRegisterService.updateActiveMarker({ username: 'tommy' }, 'SHFCC', true)
+      await courtRegisterService.updateActiveCourtMarker({ username: 'tommy' }, 'SHFCC', true)
 
       expect(updatedCourt).toEqual(
         expect.objectContaining({
           courtName: 'Sheffield Crown Court',
           courtDescription: 'Sheffield Crown Court - Yorkshire',
           courtType: 'CROWN',
+          active: true,
+        })
+      )
+    })
+  })
+  describe('updateActiveBuildingMarker', () => {
+    let updatedBuilding: UpdateCourtBuilding
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      courtRegisterService = new CourtRegisterService(hmppsAuthClient)
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/id/99').reply(200, data.courtBuilding({}))
+      fakeCourtRegister
+        .put('/court-maintenance/id/SHFCC/buildings/99', body => {
+          updatedBuilding = body
+          return body
+        })
+        .reply(200, data.court({}))
+    })
+    it('username will be used by client', async () => {
+      await courtRegisterService.updateActiveBuildingMarker({ username: 'tommy' }, 'SHFCC', '99', true)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send all data back with active marker now true', async () => {
+      const buildingBeforeUpdate: CourtBuilding = data.courtBuilding({
+        active: false,
+      })
+      fakeCourtRegister.get('/courts/id/SHFCC/buildings/99').reply(200, buildingBeforeUpdate)
+
+      await courtRegisterService.updateActiveBuildingMarker({ username: 'tommy' }, 'SHFCC', '99', true)
+
+      expect(updatedBuilding).toEqual(
+        expect.objectContaining({
           active: true,
         })
       )
@@ -452,6 +486,7 @@ describe('Court Register service', () => {
       postcode: 'S1 2BJ',
       county: 'South Yorkshire',
       country: 'England',
+      active: true,
     }
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
@@ -484,6 +519,7 @@ describe('Court Register service', () => {
         postcode: 'S1 2BJ',
         county: 'South Yorkshire',
         country: 'England',
+        active: true,
       })
     })
   })
@@ -538,6 +574,7 @@ describe('Court Register service', () => {
           postcode: 'S1 2BJ',
           county: 'South Yorkshire',
           country: 'England',
+          active: true,
         },
         contacts: [
           {
@@ -611,6 +648,7 @@ describe('Court Register service', () => {
             postcode: 'S1 2BJ',
             county: 'South Yorkshire',
             country: 'England',
+            active: true,
           },
           contacts: [
             {
@@ -685,6 +723,7 @@ describe('Court Register service', () => {
           postcode: 'S1 2BJ',
           county: 'South Yorkshire',
           country: 'England',
+          active: true,
         })
       })
       it('both telephone and fax sent when both present will be sent when adding', async () => {
@@ -762,6 +801,7 @@ describe('Court Register service', () => {
       postcode: 'S1 2BJ',
       county: 'South Yorkshire',
       country: 'England',
+      active: true,
     }
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
@@ -794,6 +834,7 @@ describe('Court Register service', () => {
         postcode: 'S1 2BJ',
         county: 'South Yorkshire',
         country: 'England',
+        active: true,
       })
     })
   })

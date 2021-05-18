@@ -129,6 +129,7 @@ describe('courtBuildingMapper', () => {
         country: 'England',
         courtId: 'SHFCC',
         subCode: 'SHFCX',
+        active: true,
       })
     )
   })
@@ -151,6 +152,9 @@ describe('courtBuildingMapper', () => {
   })
   it('will map each contact', () => {
     expect(building.contacts).toHaveLength(2)
+  })
+  it('will map active flag', () => {
+    expect(building.active).toBeTruthy()
   })
 })
 
