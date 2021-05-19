@@ -32,22 +32,22 @@
 {% macro renderContacts(contacts) %}
   {% for contact in contacts %}
     <p>
-    {{ contact.number }}
-    {% if contact.type == 'FAX' %}
-      &nbsp;(fax)
-    {% endif %}
+      {{ contact.number }}
+      {% if contact.type == 'FAX' %}
+        &nbsp;(fax)
+      {% endif %}
     </p>
   {% endfor %}
 {% endmacro %}
 
 {% macro amendCourtUrl(court) %}
-  /court-register/amend-court-details-start?courtId={{court.id}}
+  /court-register/amend-court-details-start?courtId={{ court.id }}
 {% endmacro %}
 {% macro amendBuildUrl(court, building) %}
-  /court-register/amend-court-building-start?courtId={{court.id}}&buildingId={{building.id}}
+  /court-register/amend-court-building-start?courtId={{ court.id }}&buildingId={{ building.id }}
 {% endmacro %}
 {% macro amendBuildContactsUrl(court, building) %}
-  /court-register/amend-court-building-contacts-start?courtId={{court.id}}&buildingId={{building.id}}
+  /court-register/amend-court-building-contacts-start?courtId={{ court.id }}&buildingId={{ building.id }}
 {% endmacro %}
 {% macro confirmationPanel(message, attribute) %}
   <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
@@ -67,18 +67,46 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ courtDetails.name }}</h1>
 
-    {% if action == 'ACTIVATE' %}
-      {{  confirmationPanel('Court has been successfully activated', 'confirm-activation') }}
+    {% if action == 'ACTIVATE-COURT' %}
+      {{ confirmationPanel('Court has been successfully activated', 'confirm-court-activation') }}
     {% endif %}
-    {% if action == 'DEACTIVATE' %}
-      {{  confirmationPanel('Court has been successfully marked as closed', 'confirm-deactivation') }}
+    {% if action == 'DEACTIVATE-COURT' %}
+      {{ confirmationPanel('Court has been successfully marked as closed', 'confirm-court-deactivation') }}
+    {% endif %}
+    {% if action == 'ACTIVATE-BUILDING' %}
+      {{ confirmationPanel('Building has been successfully activated', 'confirm-building-activation') }}
+    {% endif %}
+    {% if action == 'DEACTIVATE-BUILDING' %}
+      {{ confirmationPanel('Building has been successfully marked as closed', 'confirm-building-deactivation') }}
     {% endif %}
     {% if action == 'UPDATED' %}
-      {{  confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
+      {{ confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
     {% endif %}
 
-    <h2 class="govuk-heading-m">Court details</h2>
-
+    <div>
+      <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Court details</h2>
+      <form class="flush-right govuk-grid-column-one-half" action="/court-register/toggle-court-active"
+            method="post"
+            novalidate="">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+        <input type="hidden" name="id" value="{{ courtDetails.id }}">
+        {% if courtDetails.active %}
+          <input type="hidden" name="active" value="false">
+          {{ govukButton({
+            text: "Mark court closed",
+            classes: "govuk-button govuk-button--secondary",
+            attributes: { "data-qa": "mark-as-closed-" + courtDetails.id }
+          }) }}
+        {% else %}
+          <input type="hidden" name="active" value="true">
+          {{ govukButton({
+            text: "Mark court open",
+            classes: "govuk-button govuk-button--secondary",
+            attributes: { "data-qa": "mark-as-open-" + courtDetails.id }
+          }) }}
+        {% endif %}
+      </form>
+    </div>
     {{ govukSummaryList({
       attributes: { "data-qa": "court-summary-section"},
       rows: [
@@ -105,7 +133,30 @@
     }) }}
 
     {% for building in courtDetails.buildings %}
-      <h2 class="govuk-heading-m">{{ building.name }}</h2>
+      <div>
+        <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">{{ building.name }}</h2>
+        <form class="flush-right govuk-grid-column-one-half" action="/court-register/toggle-building-active" method="post"
+              novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+          <input type="hidden" name="courtId" value="{{ courtDetails.id }}">
+          <input type="hidden" name="buildingId" value="{{ building.id }}">
+          {% if building.active %}
+            <input type="hidden" name="active" value="false">
+            {{ govukButton({
+              text: "Mark building closed",
+              classes: "govuk-button govuk-button--secondary",
+              attributes: { "data-qa": "mark-as-closed-" + building.id }
+            }) }}
+          {% else %}
+            <input type="hidden" name="active" value="true">
+            {{ govukButton({
+              text: "Mark building open",
+              classes: "govuk-button govuk-button--secondary",
+              attributes: { "data-qa": "mark-as-open-" + building.id }
+            }) }}
+          {% endif %}
+        </form>
+      </div>
       {{ govukSummaryList({
         attributes: { "data-qa": "building-summary-section-"+ building.id},
         rows: [
@@ -153,31 +204,12 @@
     {% endfor %}
 
     <div class="govuk-button-group">
-    <form action="/court-register/toggle-active" method="post" novalidate="">
-      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-      <input type="hidden" name="id" value="{{ courtDetails.id }}">
-      {% if courtDetails.active %}
-        <input type="hidden" name="active" value="false">
-        {{ govukButton({
-          text: "Mark as closed",
-          classes: "govuk-button",
-          attributes: { "data-qa": "mark-as-closed"}
-        }) }}
-      {% else %}
-        <input type="hidden" name="active" value="true">
-        {{ govukButton({
-          text: "Mark as open",
-          classes: "govuk-button",
-          attributes: { "data-qa": "mark-as-open"}
-        }) }}
-      {% endif %}
       {{ govukButton({
         text: "Add another building",
         href: "/court-register/add-court-building-start?courtId=" + courtDetails.id ,
         classes: "govuk-button govuk-button--secondary",
         attributes: { "data-qa": "add-court-building-link"}
       }) }}
-    </form>
     </div>
 
   </main>

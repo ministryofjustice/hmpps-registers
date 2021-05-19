@@ -48,6 +48,10 @@ export interface paths {
     /** Information on a specific court */
     get: operations['getCourtFromId']
   }
+  '/courts/id/{courtId}/buildings/main': {
+    /** Information on the main building by court ID */
+    get: operations['findMainBuilding']
+  }
   '/courts/id/{courtId}/buildings/id/{buildingId}': {
     /** Information on a specific building */
     get: operations['getBuildingFromId']
@@ -103,6 +107,8 @@ export interface components {
       country?: string
       /** List of contacts for this building by type */
       contacts?: components['schemas']['ContactDto'][]
+      /** Whether the building is active */
+      active: boolean
     }
     /** Contact */
     ContactDto: {
@@ -144,6 +150,7 @@ export interface components {
       userMessage?: string
       developerMessage?: string
       moreInfo?: string
+      errors?: string[]
     }
     /** Building Update Record */
     UpdateBuildingDto: {
@@ -163,6 +170,8 @@ export interface components {
       country?: string
       /** Sub location code for referencing building */
       subCode?: string
+      /** Whether the building is active */
+      active: boolean
     }
     /** Contact */
     UpdateContactDto: {
@@ -563,6 +572,8 @@ export interface operations {
         active?: boolean
         /** Court Type */
         courtTypeIds?: string[]
+        /** Text search */
+        textSearch?: string
         pageable?: components['schemas']['Pageable']
       }
     }
@@ -596,6 +607,34 @@ export interface operations {
         }
       }
       /** Court ID not found */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  /** Information on the main building by court ID */
+  findMainBuilding: {
+    parameters: {
+      path: {
+        courtId: string
+      }
+    }
+    responses: {
+      /** Building Information Returned */
+      200: {
+        content: {
+          'application/json': components['schemas']['BuildingDto']
+        }
+      }
+      /** Incorrect request to get building information */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Building SubCode not found */
       404: {
         content: {
           'application/json': components['schemas']['ErrorResponse']

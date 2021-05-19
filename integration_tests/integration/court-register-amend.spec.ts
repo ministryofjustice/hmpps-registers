@@ -55,8 +55,8 @@ context('Court register - amend existing court', () => {
       AllCourtsPagedPage.verifyOnPage().viewCourtLink('SHFCC').should('contain.text', 'Sheffield Crown Court').click()
     })
     it('Can deactivate open court', () => {
-      CourtDetailsPage.verifyOnPage('Sheffield Crown Court').markAsClosedButton().click()
-      CourtDetailsPage.verifyOnPage('Sheffield Crown Court').deactivatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage('Sheffield Crown Court').markAsClosedButton('SHFCC').click()
+      CourtDetailsPage.verifyOnPage('Sheffield Crown Court').deactivatedConfirmationBlock('court').should('exist')
     })
   })
   describe('amending a court', () => {
@@ -68,8 +68,10 @@ context('Court register - amend existing court', () => {
         .click()
     })
     it('Can activate closed court', () => {
-      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsOpenButton().click()
-      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).activatedConfirmationBlock().should('exist')
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsOpenButton('SHFMC').click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+        .activatedConfirmationBlock('court')
+        .should('exist')
     })
     it('should show summary of court with link to amend', () => {
       const courtDetailsPage = CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
@@ -158,6 +160,18 @@ context('Court register - amend existing court', () => {
       amendCourtBuildingDetailPage.saveButton().click()
 
       CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).courtUpdatedConfirmationBlock().should('exist')
+    })
+    it('Can deactivate open building', () => {
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsClosedButton('1').click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+        .deactivatedConfirmationBlock('building')
+        .should('exist')
+    })
+    it('Can activate closed building', () => {
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName).markAsOpenButton('2').click()
+      CourtDetailsPage.verifyOnPage(sheffieldMagistratesCourt.courtName)
+        .activatedConfirmationBlock('building')
+        .should('exist')
     })
   })
   describe('adding a court building', () => {

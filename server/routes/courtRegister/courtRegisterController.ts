@@ -86,9 +86,17 @@ export default class CourtRegisterController {
   async toggleCourtActive(req: Request, res: Response): Promise<void> {
     const { id, active } = req.body
     const activate = active === 'true'
-    const action: Action = activate ? 'ACTIVATE' : 'DEACTIVATE'
-    await this.courtRegisterService.updateActiveMarker(context(res), id, activate)
+    const action: Action = activate ? 'ACTIVATE-COURT' : 'DEACTIVATE-COURT'
+    await this.courtRegisterService.updateActiveCourtMarker(context(res), id, activate)
     res.redirect(`/court-register/details?id=${id}&action=${action}`)
+  }
+
+  async toggleBuildingActive(req: Request, res: Response): Promise<void> {
+    const { courtId, buildingId, active } = req.body
+    const activate = active === 'true'
+    const action: Action = activate ? 'ACTIVATE-BUILDING' : 'DEACTIVATE-BUILDING'
+    await this.courtRegisterService.updateActiveBuildingMarker(context(res), courtId, buildingId, activate)
+    res.redirect(`/court-register/details?id=${courtId}&action=${action}`)
   }
 
   addNewCourtStart(req: Request, res: Response): void {
@@ -272,6 +280,7 @@ export default class CourtRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
             subCode: form.subCode,
+            active: form.active,
           }
           return this.courtRegisterService.updateCourtBuilding(
             context(res),
@@ -321,6 +330,7 @@ export default class CourtRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
             subCode: form.subCode,
+            active: true,
           }
           return this.courtRegisterService.addCourtBuilding(context(res), form.courtId as string, newBuilding)
         },

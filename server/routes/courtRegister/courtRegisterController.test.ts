@@ -142,12 +142,12 @@ describe('Court Register controller', () => {
     it('will update court by id', async () => {
       await controller.toggleCourtActive(req, res)
 
-      expect(courtRegisterService.updateActiveMarker).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', true)
+      expect(courtRegisterService.updateActiveCourtMarker).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', true)
     })
     it('will redirect back to court details view with action', async () => {
       await controller.toggleCourtActive(req, res)
 
-      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=ACTIVATE')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=ACTIVATE-COURT')
     })
     it('can deactivate court', async () => {
       req.body = {
@@ -157,7 +157,47 @@ describe('Court Register controller', () => {
 
       await controller.toggleCourtActive(req, res)
 
-      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=DEACTIVATE')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=DEACTIVATE-COURT')
+    })
+  })
+  describe('toggleBuildingActive', () => {
+    beforeEach(() => {
+      courtRegisterService = new CourtRegisterService({} as HmppsAuthClient) as jest.Mocked<CourtRegisterService>
+      controller = new CourtRegisterController(courtRegisterService)
+      req.body = {
+        courtId: 'SHFCC',
+        buildingId: '1234',
+        active: 'true',
+      }
+      res.locals.user = {
+        username: 'tom',
+      }
+    })
+    it('will update building by id', async () => {
+      await controller.toggleBuildingActive(req, res)
+
+      expect(courtRegisterService.updateActiveBuildingMarker).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        '1234',
+        true
+      )
+    })
+    it('will redirect back to court details view with action', async () => {
+      await controller.toggleBuildingActive(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=ACTIVATE-BUILDING')
+    })
+    it('can deactivate building', async () => {
+      req.body = {
+        courtId: 'SHFCC',
+        buildingId: '1234',
+        active: 'false',
+      }
+
+      await controller.toggleBuildingActive(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=DEACTIVATE-BUILDING')
     })
   })
   describe('Add new court flow', () => {
@@ -652,6 +692,7 @@ describe('Court Register controller', () => {
           postcode: 'S1 2BJ',
           county: 'South Yorkshire',
           country: 'England',
+          active: true,
         })
       })
     })

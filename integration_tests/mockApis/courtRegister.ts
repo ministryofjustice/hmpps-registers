@@ -28,6 +28,7 @@ export const sheffieldMagistratesMainBuilding: CourtBuilding = {
       detail: '0114 555 4321',
     },
   ],
+  active: true,
 }
 
 export const sheffieldMagistratesAnnexeBuilding: CourtBuilding = {
@@ -42,6 +43,7 @@ export const sheffieldMagistratesAnnexeBuilding: CourtBuilding = {
   postcode: ' S3 8LU',
   country: 'England',
   contacts: [],
+  active: false,
 }
 
 export const sheffieldCrownMainBuilding: CourtBuilding = {
@@ -63,6 +65,7 @@ export const sheffieldCrownMainBuilding: CourtBuilding = {
       detail: '0114 555 4321',
     },
   ],
+  active: true,
 }
 
 export const sheffieldCrownCourt: Court = {

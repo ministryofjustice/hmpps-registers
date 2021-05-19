@@ -18,6 +18,7 @@ describe('amendCourtBuildingValidator', () => {
     addresscounty: 'South Yorkshire',
     addresspostcode: 'S1 2BJ',
     addresscountry: 'England',
+    active: true,
   }
 
   describe('validate', () => {

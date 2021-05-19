@@ -21,6 +21,7 @@ export type CourtBuildingDetail = {
   addresscounty?: string
   addresspostcode?: string
   addresscountry?: string
+  active?: boolean
   contacts: CourtBuildingContactDetail[]
 }
 
@@ -65,6 +66,7 @@ export function courtBuildingMapper(building: CourtBuilding): CourtBuildingDetai
     addresscounty: building.county,
     addresspostcode: building.postcode,
     addresscountry: building.country,
+    active: building.active,
     contacts: building.contacts?.map(courtBuildingContactMapper) || [],
   }
 }

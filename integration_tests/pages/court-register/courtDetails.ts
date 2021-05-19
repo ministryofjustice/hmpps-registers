@@ -2,10 +2,10 @@ import type { Page } from '../page'
 import page from '../page'
 
 const courtDetails = {
-  markAsClosedButton: () => cy.get('[data-qa=mark-as-closed]'),
-  markAsOpenButton: () => cy.get('[data-qa=mark-as-open]'),
-  activatedConfirmationBlock: () => cy.get('[data-qa=confirm-activation]'),
-  deactivatedConfirmationBlock: () => cy.get('[data-qa=confirm-deactivation]'),
+  markAsClosedButton: (id: string) => cy.get(`[data-qa=mark-as-closed-${id}]`),
+  markAsOpenButton: (id: string) => cy.get(`[data-qa=mark-as-open-${id}]`),
+  activatedConfirmationBlock: (type: 'court' | 'building') => cy.get(`[data-qa=confirm-${type}-activation]`),
+  deactivatedConfirmationBlock: (type: 'court' | 'building') => cy.get(`[data-qa=confirm-${type}-deactivation]`),
   courtUpdatedConfirmationBlock: () => cy.get('[data-qa=confirm-updated]'),
   courtDetailsSection: () => cy.get('[data-qa=court-summary-section]'),
   amendCourtDetailsLink: () => cy.get('[data-qa=amend-court-details-link]'),

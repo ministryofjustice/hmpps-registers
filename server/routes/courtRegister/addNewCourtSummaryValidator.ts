@@ -43,6 +43,7 @@ function asAddCourt(form: AddNewCourtForm): AddCourt {
       postcode: form.addresspostcode,
       county: form.addresscounty,
       country: form.addresscountry,
+      active: true,
     },
     contacts,
   }
