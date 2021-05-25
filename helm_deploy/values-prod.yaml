@@ -21,3 +21,7 @@ env:
   TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
   COURT_REGISTER_API_URL: https://court-register.hmpps.service.justice.gov.uk
+
+# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service
