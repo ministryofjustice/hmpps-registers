@@ -21,3 +21,7 @@ env:
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
   COURT_REGISTER_API_URL: https://court-register-preprod.hmpps.service.justice.gov.uk
+
+# CloudPlatform AlertManager receiver to route promethues alerts to slack
+generic-prometheus-alerts:
+  alertSeverity: hmpps_tech_non_prod
