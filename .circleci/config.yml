@@ -49,24 +49,6 @@ jobs:
             - .cache/Cypress
             - assets/stylesheets
 
-  check_outdated:
-    executor:
-      name: hmpps/node
-      tag: 14.15-browsers
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: install-npm
-          command: 'npm ci --no-audit'
-      - run:
-          name: Check version
-          command: 'npm --version'
-      - run:
-          name: Run check
-          command: 'npm outdated typescript govuk-frontend'
-
   unit_test:
     executor:
       name: hmpps/node
@@ -198,4 +180,3 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
-      - check_outdated
