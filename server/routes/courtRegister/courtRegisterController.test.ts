@@ -9,16 +9,16 @@ jest.mock('../../services/courtRegisterService')
 describe('Court Register controller', () => {
   let courtRegisterService: jest.Mocked<CourtRegisterService>
   let controller: CourtRegisterController
-  const req = ({
+  const req = {
     query: {},
     session: {},
     flash: jest.fn(),
-  } as unknown) as Request
-  const res = ({
+  } as unknown as Request
+  const res = {
     locals: {},
     render: jest.fn(),
     redirect: jest.fn(),
-  } as unknown) as Response
+  } as unknown as Response
 
   afterEach(jest.resetAllMocks)
   describe('getPageOfCourts', () => {
@@ -67,11 +67,11 @@ describe('Court Register controller', () => {
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {})
     })
     it('will parse a filter from the query parameters', async () => {
-      const reqWithQueryParms = ({
+      const reqWithQueryParms = {
         query: { active: 'false', courtTypeIds: ['COU', 'CRO'], textSearch: 'some-search-text' },
         session: {},
         flash: jest.fn(),
-      } as unknown) as Request
+      } as unknown as Request
       await controller.showAllCourts(reqWithQueryParms, res)
       expect(courtRegisterService.getPageOfCourts).toHaveBeenCalledWith(expect.anything(), 0, 40, {
         active: false,
@@ -80,11 +80,11 @@ describe('Court Register controller', () => {
       })
     })
     it('will set the list page link in the session', async () => {
-      const reqWithQueryParms = ({
+      const reqWithQueryParms = {
         query: { active: 'false', courtTypeIds: ['COU', 'CRO'], page: 2 },
         session: {},
         flash: jest.fn(),
-      } as unknown) as Request
+      } as unknown as Request
       await controller.showAllCourts(reqWithQueryParms, res)
       expect(reqWithQueryParms.session.courtListPageLink).toEqual(
         '/court-register?page=2&active=false&courtTypeIds=COU&courtTypeIds=CRO'
@@ -856,9 +856,9 @@ describe('Court Register controller', () => {
   })
   describe('parseFilter', () => {
     it('should handle missing query parameters', () => {
-      const request = ({
+      const request = {
         query: {},
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -866,9 +866,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({})
     })
     it('should handle active query parameter', () => {
-      const request = ({
+      const request = {
         query: { active: 'true' },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -876,9 +876,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({ active: true })
     })
     it('should handle single courtTypeIds query parameter', () => {
-      const request = ({
+      const request = {
         query: { courtTypeIds: 'CRN' },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -886,9 +886,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({ courtTypeIds: ['CRN'] })
     })
     it('should handle multiple courtTypeIds query parameter', () => {
-      const request = ({
+      const request = {
         query: { courtTypeIds: ['CRN', 'COU'] },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -896,9 +896,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({ courtTypeIds: ['CRN', 'COU'] })
     })
     it('should handle text search query parameter', () => {
-      const request = ({
+      const request = {
         query: { textSearch: 'some-search-text' },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -906,9 +906,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({ textSearch: 'some-search-text' })
     })
     it('should handle text search query parameter as empty string ', () => {
-      const request = ({
+      const request = {
         query: { textSearch: '' },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)
@@ -916,9 +916,9 @@ describe('Court Register controller', () => {
       expect(filter).toEqual({})
     })
     it('should handle combination of query parameters', () => {
-      const request = ({
+      const request = {
         query: { textSearch: 'some-search-text', courtTypeIds: ['CRN', 'COU'], active: 'true' },
-      } as unknown) as Request
+      } as unknown as Request
       controller = new CourtRegisterController(courtRegisterService)
 
       const filter = controller.parseFilter(request)

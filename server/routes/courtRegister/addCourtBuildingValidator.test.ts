@@ -371,8 +371,7 @@ describe('addCourtBuildingValidator', () => {
         expect(req.flash).toBeCalledWith('errors', [
           {
             href: '#subCode',
-            text:
-              'The building Crown Square is already saved as the main building (with blank code). Please enter a code.',
+            text: 'The building Crown Square is already saved as the main building (with blank code). Please enter a code.',
           },
         ])
       })
@@ -393,8 +392,7 @@ describe('addCourtBuildingValidator', () => {
         expect(req.flash).not.toBeCalledWith('errors', [
           {
             href: '#subCode',
-            text:
-              'The building Crown Square is already saved as the main building (with blank code). Please enter a code.',
+            text: 'The building Crown Square is already saved as the main building (with blank code). Please enter a code.',
           },
         ])
       })

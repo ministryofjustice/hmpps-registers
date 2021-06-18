@@ -5,7 +5,7 @@
     "jest": true
   },
 
-  "plugins": ["import"],
+  "plugins": ["import", "no-only-tests"],
 
   "settings": {
     "import/parsers": {
@@ -31,7 +31,6 @@
       "extends": [
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
-        "prettier/@typescript-eslint",
         "plugin:prettier/recommended"
       ],
       "rules": {
@@ -64,6 +63,7 @@
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
 
   "rules": {
+    "no-only-tests/no-only-tests": "error",
     "no-unused-vars": [
       1,
       {
@@ -106,5 +106,8 @@
         "arrowParens": "avoid"
       }
     ]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
   }
 }

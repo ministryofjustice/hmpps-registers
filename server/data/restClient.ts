@@ -78,7 +78,7 @@ export default class RestClient {
         .timeout(this.timeoutConfig())
 
       if (result.notFound) {
-        return (undefined as unknown) as T
+        return undefined as unknown as T
       }
 
       return raw ? result : result.body
