@@ -21,7 +21,7 @@ describe('authorisationMiddleware', () => {
   const next = jest.fn()
 
   function createResWithToken({ authorities }: { authorities: string[] }): Response {
-    return ({
+    return {
       locals: {
         user: {
           token: createToken(authorities),
@@ -30,7 +30,7 @@ describe('authorisationMiddleware', () => {
       redirect: (redirectUrl: string) => {
         return redirectUrl
       },
-    } as unknown) as Response
+    } as unknown as Response
   }
 
   it('should return next when no required roles', () => {
