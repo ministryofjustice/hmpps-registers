@@ -3,18 +3,16 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@3.5
 
-executors:
-  integration-tests:
-    docker:
-      - image: cimg/node:14.15-browsers
-      - image: circleci/redis:buster
-    working_directory: ~/app
+parameters:
+  node-version:
+    type: string
+    default: 14.17-browsers
 
 jobs:
   build:
     executor:
       name: hmpps/node
-      tag: 14.15-browsers
+      tag: << pipeline.parameters.node-version >>
     steps:
       - checkout
       - run:
@@ -52,7 +50,7 @@ jobs:
   unit_test:
     executor:
       name: hmpps/node
-      tag: 14.15-browsers
+      tag: << pipeline.parameters.node-version >>
     steps:
       - checkout
       - restore_cache:
@@ -66,7 +64,10 @@ jobs:
           path: test-results/unit-test-reports.html
 
   integration_test:
-    executor: integration-tests
+    executor:
+      name: hmpps/node_redis
+      node_tag: << pipeline.parameters.node-version >>
+      redis_tag: "6-buster"
     steps:
       - checkout
       - attach_workspace:
