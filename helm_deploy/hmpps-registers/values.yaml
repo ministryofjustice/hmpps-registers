@@ -1,5 +1,47 @@
 ---
 # Values here are the same across all environments
 
+generic-service:
+  nameOverride: hmpps-registers
+  replicaCount: 2
+
+  image:
+    repository: quay.io/hmpps/hmpps-registers
+    tag: app_version    # override at deployment time
+    port: 3000
+
+  ingress:
+    enabled: true
+    tlsSecretName: hmpps-registers-cert
+
+  livenessProbe:
+    httpGet:
+      path: /ping
+
+  readinessProbe:
+    httpGet:
+      path: /ping
+
+  env:
+    TOKEN_VERIFICATION_ENABLED: true
+    NODE_ENV: production
+    REDIS_TLS_ENABLED: true
+
+  # Pre-existing kubernetes secrets to load as environment variables in the deployment.
+  # namespace_secrets:
+  #   [name of kubernetes secret]:
+  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
+  namespace_secrets:
+    elasticache-redis:
+      REDIS_HOST: "primary_endpoint_address"
+      REDIS_AUTH_TOKEN: "auth_token"
+    hmpps-registers:
+      API_CLIENT_ID: "API_CLIENT_ID"
+      API_CLIENT_SECRET: "API_CLIENT_SECRET"
+      SYSTEM_CLIENT_ID: "SYSTEM_CLIENT_ID"
+      SYSTEM_CLIENT_SECRET: "SYSTEM_CLIENT_SECRET"
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      SESSION_SECRET: "SESSION_SECRET"
+
 generic-prometheus-alerts:
   targetApplication: hmpps-registers
