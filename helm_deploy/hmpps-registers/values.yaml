@@ -3,7 +3,6 @@
 
 generic-service:
   nameOverride: hmpps-registers
-  replicaCount: 2
 
   image:
     repository: quay.io/hmpps/hmpps-registers
@@ -24,7 +23,7 @@ generic-service:
 
   env:
     TOKEN_VERIFICATION_ENABLED: true
-    NODE_ENV: production
+    NODE_ENV: "production"
     REDIS_TLS_ENABLED: true
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
