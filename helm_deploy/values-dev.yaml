@@ -1,27 +1,18 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+---
+# Environment specific values, override helm_deploy/hmpps-registers/values.yaml
 
-replicaCount: 2
+generic-service:
+  replicaCount: 2
+  ingress:
+    host: registers-dev.hmpps.service.justice.gov.uk
 
-image:
-  repository: quay.io/hmpps/hmpps-registers
-  tag: latest
-  pullPolicy: IfNotPresent
-  port: 3000
+  env:
+    HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+    TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
+    COURT_REGISTER_API_URL: https://court-register-dev.hmpps.service.justice.gov.uk
 
-ingress:
-  enabled: true
-  enable_whitelist: false
-  host: registers-dev.hmpps.service.justice.gov.uk
-  cert_secret: hmpps-registers-cert
-  path: /
+    INGRESS_URL: https://registers-dev.hmpps.service.justice.gov.uk
 
-env:
-  HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-  TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
-  TOKEN_VERIFICATION_ENABLED: true
-  COURT_REGISTER_API_URL: https://court-register-dev.hmpps.service.justice.gov.uk
-
-# CloudPlatform AlertManager receiver to route promethues alerts to slack
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   alertSeverity: hmpps_tech_non_prod
