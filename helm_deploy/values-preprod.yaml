@@ -3,7 +3,8 @@
 
 generic-service:
   ingress:
-    host: registers-preprod.hmpps.service.justice.gov.ukn    contextColour: green
+    host: registers-preprod.hmpps.service.justice.gov.uk
+    contextColour: green
 
   env:
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
