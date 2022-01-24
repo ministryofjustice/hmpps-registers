@@ -4,6 +4,7 @@
 generic-service:
   ingress:
     host: registers.hmpps.service.justice.gov.uk
+    contextColour: green
 
   env:
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
