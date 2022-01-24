@@ -12,6 +12,7 @@ generic-service:
   ingress:
     enabled: true
     tlsSecretName: hmpps-registers-cert
+    contextColour: green
 
   livenessProbe:
     httpGet:
