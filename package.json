@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "copy-views": "cp -R server/views dist/server/",
-    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
+    "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend --load-path=. ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
     "watch-ts": "tsc -w",
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-node": "DEBUG=gov-starter-server* nodemon --watch dist/ dist/server.js | bunyan -o short",
@@ -96,7 +96,7 @@
     "csurf": "^1.11.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
-    "express-request-id": "^2.0.1",
+    "express-request-id": "^1.4.1",
     "express-session": "^1.17.2",
     "govuk-elements-sass": "^3.1.3",
     "govuk-frontend": "^4.0.0",
