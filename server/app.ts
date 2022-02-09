@@ -201,6 +201,10 @@ export default function createApp(
     res.redirect(authLogoutUrl)
   })
 
+  app.use('/auth', (req, res) => {
+    res.redirect(`${config.apis.hmppsAuth.externalUrl}`)
+  })
+
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
   app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService }))
   app.use((req, res, next) => next(createError(404, 'Not found')))
