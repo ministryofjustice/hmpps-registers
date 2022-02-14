@@ -3,6 +3,7 @@ import { resetStubs } from '../mockApis/wiremock'
 import auth from '../mockApis/auth'
 import courtRegister from '../mockApis/courtRegister'
 import tokenVerification from '../mockApis/tokenVerification'
+import prisonRegister from '../mockApis/prisonRegister'
 
 export default (on: (task: string, tasks: Record<string, unknown>) => void): void => {
   on('task', {
@@ -29,5 +30,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubCourtBuilding: courtRegister.stubCourtBuilding,
 
     stubCourtRegisterPing: courtRegister.stubPing,
+
+    stubPrisonRegisterPing: prisonRegister.stubPing,
+    stubGetPrisons: prisonRegister.stubGetPrisons,
   })
 }

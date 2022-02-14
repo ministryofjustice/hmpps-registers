@@ -2,11 +2,14 @@ import type { RequestHandler, Router } from 'express'
 
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import courtRoutes from './courtRegister/courtRegisterRouter'
+import prisonRoutes from './prisonRegister/prisonRegisterRouter'
 import CourtRegisterService from '../services/courtRegisterService'
+import PrisonRegisterService from '../services/prisonRegisterService'
 import { extractRoles, MAINTAINER_ROLE } from '../authentication/roles'
 
 export interface Services {
   courtRegisterService: CourtRegisterService
+  prisonRegisterService: PrisonRegisterService
 }
 
 export default function routes(router: Router, services: Services): Router {
@@ -24,6 +27,14 @@ export default function routes(router: Router, services: Services): Router {
           roles: [MAINTAINER_ROLE],
           enabled: true,
         },
+        {
+          id: 'prison-register',
+          heading: 'Prison register',
+          description: 'View prison details.',
+          href: '/prison-register',
+          roles: [MAINTAINER_ROLE],
+          enabled: true,
+        },
       ].filter(
         register =>
           Boolean(register.roles === null || register.roles.find(role => roles.includes(role))) && register.enabled
@@ -32,5 +43,6 @@ export default function routes(router: Router, services: Services): Router {
   })
 
   courtRoutes(router, services)
+  prisonRoutes(router, services)
   return router
 }

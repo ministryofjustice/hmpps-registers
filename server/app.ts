@@ -23,6 +23,7 @@ import standardRouter from './routes/standardRouter'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
 import CourtRegisterService from './services/courtRegisterService'
+import PrisonRegisterService from './services/prisonRegisterService'
 import { MAINTAINER_ROLE } from './authentication/roles'
 
 const version = Date.now().toString()
@@ -32,7 +33,8 @@ const RedisStore = connectRedis(session)
 
 export default function createApp(
   userService: UserService,
-  courtRegisterService: CourtRegisterService
+  courtRegisterService: CourtRegisterService,
+  prisonRegisterService: PrisonRegisterService
 ): express.Application {
   const app = express()
 
@@ -206,7 +208,7 @@ export default function createApp(
   })
 
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
-  app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService }))
+  app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService, prisonRegisterService }))
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 

@@ -3,9 +3,11 @@ import type { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import CourtRegisterController from './courtRegisterController'
 import CourtRegisterService from '../../services/courtRegisterService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 export interface Services {
   courtRegisterService: CourtRegisterService
+  prisonRegisterService: PrisonRegisterService
 }
 export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))

@@ -1,0 +1,70 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/filter/macro.njk" import mojFilter %}
+{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set pageTitle = applicationName + " - Prison Register" %}
+
+{% block content %}
+    <!--suppress HtmlUnknownTarget -->
+    <div class="govuk-width-container">
+        {{ govukBackLink({
+            text: "Back",
+            href: "/"
+        }) }}
+
+        <main class="app-container govuk-body">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <h1 class="govuk-heading-xl">Prison Register</h1>
+                </div>
+            </div>
+
+            <div class="moj-filter-layout">
+                <div class="moj-filter-layout__content">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            {% if prisons.length %}
+                                <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="prisons">
+                                    <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">ID</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Active</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody class="govuk-table__body">
+                                    {% for prison in prisons %}
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell">{{ prison.id }}</td>
+                                            <td class="govuk-table__cell">{{ prison.name }}</td>
+                                            <td class="govuk-table__cell">
+                                                {% if prison.active %}
+                                                    Active
+                                                {% else %}
+                                                    Inactive
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p data-qa=no-prisons class="govuk-body">There are no prisons</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
