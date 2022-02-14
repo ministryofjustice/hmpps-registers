@@ -3,7 +3,7 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 
-jest.mock('../../services/PrisonRegisterService')
+jest.mock('../../services/prisonRegisterService')
 
 describe('Prison Register controller', () => {
   let prisonRegisterService: jest.Mocked<PrisonRegisterService>
