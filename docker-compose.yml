@@ -58,7 +58,6 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
     environment:
       - SERVER_PORT=8080
-      - OAUTH_API_BASE_URL=http://hmpps-auth:8080/auth
       - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
       - SPRING_DATASOURCE_URL=jdbc:postgresql://court-register-db:5432/court_register_db
       - SNS_ENDPOINT_URL=http://localstack:4566
@@ -80,6 +79,22 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin_password
       - POSTGRES_DB=court_register_db
+
+  prison-register:
+    image: quay.io/hmpps/prison-register:latest
+    networks:
+      - hmpps
+    container_name: prison-register
+    depends_on:
+      - hmpps-auth
+    ports:
+      - "8103:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
 
   nomis-user-roles-api:
     image: quay.io/hmpps/nomis-user-roles-api:latest
