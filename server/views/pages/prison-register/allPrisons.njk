@@ -1,13 +1,5 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "moj/components/pagination/macro.njk" import mojPagination %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "moj/components/filter/macro.njk" import mojFilter %}
-{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% set pageTitle = applicationName + " - Prison Register" %}
 
@@ -44,7 +36,9 @@
                                     {% for prison in prisons %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ prison.id }}</td>
-                                            <td class="govuk-table__cell">{{ prison.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/prison-register/details?id={{ prison.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ prison.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if prison.active %}
                                                     Active

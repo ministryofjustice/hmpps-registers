@@ -7,7 +7,7 @@ context('Prison register - prison list navigation', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubGetPrisons', [albanyPrison])
+    cy.task('stubGetAllPrisons', [albanyPrison])
     cy.login()
   })
 
@@ -17,8 +17,8 @@ context('Prison register - prison list navigation', () => {
 
     {
       const { id, name, active } = prisonRegisterPage.prisons(0)
-      id().contains('ALI')
-      name().contains('Albany (HMP)')
+      id().contains(albanyPrison.prisonId)
+      name().contains(albanyPrison.prisonName)
       active().contains('Active')
     }
   })

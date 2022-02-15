@@ -15,11 +15,19 @@ export default class PrisonRegisterService {
     return new RestClient('PrisonRegister API Client', config.apis.prisonRegister, token)
   }
 
-  async getPrisons(context: Context): Promise<Prison[]> {
+  async getAllPrisons(context: Context): Promise<Prison[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for prisons`)
     return PrisonRegisterService.restClient(token).get<Prison[]>({
       path: `/prisons`,
+    })
+  }
+
+  async getPrison(context: Context, prisonId: string): Promise<Prison> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting details for prison ${prisonId}`)
+    return PrisonRegisterService.restClient(token).get<Prison>({
+      path: `/prisons/id/${prisonId}`,
     })
   }
 }

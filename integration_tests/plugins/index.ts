@@ -32,6 +32,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubCourtRegisterPing: courtRegister.stubPing,
 
     stubPrisonRegisterPing: prisonRegister.stubPing,
-    stubGetPrisons: prisonRegister.stubGetPrisons,
+    stubGetAllPrisons: prisonRegister.stubGetAllPrisons,
+    stubGetPrison: prisonRegister.stubGetPrison,
   })
 }
