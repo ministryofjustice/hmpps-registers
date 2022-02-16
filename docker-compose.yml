@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 services:
 
   redis:
@@ -21,9 +21,9 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
-      SPRING_PROFILES_ACTIVE: dev,token-verification
+      SPRING_PROFILES_ACTIVE: dev,token-verification,nomis
       TOKENVERIFICATION_ENDPOINT_URL: "http://token-verification-api:8080"
-      DELIUS_ENABLED: "false"
+      NOMIS_ENDPOINT_URL: http://nomis-user-roles-api:8080
 
   token-verification-api:
     image: quay.io/hmpps/token-verification-api:latest
@@ -49,6 +49,8 @@ services:
     container_name: court-register
     depends_on:
       - redis
+      - localstack
+      - court-register-db
       - hmpps-auth
     ports:
       - "8101:8080"
@@ -57,14 +59,16 @@ services:
     environment:
       - SERVER_PORT=8080
       - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
-      - SNS_ENDPOINT_URL=http://localstack:4575
-      - SPRING_PROFILES_ACTIVE=stdout,localstack
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://court-register-db:5432/court_register_db
+      - SNS_ENDPOINT_URL=http://localstack:4566
+      - HMPPS_SQS_LOCALSTACKURL=http://localstack:4566
+      - SPRING_PROFILES_ACTIVE=stdout,localstack,postgres
       - AWS_ACCESS_KEY_ID=foobar
       - AWS_SECRET_ACCESS_KEY=foobar
       - AWS_DEFAULT_REGION=eu-west-2
 
   court-register-db:
-    image: postgres
+    image: postgres:13.2
     networks:
       - hmpps
     container_name: court-register-db
@@ -74,19 +78,50 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin_password
-      - DATABASE_NAME=court-register-db
-      - DATABASE_ENDPOINT=court-register-db
+      - POSTGRES_DB=court_register_db
+
+  prison-register:
+    image: quay.io/hmpps/prison-register:latest
+    networks:
+      - hmpps
+    container_name: prison-register
+    depends_on:
+      - hmpps-auth
+    ports:
+      - "8103:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
+
+  nomis-user-roles-api:
+    image: quay.io/hmpps/nomis-user-roles-api:latest
+    networks:
+      - hmpps
+    container_name: nomis-user-roles-api
+    depends_on:
+      - hmpps-auth
+    ports:
+      - "8082:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
 
   localstack:
-    image: localstack/localstack:0.11.2
+    image: localstack/localstack:0.12.10
     networks:
       - hmpps
     container_name: localstack
     ports:
-      - "4567-4597:4567-4597"
+      - "4566-4597:4566-4597"
       - 8999:8080
     environment:
-      - SERVICES=sns
+      - SERVICES=sns,sqs
       - DEBUG=${DEBUG- }
       - DATA_DIR=${DATA_DIR- }
       - PORT_WEB_UI=${PORT_WEB_UI- }
@@ -98,7 +133,6 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - $PWD/localstack:/docker-entrypoint-initaws.d
 
   app:
     build: .

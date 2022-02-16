@@ -1,4 +1,5 @@
 import type { Court, CourtBuilding, CourtBuildingContact } from '../../@types/courtRegister'
+import { Prison } from '../../@types/prisonRegister'
 
 export default {
   court: ({
@@ -60,4 +61,11 @@ export default {
       type,
       detail,
     } as CourtBuildingContact),
+
+  prison: ({ prisonId = 'ALI', prisonName = 'Albany (HMP)', active = true }: Partial<Prison>): Prison =>
+    ({
+      prisonId,
+      prisonName,
+      active,
+    } as Prison),
 }
