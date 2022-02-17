@@ -344,11 +344,11 @@ describe('toCourtActiveFilterRadioButtons', () => {
   })
 })
 
-describe('toTextSearchInput', () => {
+describe('toCourtTextSearchInput', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should create text search metadata', () => {
-    const result = njk.getFilter('toTextSearchInput')()
+    const result = njk.getFilter('toCourtTextSearchInput')()
     expect(result.label.text).toBeTruthy()
     expect(result.label.classes).toContain('govuk-label')
     expect(result.id).toEqual('textSearch')

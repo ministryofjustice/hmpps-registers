@@ -150,7 +150,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toTextSearchInput', (allCourtsFilter: AllCourtsFilter) => {
+  njkEnv.addFilter('toCourtTextSearchInput', (allCourtsFilter: AllCourtsFilter) => {
     return {
       label: {
         text: 'Search',
