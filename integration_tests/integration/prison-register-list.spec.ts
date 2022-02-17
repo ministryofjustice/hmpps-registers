@@ -19,7 +19,7 @@ context('Prison register - prison list navigation', () => {
       const { id, name, active } = prisonRegisterPage.prisons(0)
       id().contains(albanyPrison.prisonId)
       name().contains(albanyPrison.prisonName)
-      active().contains('Active')
+      active().contains('Open')
     }
   })
 })
