@@ -113,7 +113,7 @@ services:
       - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
 
   localstack:
-    image: localstack/localstack:0.12.10
+    image: localstack/localstack:0.14.0
     networks:
       - hmpps
     container_name: localstack

@@ -9,6 +9,7 @@ const allPrisons = {
     name: () => column(rowNumber, 1),
     active: () => column(rowNumber, 2),
   }),
+  viewPrisonLink: (prisonId: string) => cy.get(`[href="/prison-register/details?id=${prisonId}"]`).first(),
 }
 
 const verifyOnPage = (): typeof allPrisons & Page => page('Prison Register', allPrisons)
