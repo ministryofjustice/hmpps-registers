@@ -271,11 +271,11 @@ describe('toCourtTypeFilterCheckboxes', () => {
     ])
   })
 })
-describe('toActiveFilterRadioButtons', () => {
+describe('toCourtActiveFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should create radio button metadata', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
     expect(result.idPrefix).toEqual('active')
     expect(result.name).toEqual('active')
     expect(result.classes).toContain('govuk-radios')
@@ -283,7 +283,7 @@ describe('toActiveFilterRadioButtons', () => {
     expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
   })
   it('should map null to all courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({})
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({})
     expect(result.items).toEqual([
       {
         value: '',
@@ -303,7 +303,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map true to open courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: true })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ active: true })
     expect(result.items).toEqual([
       {
         value: '',
@@ -323,7 +323,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map false to closed courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: false })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ active: false })
     expect(result.items).toEqual([
       {
         value: '',

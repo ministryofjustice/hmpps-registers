@@ -116,7 +116,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
+  njkEnv.addFilter('toCourtActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
     return {
       idPrefix: 'active',
       name: 'active',
