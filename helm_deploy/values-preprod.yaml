@@ -9,6 +9,7 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
     COURT_REGISTER_API_URL: https://court-register-preprod.hmpps.service.justice.gov.uk
+    PRISON_REGISTER_API_URL: https://prison-register-preprod.hmpps.service.justice.gov.uk
 
     INGRESS_URL: https://registers-preprod.hmpps.service.justice.gov.uk
 
