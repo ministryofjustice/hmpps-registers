@@ -26,9 +26,9 @@
                                 <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="prisons">
                                     <thead class="govuk-table__head">
                                     <tr class="govuk-table__row">
-                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">ID</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
-                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Active</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
                                     </tr>
                                     </thead>
 
@@ -41,9 +41,9 @@
                                             </td>
                                             <td class="govuk-table__cell">
                                                 {% if prison.active %}
-                                                    Active
+                                                    Open
                                                 {% else %}
-                                                    Inactive
+                                                    Closed
                                                 {% endif %}
                                             </td>
                                         </tr>

@@ -12,10 +12,10 @@
     {{ name }}
   </p>
   <p>
-    {% if active %}
-      Active
+    {% if prison.active %}
+      Open
     {% else %}
-      Inactive
+      Closed
     {% endif %}
   </p>
 {% endmacro %}
