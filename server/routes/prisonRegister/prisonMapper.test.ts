@@ -1,4 +1,4 @@
-import prisonMapper, { PrisonDetail, prisonPageMapper, PrisonPageView } from './prisonMapper'
+import prisonMapper, { PrisonDetail, prisonsPageMapper } from './prisonMapper'
 import data from '../testutils/mockData'
 
 describe('prisonMapper', () => {
@@ -7,6 +7,7 @@ describe('prisonMapper', () => {
   beforeEach(() => {
     prison = prisonMapper(data.prison({}))
   })
+
   it('will map prisonId', () => {
     expect(prison.id).toEqual('ALI')
   })
@@ -18,13 +19,14 @@ describe('prisonMapper', () => {
   })
 })
 
-describe('prisonPageMapper', () => {
-  let prisonPageView: PrisonPageView
+describe('prisonsPageMapper', () => {
+  let prisons: PrisonDetail[]
 
   beforeEach(() => {
-    prisonPageView = prisonPageMapper([data.prison({}), data.prison({})])
+    prisons = prisonsPageMapper([data.prison({}), data.prison({})], {}).prisons
   })
+
   it('will contain two prisons', () => {
-    expect(prisonPageView.prisons.length).toEqual(2)
+    expect(prisons.length).toEqual(2)
   })
 })

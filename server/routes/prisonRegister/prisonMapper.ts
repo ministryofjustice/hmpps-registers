@@ -8,6 +8,7 @@ export type PrisonDetail = {
 
 export type PrisonPageView = {
   prisons: PrisonDetail[]
+  allPrisonsFilter: AllPrisonsFilter
 }
 
 export default function prisonMapper(prison: Prison): PrisonDetail {
@@ -18,7 +19,12 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
   }
 }
 
-export function prisonPageMapper(prisonResults: Prison[]): PrisonPageView {
+export function prisonsPageMapper(prisonResults: Prison[], allPrisonsFilter: AllPrisonsFilter): PrisonPageView {
   const prisons = prisonResults.map((prison: Prison) => prisonMapper(prison))
-  return { prisons }
+  return { prisons, allPrisonsFilter }
+}
+
+export type AllPrisonsFilter = {
+  active?: boolean
+  textSearch?: string
 }
