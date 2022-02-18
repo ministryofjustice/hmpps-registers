@@ -10,6 +10,16 @@ const allPrisons = {
     active: () => column(rowNumber, 2),
   }),
   viewPrisonLink: (prisonId: string) => cy.get(`[href="/prison-register/details?id=${prisonId}"]`).first(),
+  mojFilter: () => cy.get('div.moj-filter'),
+  showFilterButton: () => cy.contains('Show filter'),
+  hideFilterButton: () => cy.contains('Hide filter'),
+  applyFilterButton: () => cy.contains('Apply filters'),
+  allFilter: () => cy.contains('label', 'All').prev(),
+  openFilter: () => cy.contains('label', 'Open').prev(),
+  closedFilter: () => cy.contains('label', 'Closed').prev(),
+  textSearchFilter: () => cy.get('#textSearch'),
+  cancelOpenFilter: () => cy.get('.moj-filter-tags').contains('Open'),
+  cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
 }
 
 const verifyOnPage = (): typeof allPrisons & Page => page('Prison Register', allPrisons)
