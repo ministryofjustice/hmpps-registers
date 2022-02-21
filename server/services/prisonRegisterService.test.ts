@@ -21,32 +21,34 @@ describe('Prison Register service', () => {
     nock.cleanAll()
   })
 
-  describe('getAllPrisons', () => {
+  describe('getPrisonsWithFilter', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/prisons').reply(200, [])
+      fakePrisonRegister.get('/prisons/search').reply(200, [])
 
-      await prisonRegisterService.getAllPrisons({ username: 'tommy' })
+      await prisonRegisterService.getPrisonsWithFilter({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('is ok if there are no prisons', async () => {
-      fakePrisonRegister.get('/prisons').reply(200, [])
+      fakePrisonRegister.get('/prisons/search').reply(200, [])
 
-      const result = await prisonRegisterService.getAllPrisons({})
+      const result = await prisonRegisterService.getPrisonsWithFilter({}, {})
 
       expect(result).toEqual([])
     })
 
-    it('will return all prisons', async () => {
-      fakePrisonRegister.get('/prisons').reply(200, [data.prison({}), data.prison({})])
+    it('will return all prisons with filter', async () => {
+      fakePrisonRegister
+        .get('/prisons/search?active=true&textSearch=ALI')
+        .reply(200, [data.prison({}), data.prison({})])
 
-      const result = await prisonRegisterService.getAllPrisons({})
+      const result = await prisonRegisterService.getPrisonsWithFilter({}, { active: true, textSearch: 'ALI' })
 
       expect(result).toHaveLength(2)
     })

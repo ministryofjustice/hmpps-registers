@@ -29,7 +29,7 @@ describe('Prison Register controller', () => {
 
   describe('showAllPrisons', () => {
     beforeEach(() => {
-      prisonRegisterService.getAllPrisons.mockResolvedValue([data.prison({})])
+      prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([data.prison({})])
     })
 
     it('will render all prisons page with prisons', async () => {

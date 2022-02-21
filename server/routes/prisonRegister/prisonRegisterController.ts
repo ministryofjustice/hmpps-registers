@@ -15,8 +15,8 @@ export default class PrisonRegisterController {
   constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
 
   async showAllPrisons(req: Request, res: Response): Promise<void> {
-    const prisons = await this.prisonRegisterService.getAllPrisons(context(res))
     const filter = this.parseFilter(req)
+    const prisons = await this.prisonRegisterService.getPrisonsWithFilter(context(res), filter)
     const view = new AllPrisonsView(prisons, filter)
     res.render('pages/prison-register/allPrisons', view.renderArgs)
   }

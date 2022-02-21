@@ -1,8 +1,10 @@
+import querystring from 'querystring'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
 import { Prison } from '../@types/prisonRegister'
+import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 export interface Context {
   username?: string
@@ -15,11 +17,12 @@ export default class PrisonRegisterService {
     return new RestClient('PrisonRegister API Client', config.apis.prisonRegister, token)
   }
 
-  async getAllPrisons(context: Context): Promise<Prison[]> {
+  async getPrisonsWithFilter(context: Context, filter: AllPrisonsFilter): Promise<Prison[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
-    logger.info(`getting details for prisons`)
+    logger.info(`getting details for prisons with filter ${filter}`)
     return PrisonRegisterService.restClient(token).get<Prison[]>({
-      path: `/prisons`,
+      path: `/prisons/search`,
+      query: `${querystring.stringify(filter)}`,
     })
   }
 

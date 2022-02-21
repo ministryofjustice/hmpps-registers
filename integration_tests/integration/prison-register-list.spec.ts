@@ -7,7 +7,7 @@ context('Prison register - prison list navigation', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubGetAllPrisons', [albanyPrison])
+    cy.task('stubGetPrisonsWithFilter', [albanyPrison])
     cy.login()
   })
 

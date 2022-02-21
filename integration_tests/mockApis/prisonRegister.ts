@@ -16,11 +16,11 @@ const stubPing = (): SuperAgentRequest =>
     },
   })
 
-const stubGetAllPrisons = (prisons: Prison[]): SuperAgentRequest =>
+const stubGetPrisonsWithFilter = (prisons: Prison[]): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/prison-register/prisons',
+      urlPattern: '/prison-register/prisons/search.*',
     },
     response: {
       status: 200,
@@ -48,7 +48,7 @@ const stubGetPrison = (prison: Prison): SuperAgentRequest =>
 
 export default {
   stubPing,
-  stubGetAllPrisons,
+  stubGetPrisonsWithFilter,
   stubGetPrison,
 }
 
