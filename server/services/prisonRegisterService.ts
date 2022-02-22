@@ -19,7 +19,7 @@ export default class PrisonRegisterService {
 
   async getPrisonsWithFilter(context: Context, filter: AllPrisonsFilter): Promise<Prison[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
-    logger.info(`getting details for prisons with filter ${filter}`)
+    logger.info(`getting details for prisons with filter ${JSON.stringify(filter)}`)
     return PrisonRegisterService.restClient(token).get<Prison[]>({
       path: `/prisons/search`,
       query: `${querystring.stringify(filter)}`,

@@ -60,7 +60,7 @@ export default class CourtRegisterService {
     filter: AllCourtsFilter
   ): Promise<CourtsPage> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
-    logger.info(`getting details for page of courts with filter ${filter}`)
+    logger.info(`getting details for page of courts with filter ${JSON.stringify(filter)}`)
     return CourtRegisterService.restClient(token).get<CourtsPage>({
       path: `/courts/paged`,
       query: `page=${pageNumber}&size=${pageSize}&sort=courtName&${querystring.stringify(filter)}`,
