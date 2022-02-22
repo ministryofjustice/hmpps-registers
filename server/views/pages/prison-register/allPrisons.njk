@@ -1,7 +1,18 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/filter/macro.njk" import mojFilter %}
 
 {% set pageTitle = applicationName + " - Prison Register" %}
+
+{% set filterOptionsHtml %}
+    <form id="filter-form" action="/prison-register" novalidate>
+        {{ govukInput( allPrisonsFilter | toPrisonTextSearchInput ) }}
+        {{ govukRadios( allPrisonsFilter | toPrisonActiveFilterRadioButtons ) }}
+    </form>
+{% endset %}
 
 {% block content %}
     <!--suppress HtmlUnknownTarget -->
@@ -19,16 +30,25 @@
             </div>
 
             <div class="moj-filter-layout">
+                <div class="moj-filter-layout__filter">{{ mojFilter(filterOptionsHtml | toPrisonListFilter(allPrisonsFilter, filterOptionsHtml)) }}</div>
+
                 <div class="moj-filter-layout__content">
+
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <div class="moj-action-bar__filter"></div>
+                        </div>
+                    </div>
+
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
                             {% if prisons.length %}
                                 <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="prisons">
                                     <thead class="govuk-table__head">
                                     <tr class="govuk-table__row">
-                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">ID</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
-                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Active</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
                                     </tr>
                                     </thead>
 
@@ -41,9 +61,9 @@
                                             </td>
                                             <td class="govuk-table__cell">
                                                 {% if prison.active %}
-                                                    Active
+                                                    Open
                                                 {% else %}
-                                                    Inactive
+                                                    Closed
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -61,4 +81,9 @@
         </main>
     </div>
 
+{% endblock %}
+
+{% block bodyEnd %}
+    {{ super() }}
+    <script src="/assets/filter-toggle-button.js"></script>
 {% endblock %}

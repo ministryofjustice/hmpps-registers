@@ -8,7 +8,7 @@ context('Prison register - prison details navigation', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubGetAllPrisons', [albanyPrison])
+    cy.task('stubGetPrisonsWithFilter', [albanyPrison])
     cy.task('stubGetPrison', albanyPrison)
     cy.login()
   })
@@ -23,6 +23,6 @@ context('Prison register - prison details navigation', () => {
 
     prisonDetailsPage.prisonDetailsSection().should('contain.text', albanyPrison.prisonId)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', albanyPrison.prisonName)
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Active')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Open')
   })
 })

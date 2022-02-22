@@ -271,11 +271,11 @@ describe('toCourtTypeFilterCheckboxes', () => {
     ])
   })
 })
-describe('toActiveFilterRadioButtons', () => {
+describe('toCourtActiveFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should create radio button metadata', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
     expect(result.idPrefix).toEqual('active')
     expect(result.name).toEqual('active')
     expect(result.classes).toContain('govuk-radios')
@@ -283,7 +283,7 @@ describe('toActiveFilterRadioButtons', () => {
     expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
   })
   it('should map null to all courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({})
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({})
     expect(result.items).toEqual([
       {
         value: '',
@@ -303,7 +303,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map true to open courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: true })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ active: true })
     expect(result.items).toEqual([
       {
         value: '',
@@ -323,7 +323,7 @@ describe('toActiveFilterRadioButtons', () => {
     ])
   })
   it('should map false to closed courts', () => {
-    const result = njk.getFilter('toActiveFilterRadioButtons')({ active: false })
+    const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ active: false })
     expect(result.items).toEqual([
       {
         value: '',
@@ -344,11 +344,11 @@ describe('toActiveFilterRadioButtons', () => {
   })
 })
 
-describe('toTextSearchInput', () => {
+describe('toCourtTextSearchInput', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should create text search metadata', () => {
-    const result = njk.getFilter('toTextSearchInput')()
+    const result = njk.getFilter('toCourtTextSearchInput')()
     expect(result.label.text).toBeTruthy()
     expect(result.label.classes).toContain('govuk-label')
     expect(result.id).toEqual('textSearch')
@@ -470,5 +470,181 @@ describe('toCourtListFilter', () => {
   it('should pass in options html', () => {
     const result = njk.getFilter('toCourtListFilter')([], { courtTypeIds: [], active: false }, 'some-options-html')
     expect(result.optionsHtml).toEqual('some-options-html')
+  })
+})
+
+describe('toPrisonListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should show filter headings', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], {})
+    expect(result.heading.text).toBeTruthy()
+    expect(result.selectedFilters.heading.text).toBeTruthy()
+    expect(result.selectedFilters.clearLink.text).toBeTruthy()
+  })
+
+  it('should show active Open cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { active: true })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Open or Closed',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'Open',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+
+  it('should show active Closed cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { active: false })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Open or Closed',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'Closed',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+
+  it('should show textSearch cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { textSearch: 'some-text-search' })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'some-text-search',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+
+  it('should NOT show textSearch cancel tag if no text search', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], {})
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: undefined,
+        }),
+      ])
+    )
+  })
+
+  it('should pass in options html', () => {
+    const result = njk.getFilter('toPrisonListFilter')('some-options-html', { active: false })
+    expect(result.optionsHtml).toEqual('some-options-html')
+  })
+})
+
+describe('toPrisonTextSearchInput', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create text search metadata', () => {
+    const result = njk.getFilter('toPrisonTextSearchInput')()
+    expect(result.label.text).toBeTruthy()
+    expect(result.label.classes).toContain('govuk-label')
+    expect(result.id).toEqual('textSearch')
+    expect(result.name).toEqual('textSearch')
+  })
+})
+
+describe('toPrisonActiveFilterRadioButtons', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create radio button metadata', () => {
+    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    expect(result.idPrefix).toEqual('active')
+    expect(result.name).toEqual('active')
+    expect(result.classes).toContain('govuk-radios')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+
+  it('should map null to all courts', () => {
+    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({})
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: true,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+
+  it('should map true to open prisons', () => {
+    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: true })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: true,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: false,
+      },
+    ])
+  })
+
+  it('should map false to closed prisons', () => {
+    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: false })
+    expect(result.items).toEqual([
+      {
+        value: '',
+        text: 'All',
+        checked: false,
+      },
+      {
+        value: true,
+        text: 'Open',
+        checked: false,
+      },
+      {
+        value: false,
+        text: 'Closed',
+        checked: true,
+      },
+    ])
   })
 })

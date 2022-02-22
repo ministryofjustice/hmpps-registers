@@ -5,6 +5,7 @@ import querystring, { ParsedUrlQueryInput } from 'querystring'
 import { PageMetaData } from './page'
 import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
+import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 type Error = {
   href: string
@@ -116,7 +117,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
+  njkEnv.addFilter('toCourtActiveFilterRadioButtons', (allCourtsFilter: AllCourtsFilter) => {
     return {
       idPrefix: 'active',
       name: 'active',
@@ -150,7 +151,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
-  njkEnv.addFilter('toTextSearchInput', (allCourtsFilter: AllCourtsFilter) => {
+  njkEnv.addFilter('toCourtTextSearchInput', (allCourtsFilter: AllCourtsFilter) => {
     return {
       label: {
         text: 'Search',
@@ -262,6 +263,124 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       ]
     }
     return null
+  }
+
+  njkEnv.addFilter('toPrisonListFilter', (filterOptionsHtml: string, allPrisonsFilter: AllPrisonsFilter) => {
+    const hrefBase = '/prison-register?'
+    const textSearchFilterTags = getPrisonTextSearchFilterTags(allPrisonsFilter, hrefBase)
+    const cancelActiveFilterTags = getCancelPrisonActiveFilterTags(allPrisonsFilter, hrefBase)
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/prison-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: textSearchFilterTags,
+          },
+          {
+            heading: {
+              text: 'Open or Closed',
+            },
+            items: cancelActiveFilterTags,
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toPrisonTextSearchInput', (allPrisonsFilter: AllPrisonsFilter) => {
+    return {
+      label: {
+        text: 'Search',
+        classes: 'govuk-label--m',
+      },
+      id: 'textSearch',
+      name: 'textSearch',
+      hint: {
+        text: 'Search for a prison by name or code',
+      },
+      value: allPrisonsFilter?.textSearch,
+    }
+  })
+
+  njkEnv.addFilter('toPrisonActiveFilterRadioButtons', (allPrisonsFilter: AllPrisonsFilter) => {
+    return {
+      idPrefix: 'active',
+      name: 'active',
+      classes: 'govuk-radios--inline',
+      fieldset: {
+        legend: {
+          text: 'Open or Closed',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display open or closed prisons only',
+      },
+      items: [
+        {
+          value: '',
+          text: 'All',
+          checked: allPrisonsFilter.active === undefined,
+        },
+        {
+          value: true,
+          text: 'Open',
+          checked: allPrisonsFilter.active === true,
+        },
+        {
+          value: false,
+          text: 'Closed',
+          checked: allPrisonsFilter.active === false,
+        },
+      ],
+    }
+  })
+
+  function getCancelPrisonActiveFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
+    const { active, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
+    if (allPrisonsFilter.active === true) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Open',
+        },
+      ]
+    }
+    if (allPrisonsFilter.active === false) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Closed',
+        },
+      ]
+    }
+    return null
+  }
+
+  function getPrisonTextSearchFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
+    const { textSearch, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
+    if (textSearch) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: allPrisonsFilter.textSearch,
+        },
+      ]
+    }
+    return undefined
   }
 
   return njkEnv
