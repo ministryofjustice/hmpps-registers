@@ -13,6 +13,7 @@ generic-service:
     enabled: true
     tlsSecretName: hmpps-registers-cert
     contextColour: green
+    modsecurity_enabled: true
 
   livenessProbe:
     httpGet:
