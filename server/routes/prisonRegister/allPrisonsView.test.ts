@@ -1,5 +1,5 @@
 import AllPrisonsView from './allPrisonsView'
-import data from '../testutils/mockData'
+import data from '../testutils/mockPrisonData'
 
 describe('AllPrisonsView', () => {
   let view: AllPrisonsView

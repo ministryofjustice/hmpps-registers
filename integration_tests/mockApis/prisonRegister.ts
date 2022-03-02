@@ -1,7 +1,7 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { Prison } from '../../server/@types/prisonRegister'
-import data from '../../server/routes/testutils/mockData'
+import data from '../../server/routes/testutils/mockPrisonData'
 
 // Mock API responses
 

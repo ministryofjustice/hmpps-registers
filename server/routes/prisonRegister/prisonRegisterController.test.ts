@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
-import data from '../testutils/mockData'
+import data from '../testutils/mockPrisonData'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -91,7 +91,7 @@ describe('Prison Register controller', () => {
 
   describe('viewPrison', () => {
     beforeEach(() => {
-      prisonRegisterService.getPrison.mockResolvedValue(data.prison({}))
+      prisonRegisterService.getPrison.mockResolvedValue(data.prison({ addresses: [data.prisonAddress({})] }))
     })
 
     it('will request prison for id', async () => {
@@ -110,6 +110,26 @@ describe('Prison Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
         prisonDetails: expect.objectContaining({ id: 'ALI' }),
+      })
+    })
+
+    it('will render prison details page with address', async () => {
+      await controller.viewPrison(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
+        prisonDetails: expect.objectContaining({
+          id: 'ALI',
+          addresses: [
+            {
+              line1: 'Bawtry Road',
+              line2: 'Hatfield Woodhouse',
+              town: 'Doncaster',
+              country: 'England',
+              county: 'South Yorkshire',
+              postcode: 'DN7 6BW',
+            },
+          ],
+        }),
       })
     })
   })
