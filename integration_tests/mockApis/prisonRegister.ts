@@ -54,4 +54,4 @@ export default {
 
 // Mock data
 
-export const albanyPrison: Prison = data.prison({})
+export const albanyPrison: Prison = data.prison({ addresses: [data.prisonAddress({})] })

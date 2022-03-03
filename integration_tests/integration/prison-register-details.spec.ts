@@ -25,4 +25,20 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', albanyPrison.prisonName)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Open')
   })
+
+  it('Will display prison address details', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    AllPrisons.verifyOnPage()
+      .viewPrisonLink(albanyPrison.prisonId)
+      .should('contain.text', albanyPrison.prisonName)
+      .click()
+    const prisonDetailsPage = PrisonDetails.verifyOnPage(albanyPrison.prisonName)
+
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].addressLine1)
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].addressLine2)
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].town)
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].county)
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].postcode)
+    prisonDetailsPage.addressDetailsSection().should('contain.text', albanyPrison.addresses[0].country)
+  })
 })
