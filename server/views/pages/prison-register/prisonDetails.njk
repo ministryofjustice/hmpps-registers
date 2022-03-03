@@ -20,6 +20,30 @@
   </p>
 {% endmacro %}
 
+{% macro line(text) %}
+  {% if text and text.trim() != '' %}
+    <p> {{ text }} </p>
+  {% endif %}
+{% endmacro %}
+
+{% macro renderAddress(line1, line2, town, county, postcode, country) %}
+  {{ line(line1) }}
+  {{ line(line2) }}
+  {{ line(town) }}
+  {{ line(county) }}
+  {{ line(postcode) }}
+  {{ line(country) }}
+{% endmacro %}
+
+{% macro addressTitle(line1, line2, town) %}
+  {% if line1 and line1.trim() != '' %} {{ line1 }}
+  {% else %}
+    {% if line2 and line2.trim() != '' %} {{ line2 }}
+    {% else %} {{ town }}
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
   {{ govukBackLink({
     text: "Back",
@@ -55,5 +79,27 @@
       }
     ]
   }) }}
+
+  {% for address in prisonDetails.addresses %}
+    {% if prisonDetails.addresses.length > 1 %}
+      <div>
+        <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">{{ addressTitle(address.line1, address.line2, address.town) }}</h2>
+      </div>
+    {% endif %}
+    {{ govukSummaryList({
+      attributes: { "data-qa": "address-details-section"},
+      rows: [
+        {
+          key: {
+          text: "Address"
+        },
+          value: {
+          html: renderAddress( address.line1, address.line2, address.town, address.county, address.postcode, address.country),
+          classes: "address-details"
+        }
+        }
+      ]
+    }) }}
+  {% endfor %}
 
 {% endblock %}

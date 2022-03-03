@@ -4,7 +4,7 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
-import data from '../routes/testutils/mockData'
+import data from '../routes/testutils/mockPrisonData'
 
 jest.mock('../data/hmppsAuthClient')
 

@@ -14,13 +14,30 @@ export interface paths {
     put: operations['putEmailAddressForOffenderManagementUnit']
     delete: operations['deleteEmailAddressForOffenderManagementUnit']
   }
+  '/queue-admin/retry-dlq/{dlqName}': {
+    put: operations['retryDlq']
+  }
+  '/queue-admin/retry-all-dlqs': {
+    put: operations['retryAllDlqs']
+  }
+  '/queue-admin/purge-queue/{queueName}': {
+    put: operations['purgeQueue']
+  }
   '/prison-maintenance/id/{prisonId}': {
     /** Updates prison information, role required is MAINTAIN_REF_DATA */
     put: operations['updatePrison']
   }
+  '/prison-maintenance': {
+    /** Adds new prison information, role required is MAINTAIN_REF_DATA */
+    post: operations['insertPrison']
+  }
   '/prisons': {
     /** All prisons */
     get: operations['getPrisons']
+  }
+  '/prisons/search': {
+    /** All prisons */
+    get: operations['getPrisonsFromActiveAndTextSearch']
   }
   '/prisons/id/{prisonId}': {
     /** Information on a specific prison */
@@ -36,15 +53,103 @@ export interface paths {
 
 export interface components {
   schemas: {
+    Message: {
+      messageId?: string
+      receiptHandle?: string
+      body?: string
+      attributes?: { [key: string]: string }
+      messageAttributes?: {
+        [key: string]: components['schemas']['MessageAttributeValue']
+      }
+      md5OfBody?: string
+      md5OfMessageAttributes?: string
+    }
+    MessageAttributeValue: {
+      stringValue?: string
+      binaryValue?: {
+        /** Format: int32 */
+        short?: number
+        char?: string
+        /** Format: int32 */
+        int?: number
+        /** Format: int64 */
+        long?: number
+        /** Format: float */
+        float?: number
+        /** Format: double */
+        double?: number
+        direct?: boolean
+        readOnly?: boolean
+      }
+      stringListValues?: string[]
+      binaryListValues?: {
+        /** Format: int32 */
+        short?: number
+        char?: string
+        /** Format: int32 */
+        int?: number
+        /** Format: int64 */
+        long?: number
+        /** Format: float */
+        float?: number
+        /** Format: double */
+        double?: number
+        direct?: boolean
+        readOnly?: boolean
+      }[]
+      dataType?: string
+    }
+    RetryDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+      messages: components['schemas']['Message'][]
+    }
+    PurgeQueueResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
     /** @description Prison Update Record */
     UpdatePrisonDto: {
       /**
        * @description Name of the prison
-       * @example HMPPS Moorland
+       * @example HMP Moorland
        */
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+    }
+    /** @description List of address for this prison */
+    AddressDto: {
+      /**
+       * @description Address line 1
+       * @example Bawtry Road
+       */
+      addressLine1?: string
+      /**
+       * @description Address line 2
+       * @example Hatfield Woodhouse
+       */
+      addressLine2?: string
+      /**
+       * @description Village/Town/City
+       * @example Doncaster
+       */
+      town: string
+      /**
+       * @description County
+       * @example South Yorkshire
+       */
+      county?: string
+      /**
+       * @description Country
+       * @example England
+       */
+      country: string
+      /**
+       * @description Postcode
+       * @example DN7 6BW
+       */
+      postcode: string
     }
     /**
      * @description Prison Information
@@ -63,6 +168,12 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+      /** @description If this is a male prison */
+      male: boolean
+      /** @description If this is a female prison */
+      female: boolean
+      /** @description List of address for this prison */
+      addresses: components['schemas']['AddressDto'][]
     }
     ErrorResponse: {
       /** Format: int32 */
@@ -72,6 +183,21 @@ export interface components {
       userMessage?: string
       developerMessage?: string
       moreInfo?: string
+    }
+    /** @description Prison Insert Record */
+    InsertPrisonDto: {
+      /**
+       * @description Prison Id
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * @description Name of the prison
+       * @example HMP Moorland
+       */
+      prisonName: string
+      /** @description Whether the prison is still active */
+      active: boolean
     }
   }
 }
@@ -201,6 +327,46 @@ export interface operations {
       400: unknown
     }
   }
+  retryDlq: {
+    parameters: {
+      path: {
+        dlqName: string
+      }
+    }
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          '*/*': components['schemas']['RetryDlqResult']
+        }
+      }
+    }
+  }
+  retryAllDlqs: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          '*/*': components['schemas']['RetryDlqResult'][]
+        }
+      }
+    }
+  }
+  purgeQueue: {
+    parameters: {
+      path: {
+        queueName: string
+      }
+    }
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          '*/*': components['schemas']['PurgeQueueResult']
+        }
+      }
+    }
+  }
   /** Updates prison information, role required is MAINTAIN_REF_DATA */
   updatePrison: {
     parameters: {
@@ -246,6 +412,40 @@ export interface operations {
       }
     }
   }
+  /** Adds new prison information, role required is MAINTAIN_REF_DATA */
+  insertPrison: {
+    responses: {
+      /** Prison Information Inserted */
+      201: {
+        content: {
+          'application/json': components['schemas']['PrisonDto']
+        }
+      }
+      /** Information request to add prison */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Unauthorized to access this endpoint */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Incorrect permissions to make prison insert */
+      403: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InsertPrisonDto']
+      }
+    }
+  }
   /** All prisons */
   getPrisons: {
     responses: {
@@ -253,6 +453,25 @@ export interface operations {
       200: {
         content: {
           'application/json': unknown
+        }
+      }
+    }
+  }
+  /** All prisons */
+  getPrisonsFromActiveAndTextSearch: {
+    parameters: {
+      query: {
+        /** Active */
+        active?: boolean
+        /** Text search */
+        textSearch?: string
+      }
+    }
+    responses: {
+      /** Successful Operation */
+      200: {
+        content: {
+          'application/json': components['schemas']['PrisonDto'][]
         }
       }
     }

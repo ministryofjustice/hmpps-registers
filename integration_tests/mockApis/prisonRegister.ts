@@ -1,7 +1,7 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { Prison } from '../../server/@types/prisonRegister'
-import data from '../../server/routes/testutils/mockData'
+import data from '../../server/routes/testutils/mockPrisonData'
 
 // Mock API responses
 
@@ -54,4 +54,4 @@ export default {
 
 // Mock data
 
-export const albanyPrison: Prison = data.prison({})
+export const albanyPrison: Prison = data.prison({ addresses: [data.prisonAddress({})] })

@@ -1,9 +1,19 @@
-import { Prison } from '../../@types/prisonRegister'
+import { Prison, PrisonAddress } from '../../@types/prisonRegister'
 
 export type PrisonDetail = {
   id: string
   name: string
   active: boolean
+  addresses: AddressDetail[]
+}
+
+export type AddressDetail = {
+  line1?: string
+  line2?: string
+  town: string
+  county?: string
+  postcode: string
+  country: string
 }
 
 export type PrisonPageView = {
@@ -16,6 +26,18 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     id: prison.prisonId,
     name: prison.prisonName,
     active: prison.active,
+    addresses: prison.addresses?.map(addressMapper) || [],
+  }
+}
+
+export function addressMapper(address: PrisonAddress): AddressDetail {
+  return {
+    line1: address.addressLine1,
+    line2: address.addressLine2,
+    town: address.town,
+    county: address.county,
+    postcode: address.postcode,
+    country: address.country,
   }
 }
 
