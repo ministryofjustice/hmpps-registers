@@ -29,10 +29,19 @@ export default class PrisonRegisterController {
   }
 
   parseFilter(req: Request): AllPrisonsFilter {
+    let gendersFromQuery = CourtRegisterController.parseStringArrayFromQuery(req.query.genders as string[])
+    if (PrisonRegisterController.doNotFilterIfBothGendersInQuery(gendersFromQuery)) {
+      gendersFromQuery = undefined
+    }
     const filter = {
       active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
       textSearch: req.query.textSearch as string | undefined,
+      genders: gendersFromQuery,
     }
     return CourtRegisterController.removeEmptyValues(filter)
+  }
+
+  private static doNotFilterIfBothGendersInQuery(stringArray: string[] | undefined): boolean {
+    return stringArray?.length === 2
   }
 }

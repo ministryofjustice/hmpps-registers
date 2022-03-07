@@ -17,6 +17,12 @@ describe('prisonMapper', () => {
   it('will map active flag', () => {
     expect(prison.active).toEqual(true)
   })
+  it('will map male flag', () => {
+    expect(prison.male).toEqual(true)
+  })
+  it('will map female flag', () => {
+    expect(prison.female).toEqual(true)
+  })
   it('will map address', () => {
     expect(prison.addresses[0].line1).toEqual('Bawtry Road')
     expect(prison.addresses[0].line2).toEqual('Hatfield Woodhouse')

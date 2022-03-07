@@ -24,6 +24,8 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', albanyPrison.prisonId)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', albanyPrison.prisonName)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Open')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Male prison')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
   })
 
   it('Will display prison address details', () => {

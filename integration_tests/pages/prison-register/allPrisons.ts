@@ -18,8 +18,11 @@ const allPrisons = {
   openFilter: () => cy.contains('label', 'Open').prev(),
   closedFilter: () => cy.contains('label', 'Closed').prev(),
   textSearchFilter: () => cy.get('#textSearch'),
+  maleFilter: () => cy.get('input[value="MALE"]'),
+  femaleFilter: () => cy.get('input[value="FEMALE"]'),
   cancelOpenFilter: () => cy.get('.moj-filter-tags').contains('Open'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  cancelFemaleFilter: () => cy.get('.moj-filter-tags').contains('Female'),
 }
 
 const verifyOnPage = (): typeof allPrisons & Page => page('Prison Register', allPrisons)

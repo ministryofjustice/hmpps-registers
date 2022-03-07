@@ -18,11 +18,20 @@ export default {
       country,
     } as PrisonAddress),
 
-  prison: ({ prisonId = 'ALI', prisonName = 'Albany (HMP)', active = true, addresses = [] }: Partial<Prison>): Prison =>
+  prison: ({
+    prisonId = 'ALI',
+    prisonName = 'Albany (HMP)',
+    active = true,
+    male = true,
+    female = true,
+    addresses = [],
+  }: Partial<Prison>): Prison =>
     ({
       prisonId,
       prisonName,
       active,
+      male,
+      female,
       addresses,
     } as Prison),
 }

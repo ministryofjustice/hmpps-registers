@@ -67,7 +67,7 @@ export default class CourtRegisterController {
     return undefined
   }
 
-  private static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | undefined {
+  public static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | undefined {
     if (!stringArray) return undefined
     if (typeof stringArray === 'string') return [stringArray]
     return stringArray

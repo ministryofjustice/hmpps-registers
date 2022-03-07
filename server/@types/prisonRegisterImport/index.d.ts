@@ -37,7 +37,7 @@ export interface paths {
   }
   '/prisons/search': {
     /** All prisons */
-    get: operations['getPrisonsFromActiveAndTextSearch']
+    get: operations['getPrisonsBySearchFilter']
   }
   '/prisons/id/{prisonId}': {
     /** Information on a specific prison */
@@ -168,10 +168,10 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
-      /** @description If this is a male prison */
-      male: boolean
-      /** @description If this is a female prison */
-      female: boolean
+      /** @description Whether the prison has male prisoners */
+      male?: boolean
+      /** @description Whether the prison has female prisoners */
+      female?: boolean
       /** @description List of address for this prison */
       addresses: components['schemas']['AddressDto'][]
     }
@@ -458,13 +458,15 @@ export interface operations {
     }
   }
   /** All prisons */
-  getPrisonsFromActiveAndTextSearch: {
+  getPrisonsBySearchFilter: {
     parameters: {
       query: {
         /** Active */
         active?: boolean
         /** Text search */
         textSearch?: string
+        /** Genders to include */
+        genders?: ('MALE' | 'FEMALE')[]
       }
     }
     responses: {
