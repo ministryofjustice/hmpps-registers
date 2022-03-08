@@ -137,6 +137,13 @@ context('Prison register - prison list navigation', () => {
     page.maleFilter().should('be.checked')
     page.femaleFilter().should('not.be.checked')
     cy.url().should('include', 'genders=MALE')
+    // Untick male so both are unchecked
+    page.maleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check both checkboxes have been reset and now checked
+    page.maleFilter().should('be.checked')
+    page.femaleFilter().should('be.checked')
   })
 
   it('Will remove the gender filter when cancelling via the tag', () => {
