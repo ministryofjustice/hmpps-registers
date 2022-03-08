@@ -22,6 +22,7 @@ prisonRegisterService.getPrison.mockResolvedValue({
   female: true,
   addresses: [
     {
+      id: 22,
       addressLine1: 'Bawtry Road',
       addressLine2: 'Hatfield Woodhouse',
       town: 'Doncaster',

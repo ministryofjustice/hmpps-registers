@@ -121,6 +121,12 @@ export interface components {
     /** @description List of address for this prison */
     AddressDto: {
       /**
+       * Format: int64
+       * @description Unique ID of the address
+       * @example 10000
+       */
+      id: number
+      /**
        * @description Address line 1
        * @example Bawtry Road
        */
@@ -141,15 +147,15 @@ export interface components {
        */
       county?: string
       /**
-       * @description Country
-       * @example England
-       */
-      country: string
-      /**
        * @description Postcode
        * @example DN7 6BW
        */
       postcode: string
+      /**
+       * @description Country
+       * @example England
+       */
+      country: string
     }
     /**
      * @description Prison Information

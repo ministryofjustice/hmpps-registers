@@ -12,11 +12,20 @@ export interface Services {
 
 export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
+  const post = (path: string, handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
   const prisonRegisterController = new PrisonRegisterController(services.prisonRegisterService)
 
   get('/prison-register', (req, res) => prisonRegisterController.showAllPrisons(req, res))
   get('/prison-register/details', (req, res) => prisonRegisterController.viewPrison(req, res))
+
+  get('/prison-register/amend-prison-details-start', (req, res) =>
+    prisonRegisterController.amendPrisonDetailsStart(req, res)
+  )
+  get('/prison-register/amend-prison-details', (req, res) => prisonRegisterController.amendPrisonDetails(req, res))
+  post('/prison-register/amend-prison-details', (req, res) =>
+    prisonRegisterController.submitAmendPrisonDetails(req, res)
+  )
 
   return router
 }

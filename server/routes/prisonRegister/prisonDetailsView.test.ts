@@ -18,6 +18,7 @@ describe('PrisonDetailsView', () => {
       data.prison({
         addresses: [
           {
+            id: 22,
             addressLine1: 'Alternative Address',
             addressLine2: 'Hatfield Woodhouse',
             town: 'Doncaster',
