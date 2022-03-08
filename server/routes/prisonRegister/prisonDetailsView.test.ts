@@ -8,6 +8,8 @@ describe('PrisonDetailsView', () => {
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')
     expect(view.renderArgs.prisonDetails.name).toEqual('Albany (HMP)')
     expect(view.renderArgs.prisonDetails.active).toEqual(true)
+    expect(view.renderArgs.prisonDetails.male).toEqual(true)
+    expect(view.renderArgs.prisonDetails.female).toEqual(true)
     expect(view.renderArgs.prisonDetails.addresses[0].line1).toEqual('Bawtry Road')
   })
 
@@ -31,6 +33,8 @@ describe('PrisonDetailsView', () => {
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')
     expect(view.renderArgs.prisonDetails.name).toEqual('Albany (HMP)')
     expect(view.renderArgs.prisonDetails.active).toEqual(true)
+    expect(view.renderArgs.prisonDetails.male).toEqual(true)
+    expect(view.renderArgs.prisonDetails.female).toEqual(true)
     expect(view.renderArgs.prisonDetails.addresses[0].line1).toEqual('Alternative Address')
     expect(view.renderArgs.prisonDetails.addresses[1].line1).toEqual('Bawtry Road')
   })

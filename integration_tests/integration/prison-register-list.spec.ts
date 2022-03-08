@@ -100,20 +100,79 @@ context('Prison register - prison list navigation', () => {
     // Cancel the text search filter by clicking on the filter tag
     page.cancelTextSearchFilter('Albany').click()
     page.showFilterButton().click()
-    // Check we are now only filtered on prisons
+    // Check we are not filtering on prisons
     page.cancelTextSearchFilter('Albany').should('not.exist')
     page.textSearchFilter().should('be.empty')
     cy.url().should('not.contain', 'textSearch=Albany')
+  })
+
+  it('Will change the gender filter', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    const page = AllPrisons.verifyOnPage()
+
+    // Check the filter defaults to all prisons
+    page.showFilterButton().click()
+    page.maleFilter().should('have.attr', 'type', 'checkbox').should('be.checked')
+    page.femaleFilter().should('have.attr', 'type', 'checkbox').should('be.checked')
+    // Filter on female prisons only
+    page.maleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check the female prisons filter has been applied
+    page.maleFilter().should('not.be.checked')
+    page.femaleFilter().should('be.checked')
+    cy.url().should('include', 'genders=FEMALE')
+    // Add back in male prisons
+    page.maleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check the filter has reset
+    page.maleFilter().should('be.checked')
+    page.femaleFilter().should('be.checked')
+    // Filter on male prisons only
+    page.femaleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check the male prisons filter has been applied
+    page.maleFilter().should('be.checked')
+    page.femaleFilter().should('not.be.checked')
+    cy.url().should('include', 'genders=MALE')
+    // Untick male so both are unchecked
+    page.maleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check both checkboxes have been reset and now checked
+    page.maleFilter().should('be.checked')
+    page.femaleFilter().should('be.checked')
+  })
+
+  it('Will remove the gender filter when cancelling via the tag', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    const page = AllPrisons.verifyOnPage()
+
+    // Filter on female prison
+    page.showFilterButton().click()
+    page.maleFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Cancel the gender filter by clicking on the filter tag
+    page.cancelFemaleFilter().click()
+    page.showFilterButton().click()
+    // Check we are not filtering on prisons
+    page.cancelTextSearchFilter('Female').should('not.exist')
+    page.textSearchFilter().should('be.empty')
+    cy.url().should('not.contain', 'genders=FEMALE')
   })
 
   it('Will remove one from a combination of filter tags', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     const page = AllPrisons.verifyOnPage()
 
-    // Filter on open prisons and named Albany
+    // Filter on open prisons , named Albany , and male
     page.showFilterButton().click()
     page.openFilter().click()
     page.textSearchFilter().type('Albany')
+    page.femaleFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
     // Check the filter has been applied
@@ -121,13 +180,15 @@ context('Prison register - prison list navigation', () => {
     page.textSearchFilter().should('have.value', 'Albany')
     cy.url().should('contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')
+    cy.url().should('contain', 'genders=MALE')
     // Cancel the open prison filter by clicking on the filter tag
     page.cancelOpenFilter().click()
     page.showFilterButton().click()
-    // Check we are now only filtered on Albany
+    // Check we are now only filtered on Albany and male
     page.openFilter().should('not.be.checked')
     page.textSearchFilter().should('have.value', 'Albany')
     cy.url().should('not.contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')
+    cy.url().should('contain', 'genders=MALE')
   })
 })

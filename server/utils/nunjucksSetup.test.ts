@@ -555,6 +555,44 @@ describe('toPrisonListFilter', () => {
     )
   })
 
+  it('should show male cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { genders: ['MALE'] })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Genders',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'Male',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+
+  it('should show female cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { genders: ['FEMALE'] })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Genders',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'Female',
+            },
+          ],
+        }),
+      ])
+    )
+  })
+
   it('should pass in options html', () => {
     const result = njk.getFilter('toPrisonListFilter')('some-options-html', { active: false })
     expect(result.optionsHtml).toEqual('some-options-html')
@@ -577,7 +615,7 @@ describe('toPrisonActiveFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)
   it('should create radio button metadata', () => {
-    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
+    const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: null })
     expect(result.idPrefix).toEqual('active')
     expect(result.name).toEqual('active')
     expect(result.classes).toContain('govuk-radios')
@@ -643,6 +681,67 @@ describe('toPrisonActiveFilterRadioButtons', () => {
       {
         value: false,
         text: 'Closed',
+        checked: true,
+      },
+    ])
+  })
+})
+
+describe('toPrisonMaleFemaleCheckboxes', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create checkboxes metadata', () => {
+    const result = njk.getFilter('toPrisonMaleFemaleCheckboxes')({})
+    expect(result.idPrefix).toEqual('gender')
+    expect(result.name).toEqual('genders')
+    expect(result.classes).toContain('govuk-checkboxes')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+
+  it('should map an empty filter to checked checkboxes', () => {
+    const result = njk.getFilter('toPrisonMaleFemaleCheckboxes')({})
+    expect(result.items).toEqual([
+      {
+        value: 'MALE',
+        text: 'Male',
+        checked: true,
+      },
+      {
+        value: 'FEMALE',
+        text: 'Female',
+        checked: true,
+      },
+    ])
+  })
+
+  it('should map a male filter to checked male checkbox', () => {
+    const result = njk.getFilter('toPrisonMaleFemaleCheckboxes')({ genders: ['MALE'] })
+    expect(result.items).toEqual([
+      {
+        value: 'MALE',
+        text: 'Male',
+        checked: true,
+      },
+      {
+        value: 'FEMALE',
+        text: 'Female',
+        checked: false,
+      },
+    ])
+  })
+
+  it('should map a female filter to checked female checkbox', () => {
+    const result = njk.getFilter('toPrisonMaleFemaleCheckboxes')({ genders: ['FEMALE'] })
+    expect(result.items).toEqual([
+      {
+        value: 'MALE',
+        text: 'Male',
+        checked: false,
+      },
+      {
+        value: 'FEMALE',
+        text: 'Female',
         checked: true,
       },
     ])

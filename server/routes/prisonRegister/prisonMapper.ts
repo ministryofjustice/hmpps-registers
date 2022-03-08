@@ -4,6 +4,8 @@ export type PrisonDetail = {
   id: string
   name: string
   active: boolean
+  male?: boolean
+  female?: boolean
   addresses: AddressDetail[]
 }
 
@@ -26,6 +28,8 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     id: prison.prisonId,
     name: prison.prisonName,
     active: prison.active,
+    male: prison.male,
+    female: prison.female,
     addresses: prison.addresses?.map(addressMapper) || [],
   }
 }
@@ -49,4 +53,5 @@ export function prisonsPageMapper(prisonResults: Prison[], allPrisonsFilter: All
 export type AllPrisonsFilter = {
   active?: boolean
   textSearch?: string
+  genders?: string[]
 }

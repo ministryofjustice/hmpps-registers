@@ -269,6 +269,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     const hrefBase = '/prison-register?'
     const textSearchFilterTags = getPrisonTextSearchFilterTags(allPrisonsFilter, hrefBase)
     const cancelActiveFilterTags = getCancelPrisonActiveFilterTags(allPrisonsFilter, hrefBase)
+    const cancelGendersFilterTags = getCancelPrisonGenderFilterTags(allPrisonsFilter, hrefBase)
     return {
       heading: {
         text: 'Filter',
@@ -293,6 +294,12 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
               text: 'Open or Closed',
             },
             items: cancelActiveFilterTags,
+          },
+          {
+            heading: {
+              text: 'Genders',
+            },
+            items: cancelGendersFilterTags,
           },
         ],
       },
@@ -349,6 +356,35 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }
   })
 
+  njkEnv.addFilter('toPrisonMaleFemaleCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
+    return {
+      idPrefix: 'gender',
+      name: 'genders',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Male or female',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display male or female prisons',
+      },
+      items: [
+        {
+          value: 'MALE',
+          text: 'Male',
+          checked: allPrisonsFilter.genders?.includes('MALE') || !allPrisonsFilter.genders,
+        },
+        {
+          value: 'FEMALE',
+          text: 'Female',
+          checked: allPrisonsFilter.genders?.includes('FEMALE') || !allPrisonsFilter.genders,
+        },
+      ],
+    }
+  })
+
   function getCancelPrisonActiveFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { active, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
     if (allPrisonsFilter.active === true) {
@@ -368,6 +404,22 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       ]
     }
     return null
+  }
+
+  function getCancelPrisonGenderFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
+    return allPrisonsFilter.genders?.map(gender => {
+      const newFilter = removeGender(allPrisonsFilter, gender)
+      return {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: gender.charAt(0) + gender.slice(1).toLowerCase(),
+      }
+    })
+  }
+
+  function removeGender(allPrisonsFilter: AllPrisonsFilter, gender: string): AllPrisonsFilter {
+    const genders = allPrisonsFilter.genders?.map(x => x) || []
+    genders.splice(genders.indexOf(gender), 1)
+    return { ...allPrisonsFilter, genders }
   }
 
   function getPrisonTextSearchFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
