@@ -139,8 +139,13 @@ describe('Prison Register controller', () => {
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
         prisonDetails: expect.objectContaining({
           id: 'ALI',
+          name: 'Albany (HMP)',
+          active: true,
+          female: true,
+          male: true,
           addresses: [
             {
+              id: 21,
               line1: 'Bawtry Road',
               line2: 'Hatfield Woodhouse',
               town: 'Doncaster',
@@ -192,7 +197,7 @@ describe('Prison Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: {
-            prisonId: 'MDI',
+            id: 'MDI',
             name: 'HMP Moorland',
           },
           errors: [],
