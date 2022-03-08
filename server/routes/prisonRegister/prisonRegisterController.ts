@@ -4,6 +4,9 @@ import { AllPrisonsFilter } from './prisonMapper'
 import PrisonDetailsView from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import CourtRegisterController from '../courtRegister/courtRegisterController'
+import AmendPrisonDetailsView from './amendPrisonDetailsView'
+import trimForm from '../../utils/trim'
+import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 
 function context(res: Response): Context {
   return {
@@ -43,5 +46,35 @@ export default class PrisonRegisterController {
 
   private static doNotFilterIfBothGendersInQuery(stringArray: string[] | undefined): boolean {
     return stringArray?.length === 2
+  }
+
+  async amendPrisonDetailsStart(req: Request, res: Response): Promise<void> {
+    const { prisonId } = req.query as { prisonId: string }
+
+    const [prison] = await Promise.all([this.prisonRegisterService.getPrison(context(res), prisonId)])
+
+    req.session.amendPrisonDetailsForm = {
+      id: prison.prisonId,
+      name: prison.prisonName,
+    }
+
+    const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendPrisonDetails', view.renderArgs)
+  }
+
+  async amendPrisonDetails(req: Request, res: Response): Promise<void> {
+    const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendPrisonDetails', view.renderArgs)
+  }
+
+  async submitAmendPrisonDetails(req: Request, res: Response): Promise<void> {
+    req.session.amendPrisonDetailsForm = { ...trimForm(req.body) }
+    res.redirect(
+      await amendPrisonDetailsValidator(req.session.amendPrisonDetailsForm, req, (prisonId: string, name: string) =>
+        this.prisonRegisterService.updatePrisonDetails(context(res), prisonId, name)
+      )
+    )
   }
 }

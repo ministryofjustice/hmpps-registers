@@ -5,6 +5,11 @@
 {% set pageTitle = applicationName + " - Prison Details" %}
 
 {% macro prisonname(id, name, active, male, female) %}
+{% macro amendPrisonUrl(prison) %}
+  /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
+{% endmacro %}
+
+
   <p>
     {{ id }}
   </p>
@@ -83,6 +88,10 @@
         actions: {
         items: [
           {
+            href: amendPrisonUrl(prisonDetails),
+            text: "Change",
+            visuallyHiddenText: "prison details",
+            attributes: { "data-qa": "amend-prison-details-link"}
           }
         ]
       }

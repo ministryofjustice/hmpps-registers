@@ -53,5 +53,28 @@ export default {
 }
 
 // Mock data
-
-export const albanyPrison: Prison = data.prison({ addresses: [data.prisonAddress({})] })
+export const albanyPrison: Prison = data.prison({})
+export const moorlandPrison: Prison = data.prison({
+  prisonId: 'MDI',
+  prisonName: 'HMP Moorland',
+  active: true,
+  addresses: [data.prisonAddress({})],
+})
+export const belmarshPrison: Prison = {
+  prisonId: 'BAI',
+  prisonName: 'HMP Belmarsh',
+  active: true,
+  male: true,
+  female: false,
+  addresses: [
+    {
+      id: 16,
+      addressLine1: 'Western Way',
+      addressLine2: 'Thamesmead',
+      town: 'London',
+      county: 'Greater London',
+      postcode: 'SE28 0EB',
+      country: 'England',
+    },
+  ],
+}

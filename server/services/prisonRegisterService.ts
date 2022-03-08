@@ -3,7 +3,7 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-import { Prison } from '../@types/prisonRegister'
+import { Prison, UpdatePrison } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 export interface Context {
@@ -31,6 +31,20 @@ export default class PrisonRegisterService {
     logger.info(`getting details for prison ${prisonId}`)
     return PrisonRegisterService.restClient(token).get<Prison>({
       path: `/prisons/id/${prisonId}`,
+    })
+  }
+
+  async updatePrisonDetails(context: Context, prisonId: string, prisonName: string): Promise<void> {
+    const prison: Prison = await this.getPrison(context, prisonId)
+    const updatedPrison: UpdatePrison = {
+      active: prison.active,
+      prisonName,
+    }
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Amending prison details for ${prisonId}`)
+    await PrisonRegisterService.restClient(token).put({
+      path: `/prison-maintenance/id/${prisonId}`,
+      data: updatedPrison,
     })
   }
 }

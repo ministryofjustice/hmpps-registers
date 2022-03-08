@@ -139,8 +139,13 @@ describe('Prison Register controller', () => {
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
         prisonDetails: expect.objectContaining({
           id: 'ALI',
+          name: 'Albany (HMP)',
+          active: true,
+          female: true,
+          male: true,
           addresses: [
             {
+              id: 21,
               line1: 'Bawtry Road',
               line2: 'Hatfield Woodhouse',
               town: 'Doncaster',
@@ -150,6 +155,116 @@ describe('Prison Register controller', () => {
             },
           ],
         }),
+      })
+    })
+  })
+
+  describe('Amend prison flow', () => {
+    beforeEach(() => {
+      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+      controller = new PrisonRegisterController(prisonRegisterService)
+      prisonRegisterService.getPrison.mockResolvedValue(
+        data.prison({
+          prisonId: 'MDI',
+          prisonName: 'HMP Moorland',
+          active: true,
+        })
+      )
+      prisonRegisterService.updatePrisonDetails.mockResolvedValue(undefined)
+    })
+    describe('amendPrisonDetailsStart', () => {
+      beforeEach(() => {
+        req.query.prisonId = 'MDI'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will request prison details', async () => {
+        await controller.amendPrisonDetailsStart(req, res)
+
+        expect(prisonRegisterService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
+      })
+      it('will render prison details page', async () => {
+        await controller.amendPrisonDetailsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.amendPrisonDetailsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
+          form: {
+            id: 'MDI',
+            name: 'HMP Moorland',
+          },
+          errors: [],
+        })
+      })
+    })
+
+    describe('amendPrisonDetails', () => {
+      beforeEach(() => {
+        req.session.amendPrisonDetailsForm = {
+          id: 'MDI',
+          name: 'HMP Moorland',
+        }
+        req.body = {
+          ...req.session.amendPrisonDetailsForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will not request prison details', async () => {
+        await controller.amendPrisonDetails(req, res)
+
+        expect(prisonRegisterService.getPrison).toBeCalledTimes(0)
+      })
+      it('will render prison details page', async () => {
+        await controller.amendPrisonDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        await controller.amendPrisonDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
+          form: {
+            id: 'MDI',
+            name: 'HMP Moorland',
+          },
+          errors: [],
+        })
+      })
+    })
+    describe('submitAmendPrisonDetails', () => {
+      beforeEach(() => {
+        req.session.amendPrisonDetailsForm = {
+          name: 'HMP Moorland',
+          id: 'MDI',
+        }
+        req.body = {
+          ...req.session.amendPrisonDetailsForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with a valid form data', async () => {
+        await controller.submitAmendPrisonDetails(req, res)
+        expect(prisonRegisterService.updatePrisonDetails).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'MDI',
+          'HMP Moorland'
+        )
       })
     })
   })

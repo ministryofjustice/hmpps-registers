@@ -24,6 +24,7 @@ describe('prisonMapper', () => {
     expect(prison.female).toEqual(true)
   })
   it('will map address', () => {
+    expect(prison.addresses[0].id).toEqual(21)
     expect(prison.addresses[0].line1).toEqual('Bawtry Road')
     expect(prison.addresses[0].line2).toEqual('Hatfield Woodhouse')
     expect(prison.addresses[0].town).toEqual('Doncaster')

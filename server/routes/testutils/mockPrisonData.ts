@@ -2,6 +2,7 @@ import { Prison, PrisonAddress } from '../../@types/prisonRegister'
 
 export default {
   prisonAddress: ({
+    id = 21,
     addressLine1 = 'Bawtry Road',
     addressLine2 = 'Hatfield Woodhouse',
     town = 'Doncaster',
@@ -10,6 +11,7 @@ export default {
     country = 'England',
   }: Partial<PrisonAddress>): PrisonAddress =>
     ({
+      id,
       addressLine1,
       addressLine2,
       town,

@@ -10,6 +10,7 @@ export type PrisonDetail = {
 }
 
 export type AddressDetail = {
+  id: number
   line1?: string
   line2?: string
   town: string
@@ -36,6 +37,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
 
 export function addressMapper(address: PrisonAddress): AddressDetail {
   return {
+    id: address.id,
     line1: address.addressLine1,
     line2: address.addressLine2,
     town: address.town,
