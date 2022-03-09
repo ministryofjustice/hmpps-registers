@@ -1,4 +1,4 @@
-import { albanyPrison } from '../mockApis/prisonRegister'
+import { moorlandPrison } from '../mockApis/prisonRegister'
 import IndexPage from '../pages'
 import AllPrisons from '../pages/prison-register/allPrisons'
 
@@ -7,7 +7,7 @@ context('Prison register - prison list navigation', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubGetPrisonsWithFilter', [albanyPrison])
+    cy.task('stubGetPrisonsWithFilter', [moorlandPrison])
     cy.login()
   })
 
@@ -16,10 +16,11 @@ context('Prison register - prison list navigation', () => {
     const prisonRegisterPage = AllPrisons.verifyOnPage()
 
     {
-      const { id, name, active } = prisonRegisterPage.prisons(0)
-      id().contains(albanyPrison.prisonId)
-      name().contains(albanyPrison.prisonName)
+      const { id, name, active, types } = prisonRegisterPage.prisons(0)
+      id().contains(moorlandPrison.prisonId)
+      name().contains(moorlandPrison.prisonName)
       active().contains('Open')
+      types().contains('HMP, YOI')
     }
   })
 
@@ -158,10 +159,48 @@ context('Prison register - prison list navigation', () => {
     // Cancel the gender filter by clicking on the filter tag
     page.cancelFemaleFilter().click()
     page.showFilterButton().click()
-    // Check we are not filtering on prisons
+    // Check we are not filtering on gender
     page.cancelTextSearchFilter('Female').should('not.exist')
-    page.textSearchFilter().should('be.empty')
+    page.femaleFilter().should('be.checked')
     cy.url().should('not.contain', 'genders=FEMALE')
+  })
+
+  it('Will change the prison type filter', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    const page = AllPrisons.verifyOnPage()
+
+    // Check there is no filter on prison type by default
+    page.showFilterButton().click()
+    page.hmpFilter().should('have.attr', 'type', 'checkbox').should('not.be.checked')
+    page.yoiFilter().should('have.attr', 'type', 'checkbox').should('not.be.checked')
+    // Filter on hmp and yoi prisons only
+    page.hmpFilter().click()
+    page.yoiFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Check the filter has been applied
+    page.hmpFilter().should('be.checked')
+    page.yoiFilter().should('be.checked')
+    cy.url().should('include', 'prisonTypeCodes=HMP')
+    cy.url().should('include', 'prisonTypeCodes=YOI')
+  })
+
+  it('Will remove the prison type filter when cancelling via the tag', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    const page = AllPrisons.verifyOnPage()
+
+    // Filter on hmp prison
+    page.showFilterButton().click()
+    page.hmpFilter().click()
+    page.applyFilterButton().click()
+    page.showFilterButton().click()
+    // Cancel the type filter by clicking on the filter tag
+    page.cancelHmpFilter().click()
+    page.showFilterButton().click()
+    // Check we are not filtering on type
+    page.cancelTextSearchFilter('HMP').should('not.exist')
+    page.hmpFilter().should('not.be.checked')
+    cy.url().should('not.contain', 'prisonTypeCodes=HMP')
   })
 
   it('Will remove one from a combination of filter tags', () => {

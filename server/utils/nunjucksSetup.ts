@@ -270,6 +270,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     const textSearchFilterTags = getPrisonTextSearchFilterTags(allPrisonsFilter, hrefBase)
     const cancelActiveFilterTags = getCancelPrisonActiveFilterTags(allPrisonsFilter, hrefBase)
     const cancelGendersFilterTags = getCancelPrisonGenderFilterTags(allPrisonsFilter, hrefBase)
+    const cancelTypeFilterTags = getCancelPrisonTypeFilterTags(allPrisonsFilter, hrefBase)
     return {
       heading: {
         text: 'Filter',
@@ -297,9 +298,15 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           },
           {
             heading: {
-              text: 'Genders',
+              text: 'Gender',
             },
             items: cancelGendersFilterTags,
+          },
+          {
+            heading: {
+              text: 'Prison Types',
+            },
+            items: cancelTypeFilterTags,
           },
         ],
       },
@@ -363,7 +370,7 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
       classes: 'govuk-checkboxes--small',
       fieldset: {
         legend: {
-          text: 'Male or female',
+          text: 'Gender',
           classes: 'govuk-fieldset__legend--m',
         },
       },
@@ -380,6 +387,45 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
           value: 'FEMALE',
           text: 'Female',
           checked: allPrisonsFilter.genders?.includes('FEMALE') || !allPrisonsFilter.genders,
+        },
+      ],
+    }
+  })
+
+  njkEnv.addFilter('toPrisonTypeCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
+    return {
+      idPrefix: 'prisonTypeCode',
+      name: 'prisonTypeCodes',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Prison Types',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display selected prison types only',
+      },
+      items: [
+        {
+          value: 'HMP',
+          text: 'Her Majesty’s Prison (HMP)',
+          checked: allPrisonsFilter.prisonTypeCodes?.includes('HMP') || false,
+        },
+        {
+          value: 'YOI',
+          text: 'Her Majesty’s Youth Offender Institution (YOI)',
+          checked: allPrisonsFilter.prisonTypeCodes?.includes('YOI') || false,
+        },
+        {
+          value: 'STC',
+          text: 'Secure Training Centre (STC)',
+          checked: allPrisonsFilter.prisonTypeCodes?.includes('STC') || false,
+        },
+        {
+          value: 'IRC',
+          text: 'Immigration Removal Centre (IRC)',
+          checked: allPrisonsFilter.prisonTypeCodes?.includes('IRC') || false,
         },
       ],
     }
@@ -420,6 +466,22 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     const genders = allPrisonsFilter.genders?.map(x => x) || []
     genders.splice(genders.indexOf(gender), 1)
     return { ...allPrisonsFilter, genders }
+  }
+
+  function getCancelPrisonTypeFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
+    return allPrisonsFilter.prisonTypeCodes?.map(type => {
+      const newFilter = removeTypes(allPrisonsFilter, type)
+      return {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: type,
+      }
+    })
+  }
+
+  function removeTypes(allPrisonsFilter: AllPrisonsFilter, type: string): AllPrisonsFilter {
+    const prisonTypeCodes = allPrisonsFilter.prisonTypeCodes?.map(x => x) || []
+    prisonTypeCodes.splice(prisonTypeCodes.indexOf(type), 1)
+    return { ...allPrisonsFilter, prisonTypeCodes }
   }
 
   function getPrisonTextSearchFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {

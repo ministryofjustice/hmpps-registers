@@ -13,6 +13,7 @@
         {{ govukInput( allPrisonsFilter | toPrisonTextSearchInput ) }}
         {{ govukRadios( allPrisonsFilter | toPrisonActiveFilterRadioButtons ) }}
         {{ govukCheckboxes( allPrisonsFilter | toPrisonMaleFemaleCheckboxes ) }}
+        {{ govukCheckboxes( allPrisonsFilter | toPrisonTypeCheckboxes ) }}
     </form>
 {% endset %}
 
@@ -51,6 +52,7 @@
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type(s)</th>
                                     </tr>
                                     </thead>
 
@@ -67,6 +69,11 @@
                                                 {% else %}
                                                     Closed
                                                 {% endif %}
+                                            </td>
+                                            <td class="govuk-table__cell">
+                                                {% for type in prison.types %}
+                                                    {{ type.code }}{% if loop.revindex > 1 %},{% endif %}
+                                                {% endfor %}
                                             </td>
                                         </tr>
                                     {% endfor %}

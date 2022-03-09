@@ -95,16 +95,25 @@ describe('Prison Register controller', () => {
       expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, {})
     })
 
+    it('it will call prison register service with type filter param', async () => {
+      req.query.prisonTypeCodes = ['HMP']
+
+      await controller.showAllPrisons(req, res)
+
+      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { prisonTypeCodes: ['HMP'] })
+    })
+
     it('it will call prison register service with all filter params', async () => {
       req.query.active = 'true'
       req.query.textSearch = 'ALI'
       req.query.genders = ['MALE']
+      req.query.prisonTypeCodes = ['HMP']
 
       await controller.showAllPrisons(req, res)
 
       expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith(
         {},
-        { active: true, textSearch: 'ALI', genders: ['MALE'] }
+        { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] }
       )
     })
   })

@@ -59,22 +59,8 @@ export const moorlandPrison: Prison = data.prison({
   prisonName: 'HMP Moorland',
   active: true,
   addresses: [data.prisonAddress({})],
-})
-export const belmarshPrison: Prison = {
-  prisonId: 'BAI',
-  prisonName: 'HMP Belmarsh',
-  active: true,
-  male: true,
-  female: false,
-  addresses: [
-    {
-      id: 16,
-      addressLine1: 'Western Way',
-      addressLine2: 'Thamesmead',
-      town: 'London',
-      county: 'Greater London',
-      postcode: 'SE28 0EB',
-      country: 'England',
-    },
+  types: [
+    { code: 'HMP', description: 'Her Majesty’s Prison' },
+    { code: 'YOI', description: 'Her Majesty’s Youth Offender Institution' },
   ],
-}
+})

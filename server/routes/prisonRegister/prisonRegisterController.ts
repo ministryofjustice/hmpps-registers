@@ -40,6 +40,7 @@ export default class PrisonRegisterController {
       active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
       textSearch: req.query.textSearch as string | undefined,
       genders: gendersFromQuery,
+      prisonTypeCodes: CourtRegisterController.parseStringArrayFromQuery(req.query.prisonTypeCodes as string[]),
     }
     return CourtRegisterController.removeEmptyValues(filter)
   }

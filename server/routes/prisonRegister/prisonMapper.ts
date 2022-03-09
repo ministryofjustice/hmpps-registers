@@ -1,4 +1,4 @@
-import { Prison, PrisonAddress } from '../../@types/prisonRegister'
+import { Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
 
 export type PrisonDetail = {
   id: string
@@ -7,6 +7,7 @@ export type PrisonDetail = {
   male?: boolean
   female?: boolean
   addresses: AddressDetail[]
+  types: TypeDetail[]
 }
 
 export type AddressDetail = {
@@ -17,6 +18,11 @@ export type AddressDetail = {
   county?: string
   postcode: string
   country: string
+}
+
+export type TypeDetail = {
+  code: string
+  description: string
 }
 
 export type PrisonPageView = {
@@ -32,6 +38,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     male: prison.male,
     female: prison.female,
     addresses: prison.addresses?.map(addressMapper) || [],
+    types: prison.types?.map(typeMapper) || [],
   }
 }
 
@@ -47,6 +54,13 @@ export function addressMapper(address: PrisonAddress): AddressDetail {
   }
 }
 
+export function typeMapper(type: PrisonType): TypeDetail {
+  return {
+    code: type.code,
+    description: type.description,
+  }
+}
+
 export function prisonsPageMapper(prisonResults: Prison[], allPrisonsFilter: AllPrisonsFilter): PrisonPageView {
   const prisons = prisonResults.map((prison: Prison) => prisonMapper(prison))
   return { prisons, allPrisonsFilter }
@@ -56,4 +70,5 @@ export type AllPrisonsFilter = {
   active?: boolean
   textSearch?: string
   genders?: string[]
+  prisonTypeCodes?: string[]
 }

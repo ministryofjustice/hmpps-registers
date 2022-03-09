@@ -27,6 +27,10 @@ export interface paths {
     /** Updates prison information, role required is MAINTAIN_REF_DATA */
     put: operations['updatePrison']
   }
+  '/prison-maintenance/id/{prisonId}/address/{addressId}': {
+    /** Updates address information, role required is MAINTAIN_REF_DATA */
+    put: operations['updateAddress']
+  }
   '/prison-maintenance': {
     /** Adds new prison information, role required is MAINTAIN_REF_DATA */
     post: operations['insertPrison']
@@ -157,10 +161,7 @@ export interface components {
        */
       country: string
     }
-    /**
-     * @description Prison Information
-     * @example Details about a prison
-     */
+    /** @description Prison Information */
     PrisonDto: {
       /**
        * @description Prison ID
@@ -178,8 +179,24 @@ export interface components {
       male?: boolean
       /** @description Whether the prison has female prisoners */
       female?: boolean
+      /** @description List of types for this prison */
+      types: components['schemas']['PrisonTypeDto'][]
       /** @description List of address for this prison */
       addresses: components['schemas']['AddressDto'][]
+    }
+    /** @description List of types for this prison */
+    PrisonTypeDto: {
+      /**
+       * @description Prison type code
+       * @example HMP
+       * @enum {string}
+       */
+      code: 'HMP' | 'YOI' | 'STC' | 'IRC'
+      /**
+       * @description Prison type description
+       * @example Her Majesty’s Prison
+       */
+      description: string
     }
     ErrorResponse: {
       /** Format: int32 */
@@ -189,6 +206,39 @@ export interface components {
       userMessage?: string
       developerMessage?: string
       moreInfo?: string
+    }
+    /** @description Address Update Record */
+    UpdateAddressDto: {
+      /**
+       * @description Address line 1
+       * @example Bawtry Road
+       */
+      addressLine1?: string
+      /**
+       * @description Address line 2
+       * @example Hatfield Woodhouse
+       */
+      addressLine2?: string
+      /**
+       * @description Village/Town/City
+       * @example Doncaster
+       */
+      town: string
+      /**
+       * @description County
+       * @example South Yorkshire
+       */
+      county?: string
+      /**
+       * @description Postcode
+       * @example DN7 6BW
+       */
+      postcode: string
+      /**
+       * @description Country
+       * @example England
+       */
+      country: string
     }
     /** @description Prison Insert Record */
     InsertPrisonDto: {
@@ -418,6 +468,52 @@ export interface operations {
       }
     }
   }
+  /** Updates address information, role required is MAINTAIN_REF_DATA */
+  updateAddress: {
+    parameters: {
+      path: {
+        prisonId: string
+        addressId: number
+      }
+    }
+    responses: {
+      /** Address Information Updated */
+      200: {
+        content: {
+          'application/json': components['schemas']['AddressDto']
+        }
+      }
+      /** Bad Information request to update address */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Unauthorized to access this endpoint */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Incorrect permissions to make address update */
+      403: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Address Id not found */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateAddressDto']
+      }
+    }
+  }
   /** Adds new prison information, role required is MAINTAIN_REF_DATA */
   insertPrison: {
     responses: {
@@ -458,7 +554,7 @@ export interface operations {
       /** Successful Operation */
       200: {
         content: {
-          'application/json': unknown
+          'application/json': components['schemas']['PrisonDto'][]
         }
       }
     }
@@ -471,8 +567,10 @@ export interface operations {
         active?: boolean
         /** Text search */
         textSearch?: string
-        /** Genders to include */
+        /** Genders to filter by */
         genders?: ('MALE' | 'FEMALE')[]
+        /** Prison types to filter by */
+        prisonTypeCodes?: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
       }
     }
     responses: {
