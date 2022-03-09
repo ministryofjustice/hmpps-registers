@@ -3,7 +3,7 @@ import data from '../testutils/mockPrisonData'
 
 describe('PrisonDetailsView', () => {
   it('will map prison to details', () => {
-    const view = new PrisonDetailsView(data.prison({ addresses: [data.prisonAddress({})] }))
+    const view = new PrisonDetailsView(data.prison({ addresses: [data.prisonAddress({})] }), 'NONE')
 
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')
     expect(view.renderArgs.prisonDetails.name).toEqual('Albany (HMP)')
@@ -28,7 +28,8 @@ describe('PrisonDetailsView', () => {
           },
           data.prisonAddress({}),
         ],
-      })
+      }),
+      'NONE'
     )
 
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')
