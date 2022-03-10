@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import { AllPrisonsFilter } from './prisonMapper'
-import PrisonDetailsView from './prisonDetailsView'
+import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import CourtRegisterController from '../courtRegister/courtRegisterController'
 import AmendPrisonDetailsView from './amendPrisonDetailsView'
@@ -25,9 +25,9 @@ export default class PrisonRegisterController {
   }
 
   async viewPrison(req: Request, res: Response): Promise<void> {
-    const { id } = req.query as { id: string }
+    const { id, action } = req.query as { id: string; action: Action }
     const prison = await this.prisonRegisterService.getPrison(context(res), id)
-    const view = new PrisonDetailsView(prison)
+    const view = new PrisonDetailsView(prison, (action || 'NONE') as Action)
     res.render('pages/prison-register/prisonDetails', view.renderArgs)
   }
 

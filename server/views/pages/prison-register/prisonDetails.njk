@@ -4,11 +4,7 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female, types) %}
-  {% macro amendPrisonUrl(prison) %}
-    /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
-  {% endmacro %}
-
+{% macro prisonname(id, name, active, male, female) %}
   <p>
     {{ id }}
   </p>
@@ -65,6 +61,18 @@
   {% endif %}
 {% endmacro %}
 
+{% macro amendPrisonUrl(prison) %}
+  /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
+{% endmacro %}
+
+{% macro confirmationPanel(message, attribute) %}
+  <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
+    <div class="govuk-panel__body">
+      {{ message }}
+    </div>
+  </div>
+{% endmacro %}
+
 {% block content %}
   {{ govukBackLink({
     text: "Back",
@@ -74,7 +82,10 @@
   <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ prisonDetails.name }}</h1>
-  </main>
+
+    {% if action == 'UPDATED' %}
+      {{ confirmationPanel('Prison has been updated successfully', 'confirm-updated') }}
+    {% endif %}
 
   <div>
     <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Prison details</h2>
@@ -126,5 +137,7 @@
       ]
     }) }}
   {% endfor %}
+
+  </main>
 
 {% endblock %}

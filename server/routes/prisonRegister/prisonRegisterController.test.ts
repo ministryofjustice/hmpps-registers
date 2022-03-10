@@ -139,6 +139,7 @@ describe('Prison Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
         prisonDetails: expect.objectContaining({ id: 'ALI' }),
+        action: 'NONE',
       })
     })
 
@@ -164,6 +165,7 @@ describe('Prison Register controller', () => {
             },
           ],
         }),
+        action: 'NONE',
       })
     })
   })
