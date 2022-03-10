@@ -32,6 +32,10 @@ describe('prisonMapper', () => {
     expect(prison.addresses[0].postcode).toEqual('DN7 6BW')
     expect(prison.addresses[0].country).toEqual('England')
   })
+  it('will map types', () => {
+    expect(prison.types[0].code).toEqual('HMP')
+    expect(prison.types[0].description).toEqual('Her Majesty’s Prison')
+  })
 })
 
 describe('prisonsPageMapper', () => {

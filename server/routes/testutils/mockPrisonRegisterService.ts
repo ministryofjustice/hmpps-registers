@@ -12,6 +12,7 @@ prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([
     male: true,
     female: true,
     addresses: [],
+    types: [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
   },
 ])
 prisonRegisterService.getPrison.mockResolvedValue({
@@ -31,5 +32,6 @@ prisonRegisterService.getPrison.mockResolvedValue({
       country: 'England',
     },
   ],
+  types: [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
 })
 export default prisonRegisterService

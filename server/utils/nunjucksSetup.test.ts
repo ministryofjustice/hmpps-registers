@@ -561,7 +561,7 @@ describe('toPrisonListFilter', () => {
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Genders',
+            text: 'Gender',
           },
           items: [
             {
@@ -574,18 +574,18 @@ describe('toPrisonListFilter', () => {
     )
   })
 
-  it('should show female cancel tag', () => {
-    const result = njk.getFilter('toPrisonListFilter')([], { genders: ['FEMALE'] })
+  it('should show HMP cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { prisonTypeCodes: ['HMP'] })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Genders',
+            text: 'Prison Types',
           },
           items: [
             {
               href: '/prison-register?',
-              text: 'Female',
+              text: 'HMP',
             },
           ],
         }),
@@ -743,6 +743,71 @@ describe('toPrisonMaleFemaleCheckboxes', () => {
         value: 'FEMALE',
         text: 'Female',
         checked: true,
+      },
+    ])
+  })
+})
+
+describe('toPrisonTypeCheckboxes', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create checkboxes metadata', () => {
+    const result = njk.getFilter('toPrisonTypeCheckboxes')({})
+    expect(result.idPrefix).toEqual('prisonTypeCode')
+    expect(result.name).toEqual('prisonTypeCodes')
+    expect(result.classes).toContain('govuk-checkboxes')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+
+  it('should map an empty filter to checked checkboxes', () => {
+    const result = njk.getFilter('toPrisonTypeCheckboxes')({})
+    expect(result.items).toEqual([
+      {
+        value: 'HMP',
+        text: 'Her Majesty’s Prison (HMP)',
+        checked: false,
+      },
+      {
+        value: 'YOI',
+        text: 'Her Majesty’s Youth Offender Institution (YOI)',
+        checked: false,
+      },
+      {
+        value: 'STC',
+        text: 'Secure Training Centre (STC)',
+        checked: false,
+      },
+      {
+        value: 'IRC',
+        text: 'Immigration Removal Centre (IRC)',
+        checked: false,
+      },
+    ])
+  })
+
+  it('should map a HMP and YOI filter to checked checkboxes', () => {
+    const result = njk.getFilter('toPrisonTypeCheckboxes')({ prisonTypeCodes: ['HMP', 'YOI'] })
+    expect(result.items).toEqual([
+      {
+        value: 'HMP',
+        text: 'Her Majesty’s Prison (HMP)',
+        checked: true,
+      },
+      {
+        value: 'YOI',
+        text: 'Her Majesty’s Youth Offender Institution (YOI)',
+        checked: true,
+      },
+      {
+        value: 'STC',
+        text: 'Secure Training Centre (STC)',
+        checked: false,
+      },
+      {
+        value: 'IRC',
+        text: 'Immigration Removal Centre (IRC)',
+        checked: false,
       },
     ])
   })

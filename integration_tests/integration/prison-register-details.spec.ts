@@ -26,6 +26,8 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Open')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Male prison')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Prison,')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Youth Offender Institution')
   })
 
   it('Will display prison address details', () => {

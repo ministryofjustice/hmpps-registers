@@ -4,7 +4,7 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female) %}
+{% macro prisonname(id, name, active, male, female, types) %}
   <p>
     {{ id }}
   </p>
@@ -27,6 +27,13 @@
     {% if female %}
       Female prison
     {% endif %}
+  </p>
+
+  <p>
+    Type(s):
+    {% for type in types %}
+      {{ type.description }}{% if loop.revindex > 1 %},{% endif %}
+    {% endfor %}
   </p>
 {% endmacro %}
 
@@ -92,7 +99,7 @@
         text: "Prison"
       },
         value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female),
+        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.types),
         classes: "prison-details"
       },
         actions: {

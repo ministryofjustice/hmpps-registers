@@ -74,6 +74,10 @@ export const moorlandPrison: Prison = data.prison({
   prisonName: 'HMP Moorland',
   active: true,
   addresses: [data.prisonAddress({})],
+  types: [
+    { code: 'HMP', description: 'Her Majesty’s Prison' },
+    { code: 'YOI', description: 'Her Majesty’s Youth Offender Institution' },
+  ],
 })
 export const belmarshPrison: Prison = {
   prisonId: 'BAI',
@@ -92,4 +96,5 @@ export const belmarshPrison: Prison = {
       country: 'England',
     },
   ],
+  types: [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
 }
