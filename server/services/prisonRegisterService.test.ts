@@ -5,6 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
+import { UpdatePrison } from '../@types/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -88,6 +89,36 @@ describe('Prison Register service', () => {
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
+    })
+  })
+
+  describe('updatePrisonDetails', () => {
+    let updatedPrison: UpdatePrison
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister.get('/prisons/id/MDI').reply(200, data.prison({ active: false }))
+      fakePrisonRegister
+        .put('/prison-maintenance/id/MDI', body => {
+          updatedPrison = body
+          return body
+        })
+        .reply(200, data.prison({}))
+    })
+    it('username will be used by client', async () => {
+      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send current active marker with request', async () => {
+      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland Updated')
+
+      expect(updatedPrison).toEqual(
+        expect.objectContaining({
+          prisonName: 'HMP Moorland Updated',
+          active: false,
+        })
+      )
     })
   })
 })
