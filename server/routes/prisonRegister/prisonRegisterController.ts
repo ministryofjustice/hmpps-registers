@@ -3,10 +3,13 @@ import PrisonRegisterService, { Context } from '../../services/prisonRegisterSer
 import { AllPrisonsFilter } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
-import CourtRegisterController from '../courtRegister/courtRegisterController'
+import ControllerHelper from '../utils/controllerHelper'
 import AmendPrisonDetailsView from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
+import amendPrisonAddressValidator from './amendPrisonAddressValidator'
+import AmendPrisonAddressView from './amendPrisonAddressView'
+import { UpdatePrisonAddress } from '../../@types/prisonRegister'
 
 function context(res: Response): Context {
   return {
@@ -32,17 +35,17 @@ export default class PrisonRegisterController {
   }
 
   parseFilter(req: Request): AllPrisonsFilter {
-    let gendersFromQuery = CourtRegisterController.parseStringArrayFromQuery(req.query.genders as string[])
+    let gendersFromQuery = ControllerHelper.parseStringArrayFromQuery(req.query.genders as string[])
     if (PrisonRegisterController.doNotFilterIfBothGendersInQuery(gendersFromQuery)) {
       gendersFromQuery = undefined
     }
     const filter = {
-      active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
+      active: ControllerHelper.parseBooleanFromQuery(req.query.active as string),
       textSearch: req.query.textSearch as string | undefined,
       genders: gendersFromQuery,
-      prisonTypeCodes: CourtRegisterController.parseStringArrayFromQuery(req.query.prisonTypeCodes as string[]),
+      prisonTypeCodes: ControllerHelper.parseStringArrayFromQuery(req.query.prisonTypeCodes as string[]),
     }
-    return CourtRegisterController.removeEmptyValues(filter)
+    return ControllerHelper.removeEmptyValues(filter)
   }
 
   private static doNotFilterIfBothGendersInQuery(stringArray: string[] | undefined): boolean {
@@ -76,6 +79,49 @@ export default class PrisonRegisterController {
       await amendPrisonDetailsValidator(req.session.amendPrisonDetailsForm, req, (prisonId: string, name: string) =>
         this.prisonRegisterService.updatePrisonDetails(context(res), prisonId, name)
       )
+    )
+  }
+
+  async amendPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
+
+    const prisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+
+    req.session.amendPrisonAddressForm = {
+      id: addressId,
+      prisonId,
+      addressline1: prisonAddress.addressLine1,
+      addressline2: prisonAddress.addressLine2,
+      addresstown: prisonAddress.town,
+      addresscounty: prisonAddress.county,
+      addresspostcode: prisonAddress.postcode,
+      addresscountry: prisonAddress.country,
+    }
+    const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendPrisonAddress', view.renderArgs)
+  }
+
+  async amendPrisonAddress(req: Request, res: Response): Promise<void> {
+    const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendPrisonAddress', view.renderArgs)
+  }
+
+  async submitAmendPrisonAddress(req: Request, res: Response): Promise<void> {
+    req.session.amendPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+      await amendPrisonAddressValidator(req.session.amendPrisonAddressForm, req, form => {
+        const updatedAddress: UpdatePrisonAddress = {
+          addressLine1: form.addressline1,
+          addressLine2: form.addressline2,
+          town: form.addresstown,
+          county: form.addresscounty,
+          postcode: form.addresspostcode,
+          country: form.addresscountry,
+        }
+        return this.prisonRegisterService.updatePrisonAddress(context(res), form.prisonId, form.id, updatedAddress)
+      })
     )
   }
 }

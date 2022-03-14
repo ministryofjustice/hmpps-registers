@@ -3,7 +3,7 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-import { Prison, UpdatePrison } from '../@types/prisonRegister'
+import { Prison, UpdatePrison, PrisonAddress, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 export interface Context {
@@ -34,6 +34,14 @@ export default class PrisonRegisterService {
     })
   }
 
+  async getPrisonAddress(context: Context, prisonId: string, addressId: string): Promise<PrisonAddress> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting details for prisonId ${prisonId} address ${addressId}`)
+    return PrisonRegisterService.restClient(token).get<PrisonAddress>({
+      path: `/prisons/id/${prisonId}/address/${addressId}`,
+    })
+  }
+
   async updatePrisonDetails(context: Context, prisonId: string, prisonName: string): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const updatedPrison: UpdatePrison = {
@@ -47,4 +55,26 @@ export default class PrisonRegisterService {
       data: updatedPrison,
     })
   }
+
+  async updatePrisonAddress(
+    context: Context,
+    prisonId: string,
+    addressId: string,
+    prisonAddress: UpdatePrisonAddress
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Amending prison ${prisonId} address for ${addressId}`)
+    await PrisonRegisterService.restClient(token).put({
+      path: `/prison-maintenance/id/${prisonId}/address/${addressId}`,
+      data: {
+        ...prisonAddress,
+        addressLine1: undefinedWhenAbsent(prisonAddress.addressLine1),
+        addressLine2: undefinedWhenAbsent(prisonAddress.addressLine2),
+        county: undefinedWhenAbsent(prisonAddress.county),
+      },
+    })
+  }
 }
+
+const undefinedWhenAbsent = (value: string | undefined): string | undefined =>
+  (value && value.trim().length > 0 && value) || undefined

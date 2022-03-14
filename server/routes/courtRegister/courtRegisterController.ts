@@ -24,6 +24,7 @@ import amendCourtBuildingContactsValidator, {
   amendCourtBuildingContactsFormCloneCleaner,
 } from './amendCourtBuildingContactsValidator'
 import trimForm from '../../utils/trim'
+import ControllerHelper from '../utils/controllerHelper'
 
 function context(res: Response): Context {
   return {
@@ -48,29 +49,11 @@ export default class CourtRegisterController {
 
   parseFilter(req: Request): AllCourtsFilter {
     const filter = {
-      active: CourtRegisterController.parseBooleanFromQuery(req.query.active as string),
-      courtTypeIds: CourtRegisterController.parseStringArrayFromQuery(req.query.courtTypeIds as string[]),
+      active: ControllerHelper.parseBooleanFromQuery(req.query.active as string),
+      courtTypeIds: ControllerHelper.parseStringArrayFromQuery(req.query.courtTypeIds as string[]),
       textSearch: req.query.textSearch as string | undefined,
     }
-    return CourtRegisterController.removeEmptyValues(filter)
-  }
-
-  public static removeEmptyValues(obj: Record<string, unknown>) {
-    return Object.keys(obj)
-      .filter(k => obj[k] != null && obj[k] !== '')
-      .reduce((a, k) => ({ ...a, [k]: obj[k] }), {})
-  }
-
-  public static parseBooleanFromQuery(boolAsString: string | undefined): boolean | undefined {
-    if (boolAsString === 'true') return true
-    if (boolAsString === 'false') return false
-    return undefined
-  }
-
-  public static parseStringArrayFromQuery(stringArray: string | string[] | undefined): string[] | undefined {
-    if (!stringArray) return undefined
-    if (typeof stringArray === 'string') return [stringArray]
-    return stringArray
+    return ControllerHelper.removeEmptyValues(filter)
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {

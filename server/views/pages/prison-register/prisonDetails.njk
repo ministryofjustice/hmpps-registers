@@ -64,6 +64,9 @@
 {% macro amendPrisonUrl(prison) %}
   /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
 {% endmacro %}
+{% macro amendAddressUrl(prison, address) %}
+  /prison-register/amend-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+{% endmacro %}
 
 {% macro confirmationPanel(message, attribute) %}
   <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
@@ -123,7 +126,7 @@
       </div>
     {% endif %}
     {{ govukSummaryList({
-      attributes: { "data-qa": "address-details-section"},
+      attributes: { "data-qa": "address-details-section-"+ address.id},
       rows: [
         {
           key: {
@@ -132,6 +135,16 @@
           value: {
           html: renderAddress( address.line1, address.line2, address.town, address.county, address.postcode, address.country),
           classes: "address-details"
+        },
+          actions: {
+          items: [
+            {
+              href: amendAddressUrl(prisonDetails, address),
+              text: "Change",
+              visuallyHiddenText: "address details",
+              attributes: { "data-qa": "amend-address-details-link-"+ address.id}
+            }
+          ]
         }
         }
       ]
