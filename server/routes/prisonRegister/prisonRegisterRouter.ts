@@ -1,12 +1,10 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import PrisonRegisterController from './prisonRegisterController'
-import CourtRegisterService from '../../services/courtRegisterService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 
 // include this here otherwise TS complains about cyclical dependencies
 export interface Services {
-  courtRegisterService: CourtRegisterService
   prisonRegisterService: PrisonRegisterService
 }
 
@@ -25,6 +23,14 @@ export default function routes(router: Router, services: Services): Router {
   get('/prison-register/amend-prison-details', (req, res) => prisonRegisterController.amendPrisonDetails(req, res))
   post('/prison-register/amend-prison-details', (req, res) =>
     prisonRegisterController.submitAmendPrisonDetails(req, res)
+  )
+
+  get('/prison-register/amend-prison-address-start', (req, res) =>
+    prisonRegisterController.amendPrisonAddressStart(req, res)
+  )
+  get('/prison-register/amend-prison-address', (req, res) => prisonRegisterController.amendPrisonAddress(req, res))
+  post('/prison-register/amend-prison-address', (req, res) =>
+    prisonRegisterController.submitAmendPrisonAddress(req, res)
   )
 
   return router

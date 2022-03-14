@@ -47,6 +47,10 @@ export interface paths {
     /** Information on a specific prison */
     get: operations['getPrisonFromId']
   }
+  '/prisons/id/{prisonId}/address/id/{addressId}': {
+    /** Information on a specific prison address */
+    get: operations['getAddressFromId']
+  }
   '/gp/prison/{prisonId}': {
     get: operations['getPrisonFromId_1']
   }
@@ -121,6 +125,15 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+    }
+    ErrorResponse: {
+      /** Format: int32 */
+      status: number
+      /** Format: int32 */
+      errorCode?: number
+      userMessage?: string
+      developerMessage?: string
+      moreInfo?: string
     }
     /** @description List of address for this prison */
     AddressDto: {
@@ -197,15 +210,6 @@ export interface components {
        * @example Her Majesty’s Prison
        */
       description: string
-    }
-    ErrorResponse: {
-      /** Format: int32 */
-      status: number
-      /** Format: int32 */
-      errorCode?: number
-      userMessage?: string
-      developerMessage?: string
-      moreInfo?: string
     }
     /** @description Address Update Record */
     UpdateAddressDto: {
@@ -569,7 +573,7 @@ export interface operations {
         textSearch?: string
         /** Genders to filter by */
         genders?: ('MALE' | 'FEMALE')[]
-        /** Prison types to filter by */
+        /** Prison type codes to filter by */
         prisonTypeCodes?: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
       }
     }
@@ -594,6 +598,23 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['PrisonDto']
+        }
+      }
+    }
+  }
+  /** Information on a specific prison address */
+  getAddressFromId: {
+    parameters: {
+      path: {
+        prisonId: string
+        addressId: number
+      }
+    }
+    responses: {
+      /** Successful Operation */
+      200: {
+        content: {
+          'application/json': components['schemas']['AddressDto']
         }
       }
     }

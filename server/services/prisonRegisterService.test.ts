@@ -5,7 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
-import { UpdatePrison } from '../@types/prisonRegister'
+import { UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -119,6 +119,89 @@ describe('Prison Register service', () => {
           active: false,
         })
       )
+    })
+  })
+
+  describe('findPrisonAddress', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
+
+      await prisonRegisterService.getPrisonAddress({ username: 'tommy' }, 'MDI', '21')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will return the prison address when found', async () => {
+      fakePrisonRegister.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
+
+      const prisonAddress = await prisonRegisterService.getPrisonAddress({}, 'MDI', '21')
+
+      expect(prisonAddress?.id).toEqual(21)
+    })
+    it('will be undefined when prison address not found', async () => {
+      fakePrisonRegister.get('/prisons/id/MDI/address/66').reply(404, {
+        status: 404,
+        developerMessage: 'Address 66 not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getPrisonAddress({}, 'MDI', '66')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+    it('will send error when prison address not associated with prison', async () => {
+      fakePrisonRegister.get('/prisons/id/MDI/address/66').reply(404, {
+        status: 404,
+        developerMessage: 'Address 66 not in prison MDI',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getPrisonAddress({}, 'MDI', '66')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+  describe('updatePrisonAddress', () => {
+    let updatedPrisonAddress: UpdatePrisonAddress
+    const prisonAddress = data.prisonAddress({})
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister
+        .put('/prison-maintenance/id/MDI/address/21', body => {
+          updatedPrisonAddress = body
+          return body
+        })
+        .reply(200, data.prison({}))
+    })
+    it('username will be used by client', async () => {
+      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send update prison address', async () => {
+      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
+
+      expect(updatedPrisonAddress).toEqual(prisonAddress)
+    })
+    it('will send no attribute rather than blanks', async () => {
+      const addressWithBlanks: UpdatePrisonAddress = { ...prisonAddress, addressLine1: '', county: '  ' }
+      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', addressWithBlanks)
+
+      expect(updatedPrisonAddress).toEqual({
+        id: 21,
+        addressLine2: 'Hatfield Woodhouse',
+        town: 'Doncaster',
+        postcode: 'DN7 6BW',
+        country: 'England',
+      })
     })
   })
 })
