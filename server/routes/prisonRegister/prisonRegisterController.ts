@@ -124,4 +124,12 @@ export default class PrisonRegisterController {
       })
     )
   }
+
+  async togglePrisonActive(req: Request, res: Response): Promise<void> {
+    const { id, active } = req.body
+    const activate = active === 'true'
+    const action: Action = activate ? 'ACTIVATE-PRISON' : 'DEACTIVATE-PRISON'
+    await this.prisonRegisterService.updateActivePrisonMarker(context(res), id, activate)
+    res.redirect(`/prison-register/details?id=${id}&action=${action}`)
+  }
 }

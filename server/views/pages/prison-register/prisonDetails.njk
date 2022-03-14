@@ -1,6 +1,7 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
@@ -89,9 +90,36 @@
     {% if action == 'UPDATED' %}
       {{ confirmationPanel('Prison has been updated successfully', 'confirm-updated') }}
     {% endif %}
+    {% if action == 'ACTIVATE-PRISON' %}
+      {{ confirmationPanel('Prison has been successfully activated', 'confirm-prison-activation') }}
+    {% endif %}
+    {% if action == 'DEACTIVATE-PRISON' %}
+      {{ confirmationPanel('Prison has been successfully marked as closed', 'confirm-prison-deactivation') }}
+    {% endif %}
 
   <div>
     <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Prison details</h2>
+    <form class="flush-right govuk-grid-column-one-half" action="/prison-register/toggle-prison-active"
+          method="post"
+          novalidate="">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+      <input type="hidden" name="id" value="{{ prisonDetails.id }}">
+      {% if prisonDetails.active %}
+        <input type="hidden" name="active" value="false">
+        {{ govukButton({
+          text: "Mark prison closed",
+          classes: "govuk-button govuk-button--secondary",
+          attributes: { "data-qa": "mark-as-closed-" + prisonDetails.id }
+        }) }}
+      {% else %}
+        <input type="hidden" name="active" value="true">
+        {{ govukButton({
+          text: "Mark prison open",
+          classes: "govuk-button govuk-button--secondary",
+          attributes: { "data-qa": "mark-as-open-" + prisonDetails.id }
+        }) }}
+      {% endif %}
+    </form>
   </div>
 
   {{ govukSummaryList({

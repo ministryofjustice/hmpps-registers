@@ -40,4 +40,8 @@ describe('PrisonDetailsView', () => {
     expect(view.renderArgs.prisonDetails.addresses[0].line1).toEqual('Alternative Address')
     expect(view.renderArgs.prisonDetails.addresses[1].line1).toEqual('Bawtry Road')
   })
+  it('will pass through action', () => {
+    const view = new PrisonDetailsView(data.prison({}), 'ACTIVATE-PRISON')
+    expect(view.renderArgs.action).toEqual('ACTIVATE-PRISON')
+  })
 })
