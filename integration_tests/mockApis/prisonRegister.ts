@@ -114,7 +114,7 @@ export const moorlandPrison: Prison = data.prison({
 export const belmarshPrison: Prison = {
   prisonId: 'BAI',
   prisonName: 'HMP Belmarsh',
-  active: true,
+  active: false,
   male: true,
   female: false,
   addresses: [

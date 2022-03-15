@@ -1,6 +1,6 @@
 import IndexPage from '../pages'
 import { albanyPrison, belmarshPrison, moorlandPrison } from '../mockApis/prisonRegister'
-import AllPrisons from '../pages/prison-register/allPrisons'
+import AllPrisonsPage from '../pages/prison-register/allPrisons'
 import PrisonDetailsPage from '../pages/prison-register/prisonDetails'
 import AmendPrisonDetailsPage from '../pages/prison-register/amendPrisonDetails'
 
@@ -9,8 +9,9 @@ context('Prison register - amend existing prison', () => {
     cy.task('reset')
     cy.task('stubLogin')
     cy.task('stubAuthUser')
-    cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison, active: false }, moorlandPrison])
+    cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison }, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
+    cy.task('stubGetPrison', belmarshPrison)
     cy.task('stubUpdatePrison', moorlandPrison)
     cy.login()
   })
@@ -18,7 +19,7 @@ context('Prison register - amend existing prison', () => {
   describe('amending a prison', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().prisonRegisterLink().click()
-      AllPrisons.verifyOnPage().viewPrisonLink('MDI').should('contain.text', moorlandPrison.prisonName).click()
+      AllPrisonsPage.verifyOnPage().viewPrisonLink('MDI').should('contain.text', moorlandPrison.prisonName).click()
     })
     it('should show summary of prison with link to amend', () => {
       const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
@@ -53,6 +54,27 @@ context('Prison register - amend existing prison', () => {
       amendPrisonDetailsPage.saveButton().click()
 
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
+    })
+  })
+
+  describe('deactivating an open prison', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().prisonRegisterLink().click()
+      AllPrisonsPage.verifyOnPage().viewPrisonLink('MDI').should('contain.text', moorlandPrison.prisonName).click()
+    })
+    it('Can deactivate open prison', () => {
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).markAsClosedButton('MDI').click()
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).deactivatedConfirmationBlock().should('exist')
+    })
+  })
+  describe('activating a closed prison', () => {
+    beforeEach(() => {
+      IndexPage.verifyOnPage().prisonRegisterLink().click()
+      AllPrisonsPage.verifyOnPage().viewPrisonLink('BAI').should('contain.text', belmarshPrison.prisonName).click()
+    })
+    it('Can activate a closed prison', () => {
+      PrisonDetailsPage.verifyOnPage(belmarshPrison.prisonName).markAsOpenButton('BAI').click()
+      PrisonDetailsPage.verifyOnPage(belmarshPrison.prisonName).activatedConfirmationBlock().should('exist')
     })
   })
 })

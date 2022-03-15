@@ -283,6 +283,40 @@ describe('Prison Register controller', () => {
       })
     })
 
+    describe('togglePrisonActive', () => {
+      beforeEach(() => {
+        prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+        controller = new PrisonRegisterController(prisonRegisterService)
+        req.body = {
+          id: 'MDI',
+          active: 'true',
+        }
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will update prison by id', async () => {
+        await controller.togglePrisonActive(req, res)
+
+        expect(prisonRegisterService.updateActivePrisonMarker).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', true)
+      })
+      it('will redirect back to prison details view with action', async () => {
+        await controller.togglePrisonActive(req, res)
+
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=ACTIVATE-PRISON')
+      })
+      it('can deactivate prison', async () => {
+        req.body = {
+          id: 'MDI',
+          active: 'false',
+        }
+
+        await controller.togglePrisonActive(req, res)
+
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=DEACTIVATE-PRISON')
+      })
+    })
+
     describe('amendPrisonAddressStart', () => {
       beforeEach(() => {
         req.query.prisonId = 'MDI'
