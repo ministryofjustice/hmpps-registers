@@ -57,9 +57,13 @@ export default class PrisonRegisterController {
 
     const [prison] = await Promise.all([this.prisonRegisterService.getPrison(context(res), prisonId)])
 
+    const gender = []
+    if (prison.male) gender.push('male')
+    if (prison.female) gender.push('female')
     req.session.amendPrisonDetailsForm = {
       id: prison.prisonId,
       name: prison.prisonName,
+      gender,
     }
 
     const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
@@ -76,8 +80,19 @@ export default class PrisonRegisterController {
   async submitAmendPrisonDetails(req: Request, res: Response): Promise<void> {
     req.session.amendPrisonDetailsForm = { ...trimForm(req.body) }
     res.redirect(
-      await amendPrisonDetailsValidator(req.session.amendPrisonDetailsForm, req, (prisonId: string, name: string) =>
-        this.prisonRegisterService.updatePrisonDetails(context(res), prisonId, name)
+      await amendPrisonDetailsValidator(
+        req.session.amendPrisonDetailsForm,
+        req,
+        (prisonId: string, name: string, gender: string[]) => {
+          const genderArray = ControllerHelper.parseStringArrayFromQuery(gender) || []
+          return this.prisonRegisterService.updatePrisonDetails(
+            context(res),
+            prisonId,
+            name,
+            genderArray.includes('male'),
+            genderArray.includes('female')
+          )
+        }
       )
     )
   }

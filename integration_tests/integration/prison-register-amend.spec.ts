@@ -45,12 +45,24 @@ context('Prison register - amend existing prison', () => {
       const prisonDetailsWithErrors = AmendPrisonDetailsPage.verifyOnPage('MDI')
       prisonDetailsWithErrors.errorSummary().contains('Enter a prison name between 3 and 80 characters')
     })
-    it('will return to prison details page with success message after saving', () => {
+    it('will return to prison details page with success message after saving name', () => {
       const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
       prisonDetailsPage.amendPrisonDetailsLink().click()
       const amendPrisonDetailsPage = AmendPrisonDetailsPage.verifyOnPage('MDI')
 
       amendPrisonDetailsPage.name().clear().type('HMP Moorland New Prison')
+      amendPrisonDetailsPage.saveButton().click()
+
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
+    })
+    it('will return to prison details page with success message after saving gender', () => {
+      const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
+      prisonDetailsPage.amendPrisonDetailsLink().click()
+      const amendPrisonDetailsPage = AmendPrisonDetailsPage.verifyOnPage('MDI')
+      amendPrisonDetailsPage.maleCheckbox().should('not.be.checked')
+      amendPrisonDetailsPage.femaleCheckbox().should('be.checked')
+
+      amendPrisonDetailsPage.maleCheckbox().click()
       amendPrisonDetailsPage.saveButton().click()
 
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')

@@ -42,11 +42,19 @@ export default class PrisonRegisterService {
     })
   }
 
-  async updatePrisonDetails(context: Context, prisonId: string, prisonName: string): Promise<void> {
+  async updatePrisonDetails(
+    context: Context,
+    prisonId: string,
+    prisonName: string,
+    male: boolean,
+    female: boolean
+  ): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const updatedPrison: UpdatePrison = {
       active: prison.active,
       prisonName,
+      male,
+      female,
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending prison details for ${prisonId}`)
@@ -77,8 +85,8 @@ export default class PrisonRegisterService {
 
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
-    const { prisonName } = prison
-    const updatedPrison: UpdatePrison = { active, prisonName }
+    const { prisonName, male, female } = prison
+    const updatedPrison: UpdatePrison = { active, prisonName, male, female }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
     await PrisonRegisterService.restClient(token).put({

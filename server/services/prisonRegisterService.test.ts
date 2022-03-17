@@ -6,6 +6,7 @@ import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import { UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
+import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -106,17 +107,51 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland')
+      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland', true, false)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send current active marker with request', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland Updated')
+      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland Updated', true, false)
 
       expect(updatedPrison).toEqual(
         expect.objectContaining({
           prisonName: 'HMP Moorland Updated',
           active: false,
+          male: true,
+          female: false,
+        })
+      )
+    })
+  })
+
+  describe('updateActivePrisonMarker', () => {
+    let updatedPrison: UpdatePrison
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister.get('/prisons/id/MDI').reply(200, moorlandPrison)
+      fakePrisonRegister
+        .put('/prison-maintenance/id/MDI', body => {
+          updatedPrison = body
+          return body
+        })
+        .reply(200, data.prison({}))
+    })
+    it('username will be used by client', async () => {
+      await prisonRegisterService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', true)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send all data back with active marker now false', async () => {
+      await prisonRegisterService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', false)
+
+      expect(updatedPrison).toEqual(
+        expect.objectContaining({
+          prisonName: 'HMP Moorland',
+          active: false,
+          male: false,
+          female: true,
         })
       )
     })
@@ -168,6 +203,7 @@ describe('Prison Register service', () => {
       }
     })
   })
+
   describe('updatePrisonAddress', () => {
     let updatedPrisonAddress: UpdatePrisonAddress
     const prisonAddress = data.prisonAddress({})

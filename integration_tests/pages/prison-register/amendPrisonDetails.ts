@@ -5,6 +5,8 @@ const prisonDetails = {
   saveButton: () => cy.contains('Save'),
   id: () => cy.get('#id'),
   name: () => cy.get('#name'),
+  maleCheckbox: () => cy.get('input[value="male"]'),
+  femaleCheckbox: () => cy.get('input[value="female"]'),
   errorSummary: () => cy.get('.govuk-error-summary'),
 }
 const verifyOnPage = (prisonId: string): typeof prisonDetails & Page =>
