@@ -4,7 +4,7 @@ import { AllPrisonsFilter } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import ControllerHelper from '../utils/controllerHelper'
-import AmendPrisonDetailsView from './amendPrisonDetailsView'
+import AmendPrisonDetailsView, { MALE, FEMALE } from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import amendPrisonAddressValidator from './amendPrisonAddressValidator'
@@ -58,8 +58,8 @@ export default class PrisonRegisterController {
     const [prison] = await Promise.all([this.prisonRegisterService.getPrison(context(res), prisonId)])
 
     const gender = []
-    if (prison.male) gender.push('male')
-    if (prison.female) gender.push('female')
+    if (prison.male) gender.push(MALE)
+    if (prison.female) gender.push(FEMALE)
     req.session.amendPrisonDetailsForm = {
       id: prison.prisonId,
       name: prison.prisonName,
@@ -89,8 +89,8 @@ export default class PrisonRegisterController {
             context(res),
             prisonId,
             name,
-            genderArray.includes('male'),
-            genderArray.includes('female')
+            genderArray.includes(MALE),
+            genderArray.includes(FEMALE)
           )
         }
       )

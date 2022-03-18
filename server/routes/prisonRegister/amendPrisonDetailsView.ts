@@ -1,8 +1,11 @@
 import type { AmendPrisonDetailsForm } from 'prisonForms'
 
+export const MALE = 'male'
+export const FEMALE = 'female'
+
 const genderValues = [
-  { value: 'male', text: 'Male' },
-  { value: 'female', text: 'Female' },
+  { value: MALE, text: 'Male' },
+  { value: FEMALE, text: 'Female' },
 ]
 
 export default class AmendPrisonDetailsView {
