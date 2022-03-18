@@ -35,6 +35,9 @@ export interface paths {
     /** Adds new prison information, role required is MAINTAIN_REF_DATA */
     post: operations['insertPrison']
   }
+  '/queue-admin/get-dlq-messages/{dlqName}': {
+    get: operations['getDlqMessages']
+  }
   '/prisons': {
     /** All prisons */
     get: operations['getPrisons']
@@ -47,7 +50,7 @@ export interface paths {
     /** Information on a specific prison */
     get: operations['getPrisonFromId']
   }
-  '/prisons/id/{prisonId}/address/id/{addressId}': {
+  '/prisons/id/{prisonId}/address/{addressId}': {
     /** Information on a specific prison address */
     get: operations['getAddressFromId']
   }
@@ -125,6 +128,10 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+      /** @description If this is a male prison */
+      male: boolean
+      /** @description If this is a female prison */
+      female: boolean
     }
     ErrorResponse: {
       /** Format: int32 */
@@ -189,9 +196,9 @@ export interface components {
       /** @description Whether the prison is still active */
       active: boolean
       /** @description Whether the prison has male prisoners */
-      male?: boolean
+      male: boolean
       /** @description Whether the prison has female prisoners */
-      female?: boolean
+      female: boolean
       /** @description List of types for this prison */
       types: components['schemas']['PrisonTypeDto'][]
       /** @description List of address for this prison */
@@ -258,6 +265,17 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+    }
+    DlqMessage: {
+      body: { [key: string]: { [key: string]: unknown } }
+      messageId: string
+    }
+    GetDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+      /** Format: int32 */
+      messagesReturnedCount: number
+      messages: components['schemas']['DlqMessage'][]
     }
   }
 }
@@ -549,6 +567,24 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['InsertPrisonDto']
+      }
+    }
+  }
+  getDlqMessages: {
+    parameters: {
+      path: {
+        dlqName: string
+      }
+      query: {
+        maxMessages?: number
+      }
+    }
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          '*/*': components['schemas']['GetDlqResult']
+        }
       }
     }
   }

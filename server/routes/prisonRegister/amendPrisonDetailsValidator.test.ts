@@ -12,6 +12,7 @@ describe('amendPrisonDetailsValidator', () => {
   const validForm: AmendPrisonDetailsForm = {
     id: 'MDI',
     name: 'Moorland Prison',
+    gender: ['male'],
   }
 
   describe('validate', () => {
@@ -28,10 +29,10 @@ describe('amendPrisonDetailsValidator', () => {
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
     it('calls update service when valid', async () => {
-      const form = { ...validForm, name: 'Moorland Prison' }
+      const form = { ...validForm, name: 'Moorland Prison', gender: ['male'] }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/details?id=MDI&action=UPDATED')
-      expect(updateService).toHaveBeenCalledWith(form.id, form.name)
+      expect(updateService).toHaveBeenCalledWith(form.id, form.name, form.gender)
     })
     it('name must not be a blank', async () => {
       const form = { ...validForm, name: '  ' }

@@ -179,6 +179,8 @@ describe('Prison Register controller', () => {
           prisonId: 'MDI',
           prisonName: 'HMP Moorland',
           active: true,
+          male: true,
+          female: false,
         })
       )
       prisonRegisterService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
@@ -204,6 +206,7 @@ describe('Prison Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: expect.objectContaining({}),
+          genderValues: expect.objectContaining({}),
           errors: [],
         })
       })
@@ -214,7 +217,15 @@ describe('Prison Register controller', () => {
           form: {
             id: 'MDI',
             name: 'HMP Moorland',
+            gender: ['male'],
           },
+          genderValues: [
+            { text: 'Male', value: 'male' },
+            {
+              text: 'Female',
+              value: 'female',
+            },
+          ],
           errors: [],
         })
       })
@@ -225,6 +236,7 @@ describe('Prison Register controller', () => {
         req.session.amendPrisonDetailsForm = {
           id: 'MDI',
           name: 'HMP Moorland',
+          gender: ['male'],
         }
         req.body = {
           ...req.session.amendPrisonDetailsForm,
@@ -244,6 +256,7 @@ describe('Prison Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: expect.objectContaining({}),
+          genderValues: expect.objectContaining({}),
           errors: [],
         })
       })
@@ -254,7 +267,15 @@ describe('Prison Register controller', () => {
           form: {
             id: 'MDI',
             name: 'HMP Moorland',
+            gender: ['male'],
           },
+          genderValues: [
+            { text: 'Male', value: 'male' },
+            {
+              text: 'Female',
+              value: 'female',
+            },
+          ],
           errors: [],
         })
       })
@@ -264,6 +285,7 @@ describe('Prison Register controller', () => {
         req.session.amendPrisonDetailsForm = {
           name: 'HMP Moorland',
           id: 'MDI',
+          gender: ['male'],
         }
         req.body = {
           ...req.session.amendPrisonDetailsForm,
@@ -278,7 +300,9 @@ describe('Prison Register controller', () => {
         expect(prisonRegisterService.updatePrisonDetails).toHaveBeenCalledWith(
           { username: 'tom' },
           'MDI',
-          'HMP Moorland'
+          'HMP Moorland',
+          true,
+          false
         )
       })
     })

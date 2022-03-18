@@ -2,6 +2,7 @@ declare module 'prisonForms' {
   export interface AmendPrisonDetailsForm {
     id: string
     name: string
+    gender: string[]
   }
   export interface AmendPrisonAddressForm {
     id: string

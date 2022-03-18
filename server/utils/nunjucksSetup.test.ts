@@ -812,3 +812,30 @@ describe('toPrisonTypeCheckboxes', () => {
     ])
   })
 })
+
+describe('setChecked', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should map Male and Female checkboxes and set Male to checked', () => {
+    const checkboxSettings = njk.getFilter('setChecked')(
+      [
+        { value: 'male', text: 'Male' },
+        { value: 'female', text: 'Female' },
+      ],
+      ['male']
+    )
+
+    expect(checkboxSettings).toEqual([
+      {
+        value: 'male',
+        text: 'Male',
+        checked: true,
+      },
+      {
+        value: 'female',
+        text: 'Female',
+        checked: false,
+      },
+    ])
+  })
+})

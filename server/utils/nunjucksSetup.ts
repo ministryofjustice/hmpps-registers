@@ -84,6 +84,16 @@ export default function nunjucksSetup(app: express.Application): nunjucks.Enviro
     }))
   })
 
+  njkEnv.addFilter(
+    'setChecked',
+    (items, selectedList) =>
+      items &&
+      items.map((entry: { value: string }) => ({
+        ...entry,
+        checked: entry && selectedList && selectedList.includes(entry.value),
+      }))
+  )
+
   njkEnv.addFilter('toSelect', (array, value) => {
     return array.map((item: { value: string; text: string }) => ({
       value: item.value,
