@@ -100,7 +100,7 @@ export default {
 }
 
 // Mock data
-export const albanyPrison: Prison = data.prison({})
+export const albanyPrison: Prison = data.prison({ types: [] })
 export const moorlandPrison: Prison = data.prison({
   prisonId: 'MDI',
   prisonName: 'HMP Moorland',

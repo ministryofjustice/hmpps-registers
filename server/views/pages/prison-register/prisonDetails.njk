@@ -30,12 +30,14 @@
     {% endif %}
   </p>
 
-  <p>
-    Type(s):
-    {% for type in types %}
-      {{ type.description }}{% if loop.revindex > 1 %},{% endif %}
-    {% endfor %}
-  </p>
+  {% if types|length %}
+    <p>
+      Type(s):
+      {% for type in types %}
+        {{ type.description }}{% if loop.revindex > 1 %},{% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
 {% endmacro %}
 
 {% macro line(text) %}
