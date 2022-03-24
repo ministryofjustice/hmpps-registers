@@ -112,7 +112,14 @@ describe('Prison Register service', () => {
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send current active marker with request', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland Updated', true, false, ['HMP'])
+      await prisonRegisterService.updatePrisonDetails(
+        { username: 'tommy' },
+        'MDI',
+        'HMP Moorland Updated',
+        true,
+        false,
+        ['HMP']
+      )
 
       expect(updatedPrison).toEqual(
         expect.objectContaining({
@@ -120,7 +127,7 @@ describe('Prison Register service', () => {
           active: false,
           male: true,
           female: false,
-          prisonTypes: ['HMP']
+          prisonTypes: ['HMP'],
         })
       )
     })

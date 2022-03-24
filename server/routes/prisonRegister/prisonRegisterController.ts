@@ -100,7 +100,7 @@ export default class PrisonRegisterController {
             name,
             genderArray.includes(MALE),
             genderArray.includes(FEMALE),
-            prisonTypesArray,
+            prisonTypesArray
           )
         }
       )
