@@ -2,24 +2,14 @@ import redis from 'redis'
 import { promisify } from 'util'
 
 import logger from '../../logger'
-import config from '../config'
-
-const createRedisClient = () => {
-  return redis.createClient({
-    port: config.redis.port,
-    password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
-    prefix: 'systemToken:',
-  })
-}
+import { createRedisClient } from './redisClient'
 
 export default class TokenStore {
   private getRedisAsync: (key: string) => Promise<string>
 
   private setRedisAsync: (key: string, value: string, mode: string, durationSeconds: number) => Promise<void>
 
-  constructor(redisClient: redis.RedisClient = createRedisClient()) {
+  constructor(redisClient: redis.RedisClient = createRedisClient('index/tokenStore.ts', 'systemToken:')) {
     redisClient.on('error', error => {
       logger.error(error, `Redis error`)
     })

@@ -25,6 +25,7 @@ import type UserService from './services/userService'
 import CourtRegisterService from './services/courtRegisterService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { MAINTAINER_ROLE } from './authentication/roles'
+import { createRedisClient } from './data/redisClient'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -73,12 +74,7 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const client = redis.createClient({
-    port: config.redis.port,
-    password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
-  })
+  const client = createRedisClient('index/app.tx', undefined)
 
   app.use(
     session({
