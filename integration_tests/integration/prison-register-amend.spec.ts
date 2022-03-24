@@ -67,6 +67,22 @@ context('Prison register - amend existing prison', () => {
 
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
     })
+    it('will return to prison details page with success message after saving prison types', () => {
+      const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
+      prisonDetailsPage.amendPrisonDetailsLink().click()
+      const amendPrisonDetailsPage = AmendPrisonDetailsPage.verifyOnPage('MDI')
+
+      amendPrisonDetailsPage.hmpCheckbox().should('be.checked')
+      amendPrisonDetailsPage.yoiCheckbox().should('be.checked')
+      amendPrisonDetailsPage.stcCheckbox().should('not.be.checked')
+      amendPrisonDetailsPage.ircCheckbox().should('not.be.checked')
+
+      amendPrisonDetailsPage.stcCheckbox().click()
+      amendPrisonDetailsPage.ircCheckbox().click()
+      amendPrisonDetailsPage.saveButton().click()
+
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
+    })
   })
 
   describe('deactivating an open prison', () => {
