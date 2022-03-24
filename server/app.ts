@@ -70,7 +70,7 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const client = createRedisClient('index/app.tx', undefined)
+  const client = createRedisClient('index/app.ts', undefined)
 
   app.use(
     session({
