@@ -9,13 +9,11 @@ import compression from 'compression'
 import createError from 'http-errors'
 import flash from 'connect-flash'
 import passport from 'passport'
-import redis from 'redis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 
 import auth from './authentication/auth'
 import indexRoutes from './routes'
-import healthcheck from './services/healthCheck'
 import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
 import errorHandler from './errorHandler'
@@ -26,6 +24,7 @@ import CourtRegisterService from './services/courtRegisterService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { MAINTAINER_ROLE } from './authentication/roles'
 import { createRedisClient } from './data/redisClient'
+import setUpHealthChecks from './middleware/setUpHealthChecks'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -46,9 +45,6 @@ export default function createApp(
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
-
-  // View Engine Configuration
-  app.set('view engine', 'njk')
 
   nunjucksSetup(app)
 
@@ -134,21 +130,7 @@ export default function createApp(
     app.use('/assets/js/jquery.min.js', express.static(path.join(process.cwd(), dir), cacheControl))
   })
 
-  // Express Routing Configuration
-  app.get('/health', (req, res, next) => {
-    healthcheck(result => {
-      if (!result.healthy) {
-        res.status(503)
-      }
-      res.json(result)
-    })
-  })
-
-  app.get('/ping', (req, res) =>
-    res.send({
-      status: 'UP',
-    })
-  )
+  app.use(setUpHealthChecks())
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'

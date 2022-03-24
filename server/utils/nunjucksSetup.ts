@@ -13,6 +13,8 @@ type Error = {
 }
 
 export default function nunjucksSetup(app: express.Application): nunjucks.Environment {
+  app.set('view engine', 'njk')
+
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
