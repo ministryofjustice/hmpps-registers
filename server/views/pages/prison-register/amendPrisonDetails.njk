@@ -65,6 +65,23 @@
                             errorMessage: errors | findError('gender')
                         }) }}
 
+                        {{ govukCheckboxes({
+                            idPrefix: "prisonTypes",
+                            name: "prisonTypes",
+                            fieldset: {
+                                legend: {
+                                    text: "What type of Prison is this?",
+                                    isPageHeading: false,
+                                    classes: "govuk-fieldset__legend--m"
+                                }
+                            },
+                            hint: {
+                                text: "Select all that apply."
+                            },
+                            items: prisonTypesValues | setChecked(form.prisonType),
+                            errorMessage: errors | findError('prisonType')
+                        }) }}
+
                         <div class="govuk-button-group">
                             {{ govukButton({
                                 text: "Save"
