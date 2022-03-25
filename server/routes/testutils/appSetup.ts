@@ -14,8 +14,6 @@ import MockUserService from './mockUserService'
 function appSetup(route: Router, production: boolean): Express {
   const app = express()
 
-  app.set('view engine', 'njk')
-
   nunjucksSetup(app)
 
   app.use((req, res, next) => {
