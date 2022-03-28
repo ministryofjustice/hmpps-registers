@@ -10,6 +10,7 @@ context('Prison register - prison details navigation', () => {
     cy.task('stubAuthUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
+    cy.task('stubGetPrison', albanyPrison)
     cy.login()
   })
 
@@ -26,6 +27,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Open')
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male prison')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Type(s)')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Prison,')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Youth Offender Institution')
   })
@@ -45,5 +47,16 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].county)
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].postcode)
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].country)
+  })
+
+  it('Will not display prison types when none present', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    AllPrisons.verifyOnPage()
+      .viewPrisonLink(albanyPrison.prisonId)
+      .should('contain.text', albanyPrison.prisonName)
+      .click()
+    const prisonDetailsPage = PrisonDetails.verifyOnPage(albanyPrison.prisonName)
+
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Type(s)')
   })
 })

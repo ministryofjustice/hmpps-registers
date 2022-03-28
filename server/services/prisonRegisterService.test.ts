@@ -107,12 +107,19 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland', true, false)
+      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland', true, false, [])
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send current active marker with request', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland Updated', true, false)
+      await prisonRegisterService.updatePrisonDetails(
+        { username: 'tommy' },
+        'MDI',
+        'HMP Moorland Updated',
+        true,
+        false,
+        ['HMP']
+      )
 
       expect(updatedPrison).toEqual(
         expect.objectContaining({
@@ -120,6 +127,7 @@ describe('Prison Register service', () => {
           active: false,
           male: true,
           female: false,
+          prisonTypes: ['HMP'],
         })
       )
     })
@@ -152,6 +160,7 @@ describe('Prison Register service', () => {
           active: false,
           male: false,
           female: true,
+          prisonTypes: ['HMP', 'YOI'],
         })
       )
     })

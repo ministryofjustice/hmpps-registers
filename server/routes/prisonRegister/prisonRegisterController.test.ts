@@ -3,6 +3,7 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
+import { HMP, IRC, STC, YOI } from './amendPrisonDetailsView'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -207,6 +208,7 @@ describe('Prison Register controller', () => {
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: expect.objectContaining({}),
           genderValues: expect.objectContaining({}),
+          prisonTypesValues: expect.objectContaining({}),
           errors: [],
         })
       })
@@ -218,6 +220,7 @@ describe('Prison Register controller', () => {
             id: 'MDI',
             name: 'HMP Moorland',
             gender: ['male'],
+            prisonType: ['HMP'],
           },
           genderValues: [
             { text: 'Male', value: 'male' },
@@ -225,6 +228,12 @@ describe('Prison Register controller', () => {
               text: 'Female',
               value: 'female',
             },
+          ],
+          prisonTypesValues: [
+            { text: "Her Majesty's Prison", value: HMP },
+            { text: "Her Majesty's Youth Offender Institution", value: YOI },
+            { text: 'Secure Training Centre', value: STC },
+            { text: 'Immigration Removal Centre', value: IRC },
           ],
           errors: [],
         })
@@ -237,6 +246,7 @@ describe('Prison Register controller', () => {
           id: 'MDI',
           name: 'HMP Moorland',
           gender: ['male'],
+          prisonTypes: ['HMP'],
         }
         req.body = {
           ...req.session.amendPrisonDetailsForm,
@@ -257,6 +267,7 @@ describe('Prison Register controller', () => {
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: expect.objectContaining({}),
           genderValues: expect.objectContaining({}),
+          prisonTypesValues: expect.objectContaining({}),
           errors: [],
         })
       })
@@ -268,6 +279,7 @@ describe('Prison Register controller', () => {
             id: 'MDI',
             name: 'HMP Moorland',
             gender: ['male'],
+            prisonTypes: ['HMP'],
           },
           genderValues: [
             { text: 'Male', value: 'male' },
@@ -275,6 +287,12 @@ describe('Prison Register controller', () => {
               text: 'Female',
               value: 'female',
             },
+          ],
+          prisonTypesValues: [
+            { text: "Her Majesty's Prison", value: HMP },
+            { text: "Her Majesty's Youth Offender Institution", value: YOI },
+            { text: 'Secure Training Centre', value: STC },
+            { text: 'Immigration Removal Centre', value: IRC },
           ],
           errors: [],
         })
@@ -286,6 +304,7 @@ describe('Prison Register controller', () => {
           name: 'HMP Moorland',
           id: 'MDI',
           gender: ['male'],
+          prisonTypes: ['HMP'],
         }
         req.body = {
           ...req.session.amendPrisonDetailsForm,
@@ -302,7 +321,8 @@ describe('Prison Register controller', () => {
           'MDI',
           'HMP Moorland',
           true,
-          false
+          false,
+          ['HMP']
         )
       })
     })

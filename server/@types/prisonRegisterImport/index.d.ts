@@ -132,6 +132,8 @@ export interface components {
       male: boolean
       /** @description If this is a female prison */
       female: boolean
+      /** @description Set of types for this prison */
+      prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
     }
     ErrorResponse: {
       /** Format: int32 */

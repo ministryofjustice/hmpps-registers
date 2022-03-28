@@ -7,6 +7,12 @@ const prisonDetails = {
   name: () => cy.get('#name'),
   maleCheckbox: () => cy.get('input[value="male"]'),
   femaleCheckbox: () => cy.get('input[value="female"]'),
+
+  hmpCheckbox: () => cy.get('input[value="HMP"]'),
+  yoiCheckbox: () => cy.get('input[value="YOI"]'),
+  stcCheckbox: () => cy.get('input[value="STC"]'),
+  ircCheckbox: () => cy.get('input[value="IRC"]'),
+
   errorSummary: () => cy.get('.govuk-error-summary'),
 }
 const verifyOnPage = (prisonId: string): typeof prisonDetails & Page =>

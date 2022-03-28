@@ -60,10 +60,12 @@ export default class PrisonRegisterController {
     const gender = []
     if (prison.male) gender.push(MALE)
     if (prison.female) gender.push(FEMALE)
+
     req.session.amendPrisonDetailsForm = {
       id: prison.prisonId,
       name: prison.prisonName,
       gender,
+      prisonType: prison.types.map(type => type.code),
     }
 
     const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
@@ -83,14 +85,22 @@ export default class PrisonRegisterController {
       await amendPrisonDetailsValidator(
         req.session.amendPrisonDetailsForm,
         req,
-        (prisonId: string, name: string, gender: string[]) => {
+        (prisonId: string, name: string, gender: string[], prisonTypes: string[]) => {
           const genderArray = ControllerHelper.parseStringArrayFromQuery(gender) || []
+          const prisonTypesArray = (ControllerHelper.parseStringArrayFromQuery(prisonTypes) || []) as (
+            | 'HMP'
+            | 'YOI'
+            | 'STC'
+            | 'IRC'
+          )[]
+
           return this.prisonRegisterService.updatePrisonDetails(
             context(res),
             prisonId,
             name,
             genderArray.includes(MALE),
-            genderArray.includes(FEMALE)
+            genderArray.includes(FEMALE),
+            prisonTypesArray
           )
         }
       )

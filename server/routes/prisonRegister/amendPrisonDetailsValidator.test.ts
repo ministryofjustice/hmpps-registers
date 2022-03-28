@@ -13,6 +13,7 @@ describe('amendPrisonDetailsValidator', () => {
     id: 'MDI',
     name: 'Moorland Prison',
     gender: ['male'],
+    prisonTypes: ['HMP'],
   }
 
   describe('validate', () => {
@@ -32,7 +33,7 @@ describe('amendPrisonDetailsValidator', () => {
       const form = { ...validForm, name: 'Moorland Prison', gender: ['male'] }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/details?id=MDI&action=UPDATED')
-      expect(updateService).toHaveBeenCalledWith(form.id, form.name, form.gender)
+      expect(updateService).toHaveBeenCalledWith(form.id, form.name, form.gender, form.prisonTypes)
     })
     it('name must not be a blank', async () => {
       const form = { ...validForm, name: '  ' }
