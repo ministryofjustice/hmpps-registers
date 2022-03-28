@@ -25,6 +25,8 @@ import PrisonRegisterService from './services/prisonRegisterService'
 import { MAINTAINER_ROLE } from './authentication/roles'
 import { createRedisClient } from './data/redisClient'
 import setUpHealthChecks from './middleware/setUpHealthChecks'
+import setUpWebRequestParsing from './middleware/setupRequestParsing'
+import setUpStaticResources from './middleware/setUpStaticResources'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -86,14 +88,11 @@ export default function createApp(
   app.use(passport.initialize())
   app.use(passport.session())
 
-  // Request Processing Configuration
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
+  app.use(setUpWebRequestParsing())
 
   app.use(flash())
 
-  // Resource Delivery Configuration
-  app.use(compression())
+  app.use(setUpStaticResources())
 
   // Cachebusting version string
   if (production) {
@@ -107,29 +106,6 @@ export default function createApp(
     })
   }
 
-  //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
-  ;[
-    '/assets',
-    '/assets/stylesheets',
-    '/assets/js',
-    '/node_modules/govuk-frontend/govuk/assets',
-    '/node_modules/govuk-frontend',
-    '/node_modules/jquery/dist',
-    `/node_modules/@ministryofjustice/frontend/`,
-  ].forEach(dir => {
-    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-  ;['/node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
-    app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-  ;['/node_modules/@ministryofjustice/frontend/moj/assets/images'].forEach(dir => {
-    app.use('/assets/images', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-  ;['/node_modules/jquery/dist/jquery.min.js'].forEach(dir => {
-    app.use('/assets/js/jquery.min.js', express.static(path.join(process.cwd(), dir), cacheControl))
-  })
-
   app.use(setUpHealthChecks())
 
   // GovUK Template Configuration
@@ -140,9 +116,6 @@ export default function createApp(
     res.locals.user = req.user
     next()
   })
-
-  // Don't cache dynamic resources
-  app.use(noCache())
 
   // CSRF protection
   if (!testMode) {
