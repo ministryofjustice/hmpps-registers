@@ -10,6 +10,7 @@ import * as auth from '../../authentication/auth'
 import courtRegisterService from './mockCourtRegisterService'
 import prisonRegisterService from './mockPrisonRegisterService'
 import MockUserService from './mockUserService'
+import setUpWebRequestParsing from '../../middleware/setupRequestParsing'
 
 function appSetup(route: Router, production: boolean): Express {
   const app = express()
@@ -23,8 +24,7 @@ function appSetup(route: Router, production: boolean): Express {
   })
 
   app.use(cookieSession({ keys: [''] }))
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
+  app.use(setUpWebRequestParsing())
   app.use('/', route)
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(production))
