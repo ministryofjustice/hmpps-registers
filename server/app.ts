@@ -4,12 +4,9 @@ import addRequestId from 'express-request-id'
 import helmet from 'helmet'
 import csurf from 'csurf'
 import createError from 'http-errors'
-import flash from 'connect-flash'
-import passport from 'passport'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 
-import auth from './authentication/auth'
 import indexRoutes from './routes'
 import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
@@ -24,6 +21,7 @@ import { createRedisClient } from './data/redisClient'
 import setUpHealthChecks from './middleware/setUpHealthChecks'
 import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpStaticResources from './middleware/setUpStaticResources'
+import setUpAuthentication from './middleware/setUpAuthentication'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -36,8 +34,6 @@ export default function createApp(
   prisonRegisterService: PrisonRegisterService
 ): express.Application {
   const app = express()
-
-  auth.init()
 
   app.set('json spaces', 2)
 
@@ -82,12 +78,8 @@ export default function createApp(
     })
   )
 
-  app.use(passport.initialize())
-  app.use(passport.session())
-
+  app.use(setUpAuthentication())
   app.use(setUpWebRequestParsing())
-
-  app.use(flash())
 
   app.use(setUpStaticResources())
 
@@ -124,35 +116,6 @@ export default function createApp(
   app.use((req, res, next) => {
     req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
     next()
-  })
-
-  app.get('/autherror', (req, res) => {
-    res.status(401)
-    return res.render('autherror')
-  })
-
-  app.get('/login', passport.authenticate('oauth2'))
-
-  app.get('/login/callback', (req, res, next) =>
-    passport.authenticate('oauth2', {
-      successReturnToOrRedirect: req.session.returnTo || '/',
-      failureRedirect: '/autherror',
-    })(req, res, next)
-  )
-
-  const authLogoutUrl = `${config.apis.hmppsAuth.externalUrl}/logout?client_id=${config.apis.hmppsAuth.systemClientId}&redirect_uri=${config.domain}`
-
-  app.use('/logout', (req, res) => {
-    if (req.user) {
-      req.logout()
-      req.session.destroy(() => res.redirect(authLogoutUrl))
-      return
-    }
-    res.redirect(authLogoutUrl)
-  })
-
-  app.use('/auth', (req, res) => {
-    res.redirect(`${config.apis.hmppsAuth.externalUrl}`)
   })
 
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
