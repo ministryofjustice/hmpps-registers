@@ -1,7 +1,6 @@
 import express from 'express'
 
 import addRequestId from 'express-request-id'
-import helmet from 'helmet'
 import csurf from 'csurf'
 import createError from 'http-errors'
 import session from 'express-session'
@@ -22,6 +21,7 @@ import setUpHealthChecks from './middleware/setUpHealthChecks'
 import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpAuthentication from './middleware/setUpAuthentication'
+import setUpWebSecurity from './middleware/setUpWebSecurity'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -41,27 +41,14 @@ export default function createApp(
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
 
-  nunjucksSetup(app)
-
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
-  // Secure code best practice - see:
-  // 1. https://expressjs.com/en/advanced/best-practice-security.html,
-  // 2. https://www.npmjs.com/package/helmet
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: ["'self'", 'code.jquery.com', "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='"],
-          styleSrc: ["'self'", 'code.jquery.com'],
-          fontSrc: ["'self'"],
-        },
-      },
-    })
-  )
+  app.use(setUpHealthChecks())
+
+  nunjucksSetup(app)
+
+  app.use(setUpWebSecurity())
 
   app.use(addRequestId())
 
@@ -94,8 +81,6 @@ export default function createApp(
       return next()
     })
   }
-
-  app.use(setUpHealthChecks())
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
