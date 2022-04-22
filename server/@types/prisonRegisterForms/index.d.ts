@@ -15,4 +15,13 @@ declare module 'prisonForms' {
     addresspostcode: string
     addresscountry: string
   }
+  export interface AddPrisonAddressForm {
+    prisonId: string
+    addressline1?: string
+    addressline2?: string
+    addresstown?: string
+    addresscounty?: string
+    addresspostcode?: string
+    addresscountry?: string
+  }
 }

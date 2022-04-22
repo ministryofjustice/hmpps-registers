@@ -10,6 +10,7 @@ import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import amendPrisonAddressValidator from './amendPrisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
+import AddPrisonAddressView from "./addPrisonAddressView";
 
 function context(res: Response): Context {
   return {
@@ -105,6 +106,18 @@ export default class PrisonRegisterController {
         }
       )
     )
+  }
+
+  async addPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId } = req.query as { prisonId: string }
+
+    req.session.addPrisonAddressForm = {
+      prisonId,
+    }
+
+    const view = new AddPrisonAddressView(req.session.addPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/addPrisonAddress', view.renderArgs)
   }
 
   async amendPrisonAddressStart(req: Request, res: Response): Promise<void> {

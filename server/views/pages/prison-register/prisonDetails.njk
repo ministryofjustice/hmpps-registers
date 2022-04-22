@@ -181,6 +181,15 @@
     }) }}
   {% endfor %}
 
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Add another address",
+      href: "/prison-register/add-prison-address-start?prisonId=" + prisonDetails.id ,
+      classes: "govuk-button govuk-button--secondary",
+      attributes: { "data-qa": "add-prison-address-link-" + prisonDetails.id}
+    }) }}
+  </div>
+
   </main>
 
 {% endblock %}
