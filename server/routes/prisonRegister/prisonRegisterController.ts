@@ -8,6 +8,7 @@ import AmendPrisonDetailsView, { MALE, FEMALE } from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import amendPrisonAddressValidator from './amendPrisonAddressValidator'
+import addPrisonAddressValidator from './addPrisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
 import AddPrisonAddressView from "./addPrisonAddressView";
@@ -144,6 +145,23 @@ export default class PrisonRegisterController {
     const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm, req.flash('errors'))
 
     res.render('pages/prison-register/amendPrisonAddress', view.renderArgs)
+  }
+
+  async submitAddPrisonAddress(req: Request, res: Response): Promise<void> {
+    req.session.addPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+        await addPrisonAddressValidator(req.session.addPrisonAddressForm, req, form => {
+          const updatedAddress: UpdatePrisonAddress = {
+            addressLine1: form.addressline1,
+            addressLine2: form.addressline2,
+            town: form.addresstown,
+            county: form.addresscounty,
+            postcode: form.addresspostcode,
+            country: form.addresscountry,
+          }
+          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, updatedAddress)
+        })
+    )
   }
 
   async submitAmendPrisonAddress(req: Request, res: Response): Promise<void> {

@@ -85,6 +85,24 @@ export default class PrisonRegisterService {
     })
   }
 
+  async addPrisonAddress(
+      context: Context,
+      prisonId: string,
+      prisonAddress: UpdatePrisonAddress
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Adding address to prison ${prisonId}`)
+    await PrisonRegisterService.restClient(token).post({
+      path: `/prison-maintenance/id/${prisonId}/address`,
+      data: {
+        ...prisonAddress,
+        addressLine1: undefinedWhenAbsent(prisonAddress.addressLine1),
+        addressLine2: undefinedWhenAbsent(prisonAddress.addressLine2),
+        county: undefinedWhenAbsent(prisonAddress.county),
+      },
+    })
+  }
+
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const prisonTypes = prison.types.map(type => type.code)

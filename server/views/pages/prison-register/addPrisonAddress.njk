@@ -32,9 +32,9 @@
                 <h1 class="govuk-heading-xl">Add prison address for {{ form.prisonId }}</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
-                <form action="/prison-maintenance/id/{{form.prisonId}}/address" method="post" novalidate>
+                <form action="/prison-register/add-prison-address" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-                    <input type="hidden" name="id" value="{{ form.id }}" />
+                    <input type="hidden" name="prisonId" value="{{ form.prisonId }}" />
 
                     {% call govukFieldset({
                         legend: {

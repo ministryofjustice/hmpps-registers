@@ -19,9 +19,9 @@ declare module 'prisonForms' {
     prisonId: string
     addressline1?: string
     addressline2?: string
-    addresstown?: string
+    addresstown: string
     addresscounty?: string
-    addresspostcode?: string
-    addresscountry?: string
+    addresspostcode: string
+    addresscountry: string
   }
 }
