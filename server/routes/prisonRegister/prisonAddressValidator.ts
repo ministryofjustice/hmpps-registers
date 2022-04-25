@@ -1,11 +1,11 @@
 import { Request } from 'express'
-import type { AmendPrisonAddressForm } from 'prisonForms'
+import type { PrisonAddressForm } from 'prisonForms'
 import { validate as validateSync } from '../../validation/validation'
 
 export default async function validate(
-  form: AmendPrisonAddressForm,
+  form: PrisonAddressForm,
   req: Request,
-  updateService: (prisonAddressForm: AmendPrisonAddressForm) => Promise<void>
+  updateService: (prisonAddressForm: PrisonAddressForm) => Promise<void>
 ): Promise<string> {
   const errors = validateSync(
     form,

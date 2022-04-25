@@ -7,8 +7,7 @@ import ControllerHelper from '../utils/controllerHelper'
 import AmendPrisonDetailsView, { MALE, FEMALE } from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
-import amendPrisonAddressValidator from './amendPrisonAddressValidator'
-import addPrisonAddressValidator from './addPrisonAddressValidator'
+import prisonAddressValidator from './prisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
 import AddPrisonAddressView from "./addPrisonAddressView";
@@ -150,8 +149,8 @@ export default class PrisonRegisterController {
   async submitAddPrisonAddress(req: Request, res: Response): Promise<void> {
     req.session.addPrisonAddressForm = { ...trimForm(req.body) }
     res.redirect(
-        await addPrisonAddressValidator(req.session.addPrisonAddressForm, req, form => {
-          const updatedAddress: UpdatePrisonAddress = {
+        await prisonAddressValidator(req.session.addPrisonAddressForm, req, form => {
+          const newAddress: UpdatePrisonAddress = {
             addressLine1: form.addressline1,
             addressLine2: form.addressline2,
             town: form.addresstown,
@@ -159,7 +158,7 @@ export default class PrisonRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
           }
-          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, updatedAddress)
+          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
         })
     )
   }
@@ -167,7 +166,7 @@ export default class PrisonRegisterController {
   async submitAmendPrisonAddress(req: Request, res: Response): Promise<void> {
     req.session.amendPrisonAddressForm = { ...trimForm(req.body) }
     res.redirect(
-      await amendPrisonAddressValidator(req.session.amendPrisonAddressForm, req, form => {
+      await prisonAddressValidator(req.session.amendPrisonAddressForm, req, form => {
         const updatedAddress: UpdatePrisonAddress = {
           addressLine1: form.addressline1,
           addressLine2: form.addressline2,
@@ -176,7 +175,7 @@ export default class PrisonRegisterController {
           postcode: form.addresspostcode,
           country: form.addresscountry,
         }
-        return this.prisonRegisterService.updatePrisonAddress(context(res), form.prisonId, form.id, updatedAddress)
+        return this.prisonRegisterService.updatePrisonAddress(context(res), form.prisonId, form.id!, updatedAddress)
       })
     )
   }

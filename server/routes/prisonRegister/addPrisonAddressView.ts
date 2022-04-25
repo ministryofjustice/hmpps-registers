@@ -1,10 +1,10 @@
-import type { AddPrisonAddressForm } from 'prisonForms'
+import type { PrisonAddressForm } from 'prisonForms'
 
 export default class AddPrisonAddressView {
-  constructor(private readonly form: AddPrisonAddressForm, private readonly errors?: Array<Record<string, string>>) {}
+  constructor(private readonly form: PrisonAddressForm, private readonly errors?: Array<Record<string, string>>) {}
 
   get renderArgs(): {
-    form: AddPrisonAddressForm
+    form: PrisonAddressForm
     errors: Array<Record<string, string>>
   } {
     return {

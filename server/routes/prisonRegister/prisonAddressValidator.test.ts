@@ -1,13 +1,13 @@
-import type { AmendPrisonAddressForm } from 'prisonForms'
+import type { PrisonAddressForm } from 'prisonForms'
 import { Request } from 'express'
-import validate from './amendPrisonAddressValidator'
+import validate from './prisonAddressValidator'
 
-describe('amendPrisonAddressValidator', () => {
+describe('prisonAddressValidator', () => {
   const req = {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as Request
 
-  const validForm: AmendPrisonAddressForm = {
+  const validForm: PrisonAddressForm = {
     id: '21',
     prisonId: 'MDI',
     addressline1: 'Bawtry Road',
@@ -19,7 +19,7 @@ describe('amendPrisonAddressValidator', () => {
   }
 
   describe('validate', () => {
-    let updateService: jest.Mocked<(form: AmendPrisonAddressForm) => Promise<void>>
+    let updateService: jest.Mocked<(form: PrisonAddressForm) => Promise<void>>
     beforeEach(() => {
       updateService = jest.fn().mockResolvedValue(null)
       jest.resetAllMocks()

@@ -361,6 +361,66 @@ describe('Prison Register controller', () => {
       })
     })
 
+    describe('addPrisonAddressStart', () => {
+      beforeEach(() => {
+        req.query.prisonId = 'MDI'
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+
+      it('will render add prison address page', async () => {
+        await controller.addPrisonAddressStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addPrisonAddress', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.addPrisonAddressStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addPrisonAddress', {
+          form: {
+            prisonId: 'MDI',
+          },
+          errors: [],
+        })
+      })
+    })
+
+    describe('addPrisonAddress', () => {
+      beforeEach(() => {
+        req.session.addPrisonAddressForm = {
+          prisonId: 'MDI',
+          addressline1: 'Bawtry Road',
+          addressline2: 'Hatfield Woodhouse',
+          addresstown: 'Doncaster',
+          addresscounty: 'South Yorkshire',
+          addresspostcode: 'DN7 6BW',
+          addresscountry: 'England',
+        }
+        req.body = {
+          ...req.session.addPrisonAddressForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will add prison address', async () => {
+        await controller.submitAddPrisonAddress(req, res)
+
+        expect(prisonRegisterService.addPrisonAddress).toHaveBeenCalledWith(
+            {username: "tom"}, 'MDI', {addressLine1: 'Bawtry Road', addressLine2: 'Hatfield Woodhouse', town: 'Doncaster', county: 'South Yorkshire', postcode: 'DN7 6BW', country: 'England'})
+      })
+      it('will render prison details page', async () => {
+        await controller.submitAddPrisonAddress(req, res)
+
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=UPDATED')
+      })
+    })
+
     describe('amendPrisonAddressStart', () => {
       beforeEach(() => {
         req.query.prisonId = 'MDI'

@@ -1,9 +1,8 @@
 import type { PrisonAddressForm } from 'prisonForms'
-import AmendPrisonAddressView from './amendPrisonAddressView'
+import AddPrisonAddressView from './addPrisonAddressView'
 
-describe('AmendPrisonAddressView', () => {
+describe('AddPrisonAddressView', () => {
   const form: PrisonAddressForm = {
-    id: '21',
     prisonId: 'MDI',
     addressline1: 'Bawtry Road',
     addressline2: 'Hatfield Woodhouse',
@@ -14,9 +13,8 @@ describe('AmendPrisonAddressView', () => {
   }
 
   it('will pass through the form', () => {
-    const view = new AmendPrisonAddressView(form, [])
+    const view = new AddPrisonAddressView(form, [])
     expect(view.renderArgs.form).toEqual({
-      id: '21',
       prisonId: 'MDI',
       addressline1: 'Bawtry Road',
       addressline2: 'Hatfield Woodhouse',
