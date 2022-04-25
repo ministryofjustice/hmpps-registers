@@ -10,7 +10,7 @@ import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import prisonAddressValidator from './prisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
-import AddPrisonAddressView from "./addPrisonAddressView";
+import AddPrisonAddressView from './addPrisonAddressView'
 
 function context(res: Response): Context {
   return {
@@ -149,17 +149,17 @@ export default class PrisonRegisterController {
   async submitAddPrisonAddress(req: Request, res: Response): Promise<void> {
     req.session.addPrisonAddressForm = { ...trimForm(req.body) }
     res.redirect(
-        await prisonAddressValidator(req.session.addPrisonAddressForm, req, form => {
-          const newAddress: UpdatePrisonAddress = {
-            addressLine1: form.addressline1,
-            addressLine2: form.addressline2,
-            town: form.addresstown,
-            county: form.addresscounty,
-            postcode: form.addresspostcode,
-            country: form.addresscountry,
-          }
-          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
-        })
+      await prisonAddressValidator(req.session.addPrisonAddressForm, req, form => {
+        const newAddress: UpdatePrisonAddress = {
+          addressLine1: form.addressline1,
+          addressLine2: form.addressline2,
+          town: form.addresstown,
+          county: form.addresscounty,
+          postcode: form.addresspostcode,
+          country: form.addresscountry,
+        }
+        return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
+      })
     )
   }
 
@@ -175,7 +175,12 @@ export default class PrisonRegisterController {
           postcode: form.addresspostcode,
           country: form.addresscountry,
         }
-        return this.prisonRegisterService.updatePrisonAddress(context(res), form.prisonId, form.id!, updatedAddress)
+        return this.prisonRegisterService.updatePrisonAddress(
+          context(res),
+          form.prisonId,
+          form.id as string,
+          updatedAddress
+        )
       })
     )
   }

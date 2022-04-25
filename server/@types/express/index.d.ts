@@ -1,5 +1,5 @@
 import type { AddNewCourtForm, AmendCourtDetailsForm, AmendCourtBuildingForm, AddCourtBuildingForm } from '../forms'
-import type { AmendPrisonDetailsForm, AmendPrisonAddressForm, AddPrisonAddressForm } from '../prisonRegisterForms';
+import type { AmendPrisonDetailsForm, AmendPrisonAddressForm, AddPrisonAddressForm } from '../prisonRegisterForms'
 
 export default {}
 

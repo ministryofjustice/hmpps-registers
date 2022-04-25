@@ -411,8 +411,14 @@ describe('Prison Register controller', () => {
       it('will add prison address', async () => {
         await controller.submitAddPrisonAddress(req, res)
 
-        expect(prisonRegisterService.addPrisonAddress).toHaveBeenCalledWith(
-            {username: "tom"}, 'MDI', {addressLine1: 'Bawtry Road', addressLine2: 'Hatfield Woodhouse', town: 'Doncaster', county: 'South Yorkshire', postcode: 'DN7 6BW', country: 'England'})
+        expect(prisonRegisterService.addPrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          addressLine1: 'Bawtry Road',
+          addressLine2: 'Hatfield Woodhouse',
+          town: 'Doncaster',
+          county: 'South Yorkshire',
+          postcode: 'DN7 6BW',
+          country: 'England',
+        })
       })
       it('will render prison details page', async () => {
         await controller.submitAddPrisonAddress(req, res)

@@ -85,11 +85,7 @@ export default class PrisonRegisterService {
     })
   }
 
-  async addPrisonAddress(
-      context: Context,
-      prisonId: string,
-      prisonAddress: UpdatePrisonAddress
-  ): Promise<void> {
+  async addPrisonAddress(context: Context, prisonId: string, prisonAddress: UpdatePrisonAddress): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Adding address to prison ${prisonId}`)
     await PrisonRegisterService.restClient(token).post({

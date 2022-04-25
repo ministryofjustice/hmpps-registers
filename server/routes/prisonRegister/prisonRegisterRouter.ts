@@ -25,10 +25,10 @@ export default function routes(router: Router, services: Services): Router {
     prisonRegisterController.submitAmendPrisonDetails(req, res)
   )
 
-  get('/prison-register/add-prison-address-start', (req, res) => prisonRegisterController.addPrisonAddressStart(req, res))
-  post('/prison-register/add-prison-address', (req, res) =>
-      prisonRegisterController.submitAddPrisonAddress(req, res)
+  get('/prison-register/add-prison-address-start', (req, res) =>
+    prisonRegisterController.addPrisonAddressStart(req, res)
   )
+  post('/prison-register/add-prison-address', (req, res) => prisonRegisterController.submitAddPrisonAddress(req, res))
 
   get('/prison-register/amend-prison-address-start', (req, res) =>
     prisonRegisterController.amendPrisonAddressStart(req, res)
