@@ -5,6 +5,7 @@ import { validate as validateSync } from '../../validation/validation'
 export default async function validate(
   form: PrisonAddressForm,
   req: Request,
+  errorUrl: string,
   updateService: (prisonAddressForm: PrisonAddressForm) => Promise<void>
 ): Promise<string> {
   const errors = validateSync(
@@ -31,7 +32,8 @@ export default async function validate(
 
   if (errors.length > 0) {
     req.flash('errors', errors)
-    return '/prison-register/amend-prison-address'
+    return errorUrl
+    // return '/prison-register/amend-prison-address'
   }
 
   await updateService(form)

@@ -400,6 +400,48 @@ describe('Prison Register controller', () => {
           addresspostcode: 'DN7 6BW',
           addresscountry: 'England',
         }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will render add prison address page', async () => {
+        await controller.addPrisonAddress(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addPrisonAddress', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        await controller.addPrisonAddress(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addPrisonAddress', {
+          form: {
+            prisonId: 'MDI',
+            addressline1: 'Bawtry Road',
+            addressline2: 'Hatfield Woodhouse',
+            addresstown: 'Doncaster',
+            addresscounty: 'South Yorkshire',
+            addresspostcode: 'DN7 6BW',
+            addresscountry: 'England',
+          },
+          errors: [],
+        })
+      })
+    })
+
+    describe('submitAddPrisonAddress', () => {
+      beforeEach(() => {
+        req.session.addPrisonAddressForm = {
+          prisonId: 'MDI',
+          addressline1: 'Bawtry Road',
+          addressline2: 'Hatfield Woodhouse',
+          addresstown: 'Doncaster',
+          addresscounty: 'South Yorkshire',
+          addresspostcode: 'DN7 6BW',
+          addresscountry: 'England',
+        }
         req.body = {
           ...req.session.addPrisonAddressForm,
         }
