@@ -59,5 +59,18 @@ context('Prison register - add address to existing prison', () => {
 
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
     })
+    it('will accept new address with minimal data', () => {
+      const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
+      prisonDetailsPage.addPrisonAddressLink('MDI').click()
+      const addPrisonAddressPage = AddPrisonAddressPage.verifyOnPage('MDI')
+
+      addPrisonAddressPage.addressTown().type('Doncaster')
+      addPrisonAddressPage.addressPostcode().type('DN7 6BB')
+      addPrisonAddressPage.addressCountry().check('England')
+
+      addPrisonAddressPage.saveButton().click()
+
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
+    })
   })
 })
