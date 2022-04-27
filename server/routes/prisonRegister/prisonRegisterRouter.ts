@@ -38,6 +38,14 @@ export default function routes(router: Router, services: Services): Router {
   post('/prison-register/amend-prison-address', (req, res) =>
     prisonRegisterController.submitAmendPrisonAddress(req, res)
   )
+
+  get('/prison-register/delete-prison-address-start', (req, res) =>
+    prisonRegisterController.deletePrisonAddressStart(req, res)
+  )
+  post('/prison-register/delete-prison-address', (req, res) =>
+    prisonRegisterController.submitDeletePrisonAddress(req, res)
+  )
+
   post('/prison-register/toggle-prison-active', (req, res) => prisonRegisterController.togglePrisonActive(req, res))
 
   return router

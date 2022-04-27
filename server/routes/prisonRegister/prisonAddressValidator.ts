@@ -33,7 +33,6 @@ export default async function validate(
   if (errors.length > 0) {
     req.flash('errors', errors)
     return errorUrl
-    // return '/prison-register/amend-prison-address'
   }
 
   await updateService(form)

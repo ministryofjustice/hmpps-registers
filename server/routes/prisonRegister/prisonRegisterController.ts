@@ -146,6 +146,25 @@ export default class PrisonRegisterController {
     res.render('pages/prison-register/amendPrisonAddress', view.renderArgs)
   }
 
+  async deletePrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
+
+    const prisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+
+    req.session.amendPrisonAddressForm = {
+      id: addressId,
+      prisonId,
+      addressline1: prisonAddress.addressLine1,
+      addressline2: prisonAddress.addressLine2,
+      addresstown: prisonAddress.town,
+      addresscounty: prisonAddress.county,
+      addresspostcode: prisonAddress.postcode,
+      addresscountry: prisonAddress.country,
+    }
+    const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm)
+    res.render('pages/prison-register/deletePrisonAddress', view.renderArgs)
+  }
+
   async amendPrisonAddress(req: Request, res: Response): Promise<void> {
     const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm, req.flash('errors'))
 
@@ -199,6 +218,11 @@ export default class PrisonRegisterController {
         }
       )
     )
+  }
+
+  async submitDeletePrisonAddress(req: Request, res: Response): Promise<void> {
+    await this.prisonRegisterService.deletePrisonAddress(context(res), req.body.prisonId, req.body.id)
+    res.redirect(`/prison-register/details?id=${req.body.prisonId}&action=UPDATED`)
   }
 
   async togglePrisonActive(req: Request, res: Response): Promise<void> {
