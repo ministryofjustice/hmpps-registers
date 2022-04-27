@@ -5,8 +5,8 @@ declare module 'prisonForms' {
     gender: string[]
     prisonTypes: string[]
   }
-  export interface AmendPrisonAddressForm {
-    id: string
+  export interface PrisonAddressForm {
+    id?: string
     prisonId: string
     addressline1?: string
     addressline2?: string

@@ -1,11 +1,12 @@
 import { Request } from 'express'
-import type { AmendPrisonAddressForm } from 'prisonForms'
+import type { PrisonAddressForm } from 'prisonForms'
 import { validate as validateSync } from '../../validation/validation'
 
 export default async function validate(
-  form: AmendPrisonAddressForm,
+  form: PrisonAddressForm,
   req: Request,
-  updateService: (prisonAddressForm: AmendPrisonAddressForm) => Promise<void>
+  errorUrl: string,
+  updateService: (prisonAddressForm: PrisonAddressForm) => Promise<void>
 ): Promise<string> {
   const errors = validateSync(
     form,
@@ -31,7 +32,8 @@ export default async function validate(
 
   if (errors.length > 0) {
     req.flash('errors', errors)
-    return '/prison-register/amend-prison-address'
+    return errorUrl
+    // return '/prison-register/amend-prison-address'
   }
 
   await updateService(form)

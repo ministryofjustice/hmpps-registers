@@ -7,9 +7,10 @@ import ControllerHelper from '../utils/controllerHelper'
 import AmendPrisonDetailsView, { MALE, FEMALE } from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
-import amendPrisonAddressValidator from './amendPrisonAddressValidator'
+import prisonAddressValidator from './prisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
+import AddPrisonAddressView from './addPrisonAddressView'
 
 function context(res: Response): Context {
   return {
@@ -107,6 +108,24 @@ export default class PrisonRegisterController {
     )
   }
 
+  async addPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId } = req.query as { prisonId: string }
+
+    req.session.addPrisonAddressForm = {
+      prisonId,
+    }
+
+    const view = new AddPrisonAddressView(req.session.addPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/addPrisonAddress', view.renderArgs)
+  }
+
+  async addPrisonAddress(req: Request, res: Response): Promise<void> {
+    const view = new AmendPrisonAddressView(req.session.addPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/addPrisonAddress', view.renderArgs)
+  }
+
   async amendPrisonAddressStart(req: Request, res: Response): Promise<void> {
     const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
 
@@ -133,20 +152,52 @@ export default class PrisonRegisterController {
     res.render('pages/prison-register/amendPrisonAddress', view.renderArgs)
   }
 
+  async submitAddPrisonAddress(req: Request, res: Response): Promise<void> {
+    req.session.addPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+      await prisonAddressValidator(
+        req.session.addPrisonAddressForm,
+        req,
+        '/prison-register/add-prison-address',
+        form => {
+          const newAddress: UpdatePrisonAddress = {
+            addressLine1: form.addressline1,
+            addressLine2: form.addressline2,
+            town: form.addresstown,
+            county: form.addresscounty,
+            postcode: form.addresspostcode,
+            country: form.addresscountry,
+          }
+          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
+        }
+      )
+    )
+  }
+
   async submitAmendPrisonAddress(req: Request, res: Response): Promise<void> {
     req.session.amendPrisonAddressForm = { ...trimForm(req.body) }
     res.redirect(
-      await amendPrisonAddressValidator(req.session.amendPrisonAddressForm, req, form => {
-        const updatedAddress: UpdatePrisonAddress = {
-          addressLine1: form.addressline1,
-          addressLine2: form.addressline2,
-          town: form.addresstown,
-          county: form.addresscounty,
-          postcode: form.addresspostcode,
-          country: form.addresscountry,
+      await prisonAddressValidator(
+        req.session.amendPrisonAddressForm,
+        req,
+        '/prison-register/amend-prison-address',
+        form => {
+          const updatedAddress: UpdatePrisonAddress = {
+            addressLine1: form.addressline1,
+            addressLine2: form.addressline2,
+            town: form.addresstown,
+            county: form.addresscounty,
+            postcode: form.addresspostcode,
+            country: form.addresscountry,
+          }
+          return this.prisonRegisterService.updatePrisonAddress(
+            context(res),
+            form.prisonId,
+            form.id as string,
+            updatedAddress
+          )
         }
-        return this.prisonRegisterService.updatePrisonAddress(context(res), form.prisonId, form.id, updatedAddress)
-      })
+      )
     )
   }
 
