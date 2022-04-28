@@ -389,6 +389,60 @@ describe('Prison Register controller', () => {
       })
     })
 
+    describe('deletePrisonAddressStart', () => {
+      beforeEach(() => {
+        req.query.prisonId = 'MDI'
+        req.query.addressId = '21'
+        res.locals.user = {
+          username: 'tom',
+        }
+        prisonRegisterService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
+      })
+
+      it('will render delete prison address page', async () => {
+        await controller.deletePrisonAddressStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/deletePrisonAddress', {
+          form: expect.objectContaining({
+            addresscountry: 'England',
+            addresscounty: 'South Yorkshire',
+            addressline1: 'Bawtry Road',
+            addressline2: 'Hatfield Woodhouse',
+            addresspostcode: 'DN7 6BW',
+            addresstown: 'Doncaster',
+            id: '21',
+            prisonId: 'MDI',
+          }),
+          errors: [],
+        })
+      })
+    })
+
+    describe('submitDeletePrisonAddress', () => {
+      beforeEach(() => {
+        req.body = {
+          id: '21',
+          prisonId: 'MDI',
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+
+      it('will delete prison address', async () => {
+        await controller.submitDeletePrisonAddress(req, res)
+
+        expect(prisonRegisterService.deletePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', '21')
+      })
+
+      it('will redirect to prison register details', async () => {
+        await controller.submitDeletePrisonAddress(req, res)
+
+        expect(res.redirect).toHaveBeenCalledWith(`/prison-register/details?id=${req.body.prisonId}&action=UPDATED`)
+      })
+    })
+
     describe('addPrisonAddress', () => {
       beforeEach(() => {
         req.session.addPrisonAddressForm = {
