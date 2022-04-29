@@ -11,6 +11,7 @@ const prisonDetails = {
   deactivatedConfirmationBlock: () => cy.get(`[data-qa=confirm-prison-deactivation]`),
   amendAddressDetailsLink: (addressId: string) => cy.get(`[data-qa=amend-address-details-link-${addressId}]`),
   addPrisonAddressLink: (prisonId: string) => cy.get(`[data-qa=add-prison-address-link-${prisonId}]`),
+  deletePrisonAddressLink: (addressId: string) => cy.get(`[data-qa=delete-address-details-link-${addressId}]`),
 }
 
 const verifyOnPage = (prisonName: string): typeof prisonDetails & Page => page(prisonName, prisonDetails)
