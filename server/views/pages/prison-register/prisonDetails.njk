@@ -70,6 +70,9 @@
 {% macro amendAddressUrl(prison, address) %}
   /prison-register/amend-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
 {% endmacro %}
+{% macro deleteAddressUrl(prison, address) %}
+  /prison-register/delete-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+{% endmacro %}
 
 {% macro confirmationPanel(message, attribute) %}
   <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
@@ -173,6 +176,12 @@
               text: "Change",
               visuallyHiddenText: "address details",
               attributes: { "data-qa": "amend-address-details-link-"+ address.id}
+            },
+            {
+              href: deleteAddressUrl(prisonDetails, address),
+              text: "Delete",
+              visuallyHiddenText: "address details",
+              attributes: { "data-qa": "delete-address-details-link-"+ address.id}
             }
           ]
         }

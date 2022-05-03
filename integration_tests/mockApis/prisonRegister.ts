@@ -91,6 +91,20 @@ const stubAddPrisonAddress = (): SuperAgentRequest =>
     },
   })
 
+const stubDeletePrisonAddress = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'DELETE',
+      urlPattern: `/prison-register/prison-maintenance/id/.*/address/.*`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+      },
+    },
+  })
+
 const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
   stubFor({
     request: {
@@ -113,6 +127,7 @@ export default {
   stubGetPrisonAddress,
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,
+  stubDeletePrisonAddress,
 }
 
 // Mock data

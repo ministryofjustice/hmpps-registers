@@ -85,6 +85,14 @@ export default class PrisonRegisterService {
     })
   }
 
+  async deletePrisonAddress(context: Context, prisonId: string, addressId: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Deleting prison address for prison ${prisonId} and address ${addressId}`)
+    await PrisonRegisterService.restClient(token).delete({
+      path: `/prison-maintenance/id/${prisonId}/address/${addressId}`,
+    })
+  }
+
   async addPrisonAddress(context: Context, prisonId: string, prisonAddress: UpdatePrisonAddress): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Adding address to prison ${prisonId}`)

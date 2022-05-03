@@ -249,4 +249,54 @@ describe('Prison Register service', () => {
       })
     })
   })
+
+  describe('addPrisonAddress', () => {
+    let newPrisonAddress: UpdatePrisonAddress
+    const prisonAddress = data.prisonAddress({})
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister
+        .post('/prison-maintenance/id/MDI/address', body => {
+          newPrisonAddress = body
+          return body
+        })
+        .reply(200, data.prison({}))
+    })
+    it('username will be used by client', async () => {
+      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+    it('will send add prison address', async () => {
+      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
+
+      expect(newPrisonAddress).toEqual(prisonAddress)
+    })
+    it('will not send blank address fields', async () => {
+      const addressWithBlanks: UpdatePrisonAddress = { ...prisonAddress, addressLine1: '', county: '  ' }
+      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', addressWithBlanks)
+
+      expect(newPrisonAddress).toEqual({
+        id: 21,
+        addressLine2: 'Hatfield Woodhouse',
+        town: 'Doncaster',
+        postcode: 'DN7 6BW',
+        country: 'England',
+      })
+    })
+  })
+
+  describe('deletePrisonAddress', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister.delete('/prison-maintenance/id/MDI/address/21').reply(200)
+    })
+    it('will delete prison address', async () => {
+      await prisonRegisterService.deletePrisonAddress({ username: 'tommy' }, 'MDI', '21')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+  })
 })
