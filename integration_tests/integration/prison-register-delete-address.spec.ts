@@ -4,7 +4,7 @@ import AllPrisons from '../pages/prison-register/allPrisons'
 import PrisonDetailsPage from '../pages/prison-register/prisonDetails'
 import DeletePrisonAddressPage from '../pages/prison-register/deletePrisonAddress'
 
-context('Prison register - add address to existing prison', () => {
+context('Prison register - delete prison address', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
