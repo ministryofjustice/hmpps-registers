@@ -35,6 +35,10 @@ export interface paths {
     /** Adds new prison information, role required is MAINTAIN_REF_DATA */
     post: operations['insertPrison']
   }
+  '/prison-maintenance/id/{prisonId}/address': {
+    /** Adds an additional Address to an existing Prison, role required is MAINTAIN_REF_DATA */
+    post: operations['addAddress']
+  }
   '/queue-admin/get-dlq-messages/{dlqName}': {
     get: operations['getDlqMessages']
   }
@@ -267,6 +271,17 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+      /** @description If this is a male prison */
+      male: boolean
+      /** @description If this is a female prison */
+      female: boolean
+      /**
+       * @description Set of types for this prison
+       * @example HMP
+       */
+      prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+      /** @description List of addresses for this prison */
+      addresses: components['schemas']['UpdateAddressDto'][]
     }
     DlqMessage: {
       body: { [key: string]: { [key: string]: unknown } }
@@ -569,6 +584,51 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['InsertPrisonDto']
+      }
+    }
+  }
+  /** Adds an additional Address to an existing Prison, role required is MAINTAIN_REF_DATA */
+  addAddress: {
+    parameters: {
+      path: {
+        prisonId: string
+      }
+    }
+    responses: {
+      /** New Address added to Prison */
+      200: {
+        content: {
+          'application/json': components['schemas']['AddressDto']
+        }
+      }
+      /** Bad Information request to update address */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Unauthorized to access this endpoint */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Incorrect permissions to add Prison address */
+      403: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Prison Id not found */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateAddressDto']
       }
     }
   }
