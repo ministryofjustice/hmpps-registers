@@ -1,0 +1,115 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+<!--suppress HtmlUnknownTarget -->
+{% set pageTitle = applicationName + " - Add Prison" %}
+{% macro line(text) %}
+  {% if text is defined and text.trim() != '' %}
+    <p> {{ text }} </p>
+  {% endif %}
+{% endmacro %}
+
+{% macro prisonname(id, name, gender, types, allTypes, typeDescription) %}
+  <p>
+    {{ id }}
+  </p>
+  <p>
+    {{ name }}
+  </p>
+  {% if gender|length %}
+
+  <p>
+    {% if 'male' in gender %}
+      Male prison
+    {% endif %}
+  </p>
+  <p>
+    {% if 'female' in gender %}
+      Female prison
+    {% endif %}
+  </p>
+  {% endif %}
+
+  {{ typeDescription }}
+{% endmacro %}
+
+{% macro renderAddress(line1, line2, town, county, postcode, country) %}
+  {{ line(line1) }}
+  {{ line(line2) }}
+  {{ line(town) }}
+  {{ line(county) }}
+  {{ line(postcode) }}
+  {{ line(country) }}
+{% endmacro %}
+
+{% block content %}
+
+  <main class="app-container govuk-body">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Add a new prison - check details</h1>
+      </div>
+      <div class="govuk-grid-column-full">
+        <form action="/prison-register/add-new-prison-finished" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {{ govukSummaryList({
+            rows: [
+
+
+              {
+                key: {
+                text: "Prison"
+              },
+                value: {
+                html: prisonname(form.id, form.name, gender, form.prisonTypes, types, typeDescription),
+                classes: "prison-details"
+              },
+                actions: {
+                items: [
+                  {
+                    href: "/prison-register/add-new-prison-details",
+                    text: "Change",
+                    visuallyHiddenText: "prison details",
+                    attributes: { "data-qa": "change-prison-details-link"}
+                  }
+                ]
+              }
+              },
+              {
+                key: {
+                text: "Address"
+              },
+                value: {
+                html: renderAddress( form.addressline1, form.addressline2, form.addresstown, form.addresscounty, form.addresspostcode, form.addresscountry),
+                classes: "address-details"
+              },
+                actions: {
+                items: [
+                  {
+                    href: "/prison-register/add-new-prison-address",
+                    text: "Change",
+                    visuallyHiddenText: "prison address",
+                    attributes: { "data-qa": "change-address-details-link"}
+                  }
+                ]
+              }
+              }
+            ]
+          }) }}
+
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Save and continue"
+            }) }}
+            <a class="govuk-link" href={{  backLink }}>Cancel</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}

@@ -3,7 +3,6 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
-import { HMP, IRC, STC, YOI } from './amendPrisonDetailsView'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -230,10 +229,10 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison", value: HMP },
-            { text: "Her Majesty's Youth Offender Institution", value: YOI },
-            { text: 'Secure Training Centre', value: STC },
-            { text: 'Immigration Removal Centre', value: IRC },
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
           ],
           errors: [],
         })
@@ -289,10 +288,10 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison", value: HMP },
-            { text: "Her Majesty's Youth Offender Institution", value: YOI },
-            { text: 'Secure Training Centre', value: STC },
-            { text: 'Immigration Removal Centre', value: IRC },
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
           ],
           errors: [],
         })
@@ -611,39 +610,6 @@ describe('Prison Register controller', () => {
             addresscountry: 'England',
           },
           errors: [],
-        })
-      })
-    })
-
-    describe('submitAmendPrisonAddress', () => {
-      beforeEach(() => {
-        req.session.amendPrisonAddressForm = {
-          prisonId: 'MDI',
-          id: 21,
-          addressline1: 'Bawtry Road',
-          addressline2: 'Hatfield Woodhouse',
-          addresstown: 'Doncaster',
-          addresscounty: 'South Yorkshire',
-          addresspostcode: 'DN7 6BW',
-          addresscountry: 'England',
-        }
-        req.body = {
-          ...req.session.amendPrisonAddressForm,
-        }
-
-        res.locals.user = {
-          username: 'tom',
-        }
-      })
-      it('will call service with valid form data', async () => {
-        await controller.submitAmendPrisonAddress(req, res)
-        expect(prisonRegisterService.updatePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', 21, {
-          addressLine1: 'Bawtry Road',
-          addressLine2: 'Hatfield Woodhouse',
-          town: 'Doncaster',
-          county: 'South Yorkshire',
-          postcode: 'DN7 6BW',
-          country: 'England',
         })
       })
     })

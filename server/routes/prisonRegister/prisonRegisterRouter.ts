@@ -17,6 +17,21 @@ export default function routes(router: Router, services: Services): Router {
   get('/prison-register', (req, res) => prisonRegisterController.showAllPrisons(req, res))
   get('/prison-register/details', (req, res) => prisonRegisterController.viewPrison(req, res))
 
+  get('/prison-register/add', (req, res) => prisonRegisterController.addNewPrisonStart(req, res))
+  get('/prison-register/add-new-prison-details', (req, res) => prisonRegisterController.addNewPrisonDetails(req, res))
+  post('/prison-register/add-new-prison-details', (req, res) =>
+    prisonRegisterController.submitNewPrisonDetails(req, res)
+  )
+  get('/prison-register/add-new-prison-address', (req, res) => prisonRegisterController.addNewPrisonAddress(req, res))
+  post('/prison-register/add-new-prison-address', (req, res) =>
+    prisonRegisterController.submitNewPrisonNewAddress(req, res)
+  )
+  get('/prison-register/add-new-prison-summary', (req, res) => prisonRegisterController.addNewPrisonSummary(req, res))
+  post('/prison-register/add-new-prison-finished', (req, res) =>
+    prisonRegisterController.submitNewPrisonSummary(req, res)
+  )
+  get('/prison-register/add-new-prison-finished', (req, res) => prisonRegisterController.addNewPrisonFinished(req, res))
+
   get('/prison-register/amend-prison-details-start', (req, res) =>
     prisonRegisterController.amendPrisonDetailsStart(req, res)
   )

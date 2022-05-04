@@ -11,6 +11,7 @@ const allPrisons = {
     types: () => column(rowNumber, 3),
   }),
   viewPrisonLink: (prisonId: string) => cy.get(`[href="/prison-register/details?id=${prisonId}"]`).first(),
+  addNewPrisonButton: () => cy.contains('Add a new prison'),
   mojFilter: () => cy.get('div.moj-filter'),
   showFilterButton: () => cy.contains('Show filter'),
   hideFilterButton: () => cy.contains('Hide filter'),

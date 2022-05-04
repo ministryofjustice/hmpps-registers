@@ -10,6 +10,10 @@ export type PrisonDetail = {
   types: TypeDetail[]
 }
 
+export function pageLinkMapper(): string {
+  return `/prison-register`
+}
+
 export type AddressDetail = {
   id: number
   line1?: string
