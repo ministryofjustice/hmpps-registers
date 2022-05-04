@@ -245,8 +245,6 @@ export default class PrisonRegisterController {
 
   async submitAmendPrisonAddress(req: Request, res: Response): Promise<void> {
     req.session.amendPrisonAddressForm = { ...trimForm(req.body) }
-
-    req.session.amendPrisonAddressForm = req.body.prisonId
     res.redirect(
       await prisonAddressValidator(
         req.session.amendPrisonAddressForm,
