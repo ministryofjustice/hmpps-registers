@@ -26,6 +26,7 @@ export default {
     active = true,
     male = true,
     female = true,
+    contracted = false,
     addresses = [],
     types = [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
   }: Partial<Prison>): Prison =>
@@ -35,6 +36,7 @@ export default {
       active,
       male,
       female,
+      contracted,
       addresses,
       types,
     } as Prison),

@@ -5,7 +5,7 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female, types) %}
+{% macro prisonname(id, name, active, male, female, contracted, types) %}
   <p>
     {{ id }}
   </p>
@@ -27,6 +27,11 @@
   <p>
     {% if female %}
       Female prison
+    {% endif %}
+  </p>
+  <p>
+    {% if contracted %}
+      Contracted
     {% endif %}
   </p>
 
@@ -135,7 +140,7 @@
         text: "Prison"
       },
         value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.types),
+        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.types),
         classes: "prison-details"
       },
         actions: {

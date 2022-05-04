@@ -6,6 +6,7 @@ export type PrisonDetail = {
   active: boolean
   male?: boolean
   female?: boolean
+  contracted?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
 }
@@ -41,6 +42,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     active: prison.active,
     male: prison.male,
     female: prison.female,
+    contracted: prison.contracted,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
   }
