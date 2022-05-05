@@ -613,5 +613,38 @@ describe('Prison Register controller', () => {
         })
       })
     })
+
+    describe('submitAmendPrisonAddress', () => {
+      beforeEach(() => {
+        req.session.amendPrisonAddressForm = {
+          prisonId: 'MDI',
+          id: 21,
+          addressline1: 'Bawtry Road',
+          addressline2: 'Hatfield Woodhouse',
+          addresstown: 'Doncaster',
+          addresscounty: 'South Yorkshire',
+          addresspostcode: 'DN7 6BW',
+          addresscountry: 'England',
+        }
+        req.body = {
+          ...req.session.amendPrisonAddressForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will call service with valid form data', async () => {
+        await controller.submitAmendPrisonAddress(req, res)
+        expect(prisonRegisterService.updatePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', 21, {
+          addressLine1: 'Bawtry Road',
+          addressLine2: 'Hatfield Woodhouse',
+          town: 'Doncaster',
+          county: 'South Yorkshire',
+          postcode: 'DN7 6BW',
+          country: 'England',
+        })
+      })
+    })
   })
 })
