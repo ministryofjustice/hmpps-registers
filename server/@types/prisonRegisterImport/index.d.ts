@@ -275,6 +275,17 @@ export interface components {
       prisonName: string
       /** @description Whether the prison is still active */
       active: boolean
+      /** @description If this is a male prison */
+      male: boolean
+      /** @description If this is a female prison */
+      female: boolean
+      /**
+       * @description Set of types for this prison
+       * @example HMP
+       */
+      prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+      /** @description List of addresses for this prison */
+      addresses: components['schemas']['UpdateAddressDto'][]
     }
     DlqMessage: {
       body: { [key: string]: { [key: string]: unknown } }

@@ -1,7 +1,6 @@
 import express from 'express'
 
 import addRequestId from 'express-request-id'
-import csurf from 'csurf'
 import createError from 'http-errors'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
@@ -25,7 +24,6 @@ import setUpWebSecurity from './middleware/setUpWebSecurity'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
-const testMode = process.env.NODE_ENV === 'test'
 const RedisStore = connectRedis(session)
 
 export default function createApp(
@@ -85,16 +83,6 @@ export default function createApp(
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'HMPPS Registers'
-
-  app.use((req, res, next) => {
-    res.locals.user = req.user
-    next()
-  })
-
-  // CSRF protection
-  if (!testMode) {
-    app.use(csurf())
-  }
 
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.

@@ -1,5 +1,10 @@
 import type { AddNewCourtForm, AmendCourtDetailsForm, AmendCourtBuildingForm, AddCourtBuildingForm } from '../forms'
-import type { AmendPrisonDetailsForm, AmendPrisonAddressForm, AddPrisonAddressForm } from '../prisonRegisterForms'
+import type {
+  AddNewPrisonForm,
+  AmendPrisonDetailsForm,
+  AmendPrisonAddressForm,
+  AddPrisonAddressForm,
+} from '../prisonRegisterForms'
 
 export default {}
 
@@ -14,9 +19,11 @@ declare module 'express-session' {
     addCourtBuildingForm: AddCourtBuildingForm
     amendCourtBuildingContactsForm: AmendCourtBuildingContactsForm
     courtListPageLink: string
+    addNewPrisonForm: AddNewPrisonForm
     amendPrisonDetailsForm: AmendPrisonDetailsForm
     amendPrisonAddressForm: AmendPrisonAddressForm
     addPrisonAddressForm: AddPrisonAddressForm
+    prisonListPageLink: string
   }
 }
 

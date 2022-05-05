@@ -1,0 +1,124 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = applicationName + " - Add Prison" %}
+
+{% block content %}
+
+  <!--suppress HtmlUnknownTarget -->
+  <main class="app-container govuk-body">
+    {% if errors.length > 0 %}
+      {{ govukErrorSummary({
+        titleText: 'There is a problem',
+        errorList: errors,
+        attributes: { 'data-qa-errors': true }
+      }) }}
+    {% endif %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Add a new prison - address details</h1>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <form action="/prison-register/add-new-prison-address" method="post" novalidate>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {% call govukFieldset({
+          legend: {
+            text: "What is the address for new prison main address?",
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+
+            {{ govukDetails({
+              summaryText: "What should I do if this prison has multiple address at different addresses?",
+              text: "Many services are only interested in the main address for a prison and they would typically only
+               show their users the prison and main address. However, where the physical address is significant,
+                for instance the location where a prisoner needs to be sent to, then multiple address should be
+                entered. Adding additional address can be done after you have finished creating this prison,
+                so for now just enter the main builiding address."
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: 'Address <span class="govuk-visually-hidden">Street line 1 of 2</span>'
+              },
+              id: "addressline1",
+              name: "addressline1",
+              value: form.addressline1,
+              errorMessage: errors | findError('addressline1')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
+              },
+              id: "addressline2",
+              name: "addressline2",
+              value: form.addressline2,
+              errorMessage: errors | findError('addressline2')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Town or city"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresstown",
+              name: "addresstown",
+              value: form.addresstown,
+              errorMessage: errors | findError('addresstown')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "County"
+              },
+              classes: "govuk-!-width-two-thirds",
+              id: "addresscounty",
+              name: "addresscounty",
+              value: form.addresscounty,
+              errorMessage: errors | findError('addresscounty')
+            }) }}
+
+            {{ govukInput({
+              label: {
+                text: "Postcode"
+              },
+              classes: "govuk-input--width-10",
+              id: "addresspostcode",
+              name: "addresspostcode",
+              value: form.addresspostcode,
+              errorMessage: errors | findError('addresspostcode')
+            }) }}
+
+            {{ govukRadios({
+              idPrefix: "addresscountry",
+              name: "addresscountry",
+              errorMessage: errors | findError('addresscountry'),
+              fieldset: {
+                legend: {
+                  text: "Country"
+                }
+              },
+              items: ["England", "Northern Ireland", "Scotland", "Wales" ] | toSimpleSelect(form.addresscountry)
+            }) }}
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Continue"
+            }) }}
+            <a class="govuk-link" href={{ backLink }}>Cancel</a>
+          </div>
+        {% endcall %}
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}

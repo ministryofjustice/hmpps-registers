@@ -3,12 +3,19 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-import { Prison, UpdatePrison, PrisonAddress, UpdatePrisonAddress } from '../@types/prisonRegister'
+import { Prison, UpdatePrison, PrisonAddress, UpdatePrisonAddress, InsertPrison } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 export interface Context {
   username?: string
 }
+
+export interface AddUpdateResponse {
+  success: boolean
+  errorMessage?: string
+}
+
+type ServerError = { status: number; error: string; message: string }
 
 export default class PrisonRegisterService {
   constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
@@ -29,8 +36,15 @@ export default class PrisonRegisterService {
   async getPrison(context: Context, prisonId: string): Promise<Prison> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for prison ${prisonId}`)
-    return PrisonRegisterService.restClient(token).get<Prison>({
+    return PrisonRegisterService.restClient(token).get<Prison>({ path: `/prisons/id/${prisonId}` })
+  }
+
+  async findPrison(context: Context, prisonId: string): Promise<Prison | undefined> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`finding details for prison ${prisonId}`)
+    return PrisonRegisterService.restClient(token).get<Prison | undefined>({
       path: `/prisons/id/${prisonId}`,
+      additionalStatusChecker: status => status === 404,
     })
   }
 
@@ -40,6 +54,23 @@ export default class PrisonRegisterService {
     return PrisonRegisterService.restClient(token).get<PrisonAddress>({
       path: `/prisons/id/${prisonId}/address/${addressId}`,
     })
+  }
+
+  async addPrison(context: Context, insertPrison: InsertPrison): Promise<AddUpdateResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Creating prison ${insertPrison.prisonId}`)
+    const prisonOrError = await PrisonRegisterService.restClient(token).post<Prison & ServerError>({
+      path: `/prison-maintenance`,
+      data: insertPrison,
+    })
+    if (prisonOrError.error) {
+      logger.error(`failed to create prison ${insertPrison.prisonId}`)
+      return {
+        success: false,
+        errorMessage: prisonOrError.message,
+      }
+    }
+    return { success: true }
   }
 
   async updatePrisonDetails(

@@ -1,5 +1,5 @@
 import type { AmendPrisonDetailsForm } from 'prisonForms'
-import AmendPrisonDetailsView, { HMP, IRC, STC, YOI } from './amendPrisonDetailsView'
+import AmendPrisonDetailsView from './amendPrisonDetailsView'
 
 describe('AmendPrisonDetailsView', () => {
   const form: AmendPrisonDetailsForm = {
@@ -27,10 +27,10 @@ describe('AmendPrisonDetailsView', () => {
   it('will pass through the prison type value items', () => {
     const view = new AmendPrisonDetailsView(form, [])
     expect(view.renderArgs.prisonTypesValues).toEqual([
-      { text: "Her Majesty's Prison", value: HMP },
-      { text: "Her Majesty's Youth Offender Institution", value: YOI },
-      { text: 'Secure Training Centre', value: STC },
-      { text: 'Immigration Removal Centre', value: IRC },
+      { text: "Her Majesty's Prison", value: 'HMP' },
+      { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+      { text: 'Secure Training Centre', value: 'STC' },
+      { text: 'Immigration Removal Centre', value: 'IRC' },
     ])
   })
 })

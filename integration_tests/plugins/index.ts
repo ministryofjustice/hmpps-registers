@@ -34,6 +34,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubPrisonRegisterPing: prisonRegister.stubPing,
     stubGetPrisonsWithFilter: prisonRegister.stubGetPrisonsWithFilter,
     stubGetPrison: prisonRegister.stubGetPrison,
+    stubAddPrison: prisonRegister.stubAddPrison,
     stubUpdatePrison: prisonRegister.stubUpdatePrison,
     stubGetPrisonAddress: prisonRegister.stubGetPrisonAddress,
     stubUpdatePrisonAddress: prisonRegister.stubUpdatePrisonAddress,

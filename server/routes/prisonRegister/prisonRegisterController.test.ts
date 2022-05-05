@@ -3,7 +3,6 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
-import { HMP, IRC, STC, YOI } from './amendPrisonDetailsView'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -230,10 +229,10 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison", value: HMP },
-            { text: "Her Majesty's Youth Offender Institution", value: YOI },
-            { text: 'Secure Training Centre', value: STC },
-            { text: 'Immigration Removal Centre', value: IRC },
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
           ],
           errors: [],
         })
@@ -289,10 +288,10 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison", value: HMP },
-            { text: "Her Majesty's Youth Offender Institution", value: YOI },
-            { text: 'Secure Training Centre', value: STC },
-            { text: 'Immigration Removal Centre', value: IRC },
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
           ],
           errors: [],
         })

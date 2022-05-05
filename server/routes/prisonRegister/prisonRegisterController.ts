@@ -4,13 +4,19 @@ import { AllPrisonsFilter } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import ControllerHelper from '../utils/controllerHelper'
-import AmendPrisonDetailsView, { MALE, FEMALE } from './amendPrisonDetailsView'
+import AmendPrisonDetailsView from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import prisonAddressValidator from './prisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
-import { UpdatePrisonAddress } from '../../@types/prisonRegister'
+import { InsertPrison, UpdatePrisonAddress } from '../../@types/prisonRegister'
 import AddPrisonAddressView from './addPrisonAddressView'
+import AddNewPrisonDetailsView from './addNewPrisonDetailsView'
+import addNewPrisonDetailsValidator from './addNewPrisonDetailsValidator'
+import AddNewPrisonSummaryView from './addNewPrisonSummaryView'
+import addNewPrisonSummaryValidator from './addNewPrisonSummaryValidator'
+import addNewPrisonAddressValidator from './addNewPrisonAddressValidator'
+import AddNewPrisonAddressView from './addNewPrisonAddressView'
 
 function context(res: Response): Context {
   return {
@@ -23,6 +29,7 @@ export default class PrisonRegisterController {
 
   async showAllPrisons(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
+    req.session.prisonListPageLink = '/prison-register'
     const prisons = await this.prisonRegisterService.getPrisonsWithFilter(context(res), filter)
     const view = new AllPrisonsView(prisons, filter)
     res.render('pages/prison-register/allPrisons', view.renderArgs)
@@ -53,14 +60,76 @@ export default class PrisonRegisterController {
     return stringArray?.length === 2
   }
 
+  addNewPrisonStart(req: Request, res: Response): void {
+    req.session.addNewPrisonForm = {}
+    res.redirect(`/prison-register/add-new-prison-details`)
+  }
+
+  async addNewPrisonDetails(req: Request, res: Response): Promise<void> {
+    const view = new AddNewPrisonDetailsView(
+      req.session.addNewPrisonForm,
+      req.session.prisonListPageLink as string,
+      req.flash('errors')
+    )
+
+    res.render('pages/prison-register/addNewPrisonDetails', view.renderArgs)
+  }
+
+  async submitNewPrisonDetails(req: Request, res: Response): Promise<void> {
+    req.session.addNewPrisonForm = { ...req.session.addNewPrisonForm, ...trimForm(req.body) }
+
+    res.redirect(
+      await addNewPrisonDetailsValidator(req.session.addNewPrisonForm, req, (id: string) =>
+        this.prisonRegisterService.findPrison(context(res), id)
+      )
+    )
+  }
+
+  addNewPrisonAddress(req: Request, res: Response): void {
+    const view = new AddNewPrisonAddressView(
+      req.session.addNewPrisonForm,
+      req.session.prisonListPageLink as string,
+      req.flash('errors')
+    )
+
+    res.render('pages/prison-register/addNewPrisonAddress', view.renderArgs)
+  }
+
+  submitNewPrisonNewAddress(req: Request, res: Response): void {
+    req.session.addNewPrisonForm = { ...req.session.addNewPrisonForm, ...trimForm(req.body) }
+
+    res.redirect(addNewPrisonAddressValidator(req.session.addNewPrisonForm, req))
+  }
+
+  async addNewPrisonSummary(req: Request, res: Response): Promise<void> {
+    req.session.addNewPrisonForm = { ...req.session.addNewPrisonForm, completed: true }
+
+    const view = new AddNewPrisonSummaryView(req.session.addNewPrisonForm, req.session.prisonListPageLink as string)
+
+    res.render('pages/prison-register/addNewPrisonSummary', view.renderArgs)
+  }
+
+  async submitNewPrisonSummary(req: Request, res: Response): Promise<void> {
+    res.redirect(
+      await addNewPrisonSummaryValidator(req.session.addNewPrisonForm, req, (prison: InsertPrison) =>
+        this.prisonRegisterService.addPrison(context(res), prison)
+      )
+    )
+  }
+
+  addNewPrisonFinished(req: Request, res: Response): void {
+    const { id, name } = req.session.addNewPrisonForm
+    res.render('pages/prison-register/addNewPrisonFinished', { id, name, backLink: req.session.prisonListPageLink })
+  }
+
   async amendPrisonDetailsStart(req: Request, res: Response): Promise<void> {
     const { prisonId } = req.query as { prisonId: string }
 
     const [prison] = await Promise.all([this.prisonRegisterService.getPrison(context(res), prisonId)])
 
     const gender = []
-    if (prison.male) gender.push(MALE)
-    if (prison.female) gender.push(FEMALE)
+    if (prison.male) gender.push('male')
+    if (prison.female) gender.push('female')
 
     req.session.amendPrisonDetailsForm = {
       id: prison.prisonId,
@@ -99,8 +168,8 @@ export default class PrisonRegisterController {
             context(res),
             prisonId,
             name,
-            genderArray.includes(MALE),
-            genderArray.includes(FEMALE),
+            genderArray.includes('male'),
+            genderArray.includes('female'),
             prisonTypesArray
           )
         }

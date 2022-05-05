@@ -61,6 +61,20 @@ const stubGetPrisonAddress = (): SuperAgentRequest =>
     },
   })
 
+const stubAddPrison = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/prison-register/prison-maintenance`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: data.prison({}),
+    },
+  })
 const stubUpdatePrisonAddress = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -122,6 +136,7 @@ const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
+  stubAddPrison,
   stubGetPrison,
   stubUpdatePrison,
   stubGetPrisonAddress,

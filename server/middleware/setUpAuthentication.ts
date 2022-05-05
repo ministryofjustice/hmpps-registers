@@ -43,5 +43,10 @@ export default function setUpAuth(): Router {
     res.redirect(`${config.apis.hmppsAuth.externalUrl}`)
   })
 
+  router.use((req, res, next) => {
+    res.locals.user = req.user
+    next()
+  })
+
   return router
 }
