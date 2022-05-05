@@ -11,6 +11,7 @@ prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([
     active: true,
     male: true,
     female: true,
+    contracted: false,
     addresses: [],
     types: [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
   },
@@ -20,6 +21,7 @@ prisonRegisterService.getPrison.mockResolvedValue({
   prisonName: 'Albany (HMP)',
   active: true,
   male: true,
+  contracted: false,
   female: true,
   addresses: [
     {

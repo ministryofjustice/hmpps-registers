@@ -30,6 +30,8 @@ export interface paths {
   '/prison-maintenance/id/{prisonId}/address/{addressId}': {
     /** Updates address information, role required is MAINTAIN_REF_DATA */
     put: operations['updateAddress']
+    /** Deletes address information for a Prison, role required is MAINTAIN_REF_DATA */
+    delete: operations['deleteAddress']
   }
   '/prison-maintenance': {
     /** Adds new prison information, role required is MAINTAIN_REF_DATA */
@@ -205,6 +207,8 @@ export interface components {
       male: boolean
       /** @description Whether the prison has female prisoners */
       female: boolean
+      /** @description Whether the prison is contracted */
+      contracted: boolean
       /** @description List of types for this prison */
       types: components['schemas']['PrisonTypeDto'][]
       /** @description List of address for this prison */
@@ -550,6 +554,37 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['UpdateAddressDto']
+      }
+    }
+  }
+  /** Deletes address information for a Prison, role required is MAINTAIN_REF_DATA */
+  deleteAddress: {
+    parameters: {
+      path: {
+        prisonId: string
+        addressId: number
+      }
+    }
+    responses: {
+      /** Address Information Deleted */
+      200: unknown
+      /** Unauthorized to access this endpoint */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Incorrect permissions to make address update */
+      403: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** Address Id not found */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
       }
     }
   }
