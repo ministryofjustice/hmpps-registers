@@ -15,7 +15,6 @@ context('Prison register - Add new prison', () => {
     cy.task('stubGetPrison', albanyPrison)
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubAddPrison')
-    // cy.task('stubAddPrisonAddress')
     cy.login()
   })
 
