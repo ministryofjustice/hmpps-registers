@@ -7,12 +7,14 @@ describe('AmendPrisonDetailsView', () => {
     name: 'Moorland Prison',
     gender: ['female'],
     prisonTypes: ['HMP', 'YOI'],
+    contracted: 'yes',
   }
   it('will pass through the form', () => {
     const view = new AmendPrisonDetailsView(form, [])
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
       name: 'Moorland Prison',
+      contracted: 'yes',
       gender: ['female'],
       prisonTypes: ['HMP', 'YOI'],
     })

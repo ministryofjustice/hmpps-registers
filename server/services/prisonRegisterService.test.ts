@@ -107,7 +107,15 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updatePrisonDetails({ username: 'tommy' }, 'MDI', 'HMP Moorland', true, false, [])
+      await prisonRegisterService.updatePrisonDetails(
+        { username: 'tommy' },
+        'MDI',
+        'HMP Moorland',
+        'yes',
+        true,
+        false,
+        []
+      )
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -116,6 +124,7 @@ describe('Prison Register service', () => {
         { username: 'tommy' },
         'MDI',
         'HMP Moorland Updated',
+        'yes',
         true,
         false,
         ['HMP']

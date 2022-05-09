@@ -7,7 +7,8 @@ const prisonDetails = {
   name: () => cy.get('#name'),
   maleCheckbox: () => cy.get('input[value="male"]'),
   femaleCheckbox: () => cy.get('input[value="female"]'),
-
+  contractedRadioYes: () => cy.get('input[value="yes"]'),
+  contractedRadioNo: () => cy.get('input[value="no"]'),
   hmpCheckbox: () => cy.get('input[value="HMP"]'),
   yoiCheckbox: () => cy.get('input[value="YOI"]'),
   stcCheckbox: () => cy.get('input[value="STC"]'),

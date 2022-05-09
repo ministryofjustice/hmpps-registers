@@ -5,6 +5,7 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% set pageTitle = applicationName + " - Amend Prison" %}
 
@@ -80,6 +81,34 @@
                             },
                             items: prisonTypesValues | setChecked(form.prisonType),
                             errorMessage: errors | findError('prisonType')
+                        }) }}
+
+                        {{ govukRadios({
+                          classes: "govuk-radios--inline",
+                          idPrefix: "contracted",
+                          name: "contracted",
+                          fieldset: {
+                            legend: {
+                              text: "Is this Prison contracted?",
+                              isPageHeading: true,
+                              classes: "govuk-fieldset__legend--l"
+                            }
+                          },
+                          hint: {
+                            text: "A contracted Prison is one run by a third party company, under contract to the Ministry of Justice"
+                          },
+                          items: [
+                            {
+                              value: "yes",
+                              text: "Yes",
+                              checked: form.contracted === 'yes'
+                            },
+                            {
+                              value: "no",
+                              text: "No",
+                              checked: form.contracted === 'no'
+                            }
+                          ]
                         }) }}
 
                         <div class="govuk-button-group">
