@@ -14,6 +14,7 @@ describe('amendPrisonDetailsValidator', () => {
     name: 'Moorland Prison',
     gender: ['male'],
     prisonTypes: ['HMP'],
+    contracted: 'yes',
   }
 
   describe('validate', () => {

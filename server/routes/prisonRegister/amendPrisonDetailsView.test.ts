@@ -7,6 +7,7 @@ describe('AmendPrisonDetailsView', () => {
     name: 'Moorland Prison',
     gender: ['female'],
     prisonTypes: ['HMP', 'YOI'],
+    contracted: 'yes',
   }
   it('will pass through the form', () => {
     const view = new AmendPrisonDetailsView(form, [])

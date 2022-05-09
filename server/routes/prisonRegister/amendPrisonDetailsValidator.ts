@@ -5,7 +5,13 @@ import { validate as validateSync } from '../../validation/validation'
 export default async function validate(
   form: AmendPrisonDetailsForm,
   req: Request,
-  updateService: (id: string, name: string, gender?: string[], prisonTypes?: string[]) => Promise<void>
+  updateService: (
+    id: string,
+    name: string,
+    contracted: string,
+    gender?: string[],
+    prisonTypes?: string[]
+  ) => Promise<void>
 ): Promise<string> {
   const errors = validateSync(
     form,
@@ -23,7 +29,7 @@ export default async function validate(
     return `/prison-register/amend-prison-details`
   }
 
-  await updateService(form.id, form.name, form.gender, form.prisonTypes)
+  await updateService(form.id, form.name, form.contracted, form.gender, form.prisonTypes)
 
   return `/prison-register/details?id=${form.id}&action=UPDATED`
 }
