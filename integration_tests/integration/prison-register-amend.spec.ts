@@ -67,6 +67,17 @@ context('Prison register - amend existing prison', () => {
 
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
     })
+    it('will return to prison details page with success message after saving contracted status', () => {
+      const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
+      prisonDetailsPage.amendPrisonDetailsLink().click()
+      const amendPrisonDetailsPage = AmendPrisonDetailsPage.verifyOnPage('MDI')
+      amendPrisonDetailsPage.contractedRadioYes().should('be.checked')
+      amendPrisonDetailsPage.contractedRadioNo().should('not.be.checked')
+      amendPrisonDetailsPage.contractedRadioNo().click()
+      amendPrisonDetailsPage.saveButton().click()
+
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).prisonUpdatedConfirmationBlock().should('exist')
+    })
     it('will return to prison details page with success message after saving prison types', () => {
       const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
       prisonDetailsPage.amendPrisonDetailsLink().click()
