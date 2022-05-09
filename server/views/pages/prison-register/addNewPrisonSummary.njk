@@ -18,20 +18,22 @@
     {{ name }}
   </p>
   {% if gender|length %}
-
-  <p>
-    {% if 'male' in gender %}
-      Male prison
-    {% endif %}
-  </p>
-  <p>
-    {% if 'female' in gender %}
-      Female prison
-    {% endif %}
-  </p>
+    <p>
+      {% if 'male' in gender %}
+        Male prison
+      {% endif %}
+    </p>
+    <p>
+      {% if 'female' in gender %}
+        Female prison
+      {% endif %}
+    </p>
   {% endif %}
 
-  {{ typeDescription }}
+  {% if typeDescription %}
+    Type(s): {{ typeDescription }}
+  {% endif %}
+
 {% endmacro %}
 
 {% macro renderAddress(line1, line2, town, county, postcode, country) %}

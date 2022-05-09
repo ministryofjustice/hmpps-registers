@@ -62,6 +62,7 @@ export default class PrisonRegisterService {
     const prisonOrError = await PrisonRegisterService.restClient(token).post<Prison & ServerError>({
       path: `/prison-maintenance`,
       data: insertPrison,
+      additionalStatusChecker: status => status === 400,
     })
     if (prisonOrError.error) {
       logger.error(`failed to create prison ${insertPrison.prisonId}`)
