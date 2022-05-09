@@ -14,6 +14,7 @@ describe('AmendPrisonDetailsView', () => {
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
       name: 'Moorland Prison',
+      contracted: 'yes',
       gender: ['female'],
       prisonTypes: ['HMP', 'YOI'],
     })

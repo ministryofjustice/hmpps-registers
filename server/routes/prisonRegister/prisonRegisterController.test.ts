@@ -218,6 +218,7 @@ describe('Prison Register controller', () => {
           form: {
             id: 'MDI',
             name: 'HMP Moorland',
+            contracted: 'no',
             gender: ['male'],
             prisonType: ['HMP'],
           },
@@ -302,6 +303,7 @@ describe('Prison Register controller', () => {
         req.session.amendPrisonDetailsForm = {
           name: 'HMP Moorland',
           id: 'MDI',
+          contracted: 'yes',
           gender: ['male'],
           prisonTypes: ['HMP'],
         }
@@ -319,6 +321,7 @@ describe('Prison Register controller', () => {
           { username: 'tom' },
           'MDI',
           'HMP Moorland',
+          'yes',
           true,
           false,
           ['HMP']
