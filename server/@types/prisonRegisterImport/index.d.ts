@@ -281,6 +281,8 @@ export interface components {
       male: boolean
       /** @description If this is a female prison */
       female: boolean
+      /** @description If this is a contracted prison */
+      contracted: boolean
       /**
        * @description Set of types for this prison
        * @example HMP

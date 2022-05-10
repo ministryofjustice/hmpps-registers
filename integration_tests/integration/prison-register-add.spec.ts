@@ -25,6 +25,7 @@ context('Prison register - Add new prison', () => {
       prisonDetails.name().type('Doncaster Prison')
       prisonDetails.prisonType('STC').click()
       prisonDetails.gender('female').click()
+      prisonDetails.contractedRadioYes().click()
       prisonDetails.continueButton().click()
     }
     const fillPrisonAddressPage = () => {
@@ -106,6 +107,7 @@ context('Prison register - Add new prison', () => {
         summaryPage.prisonDetails().contains('Doncaster Prison')
         summaryPage.prisonDetails().contains('Secure Training Centre')
         summaryPage.prisonDetails().contains('Female')
+        summaryPage.prisonDetails().contains('Contracted')
 
         summaryPage.changePrisonDetailsLink().click()
 

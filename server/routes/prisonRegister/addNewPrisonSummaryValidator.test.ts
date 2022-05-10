@@ -13,6 +13,7 @@ describe('addNewPrisonSummaryValidator', () => {
     id: 'MDI',
     name: 'Moorland Prison',
     gender: ['male'],
+    contracted: 'yes',
     prisonTypes: ['HMP'],
     addressline1: '',
     addressline2: '',
@@ -36,6 +37,7 @@ describe('addNewPrisonSummaryValidator', () => {
         prisonTypes: ['HMP'],
         male: true,
         female: false,
+        contracted: true,
         active: true,
         addresses: [
           {
