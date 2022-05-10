@@ -11,27 +11,29 @@
     </div>
 
     <div class="homepage-content">
-      <div class="govuk-width-container">
-        {% if registers.length %}
+        <div class="body-tiles">
+          <div class="govuk-width-container">
+            {% if registers.length %}
 
-        <ul class="govuk-grid-row card-group">
-          {% for register in registers %}
-            <li class="govuk-grid-column-one-third card-group__item">
-              {{ card({
-                "href": register.href,
-                "clickable": "true",
-                "heading": register.heading,
-                "description": register.description,
-                "id": register.id
-              }) }}
-            </li>
-          {% endfor %}
-        </ul>
-        {% else %}
-          <p data-qa=no-courts class="govuk-body">There are no registers you can view</p>
-        {% endif %}
+            <ul class="govuk-grid-row card-group">
+              {% for register in registers %}
+                <li class="govuk-grid-column-one-third card-group__item">
+                  {{ card({
+                    "href": register.href,
+                    "clickable": "true",
+                    "heading": register.heading,
+                    "description": register.description,
+                    "id": register.id
+                  }) }}
+                </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+              <p data-qa=no-courts class="govuk-body">There are no registers you can view</p>
+            {% endif %}
 
-      </div>
+          </div>
+        </div>
     </div>
   </main>
 
