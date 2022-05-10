@@ -21,6 +21,7 @@ describe('AddNewPrisonSummaryView', () => {
       name: 'Moorland Prison',
       gender: ['male'],
       prisonTypes: ['HMP', 'STC'],
+      contracted: 'yes',
       addresstown: 'Doncaster',
       addresspostcode: 'DN12 3AB',
       addresscountry: 'England',

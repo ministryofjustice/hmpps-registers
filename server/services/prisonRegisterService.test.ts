@@ -374,6 +374,7 @@ describe('Prison Register service', () => {
           active: true,
           female: false,
           male: true,
+          contracted: true,
           addresses: [
             {
               addressLine1: '1 High Street',
