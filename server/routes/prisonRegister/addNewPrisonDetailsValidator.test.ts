@@ -95,5 +95,11 @@ describe('addNewPrisonDetailsValidator', () => {
         { href: '#name', text: 'Enter a prison name between 2 and 80 characters' },
       ])
     })
+    it('contracted must not be a blank', async () => {
+      const form = { ...validForm, contracted: '' }
+      const nextPage = await validate(form, req, lookup)
+      expect(nextPage).toEqual('/prison-register/add-new-prison-details')
+      expect(req.flash).toBeCalledWith('errors', [{ href: '#contracted', text: 'State whether prison is contracted' }])
+    })
   })
 })
