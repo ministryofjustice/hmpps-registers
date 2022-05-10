@@ -10,7 +10,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro prisonname(id, name, gender, types, allTypes, typeDescription) %}
+{% macro prisonname(id, name, gender, contracted, types, allTypes, typeDescription) %}
   <p>
     {{ id }}
   </p>
@@ -27,6 +27,12 @@
       {% if 'female' in gender %}
         Female prison
       {% endif %}
+    </p>
+  {% endif %}
+
+  {% if 'yes' in contracted %}
+    <p>
+      Contracted
     </p>
   {% endif %}
 
@@ -66,7 +72,7 @@
                 text: "Prison"
               },
                 value: {
-                html: prisonname(form.id, form.name, gender, form.prisonTypes, types, typeDescription),
+                html: prisonname(form.id, form.name, gender, form.contracted, form.prisonTypes, types, typeDescription),
                 classes: "prison-details"
               },
                 actions: {
