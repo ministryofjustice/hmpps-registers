@@ -15,6 +15,7 @@ describe('addNewPrisonDetailsValidator', () => {
     id: 'MDI',
     name: 'Moorland Prison',
     gender: ['male'],
+    contracted: 'yes',
     prisonTypes: ['HMP'],
     addresstown: 'Doncaster',
     addresspostcode: 'DA1 1QA',

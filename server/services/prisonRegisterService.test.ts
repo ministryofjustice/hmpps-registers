@@ -269,6 +269,7 @@ describe('Prison Register service', () => {
         active: false,
         female: false,
         male: false,
+        contracted: true,
         prisonId: 'SHEF',
         prisonName: 'Sheffield Prison',
         prisonTypes: ['HMP'],
@@ -332,6 +333,7 @@ describe('Prison Register service', () => {
           active: true,
           female: false,
           male: true,
+          contracted: true,
           addresses: [
             {
               addressLine1: '1 High Street',
