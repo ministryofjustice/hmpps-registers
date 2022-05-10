@@ -116,6 +116,15 @@ describe('Prison Register controller', () => {
         { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] }
       )
     })
+    it('will set the list page link in the session', async () => {
+      const reqWithQueryParms = {
+        query: { active: 'true', textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] },
+        session: {},
+        flash: jest.fn(),
+      } as unknown as Request
+      await controller.showAllPrisons(reqWithQueryParms, res)
+      expect(reqWithQueryParms.session.prisonListPageLink).toEqual('/prison-register')
+    })
   })
 
   describe('viewPrison', () => {
@@ -166,6 +175,132 @@ describe('Prison Register controller', () => {
           ],
         }),
         action: 'NONE',
+      })
+    })
+  })
+
+  describe('togglePrisonActive', () => {
+    beforeEach(() => {
+      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+      controller = new PrisonRegisterController(prisonRegisterService)
+      req.body = {
+        id: 'MDI',
+        active: 'true',
+      }
+      res.locals.user = {
+        username: 'tom',
+      }
+    })
+    it('will update prison by id', async () => {
+      await controller.togglePrisonActive(req, res)
+
+      expect(prisonRegisterService.updateActivePrisonMarker).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', true)
+    })
+    it('will redirect back to prison details view with action', async () => {
+      await controller.togglePrisonActive(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=ACTIVATE-PRISON')
+    })
+    it('can deactivate prison', async () => {
+      req.body = {
+        id: 'MDI',
+        active: 'false',
+      }
+
+      await controller.togglePrisonActive(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=DEACTIVATE-PRISON')
+    })
+  })
+
+  describe('Add new prison flow', () => {
+    beforeEach(() => {
+      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+      controller = new PrisonRegisterController(prisonRegisterService)
+    })
+    describe('addNewPrisonStart', () => {
+      it('will clear any existing form', async () => {
+        req.session.addNewPrisonForm = {
+          id: 'MDI',
+        }
+
+        controller.addNewPrisonStart(req, res)
+
+        expect(req.session.addNewPrisonForm).toEqual({})
+      })
+    })
+    describe('addNewPrisonDetails', () => {
+      it('will render prison details page with prison types', async () => {
+        req.session.prisonListPageLink = '/prison-register'
+        controller.addNewPrisonStart(req, res)
+        await controller.addNewPrisonDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addNewPrisonDetails', {
+          form: {},
+          genderValues: [
+            { text: 'Male', value: 'male' },
+            { text: 'Female', value: 'female' },
+          ],
+          prisonTypesValues: [
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
+          ],
+          backLink: '/prison-register',
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        req.session.addNewPrisonForm = {
+          id: 'MDI',
+          type: 'HMP',
+        }
+        req.session.prisonListPageLink = '/prison-register'
+        await controller.addNewPrisonDetails(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addNewPrisonDetails', {
+          form: {
+            id: 'MDI',
+            type: 'HMP',
+          },
+          genderValues: [
+            { text: 'Male', value: 'male' },
+            { text: 'Female', value: 'female' },
+          ],
+          prisonTypesValues: [
+            { text: "Her Majesty's Prison", value: 'HMP' },
+            { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
+            { text: 'Secure Training Centre', value: 'STC' },
+            { text: 'Immigration Removal Centre', value: 'IRC' },
+          ],
+          backLink: '/prison-register',
+          errors: [],
+        })
+      })
+    })
+    describe('addNewPrisonSummary', () => {
+      it('will render summary with selected prison type description', async () => {
+        req.session.addNewPrisonForm = {
+          name: 'Moorland Prison',
+          prisonTypes: ['HMP'],
+          gender: ['male', 'female'],
+        }
+        req.session.prisonListPageLink = '/prison-register'
+
+        await controller.addNewPrisonSummary(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addNewPrisonSummary', {
+          form: {
+            name: 'Moorland Prison',
+            prisonTypes: ['HMP'],
+            gender: ['male', 'female'],
+            completed: true,
+          },
+          gender: ['male', 'female'],
+          typeDescription: "Her Majesty's Prison",
+          backLink: '/prison-register',
+        })
       })
     })
   })
@@ -326,40 +461,6 @@ describe('Prison Register controller', () => {
           false,
           ['HMP']
         )
-      })
-    })
-
-    describe('togglePrisonActive', () => {
-      beforeEach(() => {
-        prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-        controller = new PrisonRegisterController(prisonRegisterService)
-        req.body = {
-          id: 'MDI',
-          active: 'true',
-        }
-        res.locals.user = {
-          username: 'tom',
-        }
-      })
-      it('will update prison by id', async () => {
-        await controller.togglePrisonActive(req, res)
-
-        expect(prisonRegisterService.updateActivePrisonMarker).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', true)
-      })
-      it('will redirect back to prison details view with action', async () => {
-        await controller.togglePrisonActive(req, res)
-
-        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=ACTIVATE-PRISON')
-      })
-      it('can deactivate prison', async () => {
-        req.body = {
-          id: 'MDI',
-          active: 'false',
-        }
-
-        await controller.togglePrisonActive(req, res)
-
-        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=DEACTIVATE-PRISON')
       })
     })
 

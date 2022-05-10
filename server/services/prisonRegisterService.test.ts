@@ -5,7 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
-import { UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
+import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
@@ -255,6 +255,134 @@ describe('Prison Register service', () => {
         town: 'Doncaster',
         postcode: 'DN7 6BW',
         country: 'England',
+      })
+    })
+  })
+
+  describe('addPrison', () => {
+    let addPrisonRequest: InsertPrison
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      addPrisonRequest = {
+        active: false,
+        female: false,
+        male: false,
+        prisonId: 'SHEF',
+        prisonName: 'Sheffield Prison',
+        prisonTypes: ['HMP'],
+        addresses: [
+          {
+            addressLine1: '1 High Street',
+            addressLine2: 'Main centre',
+            town: 'Sheffield',
+            county: 'South Yorkshire',
+            postcode: 'S1 2BJ',
+            country: 'England',
+          },
+        ],
+      }
+    })
+    describe('on failure', () => {
+      it('will send back error if prison failed to be added due to bad request', async () => {
+        fakePrisonRegister.post('/prison-maintenance').reply(400, {
+          timestamp: '2022-03-30 10:42:59',
+          status: 400,
+          error: 'Bad Request',
+          message: "Validation failed for object='insertPrisonDto'. Error count: 1",
+          path: '/prison-maintenance',
+        })
+
+        const result = await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+
+        expect(result).toEqual({
+          success: false,
+          errorMessage: "Validation failed for object='insertPrisonDto'. Error count: 1",
+        })
+      })
+      it('will throw error if prison failed to be added due to some of reason', async () => {
+        fakePrisonRegister
+          .post('/prison-maintenance')
+          .reply(500, {
+            timestamp: '2021-03-30 10:42:59',
+            status: 500,
+            error: 'Bad Request',
+            message: 'Internal Error',
+            path: '/prison-maintenance',
+          })
+          .persist()
+
+        expect.assertions(1)
+        try {
+          await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        } catch (e) {
+          expect(e.message).toEqual('Internal Server Error')
+        }
+      })
+    })
+
+    describe('on success', () => {
+      let newAddedPrison: InsertPrison | null
+      beforeEach(() => {
+        addPrisonRequest = {
+          prisonId: 'SHEF',
+          prisonName: 'Sheffield Prison',
+          prisonTypes: ['HMP'],
+          active: true,
+          female: false,
+          male: true,
+          addresses: [
+            {
+              addressLine1: '1 High Street',
+              addressLine2: 'Main centre',
+              town: 'Sheffield',
+              county: 'South Yorkshire',
+              postcode: 'S1 2BJ',
+              country: 'England',
+            },
+          ],
+        }
+        newAddedPrison = null
+
+        fakePrisonRegister
+          .post('/prison-maintenance', body => {
+            newAddedPrison = body
+            return body
+          })
+          .reply(200, data.prison({ prisonId: 'SHEF' }))
+      })
+      it('username will be used by client', async () => {
+        await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+      it('will send back success', async () => {
+        const result = await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+
+        expect(result.success).toEqual(true)
+      })
+      it('prison and address will be sent together when adding', async () => {
+        await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+
+        expect(newAddedPrison).toEqual({
+          prisonId: 'SHEF',
+          prisonName: 'Sheffield Prison',
+          prisonTypes: ['HMP'],
+          active: true,
+          female: false,
+          male: true,
+          addresses: [
+            {
+              addressLine1: '1 High Street',
+              addressLine2: 'Main centre',
+              town: 'Sheffield',
+              county: 'South Yorkshire',
+              postcode: 'S1 2BJ',
+              country: 'England',
+            },
+          ],
+        })
       })
     })
   })
