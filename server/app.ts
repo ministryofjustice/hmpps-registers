@@ -1,6 +1,5 @@
 import express from 'express'
 
-import addRequestId from 'express-request-id'
 import createError from 'http-errors'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
@@ -43,7 +42,7 @@ export default function createApp(
   app.use(setUpHealthChecks())
   app.use(setUpWebSecurity())
 
-  app.use(addRequestId())
+  // app.use(addRequestId())
 
   const client = createRedisClient('index/app.ts', undefined)
 
