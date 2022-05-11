@@ -32,6 +32,7 @@ export declare global {
     interface Request {
       verified?: boolean
       id: string
+
       user: {
         username: string
         token: string
