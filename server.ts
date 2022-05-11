@@ -8,7 +8,7 @@ import { initialiseAppInsights, buildAppInsightsClient } from './server/utils/az
 initialiseAppInsights()
 buildAppInsightsClient()
 
-import app from './server/index'
+import { app } from './server/index'
 import logger from './logger'
 
 app.listen(app.get('port'), () => {

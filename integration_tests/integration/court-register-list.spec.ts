@@ -64,7 +64,7 @@ context('Court register - court list navigation', () => {
       })
       expect(items[2]).to.deep.equal({
         href: '/court-register?page=2',
-        text: 'Next set of pages',
+        text: 'Next page',
         selected: false,
       })
     })

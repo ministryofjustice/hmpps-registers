@@ -21,6 +21,7 @@ import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
+import { metricsMiddleware } from './monitoring/metricsApp'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -34,14 +35,10 @@ export default function createApp(
   const app = express()
 
   app.set('json spaces', 2)
-
-  // Configure Express for running behind proxies
-  // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
-
-  // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
+  app.use(metricsMiddleware)
   app.use(setUpHealthChecks())
 
   nunjucksSetup(app)
