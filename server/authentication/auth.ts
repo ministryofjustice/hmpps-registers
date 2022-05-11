@@ -5,7 +5,6 @@ import type { RequestHandler } from 'express'
 import config from '../config'
 import generateOauthClientToken from './clientCredentials'
 import type { TokenVerifier } from '../data/tokenVerification'
-import { User } from '../data/hmppsAuthClient'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -14,7 +13,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((user, done) => {
   // Not used but required for Passport
-  done(null, user as User)
+  done(null, user as Express.User)
 })
 
 export type AuthenticationMiddleware = (tokenVerifier: TokenVerifier) => RequestHandler
@@ -34,8 +33,8 @@ function init(): void {
     {
       authorizationURL: `${config.apis.hmppsAuth.externalUrl}/oauth/authorize`,
       tokenURL: `${config.apis.hmppsAuth.url}/oauth/token`,
-      clientID: config.apis.hmppsAuth.systemClientId,
-      clientSecret: config.apis.hmppsAuth.systemClientSecret,
+      clientID: config.apis.hmppsAuth.systemClientId as string,
+      clientSecret: config.apis.hmppsAuth.systemClientSecret as string,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: {

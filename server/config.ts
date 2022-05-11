@@ -1,9 +1,8 @@
-import * as dotenv from 'dotenv'
+import 'dotenv/config'
 
-dotenv.config()
 const production = process.env.NODE_ENV === 'production'
 
-function get<T>(name: string, fallback: T, options = { requireInProduction: false }) {
+function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
   if (process.env[name]) {
     return process.env[name]
   }
@@ -16,11 +15,11 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 const requiredInProduction = { requireInProduction: true }
 
 export class AgentConfig {
-  maxSockets: 100
+  timeout: number
 
-  maxFreeSockets: 10
-
-  freeSocketTimeout: 30000
+  constructor(timeout = 8000) {
+    this.timeout = timeout
+  }
 }
 
 export interface ApiConfig {
@@ -42,34 +41,34 @@ export default {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },
   session: {
-    secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction) as string,
+    secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120')),
   },
   apis: {
     hmppsAuth: {
-      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction) as string,
+      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
       externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9090/auth')),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
       },
-      agent: new AgentConfig(),
-      apiClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction) as string,
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
-      systemClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction) as string,
-      systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
+      agent: new AgentConfig(Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000))),
+      apiClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+      systemClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction),
+      systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     tokenVerification: {
-      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction) as string,
+      url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       timeout: {
         response: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('TOKEN_VERIFICATION_API_TIMEOUT_DEADLINE', 5000)),
       },
-      agent: new AgentConfig(),
+      agent: new AgentConfig(Number(get('TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE', 5000))),
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
     courtRegister: {
-      url: get('COURT_REGISTER_API_URL', 'http://localhost:8101', requiredInProduction) as string,
+      url: get('COURT_REGISTER_API_URL', 'http://localhost:8101', requiredInProduction),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
@@ -77,7 +76,7 @@ export default {
       agent: new AgentConfig(),
     },
     prisonRegister: {
-      url: get('PRISON_REGISTER_API_URL', 'http://localhost:8103', requiredInProduction) as string,
+      url: get('PRISON_REGISTER_API_URL', 'http://localhost:8103', requiredInProduction),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
@@ -85,5 +84,5 @@ export default {
       agent: new AgentConfig(),
     },
   },
-  domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction) as string,
+  domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
 }

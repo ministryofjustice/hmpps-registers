@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import nunjucks from 'nunjucks'
 import express from 'express'
-import path from 'path'
 import querystring, { ParsedUrlQueryInput } from 'querystring'
+import * as pathModule from 'path'
 import { PageMetaData } from './page'
 import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -15,7 +15,7 @@ type Error = {
 
 const production = process.env.NODE_ENV === 'production'
 
-export default function nunjucksSetup(app: express.Express): nunjucks.Environment {
+export default function nunjucksSetup(app: express.Express, path: pathModule.PlatformPath): nunjucks.Environment {
   app.set('view engine', 'njk')
 
   // GovUK Template Configuration

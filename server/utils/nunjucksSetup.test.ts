@@ -1,9 +1,10 @@
 import express from 'express'
+import path from 'path'
 import nunjucksSetup from './nunjucksSetup'
 
 describe('toMojPagination', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('maps a single page', () => {
     const result = njk.getFilter('toMojPagination')({
       first: true,
@@ -180,7 +181,7 @@ describe('toMojPagination', () => {
 
 describe('toCourtTypeFilterCheckboxes', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create checkboxes metadata', () => {
     const result = njk.getFilter('toCourtTypeFilterCheckboxes')([], { courtTypeIds: [], active: null })
     expect(result.idPrefix).toEqual('courtType')
@@ -273,7 +274,7 @@ describe('toCourtTypeFilterCheckboxes', () => {
 })
 describe('toCourtActiveFilterRadioButtons', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create radio button metadata', () => {
     const result = njk.getFilter('toCourtActiveFilterRadioButtons')({ courtTypeIds: [], active: null })
     expect(result.idPrefix).toEqual('active')
@@ -346,7 +347,7 @@ describe('toCourtActiveFilterRadioButtons', () => {
 
 describe('toCourtTextSearchInput', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create text search metadata', () => {
     const result = njk.getFilter('toCourtTextSearchInput')()
     expect(result.label.text).toBeTruthy()
@@ -358,7 +359,7 @@ describe('toCourtTextSearchInput', () => {
 
 describe('toCourtListFilter', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should show filter headings', () => {
     const result = njk.getFilter('toCourtListFilter')([], {})
     expect(result.heading.text).toBeTruthy()
@@ -475,7 +476,7 @@ describe('toCourtListFilter', () => {
 
 describe('toPrisonListFilter', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
 
   it('should show filter headings', () => {
     const result = njk.getFilter('toPrisonListFilter')([], {})
@@ -601,7 +602,7 @@ describe('toPrisonListFilter', () => {
 
 describe('toPrisonTextSearchInput', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create text search metadata', () => {
     const result = njk.getFilter('toPrisonTextSearchInput')()
     expect(result.label.text).toBeTruthy()
@@ -613,7 +614,7 @@ describe('toPrisonTextSearchInput', () => {
 
 describe('toPrisonActiveFilterRadioButtons', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create radio button metadata', () => {
     const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: null })
     expect(result.idPrefix).toEqual('active')
@@ -689,7 +690,7 @@ describe('toPrisonActiveFilterRadioButtons', () => {
 
 describe('toPrisonMaleFemaleCheckboxes', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create checkboxes metadata', () => {
     const result = njk.getFilter('toPrisonMaleFemaleCheckboxes')({})
     expect(result.idPrefix).toEqual('gender')
@@ -750,7 +751,7 @@ describe('toPrisonMaleFemaleCheckboxes', () => {
 
 describe('toPrisonTypeCheckboxes', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should create checkboxes metadata', () => {
     const result = njk.getFilter('toPrisonTypeCheckboxes')({})
     expect(result.idPrefix).toEqual('prisonTypeCode')
@@ -815,7 +816,7 @@ describe('toPrisonTypeCheckboxes', () => {
 
 describe('setChecked', () => {
   const app = express()
-  const njk = nunjucksSetup(app)
+  const njk = nunjucksSetup(app, path)
   it('should map Male and Female checkboxes and set Male to checked', () => {
     const checkboxSettings = njk.getFilter('setChecked')(
       [
