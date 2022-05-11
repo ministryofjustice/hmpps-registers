@@ -23,8 +23,6 @@ import setUpWebSecurity from './middleware/setUpWebSecurity'
 import { metricsMiddleware } from './monitoring/metricsApp'
 import setUpWebSession from './middleware/setUpWebSession'
 
-const version = Date.now().toString()
-const production = process.env.NODE_ENV === 'production'
 const RedisStore = connectRedis(session)
 
 export default function createApp(
@@ -42,8 +40,6 @@ export default function createApp(
   app.use(setUpHealthChecks())
   app.use(setUpWebSecurity())
 
-  // app.use(addRequestId())
-
   const client = createRedisClient('index/app.ts', undefined)
 
   app.use(
@@ -57,27 +53,10 @@ export default function createApp(
     })
   )
 
+  app.use(setUpWebSession())
   app.use(setUpWebRequestParsing())
   app.use(setUpStaticResources())
   nunjucksSetup(app)
-  // Cachebusting version string
-  if (production) {
-    // Version only changes on reboot
-    app.locals.version = version
-  } else {
-    // Version changes every request
-    app.use((req, res, next) => {
-      res.locals.version = Date.now().toString()
-      return next()
-    })
-  }
-
-  // GovUK Template Configuration
-  app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'HMPPS Registers'
-
-  app.use(setUpWebSession())
-
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
 
