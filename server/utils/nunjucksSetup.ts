@@ -12,7 +12,7 @@ type Error = {
   text: string
 }
 
-export default function nunjucksSetup(app: express.Application): nunjucks.Environment {
+export default function nunjucksSetup(app: express.Express): nunjucks.Environment {
   app.set('view engine', 'njk')
 
   const njkEnv = nunjucks.configure(

@@ -22,6 +22,7 @@ import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import { metricsMiddleware } from './monitoring/metricsApp'
+import setUpWebSession from './middleware/setUpWebSession'
 
 const version = Date.now().toString()
 const production = process.env.NODE_ENV === 'production'
@@ -40,9 +41,6 @@ export default function createApp(
 
   app.use(metricsMiddleware)
   app.use(setUpHealthChecks())
-
-  nunjucksSetup(app)
-
   app.use(setUpWebSecurity())
 
   app.use(addRequestId())
@@ -60,11 +58,9 @@ export default function createApp(
     })
   )
 
-  app.use(setUpAuthentication())
   app.use(setUpWebRequestParsing())
-
   app.use(setUpStaticResources())
-
+  nunjucksSetup(app)
   // Cachebusting version string
   if (production) {
     // Version only changes on reboot
@@ -81,15 +77,13 @@ export default function createApp(
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'HMPPS Registers'
 
-  // Update a value in the cookie so that the set-cookie will be sent.
-  // Only changes every minute so that it's not sent with every request.
-  app.use((req, res, next) => {
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-    next()
-  })
+  app.use(setUpWebSession())
 
+  app.use(setUpAuthentication())
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
+
   app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService, prisonRegisterService }))
+
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 
