@@ -28,6 +28,7 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
     prisonName: form.name as string,
     male: form.gender?.includes('male'),
     female: form.gender?.includes('female'),
+    contracted: form.contracted.includes('yes'),
     active: true,
     prisonTypes: (ControllerHelper.parseStringArrayFromQuery(form.prisonTypes) || []) as (
       | 'HMP'

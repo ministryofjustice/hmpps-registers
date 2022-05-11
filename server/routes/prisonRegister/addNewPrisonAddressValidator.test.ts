@@ -10,6 +10,7 @@ describe('addNewPrisonAddressValidator', () => {
   const validForm: AddNewPrisonForm = {
     gender: [],
     name: '',
+    contracted: 'yes',
     addressline1: '1 High Street',
     addresstown: 'Sheffield',
     addresscounty: 'South Yorkshire',
