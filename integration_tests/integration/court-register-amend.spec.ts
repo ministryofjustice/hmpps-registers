@@ -21,7 +21,7 @@ type AllWireMockRequest = { requests: WireMockRequest[] }
 context('Court register - amend existing court', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
@@ -39,7 +39,7 @@ context('Court register - amend existing court', () => {
     cy.task('stubUpdateCourt')
     cy.task('stubUpdateCourtBuilding')
     cy.task('stubCourtTypes')
-    cy.login()
+    cy.signIn()
     cy.task('stubCourtBuilding', sheffieldMagistratesMainBuilding)
     cy.task('stubCourtBuilding', sheffieldMagistratesAnnexeBuilding)
     cy.task('stubCourtBuilding', sheffieldCrownMainBuilding)

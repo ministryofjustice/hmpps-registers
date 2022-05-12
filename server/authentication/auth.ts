@@ -25,7 +25,7 @@ const authenticationMiddleware: AuthenticationMiddleware = verifyToken => {
       return next()
     }
     req.session.returnTo = req.originalUrl
-    return res.redirect('/login')
+    return res.redirect('/sign-in')
   }
 }
 

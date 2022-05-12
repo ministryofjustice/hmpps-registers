@@ -6,7 +6,7 @@ import { getRequests } from '../mockApis/wiremock'
 context('Court register - court list navigation', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubCourtTypes')
     cy.task('stubPageOfCourts', {
@@ -22,7 +22,7 @@ context('Court register - court list navigation', () => {
     })
     cy.task('stubCourt', sheffieldCrownCourt)
     cy.task('stubCourt', sheffieldMagistratesCourt)
-    cy.login()
+    cy.signIn()
   })
 
   it('Will display a page of courts', () => {

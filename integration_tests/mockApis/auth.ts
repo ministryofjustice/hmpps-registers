@@ -16,7 +16,7 @@ const createToken = (roles: string[]) => {
   return jwt.sign(payload, 'secret', { expiresIn: '1h' })
 }
 
-const getLoginUrl = (): Promise<string> =>
+const getSignInUrl = (): Promise<string> =>
   getRequests().then(data => {
     const { requests } = data.body
     const stateParam = requests[0].request.queryParams.state
@@ -62,11 +62,11 @@ const redirect = () =>
     },
   })
 
-const logout = () =>
+const signOut = () =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/auth/logout.*',
+      urlPattern: '/auth/sign-out.*',
     },
     response: {
       status: 200,
@@ -136,9 +136,9 @@ const stubUserRoles = () =>
   })
 
 export default {
-  getLoginUrl,
+  getSignInUrl,
   stubPing: (): Promise<Array<Response>> => Promise.all([ping(), tokenVerification.stubPing()]),
-  stubLogin: (roles = ['ROLE_HMPPS_REGISTERS_MAINTAINER']): Promise<Array<Response>> =>
-    Promise.all([favicon(), redirect(), logout(), token(roles), tokenVerification.stubVerifyToken()]),
+  stubSignIn: (roles = ['ROLE_HMPPS_REGISTERS_MAINTAINER']): Promise<Array<Response>> =>
+    Promise.all([favicon(), redirect(), signOut(), token(roles), tokenVerification.stubVerifyToken()]),
   stubUser: (): Promise<Array<Response>> => Promise.all([stubUser(), stubUserRoles()]),
 }

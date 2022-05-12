@@ -6,7 +6,7 @@ export type Page = {
 }
 export default <T>(name: string, pageObject: T): Page & T => {
   const checkOnPage = () => cy.get('h1').contains(name)
-  const logout = () => cy.get('[data-qa=logout]')
+  const logout = () => cy.get('[data-qa=signOut]')
   checkOnPage()
   return { ...pageObject, checkStillOnPage: checkOnPage, logout }
 }
