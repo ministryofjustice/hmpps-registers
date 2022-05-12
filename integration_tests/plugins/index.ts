@@ -9,8 +9,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
   on('task', {
     reset: resetStubs,
 
-    getLoginUrl: auth.getLoginUrl,
-    stubLogin: auth.stubLogin,
+    getSignInUrl: auth.getSignInUrl,
+    stubSignIn: auth.stubSignIn,
 
     stubAuthUser: auth.stubUser,
     stubAuthPing: auth.stubPing,

@@ -7,13 +7,13 @@ import DeletePrisonAddressPage from '../pages/prison-register/deletePrisonAddres
 context('Prison register - delete prison address', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison, active: false }, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubGetPrisonAddress')
     cy.task('stubDeletePrisonAddress')
-    cy.login()
+    cy.signIn()
   })
 
   describe('deleting a prison address', () => {

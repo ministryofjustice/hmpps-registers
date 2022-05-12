@@ -7,13 +7,13 @@ import AddPrisonAddressPage from '../pages/prison-register/addPrisonAddress'
 context('Prison register - add address to existing prison', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison, active: false }, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubGetPrisonAddress')
     cy.task('stubAddPrisonAddress')
-    cy.login()
+    cy.signIn()
   })
 
   describe('adding a prison address', () => {

@@ -10,7 +10,7 @@ import { sheffieldCrownCourt, sheffieldMagistratesCourt, sheffieldYouthCourt } f
 context('Court register - Add new court', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubPageOfCourts', {
       content: [sheffieldCrownCourt, { ...sheffieldMagistratesCourt, active: true }, sheffieldYouthCourt],
@@ -29,7 +29,7 @@ context('Court register - Add new court', () => {
     cy.task('stubAddCourt')
     cy.task('stubAddCourtBuilding')
     cy.task('stubAddCourtBuildingContact')
-    cy.login()
+    cy.signIn()
   })
 
   describe('adding a new court', () => {

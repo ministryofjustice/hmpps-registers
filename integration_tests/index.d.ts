@@ -4,7 +4,7 @@ declare namespace Cypress {
      * Custom command to login. Set failOnStatusCode to false if you expect and non 200 return code
      * @example cy.login({ failOnStatusCode: boolean })
      */
-    login<S = unknown>(options?: { failOnStatusCode: boolean }): Chainable<S>
+    signIn<S = unknown>(options?: { failOnStatusCode: boolean }): Chainable<S>
     /**
      * Task to stub a list of courts when calling /courts/all
      * @example cy.task('stubAllCourts', [

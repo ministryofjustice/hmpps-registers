@@ -5,10 +5,10 @@ import AllPrisons from '../pages/prison-register/allPrisons'
 context('Prison register - prison list navigation', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubLogin')
+    cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubGetPrisonsWithFilter', [moorlandPrison])
-    cy.login()
+    cy.signIn()
   })
 
   it('Will display a page of prisons', () => {
