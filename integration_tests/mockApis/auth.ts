@@ -21,7 +21,7 @@ const getLoginUrl = (): Promise<string> =>
     const { requests } = data.body
     const stateParam = requests[0].request.queryParams.state
     const stateValue = stateParam ? stateParam.values[0] : requests[1].request.queryParams.state.values[0]
-    return `/login/callback?code=codexxxx&state=${stateValue}`
+    return `/sign-in/callback?code=codexxxx&state=${stateValue}`
   })
 
 const favicon = () =>
@@ -56,7 +56,7 @@ const redirect = () =>
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
+        Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
       },
       body: '<html lang="en"><body>Login page<h1>Sign in</h1></body></html>',
     },
@@ -87,7 +87,7 @@ const token = (roles: string[]) =>
       status: 200,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
-        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
+        Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
         access_token: createToken(roles),
