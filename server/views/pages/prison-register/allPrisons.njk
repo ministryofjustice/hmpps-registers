@@ -55,7 +55,7 @@
                                     <tr class="govuk-table__row">
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Code</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
-                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Open</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Active</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type(s)</th>
                                     </tr>
                                     </thead>
@@ -69,9 +69,9 @@
                                             </td>
                                             <td class="govuk-table__cell">
                                                 {% if prison.active %}
-                                                    Open
+                                                    Active
                                                 {% else %}
-                                                    Closed
+                                                    Inactive
                                                 {% endif %}
                                             </td>
                                             <td class="govuk-table__cell">

@@ -323,7 +323,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
           },
           {
             heading: {
-              text: 'Open or Closed',
+              text: 'Active or Inactive',
             },
             items: cancelActiveFilterTags,
           },
@@ -367,12 +367,12 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       classes: 'govuk-radios--inline',
       fieldset: {
         legend: {
-          text: 'Open or Closed',
+          text: 'Active or Inactive',
           classes: 'govuk-fieldset__legend--m',
         },
       },
       hint: {
-        text: 'Display open or closed prisons only',
+        text: 'Display active or inactive prisons only',
       },
       items: [
         {
@@ -382,12 +382,12 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         },
         {
           value: true,
-          text: 'Open',
+          text: 'Active',
           checked: allPrisonsFilter.active === true,
         },
         {
           value: false,
-          text: 'Closed',
+          text: 'Inactive',
           checked: allPrisonsFilter.active === false,
         },
       ],
@@ -468,7 +468,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       return [
         {
           href: `${hrefBase}${querystring.stringify(newFilter)}`,
-          text: 'Open',
+          text: 'Active',
         },
       ]
     }
@@ -476,7 +476,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       return [
         {
           href: `${hrefBase}${querystring.stringify(newFilter)}`,
-          text: 'Closed',
+          text: 'Inactive',
         },
       ]
     }

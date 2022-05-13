@@ -1,5 +1,5 @@
 import superagent from 'superagent'
-import querystring from 'querystring'
+import { URLSearchParams } from 'url'
 import type TokenStore from './tokenStore'
 
 import logger from '../../logger'
@@ -29,17 +29,18 @@ function getClientTokenFromHmppsAuth(
 ): Promise<superagent.Response> {
   const clientToken = generateOauthClientToken(clientId, clientSecret)
 
-  const authRequest = username
-    ? querystring.stringify({ grant_type: 'client_credentials', username })
-    : querystring.stringify({ grant_type: 'client_credentials' })
+  const grantRequest = new URLSearchParams({
+    grant_type: 'client_credentials',
+    ...(username && { username }),
+  }).toString()
 
-  logger.info(`HMPPS Auth request '${authRequest}' for client id '${clientId}' and user '${username}'`)
+  logger.info(`HMPPS Auth request '${grantRequest}' for client id '${clientId}' and user '${username}'`)
 
   return superagent
     .post(`${hmppsAuthUrl}/oauth/token`)
     .set('Authorization', clientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
-    .send(authRequest)
+    .send(grantRequest)
     .timeout(timeoutSpec)
 }
 
