@@ -14,9 +14,9 @@
   </p>
   <p>
     {% if active %}
-      Open
+      Active
     {% else %}
-      Closed
+      Inactive
     {% endif %}
   </p>
   <p>
@@ -117,16 +117,16 @@
       {% if prisonDetails.active %}
         <input type="hidden" name="active" value="false">
         {{ govukButton({
-          text: "Mark prison closed",
+          text: "Mark prison inactive",
           classes: "govuk-button govuk-button--secondary",
-          attributes: { "data-qa": "mark-as-closed-" + prisonDetails.id }
+          attributes: { "data-qa": "mark-as-inactive-" + prisonDetails.id }
         }) }}
       {% else %}
         <input type="hidden" name="active" value="true">
         {{ govukButton({
-          text: "Mark prison open",
+          text: "Mark prison active",
           classes: "govuk-button govuk-button--secondary",
-          attributes: { "data-qa": "mark-as-open-" + prisonDetails.id }
+          attributes: { "data-qa": "mark-as-active-" + prisonDetails.id }
         }) }}
       {% endif %}
     </form>

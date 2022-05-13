@@ -19,7 +19,7 @@ context('Prison register - prison list navigation', () => {
       const { id, name, active, types } = prisonRegisterPage.prisons(0)
       id().contains(moorlandPrison.prisonId)
       name().contains(moorlandPrison.prisonName)
-      active().contains('Open')
+      active().contains('Active')
       types().contains('HMP, YOI')
     }
   })
@@ -41,15 +41,15 @@ context('Prison register - prison list navigation', () => {
     // Check the filter defaults to all prisons
     page.showFilterButton().click()
     page.allFilter().should('have.attr', 'type', 'radio').should('be.checked')
-    page.openFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
-    page.closedFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
-    // Set filter to open prisons only
-    page.openFilter().click()
+    page.activeFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
+    page.inactiveFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
+    // Set filter to active prisons only
+    page.activeFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
-    // Check the open prisons filter has been applied
+    // Check the active prisons filter has been applied
     page.allFilter().should('not.be.checked')
-    page.openFilter().should('be.checked')
+    page.activeFilter().should('be.checked')
     cy.url().should('include', 'active=true')
   })
 
@@ -57,18 +57,18 @@ context('Prison register - prison list navigation', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     const page = AllPrisons.verifyOnPage()
 
-    // Filter on open prisons
+    // Filter on active prisons
     page.showFilterButton().click()
-    page.openFilter().click()
+    page.activeFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
-    page.openFilter().should('be.checked')
-    // Cancel the open prisons by clicking on the filter tag
-    page.cancelOpenFilter().click()
+    page.activeFilter().should('be.checked')
+    // Cancel the active prisons by clicking on the filter tag
+    page.cancelActiveFilter().click()
     page.showFilterButton().click()
     // Check that the filter is no longer applied
-    page.cancelOpenFilter().should('not.exist')
-    page.openFilter().should('not.be.checked')
+    page.cancelActiveFilter().should('not.exist')
+    page.activeFilter().should('not.be.checked')
     page.allFilter().should('be.checked')
     cy.url().should('not.contain', 'active=true')
   })
@@ -207,24 +207,24 @@ context('Prison register - prison list navigation', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     const page = AllPrisons.verifyOnPage()
 
-    // Filter on open prisons , named Albany , and male
+    // Filter on active prisons , named Albany , and male
     page.showFilterButton().click()
-    page.openFilter().click()
+    page.activeFilter().click()
     page.textSearchFilter().type('Albany')
     page.femaleFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
     // Check the filter has been applied
-    page.openFilter().should('be.checked')
+    page.activeFilter().should('be.checked')
     page.textSearchFilter().should('have.value', 'Albany')
     cy.url().should('contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')
     cy.url().should('contain', 'genders=MALE')
-    // Cancel the open prison filter by clicking on the filter tag
-    page.cancelOpenFilter().click()
+    // Cancel the active prison filter by clicking on the filter tag
+    page.cancelActiveFilter().click()
     page.showFilterButton().click()
     // Check we are now only filtered on Albany and male
-    page.openFilter().should('not.be.checked')
+    page.activeFilter().should('not.be.checked')
     page.textSearchFilter().should('have.value', 'Albany')
     cy.url().should('not.contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')

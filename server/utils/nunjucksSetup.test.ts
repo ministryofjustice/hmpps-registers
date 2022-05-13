@@ -484,18 +484,18 @@ describe('toPrisonListFilter', () => {
     expect(result.selectedFilters.clearLink.text).toBeTruthy()
   })
 
-  it('should show active Open cancel tag', () => {
+  it('should show active Active cancel tag', () => {
     const result = njk.getFilter('toPrisonListFilter')([], { active: true })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Open or Closed',
+            text: 'Active or Inactive',
           },
           items: [
             {
               href: '/prison-register?',
-              text: 'Open',
+              text: 'Active',
             },
           ],
         }),
@@ -503,18 +503,18 @@ describe('toPrisonListFilter', () => {
     )
   })
 
-  it('should show active Closed cancel tag', () => {
+  it('should show active Inactive cancel tag', () => {
     const result = njk.getFilter('toPrisonListFilter')([], { active: false })
     expect(result.selectedFilters.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           heading: {
-            text: 'Open or Closed',
+            text: 'Active or Inactive',
           },
           items: [
             {
               href: '/prison-register?',
-              text: 'Closed',
+              text: 'Inactive',
             },
           ],
         }),
@@ -633,18 +633,18 @@ describe('toPrisonActiveFilterRadioButtons', () => {
       },
       {
         value: true,
-        text: 'Open',
+        text: 'Active',
         checked: false,
       },
       {
         value: false,
-        text: 'Closed',
+        text: 'Inactive',
         checked: false,
       },
     ])
   })
 
-  it('should map true to open prisons', () => {
+  it('should map true to active prisons', () => {
     const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: true })
     expect(result.items).toEqual([
       {
@@ -654,18 +654,18 @@ describe('toPrisonActiveFilterRadioButtons', () => {
       },
       {
         value: true,
-        text: 'Open',
+        text: 'Active',
         checked: true,
       },
       {
         value: false,
-        text: 'Closed',
+        text: 'Inactive',
         checked: false,
       },
     ])
   })
 
-  it('should map false to closed prisons', () => {
+  it('should map false to inactive prisons', () => {
     const result = njk.getFilter('toPrisonActiveFilterRadioButtons')({ active: false })
     expect(result.items).toEqual([
       {
@@ -675,12 +675,12 @@ describe('toPrisonActiveFilterRadioButtons', () => {
       },
       {
         value: true,
-        text: 'Open',
+        text: 'Active',
         checked: false,
       },
       {
         value: false,
-        text: 'Closed',
+        text: 'Inactive',
         checked: true,
       },
     ])

@@ -96,23 +96,23 @@ context('Prison register - amend existing prison', () => {
     })
   })
 
-  describe('deactivating an open prison', () => {
+  describe('deactivating an active prison', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().prisonRegisterLink().click()
       AllPrisonsPage.verifyOnPage().viewPrisonLink('MDI').should('contain.text', moorlandPrison.prisonName).click()
     })
-    it('Can deactivate open prison', () => {
-      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).markAsClosedButton('MDI').click()
+    it('Can deactivate active prison', () => {
+      PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).markAsInactiveButton('MDI').click()
       PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName).deactivatedConfirmationBlock().should('exist')
     })
   })
-  describe('activating a closed prison', () => {
+  describe('activating an inactive prison', () => {
     beforeEach(() => {
       IndexPage.verifyOnPage().prisonRegisterLink().click()
       AllPrisonsPage.verifyOnPage().viewPrisonLink('BAI').should('contain.text', belmarshPrison.prisonName).click()
     })
-    it('Can activate a closed prison', () => {
-      PrisonDetailsPage.verifyOnPage(belmarshPrison.prisonName).markAsOpenButton('BAI').click()
+    it('Can activate an inactive prison', () => {
+      PrisonDetailsPage.verifyOnPage(belmarshPrison.prisonName).markAsActiveButton('BAI').click()
       PrisonDetailsPage.verifyOnPage(belmarshPrison.prisonName).activatedConfirmationBlock().should('exist')
     })
   })
