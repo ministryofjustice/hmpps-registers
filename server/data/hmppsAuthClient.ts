@@ -42,15 +42,6 @@ function getClientTokenFromHmppsAuth(
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(grantRequest)
     .timeout(timeoutSpec)
-
-  logger.info(`HMPPS Auth request '${grantRequest}' for client id '${clientId}' and user '${username}'`)
-
-  return superagent
-    .post(`${hmppsAuthUrl}/oauth/token`)
-    .set('Authorization', clientToken)
-    .set('content-type', 'application/x-www-form-urlencoded')
-    .send(grantRequest)
-    .timeout(timeoutSpec)
 }
 
 export interface User {
