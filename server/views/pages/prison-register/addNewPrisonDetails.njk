@@ -121,7 +121,8 @@
                               text: "No",
                               checked: form.contracted === 'no'
                             }
-                          ]
+                          ],
+                          errorMessage: errors | findError('contracted')
                         }) }}
 
                         <div class="govuk-button-group">
