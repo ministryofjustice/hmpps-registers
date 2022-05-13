@@ -23,11 +23,12 @@ export default async function validate(
 }
 
 function asAddPrison(form: AddNewPrisonForm): InsertPrison {
-  const addPrison: InsertPrison = {
+  const genders = ControllerHelper.parseStringArrayFromQuery(form.gender) || []
+  return {
     prisonId: form.id as string,
     prisonName: form.name as string,
-    male: form.gender?.includes('male'),
-    female: form.gender?.includes('female'),
+    male: genders.includes('male'),
+    female: genders.includes('female'),
     contracted: form.contracted.includes('yes'),
     active: true,
     prisonTypes: (ControllerHelper.parseStringArrayFromQuery(form.prisonTypes) || []) as (
@@ -47,6 +48,4 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
       },
     ],
   }
-
-  return addPrison
 }
