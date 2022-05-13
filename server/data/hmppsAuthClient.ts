@@ -1,11 +1,11 @@
 import superagent from 'superagent'
-import querystring from 'querystring'
 import type TokenStore from './tokenStore'
 
 import logger from '../../logger'
 import config from '../config'
 import generateOauthClientToken from '../authentication/clientCredentials'
 import RestClient from './restClient'
+import { URLSearchParams } from 'url'
 
 const timeoutSpec = config.apis.hmppsAuth.timeout
 const hmppsAuthUrl = config.apis.hmppsAuth.url
@@ -29,17 +29,27 @@ function getClientTokenFromHmppsAuth(
 ): Promise<superagent.Response> {
   const clientToken = generateOauthClientToken(clientId, clientSecret)
 
-  const authRequest = username
-    ? querystring.stringify({ grant_type: 'client_credentials', username })
-    : querystring.stringify({ grant_type: 'client_credentials' })
+  const grantRequest = new URLSearchParams({
+    grant_type: 'client_credentials',
+    ...(username && { username }),
+  }).toString()
 
-  logger.info(`HMPPS Auth request '${authRequest}' for client id '${clientId}' and user '${username}'`)
+  logger.info(`HMPPS Auth request '${grantRequest}' for client id '${clientId}' and user '${username}'`)
 
   return superagent
     .post(`${hmppsAuthUrl}/oauth/token`)
     .set('Authorization', clientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
-    .send(authRequest)
+    .send(grantRequest)
+    .timeout(timeoutSpec)
+
+  logger.info(`HMPPS Auth request '${grantRequest}' for client id '${clientId}' and user '${username}'`)
+
+  return superagent
+    .post(`${hmppsAuthUrl}/oauth/token`)
+    .set('Authorization', clientToken)
+    .set('content-type', 'application/x-www-form-urlencoded')
+    .send(grantRequest)
     .timeout(timeoutSpec)
 }
 
