@@ -7,6 +7,7 @@ import { PageMetaData } from './page'
 import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
+import { prisonTypes } from '../routes/prisonRegister/prisonData'
 
 type Error = {
   href: string
@@ -424,6 +425,13 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
   })
 
   njkEnv.addFilter('toPrisonTypeCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
+    const prisonTypeItems = prisonTypes.map(prisonType => {
+      return {
+        value: prisonType.value,
+        text: prisonType.text,
+        checked: allPrisonsFilter.prisonTypeCodes?.includes(prisonType.value) || false,
+      }
+    })
     return {
       idPrefix: 'prisonTypeCode',
       name: 'prisonTypeCodes',
@@ -437,28 +445,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       hint: {
         text: 'Display selected prison types only',
       },
-      items: [
-        {
-          value: 'HMP',
-          text: 'Her Majesty’s Prison (HMP)',
-          checked: allPrisonsFilter.prisonTypeCodes?.includes('HMP') || false,
-        },
-        {
-          value: 'YOI',
-          text: 'Her Majesty’s Youth Offender Institution (YOI)',
-          checked: allPrisonsFilter.prisonTypeCodes?.includes('YOI') || false,
-        },
-        {
-          value: 'STC',
-          text: 'Secure Training Centre (STC)',
-          checked: allPrisonsFilter.prisonTypeCodes?.includes('STC') || false,
-        },
-        {
-          value: 'IRC',
-          text: 'Immigration Removal Centre (IRC)',
-          checked: allPrisonsFilter.prisonTypeCodes?.includes('IRC') || false,
-        },
-      ],
+      items: prisonTypeItems,
     }
   })
 
