@@ -765,12 +765,12 @@ describe('toPrisonTypeCheckboxes', () => {
     expect(result.items).toEqual([
       {
         value: 'HMP',
-        text: 'Her Majesty’s Prison (HMP)',
+        text: "Her Majesty's Prison (HMP)",
         checked: false,
       },
       {
         value: 'YOI',
-        text: 'Her Majesty’s Youth Offender Institution (YOI)',
+        text: "Her Majesty's Youth Offender Institution (YOI)",
         checked: false,
       },
       {
@@ -791,12 +791,12 @@ describe('toPrisonTypeCheckboxes', () => {
     expect(result.items).toEqual([
       {
         value: 'HMP',
-        text: 'Her Majesty’s Prison (HMP)',
+        text: "Her Majesty's Prison (HMP)",
         checked: true,
       },
       {
         value: 'YOI',
-        text: 'Her Majesty’s Youth Offender Institution (YOI)',
+        text: "Her Majesty's Youth Offender Institution (YOI)",
         checked: true,
       },
       {

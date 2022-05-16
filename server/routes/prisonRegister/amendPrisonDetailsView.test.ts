@@ -29,10 +29,10 @@ describe('AmendPrisonDetailsView', () => {
   it('will pass through the prison type value items', () => {
     const view = new AmendPrisonDetailsView(form, [])
     expect(view.renderArgs.prisonTypesValues).toEqual([
-      { text: "Her Majesty's Prison", value: 'HMP' },
-      { text: "Her Majesty's Youth Offender Institution", value: 'YOI' },
-      { text: 'Secure Training Centre', value: 'STC' },
-      { text: 'Immigration Removal Centre', value: 'IRC' },
+      { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
+      { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+      { text: 'Secure Training Centre (STC)', value: 'STC' },
+      { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
     ])
   })
 })
