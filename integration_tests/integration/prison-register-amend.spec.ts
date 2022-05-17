@@ -87,6 +87,7 @@ context('Prison register - amend existing prison', () => {
       amendPrisonDetailsPage.yoiCheckbox().should('be.checked')
       amendPrisonDetailsPage.stcCheckbox().should('not.be.checked')
       amendPrisonDetailsPage.ircCheckbox().should('not.be.checked')
+      amendPrisonDetailsPage.ycsCheckbox().should('not.be.checked')
 
       amendPrisonDetailsPage.stcCheckbox().click()
       amendPrisonDetailsPage.ircCheckbox().click()

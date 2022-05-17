@@ -13,6 +13,7 @@ const prisonDetails = {
   yoiCheckbox: () => cy.get('input[value="YOI"]'),
   stcCheckbox: () => cy.get('input[value="STC"]'),
   ircCheckbox: () => cy.get('input[value="IRC"]'),
+  ycsCheckbox: () => cy.get('input[value="YCS"]'),
 
   errorSummary: () => cy.get('.govuk-error-summary'),
 }

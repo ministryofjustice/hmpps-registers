@@ -81,7 +81,7 @@ export default class PrisonRegisterService {
     contracted: string,
     male: boolean,
     female: boolean,
-    prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+    prisonTypes: UpdatePrison['prisonTypes']
   ): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const isContracted = contracted === 'yes'
