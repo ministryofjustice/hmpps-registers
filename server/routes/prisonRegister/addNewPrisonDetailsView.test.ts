@@ -24,8 +24,9 @@ describe('AddNewPrisonDetailsView', () => {
     expect(view.renderArgs.prisonTypesValues).toEqual([
       { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
       { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
-      { text: 'Secure Training Centre (STC)', value: 'STC' },
       { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
+      { text: 'Secure Training Centre (STC)', value: 'STC' },
+      { text: 'Youth Custody Service (YCS)', value: 'YCS' },
     ])
   })
   it('will pass through the back link', () => {

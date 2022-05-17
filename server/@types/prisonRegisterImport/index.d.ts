@@ -78,8 +78,8 @@ export interface components {
       messageAttributes?: {
         [key: string]: components['schemas']['MessageAttributeValue']
       }
-      md5OfBody?: string
       md5OfMessageAttributes?: string
+      md5OfBody?: string
     }
     MessageAttributeValue: {
       stringValue?: string
@@ -141,7 +141,7 @@ export interface components {
       /** @description If this is a contracted prison */
       contracted: boolean
       /** @description Set of types for this prison */
-      prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+      prisonTypes: ('HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS')[]
     }
     ErrorResponse: {
       /** Format: int32 */
@@ -223,7 +223,7 @@ export interface components {
        * @example HMP
        * @enum {string}
        */
-      code: 'HMP' | 'YOI' | 'STC' | 'IRC'
+      code: 'HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS'
       /**
        * @description Prison type description
        * @example Her Majesty’s Prison
@@ -287,7 +287,7 @@ export interface components {
        * @description Set of types for this prison
        * @example HMP
        */
-      prisonTypes: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+      prisonTypes: ('HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS')[]
       /** @description List of addresses for this prison */
       addresses: components['schemas']['UpdateAddressDto'][]
     }
@@ -711,7 +711,7 @@ export interface operations {
         /** Genders to filter by */
         genders?: ('MALE' | 'FEMALE')[]
         /** Prison type codes to filter by */
-        prisonTypeCodes?: ('HMP' | 'YOI' | 'STC' | 'IRC')[]
+        prisonTypeCodes?: ('HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS')[]
       }
     }
     responses: {

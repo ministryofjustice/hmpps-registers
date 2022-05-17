@@ -774,13 +774,18 @@ describe('toPrisonTypeCheckboxes', () => {
         checked: false,
       },
       {
+        value: 'IRC',
+        text: 'Immigration Removal Centre (IRC)',
+        checked: false,
+      },
+      {
         value: 'STC',
         text: 'Secure Training Centre (STC)',
         checked: false,
       },
       {
-        value: 'IRC',
-        text: 'Immigration Removal Centre (IRC)',
+        value: 'YCS',
+        text: 'Youth Custody Service (YCS)',
         checked: false,
       },
     ])
@@ -800,13 +805,18 @@ describe('toPrisonTypeCheckboxes', () => {
         checked: true,
       },
       {
+        value: 'IRC',
+        text: 'Immigration Removal Centre (IRC)',
+        checked: false,
+      },
+      {
         value: 'STC',
         text: 'Secure Training Centre (STC)',
         checked: false,
       },
       {
-        value: 'IRC',
-        text: 'Immigration Removal Centre (IRC)',
+        value: 'YCS',
+        text: 'Youth Custody Service (YCS)',
         checked: false,
       },
     ])
