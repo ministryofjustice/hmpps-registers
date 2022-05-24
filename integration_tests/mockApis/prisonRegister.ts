@@ -179,4 +179,5 @@ export const belmarshPrison: Prison = {
     },
   ],
   types: [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
+  operators: [{ name: 'PSP' }],
 }

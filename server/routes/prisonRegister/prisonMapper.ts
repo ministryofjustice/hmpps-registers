@@ -1,4 +1,5 @@
-import { Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
+// eslint-disable-next-line import/named
+import { OperatorType, Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
 
 export type PrisonDetail = {
   id: string
@@ -9,6 +10,7 @@ export type PrisonDetail = {
   contracted?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
+  operators: OperatorDetail[]
 }
 
 export function pageLinkMapper(): string {
@@ -30,6 +32,10 @@ export type TypeDetail = {
   description: string
 }
 
+export type OperatorDetail = {
+  name: string
+}
+
 export type PrisonPageView = {
   prisons: PrisonDetail[]
   allPrisonsFilter: AllPrisonsFilter
@@ -45,6 +51,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     contracted: prison.contracted,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
+    operators: prison.operators?.map(operatorMapper) || [],
   }
 }
 
@@ -64,6 +71,12 @@ export function typeMapper(type: PrisonType): TypeDetail {
   return {
     code: type.code,
     description: type.description,
+  }
+}
+
+export function operatorMapper(operator: OperatorType): OperatorDetail {
+  return {
+    name: operator.name,
   }
 }
 
