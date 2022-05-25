@@ -5,7 +5,7 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female, contracted, types) %}
+{% macro prisonname(id, name, active, male, female, contracted, types, operators) %}
   <p>
     {{ id }}
   </p>
@@ -32,6 +32,14 @@
   <p>
     {% if contracted %}
       Contracted
+    {% endif %}
+  </p>
+  <p>
+    {% if contracted %}
+      Operator(s):
+      {% for operator in operators %}
+        {{ operator.name }}{% if loop.revindex > 1 %},{% endif %}
+      {% endfor %}
     {% endif %}
   </p>
 
@@ -140,7 +148,7 @@
         text: "Prison"
       },
         value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.types),
+        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.types, prisonDetails.operators),
         classes: "prison-details"
       },
         actions: {

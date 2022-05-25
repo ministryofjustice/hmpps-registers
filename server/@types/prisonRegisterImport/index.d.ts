@@ -78,8 +78,8 @@ export interface components {
       messageAttributes?: {
         [key: string]: components['schemas']['MessageAttributeValue']
       }
-      md5OfMessageAttributes?: string
       md5OfBody?: string
+      md5OfMessageAttributes?: string
     }
     MessageAttributeValue: {
       stringValue?: string
@@ -215,6 +215,16 @@ export interface components {
       types: components['schemas']['PrisonTypeDto'][]
       /** @description List of address for this prison */
       addresses: components['schemas']['AddressDto'][]
+      /** @description List of operators for this prison */
+      operators: components['schemas']['PrisonOperatorDto'][]
+    }
+    /** @description List of operators for this prison */
+    PrisonOperatorDto: {
+      /**
+       * @description Prison operator name
+       * @example PSP, G4S
+       */
+      name: string
     }
     /** @description List of types for this prison */
     PrisonTypeDto: {
