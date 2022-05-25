@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/named
 import { OperatorType, Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
 
 export type PrisonDetail = {
