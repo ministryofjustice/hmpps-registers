@@ -28,6 +28,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male prison')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Operator(s)')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Type(s)')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Prison,')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Youth Offender Institution')
@@ -70,5 +71,6 @@ context('Prison register - prison details navigation', () => {
     const prisonDetailsPage = PrisonDetails.verifyOnPage(albanyPrison.prisonName)
 
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Contracted')
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Operator(s)')
   })
 })
