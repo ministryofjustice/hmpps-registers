@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.14
+  hmpps: ministryofjustice/hmpps@6.0
 
 parameters:
   node-version:
     type: string
-    default: 16.14-browsers
+    default: 16.17-browsers
 
 jobs:
   build:
