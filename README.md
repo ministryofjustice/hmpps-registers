@@ -1,5 +1,8 @@
 # hmpps-registers
 
+[![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-registers/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-registers)
+[![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/hmpps-registers/badge.svg)](https://snyk.io/test/github/ministryofjustice/hmpps-registers)
+
 ## Running the app
 The easiest way to run the app is to use docker compose to create the service and all dependencies. 
 
