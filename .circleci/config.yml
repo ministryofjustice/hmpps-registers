@@ -6,7 +6,7 @@ orbs:
 parameters:
   node-version:
     type: string
-    default: 16.17-browsers
+    default: 18.12-browsers
 
 jobs:
   build:
