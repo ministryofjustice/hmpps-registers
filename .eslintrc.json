@@ -5,7 +5,7 @@
     "jest": true
   },
 
-  "plugins": ["import"],
+  "plugins": ["import", "no-only-tests"],
 
   "settings": {
     "import/parsers": {
@@ -16,7 +16,8 @@
         "alwaysTryTypes": true
       },
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"],
+        "moduleDirectory": ["node_modules", "./server/@types"]
       }
     }
   },
