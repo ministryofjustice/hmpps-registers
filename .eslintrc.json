@@ -5,7 +5,7 @@
     "jest": true
   },
 
-  "plugins": ["import", "no-only-tests"],
+  "plugins": ["import"],
 
   "settings": {
     "import/parsers": {
@@ -16,8 +16,7 @@
         "alwaysTryTypes": true
       },
       "node": {
-        "extensions": [".js", ".jsx", ".d.ts", ".ts", ".tsx", ".json"],
-        "moduleDirectory": ["node_modules", "./server/@types"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
     }
   },
@@ -64,7 +63,6 @@
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
 
   "rules": {
-    "no-only-tests/no-only-tests": "error",
     "no-unused-vars": [
       1,
       {
@@ -96,7 +94,10 @@
         "functions": "never"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "cypress.config.ts"] }
+    ],
     "prettier/prettier": [
       "error",
       {
@@ -107,8 +108,5 @@
         "arrowParens": "avoid"
       }
     ]
-  },
-  "parserOptions": {
-    "ecmaVersion": 2020
   }
 }
