@@ -64,7 +64,6 @@
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
 
   "rules": {
-    "no-only-tests/no-only-tests": "error",
     "no-unused-vars": [
       1,
       {
@@ -96,7 +95,10 @@
         "functions": "never"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "cypress.config.ts"] }
+    ],
     "prettier/prettier": [
       "error",
       {
@@ -107,8 +109,5 @@
         "arrowParens": "avoid"
       }
     ]
-  },
-  "parserOptions": {
-    "ecmaVersion": 2020
   }
 }
