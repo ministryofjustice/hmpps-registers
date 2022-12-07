@@ -7,7 +7,7 @@ import CourtRegisterService from './services/courtRegisterService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { createMetricsApp } from './monitoring/metricsApp'
 
-const hmppsAuthClient = new HmppsAuthClient(new TokenStore(createRedisClient()))
+const hmppsAuthClient = new HmppsAuthClient(new TokenStore(createRedisClient({ legacyMode: false })))
 const userService = new UserService(hmppsAuthClient)
 const courtRegisterService = new CourtRegisterService(hmppsAuthClient)
 const prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
