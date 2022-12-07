@@ -29,13 +29,16 @@ declare module 'express-session' {
 
 export declare global {
   namespace Express {
+    interface User {
+      username: string
+      token: string
+      authSource: string
+    }
+
     interface Request {
       verified?: boolean
       id: string
-      user: {
-        username: string
-        token: string
-      }
+
       flash(type: string, message: Array<Record<string, string>>): number
       flash(message: 'errors'): Array<Record<string, string>>
       logout(done: (err: unknown) => void): void

@@ -1,22 +1,18 @@
-import redis, { createClient } from 'redis'
+import { createClient } from 'redis'
 
 import config from '../config'
-import logger from '../../logger'
 
 export type RedisClient = ReturnType<typeof createClient>
 
-export const createRedisClient = (clientName: string, prefix: string | undefined): RedisClient => {
-  const client = redis.createClient({
-    port: config.redis.port,
+const url =
+  config.redis.tls_enabled === 'true'
+    ? `rediss://${config.redis.host}:${config.redis.port}`
+    : `redis://${config.redis.host}:${config.redis.port}`
+
+export const createRedisClient = (legacyMode = false): RedisClient => {
+  return createClient({
+    url,
     password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
-    prefix: prefix || '',
+    legacyMode,
   })
-
-  client.on('error', error => {
-    logger.error(`[${clientName}] Redis error`, error)
-  })
-
-  return client
 }
