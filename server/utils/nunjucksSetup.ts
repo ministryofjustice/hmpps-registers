@@ -8,6 +8,7 @@ import { CourtType } from '../@types/courtRegister'
 import { AllCourtsFilter } from '../routes/courtRegister/courtMapper'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { prisonTypes } from '../routes/prisonRegister/prisonData'
+import config from '../config'
 
 type Error = {
   href: string
@@ -22,6 +23,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'HMPPS Registers'
+  app.locals.hmppsAuthUrl = config.apis.hmppsAuth.url
 
   // Cachebusting version string
   if (production) {
