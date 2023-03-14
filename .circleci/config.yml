@@ -1,9 +1,18 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6.0
+  hmpps: ministryofjustice/hmpps@7
+  slack: circleci/slack@4.12.1
 
 parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps_tech_alerts_security
+
+  releases-slack-channel:
+    type: string
+    default: dps-releases
+
   node-version:
     type: string
     default: 18.12-browsers
@@ -109,9 +118,9 @@ workflows:
   build-test-and-deploy:
     jobs:
       - build:
-        filters:
-          tags:
-            ignore: /.*/
+          filters:
+            tags:
+              ignore: /.*/
       - unit_test:
           requires:
             - build
@@ -164,6 +173,7 @@ workflows:
           jira_update: true
           jira_env_type: production
           slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
             - hmpps-common-vars
             - hmpps-registers-prod
@@ -179,16 +189,20 @@ workflows:
               only:
                 - main
     jobs:
+      - hmpps/npm_outdated:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
       - hmpps/npm_security_audit:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -202,7 +216,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
