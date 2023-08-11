@@ -68,7 +68,7 @@ services:
       - AWS_DEFAULT_REGION=eu-west-2
 
   court-register-db:
-    image: postgres:13.2
+    image: postgres:13.12
     networks:
       - hmpps
     container_name: court-register-db
