@@ -68,14 +68,6 @@ export default {
       agent: new AgentConfig(),
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
-    courtRegister: {
-      url: get('COURT_REGISTER_API_URL', 'http://localhost:8101', requiredInProduction) as string,
-      timeout: {
-        response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
-        deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
-      },
-      agent: new AgentConfig(),
-    },
     prisonRegister: {
       url: get('PRISON_REGISTER_API_URL', 'http://localhost:8103', requiredInProduction) as string,
       timeout: {

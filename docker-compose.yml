@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   redis:
-    image: 'bitnami/redis:5.0'
+    image: 'redis:7.2'
     networks:
       - hmpps
     container_name: redis
@@ -41,44 +41,6 @@ services:
       SPRING_PROFILES_ACTIVE: local-redis
       SPRING_REDIS_HOST: redis
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://hmpps-auth:8080/auth/.well-known/jwks.json"
-
-  court-register:
-    image: quay.io/hmpps/court-register:latest
-    networks:
-      - hmpps
-    container_name: court-register
-    depends_on:
-      - redis
-      - localstack
-      - court-register-db
-      - hmpps-auth
-    ports:
-      - "8101:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
-    environment:
-      - SERVER_PORT=8080
-      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://court-register-db:5432/court_register_db
-      - SNS_ENDPOINT_URL=http://localstack:4566
-      - HMPPS_SQS_LOCALSTACKURL=http://localstack:4566
-      - SPRING_PROFILES_ACTIVE=stdout,localstack,postgres
-      - AWS_ACCESS_KEY_ID=foobar
-      - AWS_SECRET_ACCESS_KEY=foobar
-      - AWS_DEFAULT_REGION=eu-west-2
-
-  court-register-db:
-    image: postgres:13.2
-    networks:
-      - hmpps
-    container_name: court-register-db
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin_password
-      - POSTGRES_DB=court_register_db
 
   prison-register:
     image: quay.io/hmpps/prison-register:latest
