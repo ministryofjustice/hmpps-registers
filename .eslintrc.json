@@ -4,9 +4,7 @@
     "node": true,
     "jest": true
   },
-
-  "plugins": ["import", "no-only-tests"],
-
+  "plugins": ["import"],
   "settings": {
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"]
@@ -16,12 +14,10 @@
         "alwaysTryTypes": true
       },
       "node": {
-        "extensions": [".js", ".jsx", ".d.ts", ".ts", ".tsx", ".json"],
-        "moduleDirectory": ["node_modules", "./server/@types"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
     }
   },
-
   "overrides": [
     {
       "plugins": ["@typescript-eslint"],
@@ -34,10 +30,12 @@
         "plugin:prettier/recommended"
       ],
       "rules": {
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
         "@typescript-eslint/no-use-before-define": 0,
+        "no-empty-function": "off",
         "class-methods-use-this": 0,
         "no-useless-constructor": 0,
-        "no-promise-executor-return": 0,
         "@typescript-eslint/no-unused-vars": [
           1,
           {
@@ -47,6 +45,7 @@
         ],
         "@typescript-eslint/semi": 0,
         "import/no-unresolved": "error",
+        "import/prefer-default-export": 0,
         "prettier/prettier": [
           "error",
           {
@@ -56,13 +55,12 @@
             "semi": false,
             "arrowParens": "avoid"
           }
-        ]
+        ],
+        "max-classes-per-file": 0
       }
     }
   ],
-
   "extends": ["airbnb-base", "plugin:prettier/recommended"],
-
   "rules": {
     "no-unused-vars": [
       1,
@@ -97,7 +95,9 @@
     ],
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "cypress.config.ts"] }
+      {
+        "devDependencies": ["**/*.test.js", "**/*.test.ts", "**/*.config.ts"]
+      }
     ],
     "prettier/prettier": [
       "error",

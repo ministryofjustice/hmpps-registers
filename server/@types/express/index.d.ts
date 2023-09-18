@@ -1,4 +1,3 @@
-import type { AddNewCourtForm, AmendCourtDetailsForm, AmendCourtBuildingForm, AddCourtBuildingForm } from '../forms'
 import type {
   AddNewPrisonForm,
   AmendPrisonDetailsForm,
@@ -13,12 +12,6 @@ declare module 'express-session' {
   interface SessionData {
     returnTo: string
     nowInMinutes: number
-    addNewCourtForm: AddNewCourtForm
-    amendCourtDetailsForm: AmendCourtDetailsForm
-    amendCourtBuildingForm: AmendCourtBuildingForm
-    addCourtBuildingForm: AddCourtBuildingForm
-    amendCourtBuildingContactsForm: AmendCourtBuildingContactsForm
-    courtListPageLink: string
     addNewPrisonForm: AddNewPrisonForm
     amendPrisonDetailsForm: AmendPrisonDetailsForm
     amendPrisonAddressForm: AmendPrisonAddressForm

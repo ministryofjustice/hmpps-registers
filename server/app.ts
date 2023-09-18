@@ -7,7 +7,6 @@ import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
-import CourtRegisterService from './services/courtRegisterService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { MAINTAINER_ROLE } from './authentication/roles'
 import setUpHealthChecks from './middleware/setUpHealthChecks'
@@ -20,7 +19,6 @@ import setUpWebSession from './middleware/setUpWebSession'
 
 export default function createApp(
   userService: UserService,
-  courtRegisterService: CourtRegisterService,
   prisonRegisterService: PrisonRegisterService
 ): express.Application {
   const app = express()
@@ -39,7 +37,7 @@ export default function createApp(
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
 
-  app.use('/', indexRoutes(standardRouter(userService), { courtRegisterService, prisonRegisterService }))
+  app.use('/', indexRoutes(standardRouter(userService), { prisonRegisterService }))
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
