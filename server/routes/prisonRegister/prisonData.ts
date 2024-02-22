@@ -4,8 +4,8 @@ export const genderTypes = [
 ]
 
 export const prisonTypes = [
-  { value: 'HMP', text: "Her Majesty's Prison (HMP)" },
-  { value: 'YOI', text: "Her Majesty's Youth Offender Institution (YOI)" },
+  { value: 'HMP', text: "His Majesty's Prison (HMP)" },
+  { value: 'YOI', text: "His Majesty's Youth Offender Institution (YOI)" },
   { value: 'IRC', text: 'Immigration Removal Centre (IRC)' },
   { value: 'STC', text: 'Secure Training Centre (STC)' },
   { value: 'YCS', text: 'Youth Custody Service (YCS)' },

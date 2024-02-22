@@ -236,7 +236,7 @@ export interface components {
       code: 'HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS'
       /**
        * @description Prison type description
-       * @example Her Majesty’s Prison
+       * @example His Majesty’s Prison
        */
       description: string
     }

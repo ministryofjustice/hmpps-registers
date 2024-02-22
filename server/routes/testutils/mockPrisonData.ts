@@ -28,7 +28,7 @@ export default {
     female = true,
     contracted = false,
     addresses = [],
-    types = [{ code: 'HMP', description: 'Her Majesty’s Prison' }],
+    types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators = [{ name: 'PSP' }],
   }: Partial<Prison>): Prison =>
     ({
