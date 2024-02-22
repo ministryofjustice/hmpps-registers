@@ -34,7 +34,7 @@ describe('prisonMapper', () => {
   })
   it('will map types', () => {
     expect(prison.types[0].code).toEqual('HMP')
-    expect(prison.types[0].description).toEqual('Her Majesty’s Prison')
+    expect(prison.types[0].description).toEqual('His Majesty’s Prison')
   })
 })
 

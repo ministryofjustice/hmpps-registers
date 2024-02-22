@@ -30,8 +30,8 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Operator(s)')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Type(s)')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Prison,')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Her Majesty’s Youth Offender Institution')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Prison,')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
   })
 
   it('Will display prison address details', () => {

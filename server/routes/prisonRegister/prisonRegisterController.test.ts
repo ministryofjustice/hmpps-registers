@@ -242,8 +242,8 @@ describe('Prison Register controller', () => {
             { text: 'Female', value: 'female' },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
             { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
             { text: 'Secure Training Centre (STC)', value: 'STC' },
             { text: 'Youth Custody Service (YCS)', value: 'YCS' },
@@ -270,8 +270,8 @@ describe('Prison Register controller', () => {
             { text: 'Female', value: 'female' },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
             { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
             { text: 'Secure Training Centre (STC)', value: 'STC' },
             { text: 'Youth Custody Service (YCS)', value: 'YCS' },
@@ -300,7 +300,7 @@ describe('Prison Register controller', () => {
             completed: true,
           },
           gender: ['male', 'female'],
-          typeDescription: "Her Majesty's Prison (HMP)",
+          typeDescription: "His Majesty's Prison (HMP)",
           backLink: '/prison-register',
         })
       })
@@ -367,8 +367,8 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
             { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
             { text: 'Secure Training Centre (STC)', value: 'STC' },
             { text: 'Youth Custody Service (YCS)', value: 'YCS' },
@@ -427,8 +427,8 @@ describe('Prison Register controller', () => {
             },
           ],
           prisonTypesValues: [
-            { text: "Her Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "Her Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
             { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
             { text: 'Secure Training Centre (STC)', value: 'STC' },
             { text: 'Youth Custody Service (YCS)', value: 'YCS' },
