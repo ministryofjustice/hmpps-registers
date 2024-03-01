@@ -3,7 +3,10 @@ import { prisonTypes } from './prisonData'
 import ControllerHelper from '../utils/controllerHelper'
 
 export default class AddNewPrisonSummaryView {
-  constructor(private readonly addPrisonForm: AddNewPrisonForm, private readonly listPageLink: string) {}
+  constructor(
+    private readonly addPrisonForm: AddNewPrisonForm,
+    private readonly listPageLink: string
+  ) {}
 
   get renderArgs(): {
     form: AddNewPrisonForm

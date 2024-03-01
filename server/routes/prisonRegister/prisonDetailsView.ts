@@ -4,7 +4,10 @@ import { Prison } from '../../@types/prisonRegister'
 export type Action = 'NONE' | 'ACTIVATE-PRISON' | 'DEACTIVATE-PRISON' | 'UPDATED'
 
 export default class PrisonDetailsView {
-  constructor(private readonly prison: Prison, private readonly action: Action) {}
+  constructor(
+    private readonly prison: Prison,
+    private readonly action: Action
+  ) {}
 
   readonly prisonDetails: PrisonDetail = prisonMapper(this.prison)
 
