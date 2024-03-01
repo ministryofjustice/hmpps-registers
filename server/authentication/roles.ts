@@ -1,5 +1,5 @@
 import type { Response } from 'express'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 const MAINTAINER_ROLE = 'ROLE_HMPPS_REGISTERS_MAINTAINER'
 
