@@ -18,7 +18,7 @@ export default {
       postcode,
       county,
       country,
-    } as PrisonAddress),
+    }) as PrisonAddress,
 
   prison: ({
     prisonId = 'ALI',
@@ -41,5 +41,5 @@ export default {
       addresses,
       types,
       operators,
-    } as Prison),
+    }) as Prison,
 }
