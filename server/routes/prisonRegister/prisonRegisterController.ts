@@ -69,7 +69,7 @@ export default class PrisonRegisterController {
     const view = new AddNewPrisonDetailsView(
       req.session.addNewPrisonForm,
       req.session.prisonListPageLink as string,
-      req.flash('errors')
+      req.flash('errors'),
     )
 
     res.render('pages/prison-register/addNewPrisonDetails', view.renderArgs)
@@ -80,8 +80,8 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await addNewPrisonDetailsValidator(req.session.addNewPrisonForm, req, (id: string) =>
-        this.prisonRegisterService.findPrison(context(res), id)
-      )
+        this.prisonRegisterService.findPrison(context(res), id),
+      ),
     )
   }
 
@@ -89,7 +89,7 @@ export default class PrisonRegisterController {
     const view = new AddNewPrisonAddressView(
       req.session.addNewPrisonForm,
       req.session.prisonListPageLink as string,
-      req.flash('errors')
+      req.flash('errors'),
     )
 
     res.render('pages/prison-register/addNewPrisonAddress', view.renderArgs)
@@ -112,8 +112,8 @@ export default class PrisonRegisterController {
   async submitNewPrisonSummary(req: Request, res: Response): Promise<void> {
     res.redirect(
       await addNewPrisonSummaryValidator(req.session.addNewPrisonForm, req, (prison: InsertPrison) =>
-        this.prisonRegisterService.addPrison(context(res), prison)
-      )
+        this.prisonRegisterService.addPrison(context(res), prison),
+      ),
     )
   }
 
@@ -174,10 +174,10 @@ export default class PrisonRegisterController {
             contracted,
             genderArray.includes('male'),
             genderArray.includes('female'),
-            prisonTypesArray
+            prisonTypesArray,
           )
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -242,8 +242,8 @@ export default class PrisonRegisterController {
             country: form.addresscountry,
           }
           return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -267,10 +267,10 @@ export default class PrisonRegisterController {
             context(res),
             form.prisonId,
             form.id as string,
-            updatedAddress
+            updatedAddress,
           )
-        }
-      )
+        },
+      ),
     )
   }
 

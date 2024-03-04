@@ -6,7 +6,7 @@ export type Action = 'NONE' | 'ACTIVATE-PRISON' | 'DEACTIVATE-PRISON' | 'UPDATED
 export default class PrisonDetailsView {
   constructor(
     private readonly prison: Prison,
-    private readonly action: Action
+    private readonly action: Action,
   ) {}
 
   readonly prisonDetails: PrisonDetail = prisonMapper(this.prison)

@@ -40,13 +40,13 @@ function init(): void {
       customHeaders: {
         Authorization: generateOauthClientToken(
           config.apis.hmppsAuth.systemClientId,
-          config.apis.hmppsAuth.systemClientSecret
+          config.apis.hmppsAuth.systemClientSecret,
         ),
       },
     },
     (token, refreshToken, params, profile, done) => {
       return done(null, { token, username: params.user_name, authSource: params.auth_source })
-    }
+    },
   )
 
   passport.use(strategy)

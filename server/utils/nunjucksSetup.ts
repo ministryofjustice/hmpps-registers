@@ -45,7 +45,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   njkEnv.addFilter('initialiseName', (fullName: string) => {
@@ -113,7 +113,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       items.map((entry: { value: string }) => ({
         ...entry,
         checked: entry && selectedList && selectedList.includes(entry.value),
-      }))
+      })),
   )
 
   njkEnv.addFilter('toSelect', (array, value) => {

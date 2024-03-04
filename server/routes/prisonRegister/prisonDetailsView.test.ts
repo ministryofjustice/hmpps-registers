@@ -29,7 +29,7 @@ describe('PrisonDetailsView', () => {
           data.prisonAddress({}),
         ],
       }),
-      'NONE'
+      'NONE',
     )
 
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')

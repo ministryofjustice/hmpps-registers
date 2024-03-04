@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import type { AmendPrisonDetailsForm } from 'prisonForms'
-import { validate as validateSync } from '../../validation/validation'
+import validateSync from '../../validation/validation'
 
 export default async function validate(
   form: AmendPrisonDetailsForm,
@@ -10,8 +10,8 @@ export default async function validate(
     name: string,
     contracted: string,
     gender?: string[],
-    prisonTypes?: string[]
-  ) => Promise<void>
+    prisonTypes?: string[],
+  ) => Promise<void>,
 ): Promise<string> {
   const errors = validateSync(
     form,
@@ -21,7 +21,7 @@ export default async function validate(
     {
       'required.name': 'Enter a prison name',
       'between.name': 'Enter a prison name between 3 and 80 characters',
-    }
+    },
   )
 
   if (errors.length > 0) {

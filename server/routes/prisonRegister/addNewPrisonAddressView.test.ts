@@ -13,7 +13,7 @@ describe('AddNewPrisonAddressView', () => {
         gender: ['male'],
       },
       '',
-      []
+      [],
     )
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
@@ -37,7 +37,7 @@ describe('AddNewPrisonAddressView', () => {
         contracted: 'yes',
       },
       'http://get-back',
-      []
+      [],
     )
     expect(view.renderArgs.backLink).toEqual('http://get-back')
   })

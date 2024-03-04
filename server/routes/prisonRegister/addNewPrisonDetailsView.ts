@@ -5,7 +5,7 @@ export default class AddNewPrisonDetailsView {
   constructor(
     private readonly addPrisonForm: AddNewPrisonForm,
     private readonly listPageLink: string,
-    private readonly errors?: Array<Record<string, string>>
+    private readonly errors?: Array<Record<string, string>>,
   ) {}
 
   get renderArgs(): {

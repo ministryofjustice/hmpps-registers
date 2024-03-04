@@ -40,7 +40,7 @@ export default class RestClient {
   constructor(
     private readonly name: string,
     private readonly config: ApiConfig,
-    private readonly token: string
+    private readonly token: string,
   ) {
     this.agent = config.url.startsWith('https') ? new HttpsAgent(config.agent) : new Agent(config.agent)
   }

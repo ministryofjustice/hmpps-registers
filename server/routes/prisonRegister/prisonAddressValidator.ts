@@ -1,12 +1,12 @@
 import { Request } from 'express'
 import type { PrisonAddressForm } from 'prisonForms'
-import { validate as validateSync } from '../../validation/validation'
+import validateSync from '../../validation/validation'
 
 export default async function validate(
   form: PrisonAddressForm,
   req: Request,
   errorUrl: string,
-  updateService: (prisonAddressForm: PrisonAddressForm) => Promise<void>
+  updateService: (prisonAddressForm: PrisonAddressForm) => Promise<void>,
 ): Promise<string> {
   const errors = validateSync(
     form,
@@ -27,7 +27,7 @@ export default async function validate(
       'between.addresstown': 'Enter the town or city not greater than 80 characters',
       'between.addresscounty': 'Enter the county not greater than 80 characters',
       'between.addresspostcode': 'Enter the postcode, like AA11AA',
-    }
+    },
   )
 
   if (errors.length > 0) {

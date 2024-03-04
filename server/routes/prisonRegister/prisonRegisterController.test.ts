@@ -53,7 +53,7 @@ describe('Prison Register controller', () => {
         'pages/prison-register/allPrisons',
         expect.objectContaining({
           prisons: [expect.objectContaining({ id: 'ALI' })],
-        })
+        }),
       )
     })
 
@@ -113,7 +113,7 @@ describe('Prison Register controller', () => {
 
       expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith(
         {},
-        { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] }
+        { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] },
       )
     })
     it('will set the list page link in the session', async () => {
@@ -318,7 +318,7 @@ describe('Prison Register controller', () => {
           active: true,
           male: true,
           female: false,
-        })
+        }),
       )
       prisonRegisterService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
 
@@ -463,7 +463,7 @@ describe('Prison Register controller', () => {
           'yes',
           true,
           false,
-          ['HMP']
+          ['HMP'],
         )
       })
     })

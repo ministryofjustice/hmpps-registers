@@ -12,7 +12,7 @@ describe('AddNewPrisonDetailsView', () => {
       addresspostcode: 'DN12 3AB',
       addresscountry: 'England',
     },
-    'http://get-back'
+    'http://get-back',
   )
   it('will pass through the gender value items', () => {
     expect(view.renderArgs.genderValues).toEqual([

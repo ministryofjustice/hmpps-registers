@@ -14,7 +14,7 @@ function getSystemClientTokenFromHmppsAuth(username?: string): Promise<superagen
   return getClientTokenFromHmppsAuth(
     config.apis.hmppsAuth.systemClientId,
     config.apis.hmppsAuth.systemClientSecret,
-    username
+    username,
   )
 }
 
@@ -25,7 +25,7 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
 function getClientTokenFromHmppsAuth(
   clientId: string,
   clientSecret: string,
-  username?: string
+  username?: string,
 ): Promise<superagent.Response> {
   const clientToken = generateOauthClientToken(clientId, clientSecret)
 

@@ -11,7 +11,7 @@ export function validateAsync<T>(
     prisonLookup?: lookupFn<Prison | undefined>
   } = {
     prisonLookup: () => Promise.resolve(undefined),
-  }
+  },
 ): Promise<Array<{ text: string; href: string }>> {
   Validator.registerAsync(
     'unique-prison-code',
@@ -27,7 +27,7 @@ export function validateAsync<T>(
       }
       passes()
     },
-    `The code is already used. Choose another code`
+    `The code is already used. Choose another code`,
   )
 
   const validation = new Validator(form, rules, customMessages)
@@ -37,7 +37,7 @@ export function validateAsync<T>(
 export function validate<T>(
   form: T,
   rules: Rules,
-  customMessages: ErrorMessages
+  customMessages: ErrorMessages,
 ): Array<{ text: string; href: string }> {
   const validation = new Validator(form, rules, customMessages)
 
@@ -52,7 +52,7 @@ const checkErrorsAsync = <T>(validation: Validator.Validator<T>): Promise<Array<
       },
       () => {
         resolve(asErrors(validation.errors))
-      }
+      },
     )
   })
 }
