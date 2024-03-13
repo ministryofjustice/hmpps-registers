@@ -27,7 +27,7 @@ describe('toPrisonListFilter', () => {
             },
           ],
         }),
-      ])
+      ]),
     )
   })
 
@@ -46,7 +46,7 @@ describe('toPrisonListFilter', () => {
             },
           ],
         }),
-      ])
+      ]),
     )
   })
 
@@ -65,7 +65,7 @@ describe('toPrisonListFilter', () => {
             },
           ],
         }),
-      ])
+      ]),
     )
   })
 
@@ -79,7 +79,7 @@ describe('toPrisonListFilter', () => {
           },
           items: undefined,
         }),
-      ])
+      ]),
     )
   })
 
@@ -98,7 +98,7 @@ describe('toPrisonListFilter', () => {
             },
           ],
         }),
-      ])
+      ]),
     )
   })
 
@@ -117,7 +117,7 @@ describe('toPrisonListFilter', () => {
             },
           ],
         }),
-      ])
+      ]),
     )
   })
 
@@ -339,7 +339,7 @@ describe('setChecked', () => {
         { value: 'male', text: 'Male' },
         { value: 'female', text: 'Female' },
       ],
-      ['male']
+      ['male'],
     )
 
     expect(checkboxSettings).toEqual([

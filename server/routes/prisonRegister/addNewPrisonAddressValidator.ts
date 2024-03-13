@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import type { AddNewPrisonForm } from 'prisonForms'
-import { validate as validateSync } from '../../validation/validation'
+import validateSync from '../../validation/validation'
 
 export default function validate(form: AddNewPrisonForm, req: Request): string {
   const errors = validateSync(
@@ -22,7 +22,7 @@ export default function validate(form: AddNewPrisonForm, req: Request): string {
       'between.addresstown': 'Enter the town or city not greater than 80 characters',
       'between.addresscounty': 'Enter the county not greater than 80 characters',
       'between.addresspostcode': 'Enter the postcode, like AA11AA',
-    }
+    },
   )
 
   if (errors.length > 0) {

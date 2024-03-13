@@ -4,7 +4,7 @@ import { AllPrisonsFilter, PrisonPageView, prisonsPageMapper } from './prisonMap
 export default class AllPrisonsView {
   constructor(
     private readonly prisons: Prison[],
-    private readonly allPrisonsFilter: AllPrisonsFilter
+    private readonly allPrisonsFilter: AllPrisonsFilter,
   ) {}
 
   readonly prisonPageView = prisonsPageMapper(this.prisons, this.allPrisonsFilter)

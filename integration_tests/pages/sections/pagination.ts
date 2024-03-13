@@ -10,7 +10,7 @@ export default {
           href: Cypress.$(element).find('a').attr('href'),
           text: Cypress.$(element).text().trim(),
           selected: Cypress.$(element).find('a').attr('href') === undefined,
-        }))
+        })),
       ),
   pageResults: (): Cypress.Chainable<JQuery> => firstPagination().find('.moj-pagination__results'),
   clickLinkWithText: (text: string): Cypress.Chainable<JQuery> =>

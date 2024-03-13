@@ -7,7 +7,7 @@ import { InsertPrison } from '../../@types/prisonRegister'
 export default async function validate(
   form: AddNewPrisonForm,
   req: Request,
-  addPrisonService: (addPrison: InsertPrison) => Promise<AddUpdateResponse>
+  addPrisonService: (addPrison: InsertPrison) => Promise<AddUpdateResponse>,
 ): Promise<string> {
   const errors: Array<{ text?: string; href?: string }> = []
 

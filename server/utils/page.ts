@@ -19,7 +19,7 @@ export function toPageMetaData(
   pageNumber: number,
   pageSize: number,
   elementsOnPage: number,
-  hrefTemplate: string
+  hrefTemplate: string,
 ): PageMetaData {
   return {
     first,

@@ -12,7 +12,7 @@ describe('AddNewPrisonSummaryView', () => {
       addresspostcode: 'DN12 3AB',
       addresscountry: 'England',
     },
-    'http://get-back'
+    'http://get-back',
   )
 
   it('will pass through the current form', () => {

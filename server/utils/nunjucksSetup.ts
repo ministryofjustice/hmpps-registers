@@ -38,14 +38,14 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
-      'node_modules/govuk-frontend/',
-      'node_modules/govuk-frontend/components/',
+      'node_modules/govuk-frontend/dist',
+      'node_modules/govuk-frontend/dist/components/',
       'node_modules/@ministryofjustice/frontend',
     ],
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   njkEnv.addFilter('initialiseName', (fullName: string) => {
@@ -113,7 +113,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       items.map((entry: { value: string }) => ({
         ...entry,
         checked: entry && selectedList && selectedList.includes(entry.value),
-      }))
+      })),
   )
 
   njkEnv.addFilter('toSelect', (array, value) => {

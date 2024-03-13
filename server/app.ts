@@ -19,7 +19,7 @@ import setUpWebSession from './middleware/setUpWebSession'
 
 export default function createApp(
   userService: UserService,
-  prisonRegisterService: PrisonRegisterService
+  prisonRegisterService: PrisonRegisterService,
 ): express.Application {
   const app = express()
 

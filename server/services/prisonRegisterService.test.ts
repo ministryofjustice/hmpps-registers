@@ -114,7 +114,7 @@ describe('Prison Register service', () => {
         'yes',
         true,
         false,
-        []
+        [],
       )
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
@@ -127,7 +127,7 @@ describe('Prison Register service', () => {
         'yes',
         true,
         false,
-        ['HMP']
+        ['HMP'],
       )
 
       expect(updatedPrison).toEqual(
@@ -137,7 +137,7 @@ describe('Prison Register service', () => {
           male: true,
           female: false,
           prisonTypes: ['HMP'],
-        })
+        }),
       )
     })
   })
@@ -170,7 +170,7 @@ describe('Prison Register service', () => {
           male: false,
           female: true,
           prisonTypes: ['HMP', 'YOI'],
-        })
+        }),
       )
     })
   })

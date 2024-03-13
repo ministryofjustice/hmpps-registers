@@ -81,7 +81,7 @@ export default class PrisonRegisterService {
     contracted: string,
     male: boolean,
     female: boolean,
-    prisonTypes: UpdatePrison['prisonTypes']
+    prisonTypes: UpdatePrison['prisonTypes'],
   ): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const isContracted = contracted === 'yes'
@@ -106,7 +106,7 @@ export default class PrisonRegisterService {
     context: Context,
     prisonId: string,
     addressId: string,
-    prisonAddress: UpdatePrisonAddress
+    prisonAddress: UpdatePrisonAddress,
   ): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending prison ${prisonId} address for ${addressId}`)

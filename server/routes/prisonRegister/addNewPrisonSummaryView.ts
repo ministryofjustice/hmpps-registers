@@ -5,7 +5,7 @@ import ControllerHelper from '../utils/controllerHelper'
 export default class AddNewPrisonSummaryView {
   constructor(
     private readonly addPrisonForm: AddNewPrisonForm,
-    private readonly listPageLink: string
+    private readonly listPageLink: string,
   ) {}
 
   get renderArgs(): {

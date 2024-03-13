@@ -6,7 +6,7 @@ import { validateAsync } from '../../validation/prisonValidation'
 export default async function validate(
   form: AddNewPrisonForm,
   req: Request,
-  prisonLookup: (id: string) => Promise<Prison | undefined>
+  prisonLookup: (id: string) => Promise<Prison | undefined>,
 ): Promise<string> {
   const errors = await validateAsync(
     form,
@@ -25,7 +25,7 @@ export default async function validate(
     },
     {
       prisonLookup,
-    }
+    },
   )
 
   if (errors.length > 0) {
