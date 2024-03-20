@@ -3,118 +3,113 @@ services:
 
   redis:
     image: 'redis:7.2'
-    networks:
-      - hmpps
     container_name: redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - '6379:6379'
 
-  hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
-    networks:
-      - hmpps
-    container_name: hmpps-auth
-    ports:
-      - "9090:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
-    environment:
-      SPRING_PROFILES_ACTIVE: dev,token-verification,nomis
-      TOKENVERIFICATION_ENDPOINT_URL: "http://token-verification-api:8080"
-      NOMIS_ENDPOINT_URL: http://nomis-user-roles-api:8080
-
-  token-verification-api:
-    image: quay.io/hmpps/token-verification-api:latest
-    networks:
-      - hmpps
-    container_name: token-verification-api
-    depends_on:
-      - redis
-      - hmpps-auth
-    ports:
-      - "8100:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
-    environment:
-      SPRING_PROFILES_ACTIVE: local-redis
-      SPRING_REDIS_HOST: redis
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://hmpps-auth:8080/auth/.well-known/jwks.json"
-
   prison-register:
     image: quay.io/hmpps/prison-register:latest
-    networks:
-      - hmpps
     container_name: prison-register
     depends_on:
-      - hmpps-auth
+      - prison-register-db
     ports:
       - "8103:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
     environment:
       - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
-      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8080/auth
+      - SPRING_PROFILES_ACTIVE=dev,postgres
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:9090/auth
+      - SPRING_DATASOURCE_USERNAME=prison-register
+      - SPRING_DATASOURCE_PASSWORD=prison-register
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://prison-register-db:5432/prison-register
+      - DATABASE_ENDPOINT=prison-register-db:9432
 
-  nomis-user-roles-api:
-    image: quay.io/hmpps/nomis-user-roles-api:latest
-    networks:
-      - hmpps
-    container_name: nomis-user-roles-api
-    depends_on:
-      - hmpps-auth
+  prison-register-db:
+    image: postgres:15
+    container_name: prison-register-db
+    restart: always
     ports:
-      - "8082:8080"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      - "9432:5432"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
-      - API_BASE_URL_OAUTH=http://hmpps-auth:8080/auth
+      - POSTGRES_PASSWORD=prison-register
+      - POSTGRES_USER=prison-register
+      - POSTGRES_DB=prison-register
+
+
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    restart: always
+    ports:
+      - "7432:5432"
+    environment:
+      - POSTGRES_PASSWORD=admin_password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=auth-db
 
   localstack:
-    image: localstack/localstack:3.2.0
-    networks:
-      - hmpps
+    image: localstack/localstack:1.2.0
     container_name: localstack
     ports:
-      - "4566-4597:4566-4597"
-      - 8999:8080
+      - "4567-4597:4567-4597"
     environment:
-      - SERVICES=sns,sqs
+      - SERVICES=s3
       - DEBUG=${DEBUG- }
       - DATA_DIR=${DATA_DIR- }
-      - PORT_WEB_UI=${PORT_WEB_UI- }
-      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
-      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - AWS_EXECUTION_ENV=True
       - DEFAULT_REGION=eu-west-2
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - $PWD/localstack:/docker-entrypoint-initaws.d
 
-  app:
-    build: .
-    networks:
-      - hmpps
-    depends_on: [redis]
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    container_name: hmpps-auth
+    depends_on:
+      - auth-db
     ports:
-      - "3000:3000"
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
-      - REDIS_HOST=redis
-      - HMPPS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
-      - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
-      - API_CLIENT_ID=hmpps-registers-ui-client
-      - API_CLIENT_SECRET=clientsecret
-      - SYSTEM_CLIENT_ID=hmpps-registers-ui
-      - SYSTEM_CLIENT_SECRET=clientsecret
-      - SESSION_SECRET=app-insecure-default-session
-      - TOKEN_VERIFICATION_API_URL=http://token-verification-api:8080
-      - TOKEN_VERIFICATION_ENABLED=true
-      - INGRESS_URL=http://localhost:3000
+      - SERVER_PORT=9090
+      - SPRING_PROFILES_ACTIVE=dev,local-postgres,auth-seed
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
 
-networks:
-  hmpps:
+  hmpps-external-users-api:
+    image: quay.io/hmpps/hmpps-external-users-api:latest
+    container_name: hmpps-external-users-api
+    depends_on:
+      - hmpps-auth
+    ports:
+      - "8089:8089"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8089/health/ping"]
+    environment:
+      - SERVER_PORT=8089
+      - SPRING_PROFILES_ACTIVE=dev,local-postgres
+      - API_BASE_URL_OAUTH=http://hmpps-auth:9090/auth
+      - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+      - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+
+  hmpps-manage-users-api:
+    image: quay.io/hmpps/hmpps-manage-users-api:latest
+    container_name: hmpps-manage-users-api
+    depends_on:
+      - hmpps-external-users-api
+    ports:
+      - "9091:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - HMPPS-AUTH_ENDPOINT_URL=http://hmpps-auth:9090/auth
+      - EXTERNAL-USERS_ENDPOINT_URL=http://hmpps-external-users-api:8089
+      - NOMIS_ENDPOINT_URL=http://nomis-user-roles-api:8080
+      - DELIUS_ENDPOINT_URL=http://community-api:8080
+      - AUTHORIZATION-SERVER_TOKEN_ENDPOINT_URL=http://hmpps-auth:9090/auth/oauth/token
