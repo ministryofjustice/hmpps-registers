@@ -13,8 +13,8 @@ export default function setUpWebSecurity(): Router {
         directives: {
           defaultSrc: ["'self'"],
           // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: ["'self'", 'code.jquery.com', "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='"],
-          styleSrc: ["'self'", 'code.jquery.com'],
+          scriptSrc: ["'self'", "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='", '*.google-analytics.com'],
+          styleSrc: ["'self'"],
           fontSrc: ["'self'"],
         },
       },
