@@ -1,29 +1,31 @@
 import UserService from './userService'
-import HmppsAuthClient, { User } from '../data/hmppsAuthClient'
-import TokenStore from '../data/tokenStore'
+import ManageUsersApiClient from '../data/manageUsersApiClient'
 
 jest.mock('../data/hmppsAuthClient')
 
-const token = 'some token'
+const token =
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNzEyODMzNTgxfQ.msHZ1pMy8FoZkFyODFViloAD4jVcxxHrTRvCVmRd1uc'
 
 describe('User service', () => {
-  let hmppsAuthClient: jest.Mocked<HmppsAuthClient>
+  let manageUsersApiClient: jest.Mocked<ManageUsersApiClient>
   let userService: UserService
 
   describe('getUser', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      userService = new UserService(hmppsAuthClient)
+      manageUsersApiClient = new ManageUsersApiClient() as jest.Mocked<ManageUsersApiClient>
+      userService = new UserService(manageUsersApiClient)
     })
+
     it('Retrieves and formats user name', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue({ name: 'john smith' } as User)
+      manageUsersApiClient.getUser = jest.fn().mockResolvedValue({ name: 'john smith', username: 'JSMITH' })
 
       const result = await userService.getUser(token)
 
       expect(result.displayName).toEqual('John Smith')
     })
+
     it('Propagates error', async () => {
-      hmppsAuthClient.getUser.mockRejectedValue(new Error('some error'))
+      manageUsersApiClient.getUser = jest.fn().mockRejectedValue(new Error('some error'))
 
       await expect(userService.getUser(token)).rejects.toEqual(new Error('some error'))
     })

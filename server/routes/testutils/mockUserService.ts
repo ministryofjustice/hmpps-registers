@@ -1,17 +1,16 @@
 import UserService, { UserDetails } from '../../services/userService'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
+import ManageUsersApiClient from '../../data/manageUsersApiClient'
 
-const user = {
+const user: UserDetails = {
   name: 'john smith',
-  firstName: 'john',
-  lastName: 'smith',
   username: 'user1',
   displayName: 'John Smith',
+  roles: [],
 }
 
 export default class MockUserService extends UserService {
   constructor() {
-    super({} as HmppsAuthClient)
+    super({} as ManageUsersApiClient)
   }
 
   async getUser(token: string): Promise<UserDetails> {

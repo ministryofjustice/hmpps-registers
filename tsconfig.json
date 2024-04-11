@@ -24,7 +24,8 @@
     "cypress",
     "**/*.spec.ts",
     "./cypress.config.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "server/routes/testutils/*"
   ],
   "include": ["**/*.js", "**/*.ts"]
 }
