@@ -100,45 +100,9 @@ const token = (roles: string[]) =>
     },
   })
 
-const stubUser = () =>
-  stubFor({
-    request: {
-      method: 'GET',
-      urlPattern: '/auth/api/user/me',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      jsonBody: {
-        staffId: 231232,
-        username: 'USER1',
-        active: true,
-        name: 'john smith',
-      },
-    },
-  })
-
-const stubUserRoles = () =>
-  stubFor({
-    request: {
-      method: 'GET',
-      urlPattern: '/auth/api/user/me/roles',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      jsonBody: [{ roleId: 'SOME_USER_ROLE' }],
-    },
-  })
-
 export default {
   getSignInUrl,
   stubPing: (): Promise<Array<Response>> => Promise.all([ping(), tokenVerification.stubPing()]),
   stubSignIn: (roles = ['ROLE_HMPPS_REGISTERS_MAINTAINER']): Promise<Array<Response>> =>
     Promise.all([favicon(), redirect(), signOut(), token(roles), tokenVerification.stubVerifyToken()]),
-  stubUser: (): Promise<Array<Response>> => Promise.all([stubUser(), stubUserRoles()]),
 }

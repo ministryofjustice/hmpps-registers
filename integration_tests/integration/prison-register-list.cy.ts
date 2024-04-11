@@ -6,7 +6,7 @@ context('Prison register - prison list navigation', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
-    cy.task('stubAuthUser')
+    cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [moorlandPrison])
     cy.signIn()
   })

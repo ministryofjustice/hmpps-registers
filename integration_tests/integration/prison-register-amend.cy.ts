@@ -8,7 +8,7 @@ context('Prison register - amend existing prison', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
-    cy.task('stubAuthUser')
+    cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison }, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubGetPrison', belmarshPrison)
