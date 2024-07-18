@@ -112,7 +112,7 @@
     "prom-client": "^15.1.3",
     "querystring": "^0.2.1",
     "redis": "^4.6.15",
-    "superagent": "^8.1.2",
+    "superagent": "^9.0.2",
     "uuid": "^9.0.1",
     "validatorjs": "^3.22.1"
   },
