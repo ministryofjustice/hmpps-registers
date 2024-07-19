@@ -111,7 +111,7 @@
     "passport-oauth2": "^1.8.0",
     "prom-client": "^15.1.0",
     "querystring": "^0.2.1",
-    "redis": "^4.6.13",
+    "redis": "^4.6.15",
     "superagent": "^8.1.2",
     "uuid": "^9.0.1",
     "validatorjs": "^3.22.1"
@@ -121,7 +121,6 @@
     "@types/bunyan-format": "^0.2.9",
     "@types/compression": "^1.7.5",
     "@types/connect-flash": "0.0.40",
-    "@types/connect-redis": "^0.0.23",
     "@types/cookie-session": "^2.0.48",
     "@types/csurf": "^1.11.5",
     "@types/express-session": "^1.18.0",
