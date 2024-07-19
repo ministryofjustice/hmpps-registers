@@ -1,13 +1,13 @@
 import createApp from './app'
 import HmppsAuthClient from './data/hmppsAuthClient'
-import { createRedisClient } from './data/redisClient'
 import TokenStore from './data/tokenStore'
 import UserService from './services/userService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { createMetricsApp } from './monitoring/metricsApp'
 import ManageUsersApiClient from './data/manageUsersApiClient'
+import { redisClient } from './data/redisClient'
 
-const hmppsAuthClient = new HmppsAuthClient(new TokenStore(createRedisClient({ legacyMode: false })))
+const hmppsAuthClient = new HmppsAuthClient(new TokenStore(redisClient))
 const manageUsersApiClient = new ManageUsersApiClient()
 
 const userService = new UserService(manageUsersApiClient)
