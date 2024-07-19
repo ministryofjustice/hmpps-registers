@@ -163,7 +163,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-jinja-template": "^1.4.1",
     "sass": "^1.77.8",
-    "supertest": "^6.3.4",
+    "supertest": "^7.0.0",
     "ts-jest": "^29.2.2",
     "typescript": "^5.5.3"
   }
