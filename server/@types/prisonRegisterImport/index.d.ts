@@ -233,7 +233,7 @@ export interface components {
        * @example HMP
        * @enum {string}
        */
-      code: 'HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS'
+      code: 'HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS' | 'LTHSE'
       /**
        * @description Prison type description
        * @example His Majesty’s Prison
