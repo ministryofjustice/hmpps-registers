@@ -11,6 +11,7 @@ describe('addNewPrisonAddressValidator', () => {
     gender: [],
     name: '',
     contracted: 'yes',
+    lthse: 'no',
     addressline1: '1 High Street',
     addresstown: 'Sheffield',
     addresscounty: 'South Yorkshire',

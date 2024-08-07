@@ -12,6 +12,7 @@ prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([
     male: true,
     female: true,
     contracted: false,
+    lthse: false,
     addresses: [],
     types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators: [{ name: 'PSP' }],
@@ -23,6 +24,7 @@ prisonRegisterService.getPrison.mockResolvedValue({
   active: true,
   male: true,
   contracted: false,
+  lthse: false,
   female: true,
   addresses: [
     {

@@ -125,6 +125,34 @@
                           errorMessage: errors | findError('contracted')
                         }) }}
 
+                        {{ govukRadios({
+                            classes: "govuk-radios--inline",
+                            idPrefix: "lthse",
+                            name: "lthse",
+                            fieldset: {
+                                legend: {
+                                    text: "Is this Prison a long term high security estate (LTHSE)?",
+                                    isPageHeading: false,
+                                    classes: "govuk-fieldset__legend--m"
+                                }
+                            },
+                            hint: {
+                                text: ""
+                            },
+                            items: [
+                                {
+                                    value: "yes",
+                                    text: "Yes",
+                                    checked: form.lthse === 'yes'
+                                },
+                                {
+                                    value: "no",
+                                    text: "No",
+                                    checked: form.lthse === 'no'
+                                }
+                            ]
+                        }) }}
+
                         <div class="govuk-button-group">
                             {{ govukButton({
                                 text: "Continue"

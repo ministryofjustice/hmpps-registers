@@ -140,6 +140,8 @@ export interface components {
       female: boolean
       /** @description If this is a contracted prison */
       contracted: boolean
+      /** @description Whether the prison is a Long Term High Security Estate (LTHSE) */
+      lthse: boolean
       /** @description Set of types for this prison */
       prisonTypes: ('HMP' | 'YOI' | 'IRC' | 'STC' | 'YCS')[]
     }
@@ -211,6 +213,8 @@ export interface components {
       female: boolean
       /** @description Whether the prison is contracted */
       contracted: boolean
+      /** @description Whether the prison is a Long Term High Security Estate (LTHSE) */
+      lthse: boolean
       /** @description List of types for this prison */
       types: components['schemas']['PrisonTypeDto'][]
       /** @description List of address for this prison */
@@ -293,6 +297,8 @@ export interface components {
       female: boolean
       /** @description If this is a contracted prison */
       contracted: boolean
+      /** @description Whether the prison is a Long Term High Security Estate (LTHSE) */
+      lthse: boolean
       /**
        * @description Set of types for this prison
        * @example HMP

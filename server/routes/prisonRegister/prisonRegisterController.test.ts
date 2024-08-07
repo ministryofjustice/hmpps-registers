@@ -356,6 +356,7 @@ describe('Prison Register controller', () => {
             id: 'MDI',
             name: 'HMP Moorland',
             contracted: 'no',
+            lthse: 'no',
             gender: ['male'],
             prisonType: ['HMP'],
           },
@@ -443,6 +444,7 @@ describe('Prison Register controller', () => {
           name: 'HMP Moorland',
           id: 'MDI',
           contracted: 'yes',
+          lthse: 'no',
           gender: ['male'],
           prisonTypes: ['HMP'],
         }
@@ -461,6 +463,7 @@ describe('Prison Register controller', () => {
           'MDI',
           'HMP Moorland',
           'yes',
+          'no',
           true,
           false,
           ['HMP'],
