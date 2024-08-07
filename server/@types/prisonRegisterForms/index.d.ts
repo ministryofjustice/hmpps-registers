@@ -4,6 +4,7 @@ declare module 'prisonForms' {
     name: string
     gender: string[]
     contracted: string
+    lthse: string
     prisonTypes?: string[]
     addressline1?: string
     addressline2?: string
@@ -20,6 +21,7 @@ declare module 'prisonForms' {
     gender: string[]
     prisonTypes: string[]
     contracted: string
+    lthse: string
   }
   export interface PrisonAddressForm {
     id?: string

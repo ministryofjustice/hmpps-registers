@@ -57,11 +57,13 @@
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Name</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Active</th>
                                         <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">Type(s)</th>
+                                        <th class="govuk-table__header govuk-!-width-one-fifth" scope="col">LTHSE</th>
                                     </tr>
                                     </thead>
 
                                     <tbody class="govuk-table__body">
                                     {% for prison in prisons %}
+                                        {{ prison | dump }}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ prison.id }}</td>
                                             <td class="govuk-table__cell"><a href="/prison-register/details?id={{ prison.id }}"
@@ -78,6 +80,11 @@
                                                 {% for type in prison.types %}
                                                     {{ type.code }}{% if loop.revindex > 1 %},{% endif %}
                                                 {% endfor %}
+                                            </td>
+                                            <td class="govuk-table__cell">
+                                                {% if prison.lthse %}
+                                                    LTHSE
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}

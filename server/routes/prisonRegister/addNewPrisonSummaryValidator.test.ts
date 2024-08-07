@@ -14,6 +14,7 @@ describe('addNewPrisonSummaryValidator', () => {
     name: 'Moorland Prison',
     gender: ['female'],
     contracted: 'yes',
+    lthse: 'no',
     prisonTypes: ['HMP'],
     addressline1: '',
     addressline2: '',
@@ -38,6 +39,7 @@ describe('addNewPrisonSummaryValidator', () => {
         male: false,
         female: true,
         contracted: true,
+        lthse: false,
         active: true,
         addresses: [
           {

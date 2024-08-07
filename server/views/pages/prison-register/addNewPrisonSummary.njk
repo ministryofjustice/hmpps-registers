@@ -10,7 +10,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro prisonname(id, name, gender, contracted, types, allTypes, typeDescription) %}
+{% macro prisonname(id, name, gender, contracted, lthse, types, allTypes, typeDescription) %}
   <p>
     {{ id }}
   </p>
@@ -36,8 +36,16 @@
     </p>
   {% endif %}
 
+  {% if 'yes' in lthse %}
+    <p>
+     LTHSE
+    </p>
+  {% endif %}
+
   {% if typeDescription %}
-    Type(s): {{ typeDescription }}
+    <p>
+      Type(s): {{ typeDescription }}
+    </p>
   {% endif %}
 
 {% endmacro %}

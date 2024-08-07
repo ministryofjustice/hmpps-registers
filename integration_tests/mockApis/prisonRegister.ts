@@ -168,6 +168,7 @@ export const belmarshPrison: Prison = {
   male: true,
   female: false,
   contracted: false,
+  lthse: false,
   addresses: [
     {
       id: 16,
