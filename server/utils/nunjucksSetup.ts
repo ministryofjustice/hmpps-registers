@@ -290,12 +290,12 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       classes: 'govuk-checkboxes--small',
       fieldset: {
         legend: {
-          text: 'LTHSE',
+          text: 'Long Term High Security Estate (LTHSE)',
           classes: 'govuk-fieldset__legend--m',
         },
       },
       hint: {
-        text: 'Display prisons that are only long term high security estates',
+        text: 'Display only prisons that are part of the long term high security estate',
       },
       items: [
         {
