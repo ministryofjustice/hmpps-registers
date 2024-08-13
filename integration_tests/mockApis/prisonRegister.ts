@@ -154,6 +154,7 @@ export const moorlandPrison: Prison = data.prison({
   male: false,
   female: true,
   contracted: true,
+  lthse: false,
   addresses: [data.prisonAddress({})],
   types: [
     { code: 'HMP', description: 'His Majesty’s Prison' },
@@ -168,6 +169,7 @@ export const belmarshPrison: Prison = {
   male: true,
   female: false,
   contracted: false,
+  lthse: false,
   addresses: [
     {
       id: 16,

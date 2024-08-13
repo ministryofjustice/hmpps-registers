@@ -7,6 +7,7 @@ describe('AddNewPrisonAddressView', () => {
         id: 'MDI',
         name: 'Moorland Prison',
         contracted: 'yes',
+        lthse: 'no',
         addresscountry: 'England',
         addresspostcode: 'S1 1WS',
         addresstown: 'Sheffield',
@@ -23,6 +24,7 @@ describe('AddNewPrisonAddressView', () => {
       addresstown: 'Sheffield',
       gender: ['male'],
       contracted: 'yes',
+      lthse: 'no',
     })
   })
   it('will pass through the back link', () => {
@@ -35,6 +37,7 @@ describe('AddNewPrisonAddressView', () => {
         addresstown: 'Sheffield',
         gender: ['male'],
         contracted: 'yes',
+        lthse: 'no',
       },
       'http://get-back',
       [],

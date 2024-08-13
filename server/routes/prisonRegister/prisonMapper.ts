@@ -7,6 +7,7 @@ export type PrisonDetail = {
   male?: boolean
   female?: boolean
   contracted?: boolean
+  lthse?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
   operators: OperatorDetail[]
@@ -48,6 +49,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     male: prison.male,
     female: prison.female,
     contracted: prison.contracted,
+    lthse: prison.lthse,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
     operators: prison.operators?.map(operatorMapper) || [],
@@ -89,4 +91,5 @@ export type AllPrisonsFilter = {
   textSearch?: string
   genders?: string[]
   prisonTypeCodes?: string[]
+  lthse?: boolean
 }

@@ -130,6 +130,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     const cancelActiveFilterTags = getCancelPrisonActiveFilterTags(allPrisonsFilter, hrefBase)
     const cancelGendersFilterTags = getCancelPrisonGenderFilterTags(allPrisonsFilter, hrefBase)
     const cancelTypeFilterTags = getCancelPrisonTypeFilterTags(allPrisonsFilter, hrefBase)
+    const cancelLthseFilterTags = getCancelLthseFilterTags(allPrisonsFilter, hrefBase)
     return {
       heading: {
         text: 'Filter',
@@ -166,6 +167,12 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
               text: 'Prison Types',
             },
             items: cancelTypeFilterTags,
+          },
+          {
+            heading: {
+              text: 'LTHSE',
+            },
+            items: cancelLthseFilterTags,
           },
         ],
       },
@@ -276,6 +283,30 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     }
   })
 
+  njkEnv.addFilter('toPrisonLthseCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
+    return {
+      idPrefix: 'lthse',
+      name: 'lthse',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Long Term High Security Estate (LTHSE)',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display only prisons that are part of the long term high security estate',
+      },
+      items: [
+        {
+          value: true,
+          text: 'LTHSE',
+          checked: allPrisonsFilter.lthse === true,
+        },
+      ],
+    }
+  })
+
   function getCancelPrisonActiveFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { active, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
     if (allPrisonsFilter.active === true) {
@@ -321,6 +352,19 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         text: type,
       }
     })
+  }
+
+  function getCancelLthseFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
+    const { lthse, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
+    if (allPrisonsFilter.lthse === true) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'LTHSE',
+        },
+      ]
+    }
+    return null
   }
 
   function removeTypes(allPrisonsFilter: AllPrisonsFilter, type: string): AllPrisonsFilter {

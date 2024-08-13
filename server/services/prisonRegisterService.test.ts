@@ -112,6 +112,7 @@ describe('Prison Register service', () => {
         'MDI',
         'HMP Moorland',
         'yes',
+        'no',
         true,
         false,
         [],
@@ -125,6 +126,7 @@ describe('Prison Register service', () => {
         'MDI',
         'HMP Moorland Updated',
         'yes',
+        'no',
         true,
         false,
         ['HMP'],
@@ -271,6 +273,7 @@ describe('Prison Register service', () => {
         male: false,
         contracted: true,
         prisonId: 'SHEF',
+        lthse: false,
         prisonName: 'Sheffield Prison',
         prisonTypes: ['HMP'],
         addresses: [
@@ -334,6 +337,7 @@ describe('Prison Register service', () => {
           female: false,
           male: true,
           contracted: true,
+          lthse: false,
           addresses: [
             {
               addressLine1: '1 High Street',
@@ -375,6 +379,7 @@ describe('Prison Register service', () => {
           female: false,
           male: true,
           contracted: true,
+          lthse: false,
           addresses: [
             {
               addressLine1: '1 High Street',

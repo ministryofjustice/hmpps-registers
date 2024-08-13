@@ -23,9 +23,10 @@ context('Prison register - Add new prison', () => {
       const prisonDetails = AddPrisonDetailsPage.verifyOnPage()
       prisonDetails.id().type(id)
       prisonDetails.name().type('Doncaster Prison')
-      prisonDetails.prisonType('STC').click()
       prisonDetails.gender('female').click()
+      prisonDetails.prisonType('STC').click()
       prisonDetails.contractedRadioYes().click()
+      prisonDetails.lthseYes().click()
       prisonDetails.continueButton().click()
     }
     const fillPrisonAddressPage = () => {

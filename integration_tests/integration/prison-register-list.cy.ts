@@ -43,6 +43,7 @@ context('Prison register - prison list navigation', () => {
     page.allFilter().should('have.attr', 'type', 'radio').should('be.checked')
     page.activeFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
     page.inactiveFilter().should('have.attr', 'type', 'radio').should('not.be.checked')
+    page.lthseFilter().should('have.attr', 'type', 'checkbox').should('not.be.checked')
     // Set filter to active prisons only
     page.activeFilter().click()
     page.applyFilterButton().click()
@@ -192,14 +193,17 @@ context('Prison register - prison list navigation', () => {
     // Filter on hmp prison
     page.showFilterButton().click()
     page.hmpFilter().click()
+    page.lthseFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
     // Cancel the type filter by clicking on the filter tag
     page.cancelHmpFilter().click()
     page.showFilterButton().click()
+    page.cancelLthseFilter().click()
     // Check we are not filtering on type
     page.cancelTextSearchFilter('HMP').should('not.exist')
     page.hmpFilter().should('not.be.checked')
+    page.lthseFilter().should('not.be.checked')
     cy.url().should('not.contain', 'prisonTypeCodes=HMP')
   })
 
@@ -212,6 +216,7 @@ context('Prison register - prison list navigation', () => {
     page.activeFilter().click()
     page.textSearchFilter().type('Albany')
     page.femaleFilter().click()
+    page.lthseFilter().click()
     page.applyFilterButton().click()
     page.showFilterButton().click()
     // Check the filter has been applied
@@ -220,6 +225,7 @@ context('Prison register - prison list navigation', () => {
     cy.url().should('contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')
     cy.url().should('contain', 'genders=MALE')
+    cy.url().should('contain', 'lthse=true')
     // Cancel the active prison filter by clicking on the filter tag
     page.cancelActiveFilter().click()
     page.showFilterButton().click()
@@ -229,5 +235,6 @@ context('Prison register - prison list navigation', () => {
     cy.url().should('not.contain', 'active=true')
     cy.url().should('contain', 'textSearch=Albany')
     cy.url().should('contain', 'genders=MALE')
+    cy.url().should('contain', 'lthse=true')
   })
 })

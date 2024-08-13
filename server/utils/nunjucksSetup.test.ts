@@ -121,6 +121,25 @@ describe('toPrisonListFilter', () => {
     )
   })
 
+  it('should show active lthse cancel tag', () => {
+    const result = njk.getFilter('toPrisonListFilter')([], { lthse: true })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'LTHSE',
+          },
+          items: [
+            {
+              href: '/prison-register?',
+              text: 'LTHSE',
+            },
+          ],
+        }),
+      ]),
+    )
+  })
+
   it('should pass in options html', () => {
     const result = njk.getFilter('toPrisonListFilter')('some-options-html', { active: false })
     expect(result.optionsHtml).toEqual('some-options-html')

@@ -79,16 +79,19 @@ export default class PrisonRegisterService {
     prisonId: string,
     prisonName: string,
     contracted: string,
+    lthse: string,
     male: boolean,
     female: boolean,
     prisonTypes: UpdatePrison['prisonTypes'],
   ): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const isContracted = contracted === 'yes'
+    const isLthse = lthse === 'yes'
 
     const updatedPrison: UpdatePrison = {
       active: prison.active,
       contracted: isContracted,
+      lthse: isLthse,
       prisonName,
       male,
       female,
@@ -146,8 +149,8 @@ export default class PrisonRegisterService {
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const prisonTypes = prison.types.map(type => type.code)
-    const { prisonName, male, female, contracted } = prison
-    const updatedPrison: UpdatePrison = { active, prisonName, male, female, contracted, prisonTypes }
+    const { prisonName, male, female, contracted, lthse } = prison
+    const updatedPrison: UpdatePrison = { active, prisonName, male, female, contracted, lthse, prisonTypes }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
     await PrisonRegisterService.restClient(token).put({

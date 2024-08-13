@@ -5,7 +5,7 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female, contracted, types, operators) %}
+{% macro prisonname(id, name, active, male, female, contracted, lthse, types, operators) %}
   <p>
     {{ id }}
   </p>
@@ -51,6 +51,12 @@
       {% endfor %}
     </p>
   {% endif %}
+
+  <p>
+    {% if lthse %}
+      Long Term High Security Estate (LTHSE)
+    {% endif %}
+  </p>
 {% endmacro %}
 
 {% macro line(text) %}
@@ -148,7 +154,7 @@
         text: "Prison"
       },
         value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.types, prisonDetails.operators),
+        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.lthse, prisonDetails.types, prisonDetails.operators),
         classes: "prison-details"
       },
         actions: {

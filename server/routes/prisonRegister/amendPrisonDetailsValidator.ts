@@ -9,6 +9,7 @@ export default async function validate(
     id: string,
     name: string,
     contracted: string,
+    lthse: string,
     gender?: string[],
     prisonTypes?: string[],
   ) => Promise<void>,
@@ -29,7 +30,7 @@ export default async function validate(
     return `/prison-register/amend-prison-details`
   }
 
-  await updateService(form.id, form.name, form.contracted, form.gender, form.prisonTypes)
+  await updateService(form.id, form.name, form.contracted, form.lthse, form.gender, form.prisonTypes)
 
   return `/prison-register/details?id=${form.id}&action=UPDATED`
 }
