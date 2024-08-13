@@ -30,7 +30,7 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
     male: genders.includes('male'),
     female: genders.includes('female'),
     contracted: form.contracted.includes('yes'),
-    lthse: form.lthse.includes('no'),
+    lthse: form.lthse.includes('yes'),
     active: true,
     prisonTypes: (ControllerHelper.parseStringArrayFromQuery(form.prisonTypes) || []) as InsertPrison['prisonTypes'],
     addresses: [

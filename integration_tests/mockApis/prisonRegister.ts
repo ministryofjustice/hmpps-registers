@@ -154,6 +154,7 @@ export const moorlandPrison: Prison = data.prison({
   male: false,
   female: true,
   contracted: true,
+  lthse: false,
   addresses: [data.prisonAddress({})],
   types: [
     { code: 'HMP', description: 'His Majesty’s Prison' },

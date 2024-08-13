@@ -103,22 +103,31 @@ describe('Prison Register controller', () => {
       expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { prisonTypeCodes: ['HMP'] })
     })
 
+    it('it will call prison register service with lthse filter param', async () => {
+      req.query.lthse = 'true'
+
+      await controller.showAllPrisons(req, res)
+
+      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { lthse: true })
+    })
+
     it('it will call prison register service with all filter params', async () => {
       req.query.active = 'true'
       req.query.textSearch = 'ALI'
       req.query.genders = ['MALE']
       req.query.prisonTypeCodes = ['HMP']
+      req.query.lthse = 'true'
 
       await controller.showAllPrisons(req, res)
 
       expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith(
         {},
-        { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] },
+        { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'], lthse: true },
       )
     })
     it('will set the list page link in the session', async () => {
       const reqWithQueryParms = {
-        query: { active: 'true', textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'] },
+        query: { active: 'true', textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'], lthse: 'true' },
         session: {},
         flash: jest.fn(),
       } as unknown as Request

@@ -52,6 +52,7 @@ export default class PrisonRegisterController {
       textSearch: req.query.textSearch as string | undefined,
       genders: gendersFromQuery,
       prisonTypeCodes: ControllerHelper.parseStringArrayFromQuery(req.query.prisonTypeCodes as string[]),
+      lthse: ControllerHelper.parseBooleanFromQuery(req.query.lthse as string),
     }
     return ControllerHelper.removeEmptyValues(filter)
   }

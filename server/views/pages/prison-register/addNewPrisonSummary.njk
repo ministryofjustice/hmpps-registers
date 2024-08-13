@@ -36,7 +36,7 @@
     </p>
   {% endif %}
 
-  {% if 'yes' in lthse %}
+  {% if lthse|length %}
     <p>
      LTHSE
     </p>
@@ -80,7 +80,7 @@
                 text: "Prison"
               },
                 value: {
-                html: prisonname(form.id, form.name, gender, form.contracted, form.prisonTypes, types, typeDescription),
+                html: prisonname(form.id, form.name, gender, form.contracted, from.lthse, form.prisonTypes, types, typeDescription),
                 classes: "prison-details"
               },
                 actions: {

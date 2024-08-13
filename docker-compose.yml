@@ -10,7 +10,7 @@ services:
       - '6379:6379'
 
   prison-register:
-    image: quay.io/hmpps/prison-register:latest
+    image: map1440-c
     container_name: prison-register
     depends_on:
       - prison-register-db
@@ -51,7 +51,7 @@ services:
       - POSTGRES_DB=auth-db
 
   localstack:
-    image: localstack/localstack:3.5.0
+    image: localstack/localstack:stable
     container_name: localstack
     ports:
       - "4567-4597:4567-4597"

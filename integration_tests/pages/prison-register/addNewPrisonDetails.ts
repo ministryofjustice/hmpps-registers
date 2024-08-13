@@ -7,8 +7,8 @@ const prisonDetails = {
   name: () => cy.get('#name'),
   prisonType: (prisonType: string) => cy.get(`input[value="${prisonType}"]`),
   gender: (gender: string) => cy.get(`input[value="${gender}"]`),
-  contractedRadioYes: () => cy.get('input[value="yes"]'),
-  contractedRadioNo: () => cy.get('input[value="no"]'),
+  contractedRadioYes: () => cy.get('#contracted[value="yes"]'),
+  lthseYes: () => cy.get('#lthse[value="yes"]'),
   errorSummary: () => cy.get('.govuk-error-summary'),
 }
 const verifyOnPage = (): typeof prisonDetails & Page => page('Add a new prison - main details', prisonDetails)

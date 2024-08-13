@@ -91,4 +91,5 @@ export type AllPrisonsFilter = {
   textSearch?: string
   genders?: string[]
   prisonTypeCodes?: string[]
+  lthse?: boolean
 }
