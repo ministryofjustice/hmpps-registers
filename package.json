@@ -165,5 +165,12 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.3",
     "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "jest": {
+      "jest-core": {
+        "micromatch": "4.0.8"
+      }
+    }
   }
 }
