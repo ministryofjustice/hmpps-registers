@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   redis:
-    image: 'redis:7.2'
+    image: 'redis:7.4'
     container_name: redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
