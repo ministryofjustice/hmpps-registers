@@ -28,7 +28,7 @@
     "clean": "rm -rf dist build node_modules stylesheets"
   },
   "engines": {
-    "node": "^20",
+    "node": "^22",
     "npm": "^10"
   },
   "jest": {
@@ -127,7 +127,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.13",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "^18.19.55",
+    "@types/node": "^22.10.2",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.16",
     "@types/passport-oauth2": "^1.4.17",
