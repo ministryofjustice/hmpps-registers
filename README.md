@@ -35,6 +35,12 @@ And then, to build the assets and start the app with nodemon:
 
 `npm run test`
 
+Run:
+
+```shell
+npm run test-coverage
+```
+
 ### Running integration tests
 
 For local running, start a test db, redis, and wiremock instance by:
