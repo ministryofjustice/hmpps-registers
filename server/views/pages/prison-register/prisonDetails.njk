@@ -5,13 +5,18 @@
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
-{% macro prisonname(id, name, active, male, female, contracted, lthse, types, operators) %}
+{% macro prisonname(id, name, prisonNameInWelsh, active, male, female, contracted, lthse, types, operators) %}
   <p>
     {{ id }}
   </p>
   <p>
     {{ name }}
   </p>
+  {% if prisonNameInWelsh %}
+    <p>
+    {{ prisonNameInWelsh }}
+  </p>
+  {% endif %}
   <p>
     {% if active %}
       Active
@@ -145,7 +150,6 @@
       {% endif %}
     </form>
   </div>
-
   {{ govukSummaryList({
     attributes: { "data-qa": "prison-summary-section"},
     rows: [
@@ -154,7 +158,7 @@
         text: "Prison"
       },
         value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.lthse, prisonDetails.types, prisonDetails.operators),
+        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.prisonNameInWelsh, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.lthse, prisonDetails.types, prisonDetails.operators),
         classes: "prison-details"
       },
         actions: {

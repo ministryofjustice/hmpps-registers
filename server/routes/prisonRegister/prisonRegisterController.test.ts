@@ -313,6 +313,30 @@ describe('Prison Register controller', () => {
           backLink: '/prison-register',
         })
       })
+      it('will render summary with selected prison type description and welsh prison name', async () => {
+        req.session.addNewPrisonForm = {
+          name: 'Cardif',
+          prisonNameInWelsh: 'Carchar Caerdydd',
+          prisonTypes: ['HMP'],
+          gender: ['male', 'female'],
+        }
+        req.session.prisonListPageLink = '/prison-register'
+
+        await controller.addNewPrisonSummary(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addNewPrisonSummary', {
+          form: {
+            name: 'Cardif',
+            prisonNameInWelsh: 'Carchar Caerdydd',
+            prisonTypes: ['HMP'],
+            gender: ['male', 'female'],
+            completed: true,
+          },
+          gender: ['male', 'female'],
+          typeDescription: "His Majesty's Prison (HMP)",
+          backLink: '/prison-register',
+        })
+      })
     })
   })
 

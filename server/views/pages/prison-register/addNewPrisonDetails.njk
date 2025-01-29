@@ -62,6 +62,19 @@
                             errorMessage: errors | findError('name')
                         }) }}
 
+                        {{ govukInput({
+                            label: {
+                                html: 'Welsh prison name (optional)'
+                            },
+                            id: "prisonNameInWelsh",
+                            name: "prisonNameInWelsh",
+                            hint: {
+                                text: "This is only required for establishments in Wales."
+                            },
+                            value: form.prisonNameInWelsh,
+                            errorMessage: errors | findError('prisonNameInWelsh')
+                        }) }}
+
                         {{ govukCheckboxes({
                             idPrefix: "gender",
                             name: "gender",

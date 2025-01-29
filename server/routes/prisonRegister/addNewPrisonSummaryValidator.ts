@@ -27,6 +27,7 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
   return {
     prisonId: form.id as string,
     prisonName: form.name as string,
+    prisonNameInWelsh: form.prisonNameInWelsh as string,
     male: genders.includes('male'),
     female: genders.includes('female'),
     contracted: form.contracted.includes('yes'),

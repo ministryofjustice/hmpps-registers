@@ -2,6 +2,7 @@ declare module 'prisonForms' {
   export interface AddNewPrisonForm {
     id?: string
     name: string
+    prisonNameInWelsh: string
     gender: string[]
     contracted: string
     lthse: string
