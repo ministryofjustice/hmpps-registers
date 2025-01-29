@@ -14,6 +14,7 @@ describe('addNewPrisonDetailsValidator', () => {
   const validForm: AddNewPrisonForm = {
     id: 'MDI',
     name: 'Moorland Prison',
+    prisonNameInWelsh: '',
     gender: ['male'],
     contracted: 'yes',
     lthse: 'no',

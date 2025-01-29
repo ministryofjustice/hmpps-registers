@@ -12,6 +12,7 @@ describe('addNewPrisonSummaryValidator', () => {
   const form: AddNewPrisonForm = {
     id: 'MDI',
     name: 'Moorland Prison',
+    prisonNameInWelsh: '',
     gender: ['female'],
     contracted: 'yes',
     lthse: 'no',
@@ -35,6 +36,7 @@ describe('addNewPrisonSummaryValidator', () => {
       const expectedPrison: InsertPrison = {
         prisonId: 'MDI',
         prisonName: 'Moorland Prison',
+        prisonNameInWelsh: '',
         prisonTypes: ['HMP'],
         male: false,
         female: true,
