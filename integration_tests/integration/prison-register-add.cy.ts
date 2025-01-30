@@ -46,7 +46,13 @@ context('Prison register - Add new prison', () => {
       AllPrisonsPage.verifyOnPage().addNewPrisonButton().click()
     })
     it('Can navigate to add new prison page', () => {
-      AddPrisonDetailsPage.verifyOnPage()
+      const mainPrisonDetails = AddPrisonDetailsPage.verifyOnPage()
+      mainPrisonDetails.prisonWelshName().should('exist')
+    })
+
+    it('Should contain Welsh name inout', () => {
+      const mainPrisonDetails = AddPrisonDetailsPage.verifyOnPage()
+      mainPrisonDetails.prisonWelshName().should('exist')
     })
 
     describe('add new prison details', () => {
@@ -54,6 +60,7 @@ context('Prison register - Add new prison', () => {
         fillPrisonDetailsPage()
         AddPrisonAddressPage.verifyOnPage()
       })
+
       it('Entering invalid data keeps you on page with error messages', () => {
         const prisonDetails = AddPrisonDetailsPage.verifyOnPage()
         prisonDetails.id().type(' ')

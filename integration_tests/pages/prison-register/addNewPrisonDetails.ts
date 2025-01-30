@@ -10,6 +10,7 @@ const prisonDetails = {
   contractedRadioYes: () => cy.get('#contracted[value="yes"]'),
   lthseYes: () => cy.get('#lthse[value="yes"]'),
   errorSummary: () => cy.get('.govuk-error-summary'),
+  prisonWelshName: () => cy.get('[data-qa=prison-name-in-welsh]'),
 }
 const verifyOnPage = (): typeof prisonDetails & Page => page('Add a new prison - main details', prisonDetails)
 

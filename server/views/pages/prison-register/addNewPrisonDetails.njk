@@ -72,7 +72,8 @@
                                 text: "This is only required for establishments in Wales."
                             },
                             value: form.prisonNameInWelsh,
-                            errorMessage: errors | findError('prisonNameInWelsh')
+                            errorMessage: errors | findError('prisonNameInWelsh'),
+                            attributes: { "data-qa": "prison-name-in-welsh"}
                         }) }}
 
                         {{ govukCheckboxes({
