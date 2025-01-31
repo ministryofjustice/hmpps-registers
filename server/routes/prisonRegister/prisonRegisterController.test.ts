@@ -406,6 +406,7 @@ describe('Prison Register controller', () => {
         data.prison({
           prisonId: 'MDI',
           prisonName: 'HMP Moorland',
+          prisonNameInWelsh: '',
           active: true,
           male: true,
           female: false,
@@ -446,6 +447,49 @@ describe('Prison Register controller', () => {
           form: {
             id: 'MDI',
             name: 'HMP Moorland',
+            prisonNameInWelsh: '',
+            contracted: 'no',
+            lthse: 'no',
+            gender: ['male'],
+            prisonType: ['HMP'],
+          },
+          genderValues: [
+            { text: 'Male', value: 'male' },
+            {
+              text: 'Female',
+              value: 'female',
+            },
+          ],
+          prisonTypesValues: [
+            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+            { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
+            { text: 'Secure Training Centre (STC)', value: 'STC' },
+            { text: 'Youth Custody Service (YCS)', value: 'YCS' },
+          ],
+          errors: [],
+        })
+      })
+
+      it('will create form for Welsh prison and pass through to page', async () => {
+        prisonRegisterService.getPrison.mockResolvedValue(
+          data.prison({
+            prisonId: 'CFI',
+            prisonName: 'HMP Cardiff',
+            prisonNameInWelsh: 'Carchar Caerdydd',
+            active: true,
+            male: true,
+            female: false,
+          }),
+        )
+
+        await controller.amendPrisonDetailsStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
+          form: {
+            id: 'CFI',
+            name: 'HMP Cardiff',
+            prisonNameInWelsh: 'Carchar Caerdydd',
             contracted: 'no',
             lthse: 'no',
             gender: ['male'],
@@ -534,6 +578,7 @@ describe('Prison Register controller', () => {
         req.session.amendPrisonDetailsForm = {
           name: 'HMP Moorland',
           id: 'MDI',
+          prisonNameInWelsh: '',
           contracted: 'yes',
           lthse: 'no',
           gender: ['male'],
@@ -553,6 +598,28 @@ describe('Prison Register controller', () => {
           { username: 'tom' },
           'MDI',
           'HMP Moorland',
+          null,
+          'yes',
+          'no',
+          true,
+          false,
+          ['HMP'],
+        )
+      })
+
+      it('will call service with a valid form data including welsh prison name', async () => {
+        req.body = {
+          ...req.body,
+          name: 'HMP Cardiff',
+          id: 'CFI',
+          prisonNameInWelsh: 'Carchar Caerdydd',
+        }
+        await controller.submitAmendPrisonDetails(req, res)
+        expect(prisonRegisterService.updatePrisonDetails).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'CFI',
+          'HMP Cardiff',
+          'Carchar Caerdydd',
           'yes',
           'no',
           true,

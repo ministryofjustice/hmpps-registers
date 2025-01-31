@@ -7,11 +7,12 @@ jest.mock('../../services/prisonRegisterService')
 describe('amendPrisonDetailsValidator', () => {
   const req = {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
-  } as Request
+  } as unknown as Request
 
   const validForm: AmendPrisonDetailsForm = {
     id: 'MDI',
     name: 'Moorland Prison',
+    prisonNameInWelsh: '',
     gender: ['male'],
     prisonTypes: ['HMP'],
     contracted: 'yes',
@@ -38,6 +39,7 @@ describe('amendPrisonDetailsValidator', () => {
       expect(updateService).toHaveBeenCalledWith(
         form.id,
         form.name,
+        form.prisonNameInWelsh,
         form.contracted,
         form.lthse,
         form.gender,
@@ -64,6 +66,24 @@ describe('amendPrisonDetailsValidator', () => {
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
       expect(req.flash).toBeCalledWith('errors', [
         { href: '#name', text: 'Enter a prison name between 3 and 80 characters' },
+      ])
+    })
+
+    it('welsh name must be geater than 3 chars if present', async () => {
+      const form = { ...validForm, prisonNameInWelsh: 'A'.repeat(2) }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/prison-register/amend-prison-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#prisonNameInWelsh', text: 'Enter a prison name in Welsh between 3 and 80 characters' },
+      ])
+    })
+
+    it('welsh name must be less than 80 chars if present', async () => {
+      const form = { ...validForm, prisonNameInWelsh: 'A'.repeat(81) }
+      const nextPage = await validate(form, req, updateService)
+      expect(nextPage).toEqual('/prison-register/amend-prison-details')
+      expect(req.flash).toBeCalledWith('errors', [
+        { href: '#prisonNameInWelsh', text: 'Enter a prison name in Welsh between 3 and 80 characters' },
       ])
     })
   })

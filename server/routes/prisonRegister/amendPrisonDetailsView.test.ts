@@ -5,6 +5,7 @@ describe('AmendPrisonDetailsView', () => {
   const form: AmendPrisonDetailsForm = {
     id: 'MDI',
     name: 'Moorland Prison',
+    prisonNameInWelsh: undefined,
     gender: ['female'],
     prisonTypes: ['HMP', 'YOI'],
     contracted: 'yes',
@@ -15,6 +16,22 @@ describe('AmendPrisonDetailsView', () => {
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
       name: 'Moorland Prison',
+      contracted: 'yes',
+      lthse: 'no',
+      gender: ['female'],
+      prisonTypes: ['HMP', 'YOI'],
+    })
+  })
+
+  it('will pass through the form including Welsh prison name', () => {
+    form.id = 'CFI'
+    form.name = 'HMP Cardiff'
+    form.prisonNameInWelsh = 'Carchar Caerdydd'
+    const view = new AmendPrisonDetailsView(form, [])
+    expect(view.renderArgs.form).toEqual({
+      id: 'CFI',
+      name: 'HMP Cardiff',
+      prisonNameInWelsh: 'Carchar Caerdydd',
       contracted: 'yes',
       lthse: 'no',
       gender: ['female'],

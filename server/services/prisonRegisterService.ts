@@ -78,6 +78,7 @@ export default class PrisonRegisterService {
     context: Context,
     prisonId: string,
     prisonName: string,
+    prisonNameInWelsh: string,
     contracted: string,
     lthse: string,
     male: boolean,
@@ -96,6 +97,7 @@ export default class PrisonRegisterService {
       male,
       female,
       prisonTypes,
+      prisonNameInWelsh,
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending prison details for ${prisonId}`)

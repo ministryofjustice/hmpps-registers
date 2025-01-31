@@ -138,6 +138,7 @@ export default class PrisonRegisterController {
     req.session.amendPrisonDetailsForm = {
       id: prison.prisonId,
       name: prison.prisonName,
+      prisonNameInWelsh: prison.prisonNameInWelsh,
       gender,
       prisonType: prison.types.map(type => type.code),
       contracted,
@@ -164,6 +165,7 @@ export default class PrisonRegisterController {
         (
           prisonId: string,
           name: string,
+          prisonNameInWelsh: string,
           contracted: string,
           lthse: string,
           gender: string[],
@@ -181,6 +183,7 @@ export default class PrisonRegisterController {
             context(res),
             prisonId,
             name,
+            prisonNameInWelsh || null,
             contracted,
             lthse,
             genderArray.includes('male'),

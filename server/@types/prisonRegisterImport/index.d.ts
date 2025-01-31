@@ -132,6 +132,11 @@ export interface components {
        * @example HMP Moorland
        */
       prisonName: string
+      /**
+       * @description Welsh name of the prison
+       * @example Carchar Caerdydd
+       */
+      prisonNameInWelsh?: string
       /** @description Whether the prison is still active */
       active: boolean
       /** @description If this is a male prison */
