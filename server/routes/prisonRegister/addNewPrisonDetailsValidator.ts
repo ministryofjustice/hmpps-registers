@@ -12,6 +12,7 @@ export default async function validate(
     form,
     {
       name: ['required', 'between:2,80'],
+      prisonNameInWelsh: ['between:2,80'],
       id: ['required', 'between:2,6', 'unique-prison-code'],
       contracted: ['required'],
     },
@@ -20,6 +21,7 @@ export default async function validate(
       'between.id': 'Enter a prison code between 2 and 6 characters',
       'required.name': 'Enter a prison name',
       'between.name': 'Enter a prison name between 2 and 80 characters',
+      'between.prisonNameInWelsh': 'Enter a prison name in Welsh between 2 and 80 characters',
       'between.description': 'Enter a prison description between 2 and 200 characters',
       'required.contracted': 'State whether prison is contracted',
     },

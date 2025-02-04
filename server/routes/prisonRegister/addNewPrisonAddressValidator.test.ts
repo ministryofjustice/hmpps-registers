@@ -10,6 +10,7 @@ describe('addNewPrisonAddressValidator', () => {
   const validForm: AddNewPrisonForm = {
     gender: [],
     name: '',
+    prisonNameInWelsh: '',
     contracted: 'yes',
     lthse: 'no',
     addressline1: '1 High Street',

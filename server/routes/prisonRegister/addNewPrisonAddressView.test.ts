@@ -6,6 +6,7 @@ describe('AddNewPrisonAddressView', () => {
       {
         id: 'MDI',
         name: 'Moorland Prison',
+        prisonNameInWelsh: '',
         contracted: 'yes',
         lthse: 'no',
         addresscountry: 'England',
@@ -19,6 +20,7 @@ describe('AddNewPrisonAddressView', () => {
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
       name: 'Moorland Prison',
+      prisonNameInWelsh: '',
       addresscountry: 'England',
       addresspostcode: 'S1 1WS',
       addresstown: 'Sheffield',
@@ -32,6 +34,7 @@ describe('AddNewPrisonAddressView', () => {
       {
         id: 'MDI',
         name: 'Moorland Prison',
+        prisonNameInWelsh: '',
         addresscountry: 'England',
         addresspostcode: 'S1 1WS',
         addresstown: 'Sheffield',

@@ -132,6 +132,11 @@ export interface components {
        * @example HMP Moorland
        */
       prisonName: string
+      /**
+       * @description Welsh name of the prison
+       * @example Carchar Caerdydd
+       */
+      prisonNameInWelsh?: string
       /** @description Whether the prison is still active */
       active: boolean
       /** @description If this is a male prison */
@@ -205,6 +210,11 @@ export interface components {
        * @example Moorland HMP
        */
       prisonName: string
+      /**
+       * @description Welsh name of the prison
+       * @example Carchar Caerdydd
+       */
+      prisonNameInWelsh?: string
       /** @description Whether the prison is still active */
       active: boolean
       /** @description Whether the prison has male prisoners */
@@ -289,6 +299,11 @@ export interface components {
        * @example HMP Moorland
        */
       prisonName: string
+      /**
+       * @description Welsh name of the prison
+       * @example Carchar Caerdydd
+       */
+      prisonNameInWelsh?: string
       /** @description Whether the prison is still active */
       active: boolean
       /** @description If this is a male prison */

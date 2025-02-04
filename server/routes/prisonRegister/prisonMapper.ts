@@ -3,6 +3,7 @@ import { OperatorType, Prison, PrisonAddress, PrisonType } from '../../@types/pr
 export type PrisonDetail = {
   id: string
   name: string
+  prisonNameInWelsh: string
   active: boolean
   male?: boolean
   female?: boolean
@@ -45,6 +46,7 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
   return {
     id: prison.prisonId,
     name: prison.prisonName,
+    prisonNameInWelsh: prison.prisonNameInWelsh,
     active: prison.active,
     male: prison.male,
     female: prison.female,

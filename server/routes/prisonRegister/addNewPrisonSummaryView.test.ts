@@ -5,6 +5,7 @@ describe('AddNewPrisonSummaryView', () => {
     {
       id: 'MDI',
       name: 'Moorland Prison',
+      prisonNameInWelsh: '',
       gender: ['male'],
       contracted: 'yes',
       lthse: 'no',
@@ -20,6 +21,7 @@ describe('AddNewPrisonSummaryView', () => {
     expect(view.renderArgs.form).toEqual({
       id: 'MDI',
       name: 'Moorland Prison',
+      prisonNameInWelsh: '',
       gender: ['male'],
       prisonTypes: ['HMP', 'STC'],
       contracted: 'yes',
