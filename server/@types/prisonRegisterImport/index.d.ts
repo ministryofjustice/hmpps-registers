@@ -159,6 +159,35 @@ export interface components {
       developerMessage?: string
       moreInfo?: string
     }
+    /** @description Welsh Address Record */
+    WelshAddressDto: {
+      /**
+       * @description Address line 1
+       * @example Bawtry Road
+       */
+      addressLine1InWelsh?: string
+      /**
+       * @description Address line 2
+       * @example Hatfield Woodhouse
+       */
+      addressLine2InWelsh?: string
+      /**
+       * @description Village/Town/City
+       * @example Doncaster
+       */
+      townInWelsh: string
+      /**
+       * @description County
+       * @example South Yorkshire
+       */
+      countyInWelsh?: string
+      /**
+       * @description Country
+       * @example Cymru
+       */
+      countryInWelsh?: string
+    }
+
     /** @description List of address for this prison */
     AddressDto: {
       /**
@@ -199,34 +228,6 @@ export interface components {
       country: string
     } & WelshAddressDto
 
-    /** @description Address Update Record */
-    WelshAddressDto: {
-      /**
-       * @description Address line 1
-       * @example Bawtry Road
-       */
-      addressLine1InWelsh?: string
-      /**
-       * @description Address line 2
-       * @example Hatfield Woodhouse
-       */
-      addressLine2InWelsh?: string
-      /**
-       * @description Village/Town/City
-       * @example Doncaster
-       */
-      townInWelsh: string
-      /**
-       * @description County
-       * @example South Yorkshire
-       */
-      countyInWelsh?: string
-      /**
-       * @description Country
-       * @example Cymru
-       */
-      countryInWelsh?: string
-    }
     /** @description Prison Information */
     PrisonDto: {
       /**
