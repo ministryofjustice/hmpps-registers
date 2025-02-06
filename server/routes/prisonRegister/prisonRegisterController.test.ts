@@ -225,37 +225,6 @@ describe('Prison Register controller', () => {
         action: 'NONE',
       })
     })
-
-    it('will render prison details page including welsh prison name', async () => {
-      prisonRegisterService.getPrison.mockResolvedValue(
-        data.prison({ prisonNameInWelsh: 'Carchar Brynbuga', addresses: [data.prisonAddress({})] }),
-      )
-
-      await controller.viewPrison(req, res)
-
-      expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
-        prisonDetails: expect.objectContaining({
-          id: 'ALI',
-          name: 'Albany (HMP)',
-          prisonNameInWelsh: 'Carchar Brynbuga',
-          active: true,
-          female: true,
-          male: true,
-          addresses: [
-            {
-              id: 21,
-              line1: 'Bawtry Road',
-              line2: 'Hatfield Woodhouse',
-              town: 'Doncaster',
-              country: 'England',
-              county: 'South Yorkshire',
-              postcode: 'DN7 6BW',
-            },
-          ],
-        }),
-        action: 'NONE',
-      })
-    })
   })
 
   describe('togglePrisonActive', () => {

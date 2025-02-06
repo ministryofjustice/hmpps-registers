@@ -72,6 +72,7 @@ describe('PrisonDetailsView', () => {
       data.prison({
         prisonId: 'CFI',
         prisonName: 'Cardiff',
+        prisonNameInWelsh: 'Carchar Caerdydd',
         addresses: [
           data.prisonAddress({
             id: 22,
@@ -95,6 +96,7 @@ describe('PrisonDetailsView', () => {
       action: 'NONE',
       isWelshPrison: true,
       prisonDetails: {
+        prisonNameInWelsh: 'Carchar Caerdydd',
         active: true,
         addresses: [
           {
