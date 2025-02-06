@@ -5,7 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
-import { InsertPrison, UpdatePrison, UpdatePrisonAddress, WelshPrisonAddress } from '../@types/prisonRegister'
+import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
