@@ -3,7 +3,14 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
-import { Prison, UpdatePrison, PrisonAddress, UpdatePrisonAddress, InsertPrison } from '../@types/prisonRegister'
+import {
+  Prison,
+  UpdatePrison,
+  PrisonAddress,
+  UpdatePrisonAddress,
+  InsertPrison,
+  WelshPrisonAddress,
+} from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
 export interface Context {
@@ -123,6 +130,20 @@ export default class PrisonRegisterService {
         addressLine2: undefinedWhenAbsent(prisonAddress.addressLine2),
         county: undefinedWhenAbsent(prisonAddress.county),
       },
+    })
+  }
+
+  async updateAddressWithWelshPrisonAddress(
+    context: Context,
+    prisonId: string,
+    addressId: string,
+    welshAddress: WelshPrisonAddress,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Amending Welsh prison ${prisonId} address for ${addressId}`)
+    await PrisonRegisterService.restClient(token).put({
+      path: `/prison-maintenance/id/${prisonId}/welsh-address/${addressId}`,
+      data: welshAddress,
     })
   }
 

@@ -5,7 +5,7 @@ import validate from './addNewPrisonAddressValidator'
 describe('addNewPrisonAddressValidator', () => {
   const req = {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
-  } as Request
+  } as unknown as Request
 
   const validForm: AddNewPrisonForm = {
     gender: [],

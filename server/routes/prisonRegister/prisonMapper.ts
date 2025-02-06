@@ -26,6 +26,17 @@ export type AddressDetail = {
   county?: string
   postcode: string
   country: string
+  line1inwelsh?: string
+  line2inwelsh?: string
+  towninwelsh?: string
+  countryinwelsh?: string
+}
+
+export type WelshAddressDetail = {
+  line1inwelsh?: string
+  line2inwelsh?: string
+  towninwelsh?: string
+  countryinwelsh?: string
 }
 
 export type TypeDetail = {
@@ -67,7 +78,18 @@ export function addressMapper(address: PrisonAddress): AddressDetail {
     county: address.county,
     postcode: address.postcode,
     country: address.country,
+    line1inwelsh: address.addressLine1InWelsh,
+    line2inwelsh: address.addressLine2InWelsh,
+    towninwelsh: address.townInWelsh,
+    countryinwelsh: address.countryInWelsh,
   }
+}
+
+export function addWelshAddressMarker(prisonDetails) {
+  const addresses = prisonDetails.addresses.map(address =>
+    address.towninwelsh ? { ...address, hasWelshAddress: true } : { ...address, hasWelshAddress: false },
+  )
+  return { ...prisonDetails, addresses }
 }
 
 export function typeMapper(type: PrisonType): TypeDetail {

@@ -35,4 +35,13 @@ declare module 'prisonForms' {
     addresspostcode: string
     addresscountry: string
   }
+  export interface WelshPrisonAddressForm {
+    addressId?: string
+    prisonId: string
+    addressline1inwelsh?: string
+    addressline2inwelsh?: string
+    towninwelsh: string
+    countyinwelsh?: string
+    countryinwelsh?: string
+  }
 }

@@ -5,7 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore'
 import data from '../routes/testutils/mockPrisonData'
-import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
+import { InsertPrison, UpdatePrison, UpdatePrisonAddress, WelshPrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
@@ -260,6 +260,38 @@ describe('Prison Register service', () => {
         postcode: 'DN7 6BW',
         country: 'England',
       })
+    })
+  })
+
+  describe('updateAddressWithWelshPrisonAddress', () => {
+    const welshPrisonAddress = data.welshPrisonAddress({})
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister
+        .put('/prison-maintenance/id/CFI/welsh-address/21', welshPrisonAddress)
+        .reply(200, welshPrisonAddress)
+    })
+    it('username will be used by client', async () => {
+      await prisonRegisterService.updateAddressWithWelshPrisonAddress(
+        { username: 'tommy' },
+        'CFI',
+        '21',
+        welshPrisonAddress,
+      )
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will send update prison address', async () => {
+      await prisonRegisterService.updateAddressWithWelshPrisonAddress(
+        { username: 'tommy' },
+        'CFI',
+        '21',
+        welshPrisonAddress,
+      )
+
+      expect(welshPrisonAddress).toEqual(welshPrisonAddress)
     })
   })
 

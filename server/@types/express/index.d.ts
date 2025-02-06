@@ -3,6 +3,7 @@ import type {
   AmendPrisonDetailsForm,
   AmendPrisonAddressForm,
   AddPrisonAddressForm,
+  AddWelshPrisonAddressForm,
 } from '../prisonRegisterForms'
 
 export default {}
@@ -16,6 +17,7 @@ declare module 'express-session' {
     amendPrisonDetailsForm: AmendPrisonDetailsForm
     amendPrisonAddressForm: AmendPrisonAddressForm
     addPrisonAddressForm: AddPrisonAddressForm
+    addWelshPrisonAddressForm: AddWelshPrisonAddressForm
     prisonListPageLink: string
   }
 }
