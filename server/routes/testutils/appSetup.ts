@@ -18,6 +18,7 @@ function appSetup(route: Router, production: boolean): Express {
 
   app.use((req, res, next) => {
     res.locals = {}
+    req.flash = jest.fn()
     res.locals.user = req.user
     next()
   })

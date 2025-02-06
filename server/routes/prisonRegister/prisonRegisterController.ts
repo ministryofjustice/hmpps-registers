@@ -8,9 +8,11 @@ import AmendPrisonDetailsView from './amendPrisonDetailsView'
 import trimForm from '../../utils/trim'
 import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import prisonAddressValidator from './prisonAddressValidator'
+import welshPrisonAddressValidator from './welshPrisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
-import { InsertPrison, UpdatePrisonAddress } from '../../@types/prisonRegister'
+import { InsertPrison, UpdatePrisonAddress, WelshPrisonAddress } from '../../@types/prisonRegister'
 import AddPrisonAddressView from './addPrisonAddressView'
+import AddWelshPrisonAddressView from './addWelshPrisonAddressView'
 import AddNewPrisonDetailsView from './addNewPrisonDetailsView'
 import addNewPrisonDetailsValidator from './addNewPrisonDetailsValidator'
 import AddNewPrisonSummaryView from './addNewPrisonSummaryView'
@@ -205,6 +207,53 @@ export default class PrisonRegisterController {
     const view = new AddPrisonAddressView(req.session.addPrisonAddressForm, req.flash('errors'))
 
     res.render('pages/prison-register/addPrisonAddress', view.renderArgs)
+  }
+
+  async addWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as {
+      prisonId: string
+      addressId: string
+    }
+
+    req.session.addWelshPrisonAddressForm = {
+      prisonId,
+      addressId,
+    }
+
+    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
+    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
+  }
+
+  async addWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
+    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
+  }
+
+  async submitAddWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const { addressId, prisonId } = req.body
+    req.session.addWelshPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+      await welshPrisonAddressValidator(
+        req.session.addWelshPrisonAddressForm,
+        req,
+        '/prison-register/add-welsh-prison-address',
+        form => {
+          const newWelshAddress: WelshPrisonAddress = {
+            addressLine1InWelsh: form.addressline1inwelsh,
+            addressLine2InWelsh: form.addressline2inwelsh,
+            townInWelsh: form.towninwelsh,
+            countyInWelsh: form.countyinwelsh,
+            countryInWelsh: 'Cymru',
+          }
+          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
+            context(res),
+            prisonId,
+            addressId as string,
+            newWelshAddress,
+          )
+        },
+      ),
+    )
   }
 
   async addPrisonAddress(req: Request, res: Response): Promise<void> {

@@ -60,6 +60,20 @@ const stubGetPrisonAddress = (): SuperAgentRequest =>
       jsonBody: data.prisonAddress({}),
     },
   })
+const stubGetWelshPrisonAddress = (address: { prisonId: string; addressId: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${address.prisonId}/welsh-address/${address.addressId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: data.welshPrisonAddress({}),
+    },
+  })
 
 const stubAddPrison = (): SuperAgentRequest =>
   stubFor({
@@ -143,6 +157,7 @@ export default {
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,
   stubDeletePrisonAddress,
+  stubGetWelshPrisonAddress,
 }
 
 // Mock data
@@ -179,6 +194,29 @@ export const belmarshPrison: Prison = {
       county: 'Greater London',
       postcode: 'SE28 0EB',
       country: 'England',
+    },
+  ],
+  types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
+  operators: [{ name: 'PSP' }],
+}
+
+export const cardiffPrison: Prison = {
+  prisonId: 'CFI',
+  prisonName: 'HMP Cardiff',
+  active: false,
+  male: true,
+  female: false,
+  contracted: false,
+  lthse: false,
+  addresses: [
+    {
+      id: 16,
+      addressLine1: '2 Knox Road',
+      addressLine2: 'Merrywheather',
+      town: 'Cardiff',
+      county: 'Glamorgan',
+      postcode: 'CF24 0UG',
+      country: 'Wales',
     },
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],

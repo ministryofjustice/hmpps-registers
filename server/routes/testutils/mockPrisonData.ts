@@ -1,4 +1,4 @@
-import { Prison, PrisonAddress } from '../../@types/prisonRegister'
+import { Prison, PrisonAddress, WelshPrisonAddress } from '../../@types/prisonRegister'
 
 export default {
   prisonAddress: ({
@@ -9,6 +9,11 @@ export default {
     postcode = 'DN7 6BW',
     county = 'South Yorkshire',
     country = 'England',
+    addressLine1InWelsh = undefined,
+    addressLine2InWelsh = undefined,
+    townInWelsh = undefined,
+    countyInWelsh = undefined,
+    countryInWelsh = undefined,
   }: Partial<PrisonAddress>): PrisonAddress =>
     ({
       id,
@@ -18,7 +23,56 @@ export default {
       postcode,
       county,
       country,
+      addressLine1InWelsh,
+      addressLine2InWelsh,
+      townInWelsh,
+      countyInWelsh,
+      countryInWelsh,
     }) as PrisonAddress,
+
+  combinedEnglishAddWelshAddress: ({
+    id = 21,
+    addressLine1 = '2 Knox Road',
+    addressLine2 = null,
+    town = 'Cardiff',
+    postcode = 'CC24 0UG',
+    county = 'Glamorgan',
+    country = 'Wales',
+    addressLine1InWelsh = 'Heol Knox',
+    addressLine2InWelsh = 'Hollybush',
+    townInWelsh = 'Caerdydd',
+    countyInWelsh = 'Glamorgan',
+    countryInWelsh = undefined,
+  }: Partial<PrisonAddress>): PrisonAddress =>
+    ({
+      id,
+      addressLine1,
+      addressLine2,
+      town,
+      postcode,
+      county,
+      country,
+      addressLine1InWelsh,
+      addressLine2InWelsh,
+      townInWelsh,
+      countyInWelsh,
+      countryInWelsh,
+    }) as PrisonAddress,
+
+  welshPrisonAddress: ({
+    addressLine1InWelsh = 'Heol Knox',
+    addressLine2InWelsh = undefined,
+    townInWelsh = 'Caerdydd',
+    countyInWelsh = 'Glamorgan',
+    countryInWelsh = 'Cymru',
+  }: Partial<WelshPrisonAddress>): WelshPrisonAddress =>
+    ({
+      addressLine1InWelsh,
+      addressLine2InWelsh,
+      townInWelsh,
+      countyInWelsh,
+      countryInWelsh,
+    }) as WelshPrisonAddress,
 
   prison: ({
     prisonId = 'ALI',

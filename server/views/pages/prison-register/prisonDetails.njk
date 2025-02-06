@@ -70,13 +70,16 @@
   {% endif %}
 {% endmacro %}
 
-{% macro renderAddress(line1, line2, town, county, postcode, country) %}
+{% macro renderAddress(line1, line2, town, county, postcode, country, addressId, showAddWelshAddressLink) %}
   {{ line(line1) }}
   {{ line(line2) }}
   {{ line(town) }}
   {{ line(county) }}
   {{ line(postcode) }}
   {{ line(country) }}
+  {% if(isWelshPrison and showAddWelshAddressLink)%}
+    <a href="/prison-register/add-welsh-prison-address-start?prisonId={{prisonDetails.id}}&addressId={{addressId}}" class="govuk-link" data-qa="add-welsh-address-link-{{addressId}}">Add Welsh address</a>
+  {% endif %}
 {% endmacro %}
 
 {% macro addressTitle(line1, line2, town) %}
@@ -96,6 +99,47 @@
 {% endmacro %}
 {% macro deleteAddressUrl(prison, address) %}
   /prison-register/delete-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+{% endmacro %}
+
+{#  welsh hrefs temporarily pointing to add address details page #}
+{% macro amendWelshAddressUrl(prison, address) %}
+  /prison-register/add-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+{% endmacro %}
+{% macro deleteWelshAddressUrl(prison, address) %}
+  /prison-register/add-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+{% endmacro %}
+
+{% macro govukSummaryListEnglishPrisonAddress(address, addressLabel, showAddWelshAddressLink) %}
+    {{ govukSummaryList({
+      attributes: { "data-qa": "address-details-section-"+ address.id},
+      rows: [
+        {
+          key: {
+          text: addressLabel
+        },
+          value: {
+          html: renderAddress( address.line1, address.line2, address.town, address.county, address.postcode, address.country, address.id, showAddWelshAddressLink),
+          classes: "address-details"
+        },
+          actions: {
+          items: [
+            {
+              href: amendAddressUrl(prisonDetails, address),
+              text: "Change",
+              visuallyHiddenText: "address details",
+              attributes: { "data-qa": "amend-address-details-link-"+ address.id}
+            },
+            {
+              href: deleteAddressUrl(prisonDetails, address),
+              text: "Delete",
+              visuallyHiddenText: "address details",
+              attributes: { "data-qa": "delete-address-details-link-"+ address.id}
+            }
+          ]
+        }
+        }
+      ]
+    }) }}
 {% endmacro %}
 
 {% macro confirmationPanel(message, attribute) %}
@@ -181,36 +225,42 @@
         <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">{{ addressTitle(address.line1, address.line2, address.town) }}</h2>
       </div>
     {% endif %}
-    {{ govukSummaryList({
-      attributes: { "data-qa": "address-details-section-"+ address.id},
-      rows: [
-        {
-          key: {
-          text: "Address"
-        },
-          value: {
-          html: renderAddress( address.line1, address.line2, address.town, address.county, address.postcode, address.country),
-          classes: "address-details"
-        },
-          actions: {
-          items: [
-            {
-              href: amendAddressUrl(prisonDetails, address),
-              text: "Change",
-              visuallyHiddenText: "address details",
-              attributes: { "data-qa": "amend-address-details-link-"+ address.id}
-            },
-            {
-              href: deleteAddressUrl(prisonDetails, address),
-              text: "Delete",
-              visuallyHiddenText: "address details",
-              attributes: { "data-qa": "delete-address-details-link-"+ address.id}
-            }
-          ]
-        }
-        }
-      ]
-    }) }}
+
+    {% if address.hasWelshAddress %}
+      {{ govukSummaryListEnglishPrisonAddress(address, "English address", false) }}
+      {{ govukSummaryList({
+        attributes: { "data-qa": "welsh-address-details-section-"+ address.id},
+        rows: [
+          {
+            key: {
+            text: "Welsh address"
+          },
+            value: {
+            html: renderAddress( address.line1inwelsh, address.line2inwelsh, address.towninwelsh, address.countyinwelsh, address.postcode, address.countryinwelsh, address.id, false),
+            classes: "address-details"
+          },
+            actions: {
+            items: [
+              {
+                href: amendWelshAddressUrl(prisonDetails, address),
+                text: "Change",
+                visuallyHiddenText: "welsh address details",
+                attributes: { "data-qa": "amend-welsh-address-details-link-"+ address.id} 
+              },
+              {
+                href: deleteWelshAddressUrl(prisonDetails, address),
+                text: "Delete",
+                visuallyHiddenText: "address details",
+                attributes: { "data-qa": "delete-welsh-address-details-link-"+ address.id}
+              }
+            ]
+          }
+          }
+        ]
+      }) }}
+    {% else %}
+      {{ govukSummaryListEnglishPrisonAddress(address, "Address", true) }}
+    {% endif %}
   {% endfor %}
 
   <div class="govuk-button-group">

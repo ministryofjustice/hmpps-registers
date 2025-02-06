@@ -156,12 +156,13 @@ describe('Prison Register controller', () => {
       await controller.viewPrison(req, res)
 
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
-        prisonDetails: expect.objectContaining({ id: 'ALI' }),
         action: 'NONE',
+        prisonDetails: expect.objectContaining({ id: 'ALI' }),
+        isWelshPrison: false,
       })
     })
 
-    it('will render prison details page with address', async () => {
+    it('will render prison details page with English address only', async () => {
       await controller.viewPrison(req, res)
 
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
@@ -180,40 +181,47 @@ describe('Prison Register controller', () => {
               country: 'England',
               county: 'South Yorkshire',
               postcode: 'DN7 6BW',
+              countryinwelsh: undefined,
+              hasWelshAddress: false,
+              line1inwelsh: undefined,
+              line2inwelsh: undefined,
+              towninwelsh: undefined,
             },
           ],
         }),
+        isWelshPrison: false,
         action: 'NONE',
       })
     })
 
-    it('will render prison details page including welsh prison name', async () => {
+    it('will render prison details page with both English and Welsh address', async () => {
       prisonRegisterService.getPrison.mockResolvedValue(
-        data.prison({ prisonNameInWelsh: 'Carchar Brynbuga', addresses: [data.prisonAddress({})] }),
+        data.prison({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
       )
 
       await controller.viewPrison(req, res)
 
       expect(res.render).toHaveBeenCalledWith('pages/prison-register/prisonDetails', {
         prisonDetails: expect.objectContaining({
-          id: 'ALI',
-          name: 'Albany (HMP)',
-          prisonNameInWelsh: 'Carchar Brynbuga',
           active: true,
-          female: true,
-          male: true,
           addresses: [
             {
+              country: 'Wales',
+              countryinwelsh: undefined,
+              county: 'Glamorgan',
+              hasWelshAddress: true,
               id: 21,
-              line1: 'Bawtry Road',
-              line2: 'Hatfield Woodhouse',
-              town: 'Doncaster',
-              country: 'England',
-              county: 'South Yorkshire',
-              postcode: 'DN7 6BW',
+              line1: '2 Knox Road',
+              line1inwelsh: 'Heol Knox',
+              line2: null,
+              line2inwelsh: 'Hollybush',
+              postcode: 'CC24 0UG',
+              town: 'Cardiff',
+              towninwelsh: 'Caerdydd',
             },
           ],
         }),
+        isWelshPrison: true,
         action: 'NONE',
       })
     })
@@ -657,6 +665,35 @@ describe('Prison Register controller', () => {
       })
     })
 
+    describe('addWelshPrisonAddressStart', () => {
+      beforeEach(() => {
+        req.query = { prisonId: 'CFI', addressId: '123' }
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+
+      it("will render 'Add Welsh prison address' page", async () => {
+        await controller.addWelshPrisonAddressStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addWelshPrisonAddress', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will create form and pass through to page', async () => {
+        await controller.addWelshPrisonAddressStart(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addWelshPrisonAddress', {
+          form: {
+            prisonId: 'CFI',
+            addressId: '123',
+          },
+          errors: [],
+        })
+      })
+    })
+
     describe('deletePrisonAddressStart', () => {
       beforeEach(() => {
         req.query.prisonId = 'MDI'
@@ -753,6 +790,42 @@ describe('Prison Register controller', () => {
       })
     })
 
+    describe('addWelshPrisonAddress', () => {
+      beforeEach(() => {
+        req.session.addWelshPrisonAddressForm = {
+          addressline1inwelsh: 'line 1',
+          addressline2inwelsh: 'line 2',
+          towninwelsh: 'Carchar Caerdydd',
+          countyinwelsh: 'Galmorgan',
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will render add prison address page', async () => {
+        await controller.addWelshPrisonAddress(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addWelshPrisonAddress', {
+          form: expect.objectContaining({}),
+          errors: [],
+        })
+      })
+      it('will pass through form to page', async () => {
+        await controller.addWelshPrisonAddress(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/addWelshPrisonAddress', {
+          form: {
+            addressline1inwelsh: 'line 1',
+            addressline2inwelsh: 'line 2',
+            countyinwelsh: 'Galmorgan',
+            towninwelsh: 'Carchar Caerdydd',
+          },
+          errors: [],
+        })
+      })
+    })
+
     describe('submitAddPrisonAddress', () => {
       beforeEach(() => {
         req.session.addPrisonAddressForm = {
@@ -788,6 +861,47 @@ describe('Prison Register controller', () => {
         await controller.submitAddPrisonAddress(req, res)
 
         expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=UPDATED')
+      })
+    })
+
+    describe('submitAddWelshPrisonAddress', () => {
+      beforeEach(() => {
+        req.session.addWelshPrisonAddressForm = {
+          addressline1inwelsh: 'line 1',
+          addressline2inwelsh: 'line 2',
+          countyinwelsh: 'Galmorgan',
+          towninwelsh: 'Carchar Caerdydd',
+        }
+        req.body = {
+          prisonId: 'CFI',
+          addressId: '123',
+          ...req.session.addWelshPrisonAddressForm,
+        }
+
+        res.locals.user = {
+          username: 'tom',
+        }
+      })
+      it('will add welsh prison address', async () => {
+        await controller.submitAddWelshPrisonAddress(req, res)
+
+        expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'CFI',
+          '123',
+          {
+            addressLine1InWelsh: 'line 1',
+            addressLine2InWelsh: 'line 2',
+            countryInWelsh: 'Cymru',
+            countyInWelsh: 'Galmorgan',
+            townInWelsh: 'Carchar Caerdydd',
+          },
+        )
+      })
+      it('will render prison details page', async () => {
+        await controller.submitAddWelshPrisonAddress(req, res)
+
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=CFI&action=UPDATED')
       })
     })
 

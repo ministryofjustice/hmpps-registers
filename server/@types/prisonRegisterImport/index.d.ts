@@ -159,6 +159,35 @@ export interface components {
       developerMessage?: string
       moreInfo?: string
     }
+    /** @description Welsh Address Record */
+    WelshAddressDto: {
+      /**
+       * @description Address line 1
+       * @example Some Road
+       */
+      addressLine1InWelsh?: string
+      /**
+       * @description Address line 2
+       * @example Some area
+       */
+      addressLine2InWelsh?: string
+      /**
+       * @description Village/Town/City
+       * @example Cardiff
+       */
+      townInWelsh: string
+      /**
+       * @description County
+       * @example Glamorgan
+       */
+      countyInWelsh?: string
+      /**
+       * @description Country
+       * @example Cymru
+       */
+      countryInWelsh?: string
+    }
+
     /** @description List of address for this prison */
     AddressDto: {
       /**
@@ -197,7 +226,33 @@ export interface components {
        * @example England
        */
       country: string
+      /**
+       * @description Address line 1
+       * @example Some Road
+       */
+      addressLine1InWelsh?: string
+      /**
+       * @description Address line 2
+       * @example Some area
+       */
+      addressLine2InWelsh?: string
+      /**
+       * @description Village/Town/City
+       * @example Cardiff
+       */
+      townInWelsh?: string
+      /**
+       * @description County
+       * @example Glamorgan
+       */
+      countyInWelsh?: string
+      /**
+       * @description Country
+       * @example Cymru
+       */
+      countryInWelsh?: string
     }
+
     /** @description Prison Information */
     PrisonDto: {
       /**

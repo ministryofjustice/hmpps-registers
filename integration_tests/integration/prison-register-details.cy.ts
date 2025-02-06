@@ -1,4 +1,4 @@
-import { albanyPrison, moorlandPrison } from '../mockApis/prisonRegister'
+import { albanyPrison, moorlandPrison, cardiffPrison } from '../mockApis/prisonRegister'
 import IndexPage from '../pages'
 import AllPrisons from '../pages/prison-register/allPrisons'
 import PrisonDetails from '../pages/prison-register/prisonDetails'
@@ -8,7 +8,7 @@ context('Prison register - prison details navigation', () => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.task('stubManageUser')
-    cy.task('stubGetPrisonsWithFilter', [albanyPrison, moorlandPrison])
+    cy.task('stubGetPrisonsWithFilter', [albanyPrison, moorlandPrison, cardiffPrison])
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubGetPrison', albanyPrison)
     cy.signIn()
@@ -34,7 +34,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
   })
 
-  it('Will display prison address details', () => {
+  it('Will display prison address details without link to add welsh address', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()
       .viewPrisonLink(moorlandPrison.prisonId)
@@ -49,6 +49,19 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].county)
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].postcode)
     prisonDetailsPage.addressDetailsSection('21').should('contain.text', moorlandPrison.addresses[0].country)
+    prisonDetailsPage.addWelshAddressLink('21').should('not.exist')
+  })
+
+  it('Will display prison address with link to add welsh address', () => {
+    cy.task('stubGetPrison', cardiffPrison)
+
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    AllPrisons.verifyOnPage()
+      .viewPrisonLink(cardiffPrison.prisonId)
+      .should('contain.text', cardiffPrison.prisonName)
+      .click()
+    const prisonDetailsPage = PrisonDetails.verifyOnPage(cardiffPrison.prisonName)
+    prisonDetailsPage.addWelshAddressLink('16').should('exist')
   })
 
   it('Will not display prison types when none present', () => {
