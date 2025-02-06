@@ -163,22 +163,22 @@ export interface components {
     WelshAddressDto: {
       /**
        * @description Address line 1
-       * @example Bawtry Road
+       * @example Some Road
        */
       addressLine1InWelsh?: string
       /**
        * @description Address line 2
-       * @example Hatfield Woodhouse
+       * @example Some area
        */
       addressLine2InWelsh?: string
       /**
        * @description Village/Town/City
-       * @example Doncaster
+       * @example Cardiff
        */
       townInWelsh: string
       /**
        * @description County
-       * @example South Yorkshire
+       * @example Glamorgan
        */
       countyInWelsh?: string
       /**
@@ -226,7 +226,32 @@ export interface components {
        * @example England
        */
       country: string
-    } & WelshAddressDto
+      /**
+       * @description Address line 1
+       * @example Some Road
+       */
+      addressLine1InWelsh?: string
+      /**
+       * @description Address line 2
+       * @example Some area
+       */
+      addressLine2InWelsh?: string
+      /**
+       * @description Village/Town/City
+       * @example Cardiff
+       */
+      townInWelsh?: string
+      /**
+       * @description County
+       * @example Glamorgan
+       */
+      countyInWelsh?: string
+      /**
+       * @description Country
+       * @example Cymru
+       */
+      countryInWelsh?: string
+    }
 
     /** @description Prison Information */
     PrisonDto: {
