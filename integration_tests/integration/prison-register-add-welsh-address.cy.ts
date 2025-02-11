@@ -4,14 +4,14 @@ import AllPrisons from '../pages/prison-register/allPrisons'
 import PrisonDetailsPage from '../pages/prison-register/prisonDetails'
 import AddWelshPrisonAddressPage from '../pages/prison-register/addWelshPrisonAddress'
 
-context('Prison register - add address to existing prison', () => {
+context('Prison register - add Welsh address to existing prison', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [cardiffPrison])
     cy.task('stubGetPrison', cardiffPrison)
-    cy.task('stubGetWelshPrisonAddress', { prisonId: 'CFI', addressId: '16' })
+    cy.task('stubPutWelshPrisonAddress', { prisonId: 'CFI', addressId: '16' })
     cy.signIn()
   })
 
