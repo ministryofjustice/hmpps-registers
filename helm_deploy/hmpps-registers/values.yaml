@@ -45,3 +45,4 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: hmpps-registers
+  alertSeverity: move-a-prisoner-alerts-nonprod
