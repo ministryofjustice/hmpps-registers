@@ -29,11 +29,11 @@
         {% endif %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl">Add Welsh prison address for {{ form.prisonId }}</h1>
+                <h1 class="govuk-heading-xl">Amend Welsh address details for {{ form.prisonId }}</h1>
             </div>
 
             <div class="govuk-grid-column-two-thirds">
-                <form action="/prison-register/add-welsh-prison-address" method="post" novalidate>
+                <form action="/prison-register/amend-welsh-prison-address" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     <input type="hidden" name="prisonId" value="{{ form.prisonId }}" />
                     <input type="hidden" name="addressId" value="{{ form.addressId }}" />

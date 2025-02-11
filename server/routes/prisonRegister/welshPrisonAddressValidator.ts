@@ -13,15 +13,15 @@ export default async function validate(
     {
       addressline1inwelsh: ['between:0,80'],
       addressline2inwelsh: 'between:0,80',
-      towninwelsh: ['required', 'between:0,80'],
-      countyinwelsh: ['between:0,80'],
+      addresstowninwelsh: ['required', 'between:0,80'],
+      addresscountyinwelsh: ['between:0,80'],
     },
     {
-      'required.towninwelsh': 'Enter the town or city',
+      'required.addresstowninwelsh': 'Enter the town or city',
       'between.addressline1inwelsh': 'Enter the first line of the address not greater than 80 characters',
       'between.addressline2inwelsh': 'Enter the second line of the address not greater than 80 characters',
-      'between.towninwelsh': 'Enter the town or city not greater than 80 characters',
-      'between.countyinwelsh': 'Enter the county not greater than 80 characters',
+      'between.addresstowninwelsh': 'Enter the town or city not greater than 80 characters',
+      'between.addresscountyinwelsh': 'Enter the county not greater than 80 characters',
     },
   )
 

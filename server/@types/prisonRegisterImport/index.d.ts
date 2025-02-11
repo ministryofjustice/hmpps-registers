@@ -162,6 +162,50 @@ export interface components {
     /** @description Welsh Address Record */
     WelshAddressDto: {
       /**
+       * @description Address id
+       * @example 123
+       */
+      addressId?: string
+      /**
+       * @description Address line 1
+       * @example Some Road
+       */
+      addressLine1InWelsh?: string
+      /**
+       * @description Address line 2
+       * @example Some area
+       */
+      addressLine2InWelsh?: string
+      /**
+       * @description Village/Town/City
+       * @example Cardiff
+       */
+      townInWelsh: string
+      /**
+       * @description County
+       * @example Glamorgan
+       */
+      countyInWelsh?: string
+      /**
+       * @description Country
+       * @example Cymru
+       */
+      countryInWelsh?: string
+    }
+
+    /** @description Welsh Address Record */
+    UpdateWelshAddressDto: {
+      /**
+       * @description Prison id
+       * @example MDI
+       */
+      prisonId?: string
+      /**
+       * @description Address id
+       * @example 123
+       */
+      addressId?: string
+      /**
        * @description Address line 1
        * @example Some Road
        */

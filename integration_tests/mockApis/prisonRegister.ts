@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Prison } from '../../server/@types/prisonRegister'
+import { Prison, PrisonAddress } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 
 // Mock API responses
@@ -46,7 +46,7 @@ const stubGetPrison = (prison: Prison): SuperAgentRequest =>
     },
   })
 
-const stubGetPrisonAddress = (): SuperAgentRequest =>
+const stubGetPrisonAddress = (prisonAddress: PrisonAddress): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -57,10 +57,10 @@ const stubGetPrisonAddress = (): SuperAgentRequest =>
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
       },
-      jsonBody: data.prisonAddress({}),
+      jsonBody: prisonAddress || data.prisonAddress({}),
     },
   })
-const stubGetWelshPrisonAddress = (address: { prisonId: string; addressId: string }): SuperAgentRequest =>
+const stubPutWelshPrisonAddress = (address: { prisonId: string; addressId: string }): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'PUT',
@@ -157,7 +157,7 @@ export default {
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,
   stubDeletePrisonAddress,
-  stubGetWelshPrisonAddress,
+  stubPutWelshPrisonAddress,
 }
 
 // Mock data
@@ -212,11 +212,39 @@ export const cardiffPrison: Prison = {
     {
       id: 16,
       addressLine1: '2 Knox Road',
-      addressLine2: 'Merrywheather',
+      addressLine2: 'Merryweather',
       town: 'Cardiff',
       county: 'Glamorgan',
       postcode: 'CF24 0UG',
       country: 'Wales',
+    },
+  ],
+  types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
+  operators: [{ name: 'PSP' }],
+}
+
+export const cardiffPrisonWithWelshAddress: Prison = {
+  prisonId: 'CFI',
+  prisonName: 'HMP Cardiff',
+  active: false,
+  male: true,
+  female: false,
+  contracted: false,
+  lthse: false,
+  addresses: [
+    {
+      id: 16,
+      addressLine1: '2 Knox Road',
+      addressLine2: 'Merryweather',
+      town: 'Cardiff',
+      county: 'Glamorgan',
+      postcode: 'CF24 0UG',
+      country: 'Wales',
+      addressLine1InWelsh: 'Heol Knox',
+      addressLine2InWelsh: 'Merryweather',
+      townInWelsh: 'Caerdydd',
+      countyInWelsh: 'Glamorgan',
+      countryInWelsh: 'Cymru',
     },
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],

@@ -14,8 +14,8 @@ describe('welshPrisonAddressValidator', () => {
     prisonId: 'CFI',
     addressline1inwelsh: 'line 1 in welsh',
     addressline2inwelsh: 'line 21 in welsh',
-    towninwelsh: 'Cardiff',
-    countyinwelsh: 'Glamorgan',
+    addresstowninwelsh: 'Cardiff',
+    addresscountyinwelsh: 'Glamorgan',
   }
 
   describe('validate', () => {
@@ -53,25 +53,25 @@ describe('welshPrisonAddressValidator', () => {
       ])
     })
     it('town must not be a blank', async () => {
-      const form = { ...validForm, towninwelsh: '  ' }
+      const form = { ...validForm, addresstowninwelsh: '  ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#towninwelsh', text: 'Enter the town or city' }])
+      expect(req.flash).toBeCalledWith('errors', [{ href: '#addresstowninwelsh', text: 'Enter the town or city' }])
     })
     it('town must not be greater than 80 characters', async () => {
-      const form = { ...validForm, towninwelsh: 'A'.repeat(81) }
+      const form = { ...validForm, addresstowninwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#towninwelsh', text: 'Enter the town or city not greater than 80 characters' },
+        { href: '#addresstowninwelsh', text: 'Enter the town or city not greater than 80 characters' },
       ])
     })
     it('county must not be greater than 80 characters', async () => {
-      const form = { ...validForm, countyinwelsh: 'A'.repeat(81) }
+      const form = { ...validForm, addresscountyinwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
       expect(req.flash).toBeCalledWith('errors', [
-        { href: '#countyinwelsh', text: 'Enter the county not greater than 80 characters' },
+        { href: '#addresscountyinwelsh', text: 'Enter the county not greater than 80 characters' },
       ])
     })
   })

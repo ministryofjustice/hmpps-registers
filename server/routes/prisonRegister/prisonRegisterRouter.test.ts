@@ -38,4 +38,20 @@ describe('GET /', () => {
         expect(res.text).toContain('Add Welsh prison address for')
       })
   })
+  it("should render 'Amend Welsh prison address for' page", () => {
+    return request(app)
+      .get('/prison-register/amend-welsh-prison-address-start')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Amend Welsh address details for')
+      })
+  })
+  it("should render to 'Add Welsh prison address for' page on redirect", () => {
+    return request(app)
+      .get('/prison-register/add-welsh-prison-address')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Add Welsh prison address for')
+      })
+  })
 })

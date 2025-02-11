@@ -9,7 +9,7 @@ import {
   PrisonAddress,
   UpdatePrisonAddress,
   InsertPrison,
-  WelshPrisonAddress,
+  UpdateWelshPrisonAddress,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
@@ -137,7 +137,7 @@ export default class PrisonRegisterService {
     context: Context,
     prisonId: string,
     addressId: string,
-    welshAddress: WelshPrisonAddress,
+    welshAddress: UpdateWelshPrisonAddress,
   ): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending Welsh prison ${prisonId} address for ${addressId}`)

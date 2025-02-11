@@ -9,10 +9,14 @@ const prisonDetails = {
   markAsActiveButton: (id: string) => cy.get(`[data-qa=mark-as-active-${id}]`),
   activatedConfirmationBlock: () => cy.get(`[data-qa=confirm-prison-activation]`),
   deactivatedConfirmationBlock: () => cy.get(`[data-qa=confirm-prison-deactivation]`),
-  amendAddressDetailsLink: (addressId: string) => cy.get(`[data-qa=amend-address-details-link-${addressId}]`),
+  addWelshAddressLink: (addressId: string) => cy.get(`[data-qa=add-welsh-address-link-${addressId}]`),
   addPrisonAddressLink: (prisonId: string) => cy.get(`[data-qa=add-prison-address-link-${prisonId}]`),
   deletePrisonAddressLink: (addressId: string) => cy.get(`[data-qa=delete-address-details-link-${addressId}]`),
-  addWelshAddressLink: (addressId: string) => cy.get(`[data-qa=add-welsh-address-link-${addressId}]`),
+  amendAddressDetailsLink: (addressId: string) => cy.get(`[data-qa=amend-address-details-link-${addressId}]`),
+  amendWelshAddressDetailsLink: (addressId: string) =>
+    cy.get(`[data-qa=amend-welsh-address-details-link-${addressId}]`),
+  deleteWelshAddressDetailsLink: (addressId: string) =>
+    cy.get(`[data-qa=delete-welsh-address-details-link-${addressId}]`),
 }
 
 const verifyOnPage = (prisonName: string): typeof prisonDetails & Page => page(prisonName, prisonDetails)

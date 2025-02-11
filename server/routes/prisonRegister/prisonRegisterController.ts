@@ -10,7 +10,14 @@ import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import prisonAddressValidator from './prisonAddressValidator'
 import welshPrisonAddressValidator from './welshPrisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
-import { InsertPrison, UpdatePrisonAddress, WelshPrisonAddress } from '../../@types/prisonRegister'
+import AmendWelshPrisonAddressView from './amendWelshPrisonAddressView'
+import DeleteWelshPrisonAddressView from './deleteWelshPrisonAddressView'
+import {
+  InsertPrison,
+  UpdatePrisonAddress,
+  UpdateWelshPrisonAddress,
+  WelshPrisonAddress,
+} from '../../@types/prisonRegister'
 import AddPrisonAddressView from './addPrisonAddressView'
 import AddWelshPrisonAddressView from './addWelshPrisonAddressView'
 import AddNewPrisonDetailsView from './addNewPrisonDetailsView'
@@ -209,53 +216,6 @@ export default class PrisonRegisterController {
     res.render('pages/prison-register/addPrisonAddress', view.renderArgs)
   }
 
-  async addWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
-    const { prisonId, addressId } = req.query as {
-      prisonId: string
-      addressId: string
-    }
-
-    req.session.addWelshPrisonAddressForm = {
-      prisonId,
-      addressId,
-    }
-
-    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
-    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
-  }
-
-  async addWelshPrisonAddress(req: Request, res: Response): Promise<void> {
-    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
-    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
-  }
-
-  async submitAddWelshPrisonAddress(req: Request, res: Response): Promise<void> {
-    const { addressId, prisonId } = req.body
-    req.session.addWelshPrisonAddressForm = { ...trimForm(req.body) }
-    res.redirect(
-      await welshPrisonAddressValidator(
-        req.session.addWelshPrisonAddressForm,
-        req,
-        '/prison-register/add-welsh-prison-address',
-        form => {
-          const newWelshAddress: WelshPrisonAddress = {
-            addressLine1InWelsh: form.addressline1inwelsh,
-            addressLine2InWelsh: form.addressline2inwelsh,
-            townInWelsh: form.towninwelsh,
-            countyInWelsh: form.countyinwelsh,
-            countryInWelsh: 'Cymru',
-          }
-          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
-            context(res),
-            prisonId,
-            addressId as string,
-            newWelshAddress,
-          )
-        },
-      ),
-    )
-  }
-
   async addPrisonAddress(req: Request, res: Response): Promise<void> {
     const view = new AmendPrisonAddressView(req.session.addPrisonAddressForm, req.flash('errors'))
 
@@ -351,6 +311,11 @@ export default class PrisonRegisterController {
       addresscounty: prisonAddress.county,
       addresspostcode: prisonAddress.postcode,
       addresscountry: prisonAddress.country,
+      addressline1inwelsh: prisonAddress.addressLine1InWelsh,
+      addressline2inwelsh: prisonAddress.addressLine2InWelsh,
+      addresstowninwelsh: prisonAddress.townInWelsh,
+      addresscountyinwelsh: prisonAddress.countyInWelsh,
+      addresscountryinwelsh: prisonAddress.countryInWelsh,
     }
     const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm)
     res.render('pages/prison-register/deletePrisonAddress', view.renderArgs)
@@ -367,5 +332,135 @@ export default class PrisonRegisterController {
     const action: Action = activate ? 'ACTIVATE-PRISON' : 'DEACTIVATE-PRISON'
     await this.prisonRegisterService.updateActivePrisonMarker(context(res), id, activate)
     res.redirect(`/prison-register/details?id=${id}&action=${action}`)
+  }
+
+  async addWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as {
+      prisonId: string
+      addressId: string
+    }
+
+    req.session.addWelshPrisonAddressForm = {
+      prisonId,
+      addressId,
+    }
+
+    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
+    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
+  }
+
+  async addWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const view = new AddWelshPrisonAddressView(req.session.addWelshPrisonAddressForm, req.flash('errors'))
+    res.render('pages/prison-register/addWelshPrisonAddress', view.renderArgs)
+  }
+
+  async submitAddWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const { addressId, prisonId } = req.body
+    req.session.addWelshPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+      await welshPrisonAddressValidator(
+        req.session.addWelshPrisonAddressForm,
+        req,
+        '/prison-register/add-welsh-prison-address',
+        form => {
+          const newWelshAddress: WelshPrisonAddress = {
+            addressLine1InWelsh: form.addressline1inwelsh,
+            addressLine2InWelsh: form.addressline2inwelsh,
+            townInWelsh: form.addresstowninwelsh,
+            countyInWelsh: form.addresscountyinwelsh,
+            countryInWelsh: 'Cymru',
+          }
+          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
+            context(res),
+            prisonId,
+            addressId as string,
+            newWelshAddress,
+          )
+        },
+      ),
+    )
+  }
+
+  async amendWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
+
+    const welshPrisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+
+    req.session.amendWelshPrisonAddressForm = {
+      addressId,
+      prisonId,
+      addressline1inwelsh: welshPrisonAddress.addressLine1InWelsh,
+      addressline2inwelsh: welshPrisonAddress.addressLine2InWelsh,
+      addresstowninwelsh: welshPrisonAddress.townInWelsh,
+      addresscountyinwelsh: welshPrisonAddress.countyInWelsh,
+    }
+    const view = new AmendWelshPrisonAddressView(req.session.amendWelshPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendWelshPrisonAddress', view.renderArgs)
+  }
+
+  async amendWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const view = new AmendWelshPrisonAddressView(req.session.amendWelshPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/amendWelshPrisonAddress', view.renderArgs)
+  }
+
+  async submitAmendWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    req.session.amendWelshPrisonAddressForm = { ...trimForm(req.body) }
+    res.redirect(
+      await welshPrisonAddressValidator(
+        req.session.amendWelshPrisonAddressForm,
+        req,
+        '/prison-register/amend-welsh-prison-address',
+        form => {
+          const updatedAddress: WelshPrisonAddress = {
+            addressLine1InWelsh: form.addressline1inwelsh,
+            addressLine2InWelsh: form.addressline2inwelsh,
+            townInWelsh: form.addresstowninwelsh,
+            countyInWelsh: form.addresscountyinwelsh,
+            countryInWelsh: 'Cymru',
+          }
+          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
+            context(res),
+            form.prisonId,
+            form.addressId as string,
+            updatedAddress,
+          )
+        },
+      ),
+    )
+  }
+
+  async deleteWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
+    const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
+
+    const welshPrisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+
+    req.session.deleteWelshPrisonAddressForm = {
+      addressId,
+      prisonId,
+      addressline1inwelsh: welshPrisonAddress.addressLine1InWelsh,
+      addressline2inwelsh: welshPrisonAddress.addressLine2InWelsh,
+      addresstowninwelsh: welshPrisonAddress.townInWelsh,
+      addresscountyinwelsh: welshPrisonAddress.countyInWelsh,
+      addresscountryinwelsh: welshPrisonAddress.countryInWelsh,
+      addresspostcode: welshPrisonAddress.postcode,
+    }
+    const view = new DeleteWelshPrisonAddressView(req.session.deleteWelshPrisonAddressForm, req.flash('errors'))
+
+    res.render('pages/prison-register/deleteWelshPrisonAddress', view.renderArgs)
+  }
+
+  async submitDeleteWelshPrisonAddress(req: Request, res: Response): Promise<void> {
+    const form: UpdateWelshPrisonAddress = trimForm(req.body)
+
+    this.prisonRegisterService.updateAddressWithWelshPrisonAddress(context(res), form.prisonId, form.addressId, {
+      addressLine1InWelsh: null,
+      addressLine2InWelsh: null,
+      townInWelsh: null,
+      countyInWelsh: null,
+      countryInWelsh: null,
+    })
+    return res.redirect(`/prison-register/details?id=${form.prisonId}&action=UPDATED`)
   }
 }

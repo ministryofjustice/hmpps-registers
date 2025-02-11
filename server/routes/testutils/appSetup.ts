@@ -34,5 +34,6 @@ function appSetup(route: Router, production: boolean): Express {
 
 export default function appWithAllRoutes({ production = false }: { production?: boolean }): Express {
   auth.default.authenticationMiddleware = () => (req, res, next) => next()
+  prisonRegisterService.getPrisonAddress = jest.fn().mockResolvedValue({})
   return appSetup(allRoutes(standardRouter(new MockUserService()), { prisonRegisterService }), production)
 }
