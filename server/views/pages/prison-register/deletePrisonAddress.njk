@@ -32,7 +32,7 @@
 
 {% block content %}
 
-    {% if form.towninwelsh %}
+    {% if form.addresstowninwelsh %}
       {% set englishAddressLabel = 'English address' %}
     {% else %}
       {% set englishAddressLabel = 'Address' %}
@@ -66,7 +66,7 @@
                           ]
                         }) }}
 
-                  {% if form.towninwelsh %}
+                  {% if form.addresstowninwelsh %}
                     {{ govukSummaryList({
                           attributes: { "data-qa": "welsh-address-details-section-"+ address.id},
                           rows: [
@@ -75,7 +75,7 @@
                               text: "Welsh address"
                             },
                               value: {
-                              html: renderAddress( form.addressline1inwelsh, form.addressline2inwelsh, form.towninwelsh, form.countyinwelsh, form.addresspostcode, form.countryinwelsh),
+                              html: renderAddress( form.addressline1inwelsh, form.addressline2inwelsh, form.addresstowninwelsh, form.addresscountyinwelsh, form.addresspostcode, form.addresscountryinwelsh),
                               classes: "address-details"
                             }
                             }

@@ -313,9 +313,9 @@ export default class PrisonRegisterController {
       addresscountry: prisonAddress.country,
       addressline1inwelsh: prisonAddress.addressLine1InWelsh,
       addressline2inwelsh: prisonAddress.addressLine2InWelsh,
-      towninwelsh: prisonAddress.townInWelsh,
-      countyinwelsh: prisonAddress.countyInWelsh,
-      countryinwelsh: prisonAddress.countryInWelsh,
+      addresstowninwelsh: prisonAddress.townInWelsh,
+      addresscountyinwelsh: prisonAddress.countyInWelsh,
+      addresscountryinwelsh: prisonAddress.countryInWelsh,
     }
     const view = new AmendPrisonAddressView(req.session.amendPrisonAddressForm)
     res.render('pages/prison-register/deletePrisonAddress', view.renderArgs)
@@ -366,8 +366,8 @@ export default class PrisonRegisterController {
           const newWelshAddress: WelshPrisonAddress = {
             addressLine1InWelsh: form.addressline1inwelsh,
             addressLine2InWelsh: form.addressline2inwelsh,
-            townInWelsh: form.towninwelsh,
-            countyInWelsh: form.countyinwelsh,
+            townInWelsh: form.addresstowninwelsh,
+            countyInWelsh: form.addresscountyinwelsh,
             countryInWelsh: 'Cymru',
           }
           return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
@@ -391,8 +391,8 @@ export default class PrisonRegisterController {
       prisonId,
       addressline1inwelsh: welshPrisonAddress.addressLine1InWelsh,
       addressline2inwelsh: welshPrisonAddress.addressLine2InWelsh,
-      towninwelsh: welshPrisonAddress.townInWelsh,
-      countyinwelsh: welshPrisonAddress.countyInWelsh,
+      addresstowninwelsh: welshPrisonAddress.townInWelsh,
+      addresscountyinwelsh: welshPrisonAddress.countyInWelsh,
     }
     const view = new AmendWelshPrisonAddressView(req.session.amendWelshPrisonAddressForm, req.flash('errors'))
 
@@ -416,8 +416,8 @@ export default class PrisonRegisterController {
           const updatedAddress: WelshPrisonAddress = {
             addressLine1InWelsh: form.addressline1inwelsh,
             addressLine2InWelsh: form.addressline2inwelsh,
-            townInWelsh: form.towninwelsh,
-            countyInWelsh: form.countyinwelsh,
+            townInWelsh: form.addresstowninwelsh,
+            countyInWelsh: form.addresscountyinwelsh,
             countryInWelsh: 'Cymru',
           }
           return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
@@ -441,9 +441,9 @@ export default class PrisonRegisterController {
       prisonId,
       addressline1inwelsh: welshPrisonAddress.addressLine1InWelsh,
       addressline2inwelsh: welshPrisonAddress.addressLine2InWelsh,
-      towninwelsh: welshPrisonAddress.townInWelsh,
-      countyinwelsh: welshPrisonAddress.countyInWelsh,
-      countryinwelsh: welshPrisonAddress.countryInWelsh,
+      addresstowninwelsh: welshPrisonAddress.townInWelsh,
+      addresscountyinwelsh: welshPrisonAddress.countyInWelsh,
+      addresscountryinwelsh: welshPrisonAddress.countryInWelsh,
       addresspostcode: welshPrisonAddress.postcode,
     }
     const view = new DeleteWelshPrisonAddressView(req.session.deleteWelshPrisonAddressForm, req.flash('errors'))

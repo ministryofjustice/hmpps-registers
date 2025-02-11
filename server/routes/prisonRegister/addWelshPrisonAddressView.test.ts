@@ -7,8 +7,8 @@ describe('AddWelshPrisonAddressView', () => {
     addressId: '123',
     addressline1inwelsh: 'Line 1',
     addressline2inwelsh: 'Line 2',
-    towninwelsh: 'Caerdydd',
-    countyinwelsh: 'Glamorgan',
+    addresstowninwelsh: 'Caerdydd',
+    addresscountyinwelsh: 'Glamorgan',
   }
 
   it('will pass through the form', () => {
@@ -18,8 +18,8 @@ describe('AddWelshPrisonAddressView', () => {
       prisonId: 'CFI',
       addressline1inwelsh: 'Line 1',
       addressline2inwelsh: 'Line 2',
-      countyinwelsh: 'Glamorgan',
-      towninwelsh: 'Caerdydd',
+      addresscountyinwelsh: 'Glamorgan',
+      addresstowninwelsh: 'Caerdydd',
     })
   })
 })

@@ -40,8 +40,8 @@ declare module 'prisonForms' {
     prisonId: string
     addressline1inwelsh?: string
     addressline2inwelsh?: string
-    towninwelsh: string
-    countyinwelsh?: string
-    countryinwelsh?: string
+    addresstowninwelsh: string
+    addresscountyinwelsh?: string
+    addresscountryinwelsh?: string
   }
 }

@@ -7,9 +7,9 @@ describe('AmendWelshPrisonAddressView', () => {
     prisonId: 'CFI',
     addressline1inwelsh: 'First line in welsh',
     addressline2inwelsh: 'second line in welsh',
-    towninwelsh: 'Town in welsh',
-    countyinwelsh: 'Glamorgan',
-    countryinwelsh: 'Cymru',
+    addresstowninwelsh: 'Town in welsh',
+    addresscountyinwelsh: 'Glamorgan',
+    addresscountryinwelsh: 'Cymru',
   }
 
   it('will pass through the form', () => {
@@ -19,9 +19,9 @@ describe('AmendWelshPrisonAddressView', () => {
       prisonId: 'CFI',
       addressline1inwelsh: 'First line in welsh',
       addressline2inwelsh: 'second line in welsh',
-      towninwelsh: 'Town in welsh',
-      countyinwelsh: 'Glamorgan',
-      countryinwelsh: 'Cymru',
+      addresstowninwelsh: 'Town in welsh',
+      addresscountyinwelsh: 'Glamorgan',
+      addresscountryinwelsh: 'Cymru',
     })
   })
 })

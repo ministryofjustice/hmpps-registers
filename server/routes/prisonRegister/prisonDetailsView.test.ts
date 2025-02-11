@@ -101,7 +101,7 @@ describe('PrisonDetailsView', () => {
         addresses: [
           {
             country: 'Wales',
-            countryinwelsh: 'Cymru',
+            addresscountryinwelsh: 'Cymru',
             county: 'Glamorgan',
             hasWelshAddress: true,
             id: 22,
@@ -111,7 +111,7 @@ describe('PrisonDetailsView', () => {
             line2inwelsh: undefined,
             postcode: 'CF24 0UG',
             town: 'Cardiff',
-            towninwelsh: 'Caerdydd',
+            addresstowninwelsh: 'Caerdydd',
           },
         ],
         contracted: false,

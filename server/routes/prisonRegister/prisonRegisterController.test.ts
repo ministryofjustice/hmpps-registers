@@ -181,11 +181,11 @@ describe('Prison Register controller', () => {
               country: 'England',
               county: 'South Yorkshire',
               postcode: 'DN7 6BW',
-              countryinwelsh: undefined,
+              addresscountryinwelsh: undefined,
               hasWelshAddress: false,
               line1inwelsh: undefined,
               line2inwelsh: undefined,
-              towninwelsh: undefined,
+              addresstowninwelsh: undefined,
             },
           ],
         }),
@@ -207,7 +207,7 @@ describe('Prison Register controller', () => {
           addresses: [
             {
               country: 'Wales',
-              countryinwelsh: undefined,
+              addresscountryinwelsh: undefined,
               county: 'Glamorgan',
               hasWelshAddress: true,
               id: 21,
@@ -217,8 +217,8 @@ describe('Prison Register controller', () => {
               line2inwelsh: 'Hollybush',
               postcode: 'CC24 0UG',
               town: 'Cardiff',
-              towninwelsh: 'Caerdydd',
-              countyinwelsh: 'Glamorgan',
+              addresstowninwelsh: 'Caerdydd',
+              addresscountyinwelsh: 'Glamorgan',
             },
           ],
         }),
@@ -805,8 +805,8 @@ describe('Prison Register controller', () => {
         req.session.addWelshPrisonAddressForm = {
           addressline1inwelsh: 'line 1',
           addressline2inwelsh: 'line 2',
-          countyinwelsh: 'Galmorgan',
-          towninwelsh: 'Carchar Caerdydd',
+          addresscountyinwelsh: 'Galmorgan',
+          addresstowninwelsh: 'Carchar Caerdydd',
         }
         req.body = {
           prisonId: 'CFI',
@@ -1017,8 +1017,8 @@ describe('Prison Register controller', () => {
           addressId: '123',
           addressline1inwelsh: welshAddressDto.addressLine1InWelsh,
           addressline2inwelsh: welshAddressDto.addressLine2InWelsh,
-          towninwelsh: welshAddressDto.townInWelsh,
-          countyinwelsh: welshAddressDto.countyInWelsh,
+          addresstowninwelsh: welshAddressDto.townInWelsh,
+          addresscountyinwelsh: welshAddressDto.countyInWelsh,
         }
         await controller.submitAddWelshPrisonAddress(req, res)
         expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
@@ -1052,8 +1052,8 @@ describe('Prison Register controller', () => {
             prisonId: 'CFI',
             addressline1inwelsh: 'Heol Knox',
             addressline2inwelsh: 'Holly',
-            towninwelsh: 'Caerdydd',
-            countyinwelsh: 'Glamorgan',
+            addresstowninwelsh: 'Caerdydd',
+            addresscountyinwelsh: 'Glamorgan',
           }),
         })
       })
@@ -1062,7 +1062,9 @@ describe('Prison Register controller', () => {
         req.body = {}
         await controller.submitAmendWelshPrisonAddress(req, res)
         expect(res.redirect).toHaveBeenCalledWith('/prison-register/amend-welsh-prison-address')
-        expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#towninwelsh', text: 'Enter the town or city' }])
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#addresstowninwelsh', text: 'Enter the town or city' },
+        ])
       })
 
       it('Will update prison register with amended address', async () => {
@@ -1071,9 +1073,9 @@ describe('Prison Register controller', () => {
           addressId: '123',
           addressline1inwelsh: 'Heol Knox',
           addressline2inwelsh: 'Holly',
-          towninwelsh: 'Caerdydd',
-          countyinwelsh: 'Glamorgan',
-          countryinwelsh: 'Cymru',
+          addresstowninwelsh: 'Caerdydd',
+          addresscountyinwelsh: 'Glamorgan',
+          addresscountryinwelsh: 'Cymru',
         }
         await controller.submitAmendWelshPrisonAddress(req, res)
         expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
@@ -1106,8 +1108,8 @@ describe('Prison Register controller', () => {
             prisonId: 'CFI',
             addressline1inwelsh: 'Heol Knox',
             addressline2inwelsh: 'Holly',
-            towninwelsh: 'Caerdydd',
-            countyinwelsh: 'Glamorgan',
+            addresstowninwelsh: 'Caerdydd',
+            addresscountyinwelsh: 'Glamorgan',
           }),
         })
       })
