@@ -58,6 +58,26 @@ export default function routes(router: Router, services: Services): Router {
     prisonRegisterController.submitAddWelshPrisonAddress(req, res),
   )
 
+  get('/prison-register/amend-welsh-prison-address-start', (req, res) =>
+    prisonRegisterController.amendWelshPrisonAddressStart(req, res),
+  )
+
+  get('/prison-register/amend-welsh-prison-address', (req, res) =>
+    prisonRegisterController.amendWelshPrisonAddress(req, res),
+  )
+
+  post('/prison-register/amend-welsh-prison-address', (req, res) =>
+    prisonRegisterController.submitAmendWelshPrisonAddress(req, res),
+  )
+
+  get('/prison-register/delete-welsh-prison-address-start', (req, res) =>
+    prisonRegisterController.deleteWelshPrisonAddressStart(req, res),
+  )
+
+  post('/prison-register/delete-prison-welsh-address', (req, res) =>
+    prisonRegisterController.submitDeleteWelshPrisonAddress(req, res),
+  )
+
   get('/prison-register/amend-prison-address-start', (req, res) =>
     prisonRegisterController.amendPrisonAddressStart(req, res),
   )

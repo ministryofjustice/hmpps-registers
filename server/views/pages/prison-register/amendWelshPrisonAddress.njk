@@ -1,0 +1,103 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = applicationName + " - Add Welsh Prison Address" %}
+
+{% macro addressTitle(line1, line2, town) %}
+    {% if line1 and line1.trim() != '' %} {{ line1 }}
+    {% else %}
+        {% if line2 and line2.trim() != '' %} {{ line2 }}
+        {% else %} {{ town }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+
+    <!--suppress HtmlUnknownTarget -->
+    <main class="app-container govuk-body">
+        {% if errors.length > 0 %}
+            {{ govukErrorSummary({
+                titleText: 'There is a problem',
+                errorList: errors,
+                attributes: { 'data-qa-errors': true }
+            }) }}
+        {% endif %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">Amend Welsh address details for {{ form.prisonId }}</h1>
+            </div>
+
+            <div class="govuk-grid-column-two-thirds">
+                <form action="/prison-register/amend-welsh-prison-address" method="post" novalidate>
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <input type="hidden" name="prisonId" value="{{ form.prisonId }}" />
+                    <input type="hidden" name="addressId" value="{{ form.addressId }}" />
+
+                    {% call govukFieldset({
+                        legend: {
+                            text: "What is the address for the prison?",
+                            classes: "govuk-fieldset__legend--l",
+                            isPageHeading: true
+                        }
+                    }) %}
+
+                        {{ govukInput({
+                            label: {
+                                html: 'Address (Cyfeiriad) <span class="govuk-visually-hidden">Street line 1 of 2</span>'
+                            },
+                            id: "addressline1inwelsh",
+                            name: "addressline1inwelsh",
+                            value: form.addressline1inwelsh,
+                            errorMessage: errors | findError('addressline1inwelsh')
+                        }) }}
+
+                        {{ govukInput({
+                            label: {
+                                html: '<span class="govuk-visually-hidden">Street line 2 of 2</span>'
+                            },
+                            id: "addressline2inwelsh",
+                            name: "addressline2inwelsh",
+                            value: form.addressline2inwelsh,
+                            errorMessage: errors | findError('addressline2inwelsh')
+                        }) }}
+
+                        {{ govukInput({
+                            label: {
+                                text: "Town or city (Tref neu ddinas)"
+                            },
+                            classes: "govuk-!-width-two-thirds",
+                            id: "towninwelsh",
+                            name: "towninwelsh",
+                            value: form.towninwelsh,
+                            errorMessage: errors | findError('towninwelsh')
+                        }) }}
+
+                        {{ govukInput({
+                            label: {
+                                text: "County (Sir)"
+                            },
+                            classes: "govuk-!-width-two-thirds",
+                            id: "countyinwelsh",
+                            name: "countyinwelsh",
+                            value: form.countyinwelsh,
+                            errorMessage: errors | findError('countyinwelsh')
+                        }) }}
+
+                        <div class="govuk-button-group">
+                            {{ govukButton({
+                                text: "Save"
+                            }) }}
+                            <a class="govuk-link" href="/prison-register/details?id={{ form.prisonId }}">Cancel</a>
+                        </div>
+                    {% endcall %}
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

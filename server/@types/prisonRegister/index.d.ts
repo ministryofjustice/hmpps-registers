@@ -3,6 +3,7 @@ import { components } from '../prisonRegisterImport'
 export type Prison = components['schemas']['PrisonDto']
 export type PrisonAddress = components['schemas']['AddressDto']
 export type WelshPrisonAddress = components['schemas']['WelshAddressDto']
+export type UpdateWelshPrisonAddress = components['schemas']['UpdateWelshAddressDto']
 export type PrisonType = components['schemas']['PrisonTypeDto']
 export type OperatorType = components['schemas']['PrisonOperatorDto']
 export type InsertPrison = components['schemas']['InsertPrisonDto']

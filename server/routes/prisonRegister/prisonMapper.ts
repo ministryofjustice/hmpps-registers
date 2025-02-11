@@ -29,6 +29,7 @@ export type AddressDetail = {
   line1inwelsh?: string
   line2inwelsh?: string
   towninwelsh?: string
+  countyinwelsh?: string
   countryinwelsh?: string
 }
 
@@ -81,6 +82,7 @@ export function addressMapper(address: PrisonAddress): AddressDetail {
     line1inwelsh: address.addressLine1InWelsh,
     line2inwelsh: address.addressLine2InWelsh,
     towninwelsh: address.townInWelsh,
+    countyinwelsh: address.countyInWelsh,
     countryinwelsh: address.countryInWelsh,
   }
 }

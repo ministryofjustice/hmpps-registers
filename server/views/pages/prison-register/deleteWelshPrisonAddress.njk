@@ -32,23 +32,16 @@
 
 {% block content %}
 
-    {% if form.towninwelsh %}
-      {% set englishAddressLabel = 'English address' %}
-    {% else %}
-      {% set englishAddressLabel = 'Address' %}
-    {% endif %}
-
-
     <!--suppress HtmlUnknownTarget -->
     <main class="app-container govuk-body">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl">Address to be removed for prison: {{ form.prisonId }}</h1>
+                <h1 class="govuk-heading-xl">Delete Welsh address for {{ form.prisonId }}</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
-                <form action="/prison-register/delete-prison-address" method="post" novalidate>
+                <form action="/prison-register/delete-prison-welsh-address" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-                    <input type="hidden" name="id" value="{{ form.id }}" />
+                    <input type="hidden" name="addressId" value="{{ form.addressId }}" />
                     <input type="hidden" name="prisonId" value="{{ form.prisonId }}" />
 
                     {{ govukSummaryList({
@@ -56,32 +49,15 @@
                           rows: [
                             {
                               key: {
-                              text: englishAddressLabel
+                              text: "Address"
                             },
                               value: {
-                              html: renderAddress( form.addressline1, form.addressline2, form.addresstown, form.addresscounty, form.addresspostcode, form.addresscountry),
+                              html: renderAddress( form.addressline1inwelsh, form.addressline2inwelsh, form.addresstowninwelsh, form.countyinwelsh, form.addresspostcode, form.countryinwelsh),
                               classes: "address-details"
                             }
                             }
                           ]
                         }) }}
-
-                  {% if form.towninwelsh %}
-                    {{ govukSummaryList({
-                          attributes: { "data-qa": "welsh-address-details-section-"+ address.id},
-                          rows: [
-                            {
-                              key: {
-                              text: "Welsh address"
-                            },
-                              value: {
-                              html: renderAddress( form.addressline1inwelsh, form.addressline2inwelsh, form.towninwelsh, form.countyinwelsh, form.addresspostcode, form.countryinwelsh),
-                              classes: "address-details"
-                            }
-                            }
-                          ]
-                        }) }}
-                  {% endif  %}
 
                     <div class="govuk-button-group">
                         {{ govukButton({

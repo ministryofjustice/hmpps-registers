@@ -103,10 +103,10 @@
 
 {#  welsh hrefs temporarily pointing to add address details page #}
 {% macro amendWelshAddressUrl(prison, address) %}
-  /prison-register/add-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+  /prison-register/amend-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
 {% endmacro %}
 {% macro deleteWelshAddressUrl(prison, address) %}
-  /prison-register/add-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
+  /prison-register/delete-welsh-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
 {% endmacro %}
 
 {% macro govukSummaryListEnglishPrisonAddress(address, addressLabel, showAddWelshAddressLink) %}
