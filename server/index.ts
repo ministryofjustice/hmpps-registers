@@ -5,9 +5,9 @@ import UserService from './services/userService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { createMetricsApp } from './monitoring/metricsApp'
 import ManageUsersApiClient from './data/manageUsersApiClient'
-import { redisClient } from './data/redisClient'
+import { createRedisClient } from './data/redisClient'
 
-const hmppsAuthClient = new HmppsAuthClient(new TokenStore(redisClient))
+const hmppsAuthClient = new HmppsAuthClient(new TokenStore(createRedisClient()))
 const manageUsersApiClient = new ManageUsersApiClient()
 
 const userService = new UserService(manageUsersApiClient)

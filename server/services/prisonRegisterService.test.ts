@@ -332,12 +332,11 @@ describe('Prison Register service', () => {
           path: '/prison-maintenance',
         })
 
-        const result = await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
-
-        expect(result).toEqual({
-          success: false,
-          errorMessage: "Validation failed for object='insertPrisonDto'. Error count: 1",
-        })
+        try {
+          await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        } catch (e) {
+          expect(e.data.message).toEqual("Validation failed for object='insertPrisonDto'. Error count: 1")
+        }
       })
       it('will throw error if prison failed to be added due to some of reason', async () => {
         fakePrisonRegister

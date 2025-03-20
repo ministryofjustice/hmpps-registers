@@ -16,6 +16,7 @@ import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import { metricsMiddleware } from './monitoring/metricsApp'
 import setUpWebSession from './middleware/setUpWebSession'
+import setUpCurrentUser from './middleware/setUpCurrentUser'
 
 export default function createApp(
   userService: UserService,
@@ -36,6 +37,7 @@ export default function createApp(
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
+  app.use(setUpCurrentUser())
 
   app.use('/', indexRoutes(standardRouter(userService), { prisonRegisterService }))
 

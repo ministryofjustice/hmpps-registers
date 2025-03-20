@@ -1,15 +1,15 @@
-import { v4 as uuidv4 } from 'uuid'
-import { RedisStore } from 'connect-redis'
 import session, { MemoryStore, Store } from 'express-session'
+import { RedisStore } from 'connect-redis'
 import express, { Router } from 'express'
-import { redisClient } from '../data/redisClient'
+import { randomUUID } from 'crypto'
+import { createRedisClient } from '../data/redisClient'
 import config from '../config'
 import logger from '../../logger'
 
 export default function setUpWebSession(): Router {
   let store: Store
   if (config.redis.enabled) {
-    const client = redisClient
+    const client = createRedisClient()
     client.connect().catch((err: Error) => logger.error(`Error connecting to Redis`, err))
     store = new RedisStore({ client })
   } else {
@@ -39,13 +39,12 @@ export default function setUpWebSession(): Router {
   router.use((req, res, next) => {
     const headerName = 'X-Request-Id'
     const oldValue = req.get(headerName)
-    const id = oldValue === undefined ? uuidv4() : oldValue
+    const id = oldValue === undefined ? randomUUID() : oldValue
 
     res.set(headerName, id)
     req.id = id
 
     next()
   })
-
   return router
 }

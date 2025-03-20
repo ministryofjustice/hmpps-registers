@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { Response, Request } from 'express'
+import type { Request, Response } from 'express'
 
 import authorisationMiddleware from './authorisationMiddleware'
 
@@ -27,33 +27,47 @@ describe('authorisationMiddleware', () => {
           token: createToken(authorities),
         },
       },
-      redirect: (redirectUrl: string) => {
-        return redirectUrl
-      },
+      redirect: jest.fn(),
     } as unknown as Response
   }
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
 
   it('should return next when no required roles', () => {
     const res = createResWithToken({ authorities: [] })
 
-    const authorisationResponse = authorisationMiddleware()(req, res, next)
+    authorisationMiddleware()(req, res, next)
 
-    expect(authorisationResponse).toEqual(next())
+    expect(next).toHaveBeenCalled()
+    expect(res.redirect).not.toHaveBeenCalled()
   })
 
   it('should redirect when user has no authorised roles', () => {
     const res = createResWithToken({ authorities: [] })
 
-    const authorisationResponse = authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
+    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
 
-    expect(authorisationResponse).toEqual('/authError')
+    expect(next).not.toHaveBeenCalled()
+    expect(res.redirect).toHaveBeenCalledWith('/authError')
   })
 
   it('should return next when user has authorised role', () => {
-    const res = createResWithToken({ authorities: ['SOME_REQUIRED_ROLE'] })
+    const res = createResWithToken({ authorities: ['ROLE_SOME_REQUIRED_ROLE'] })
 
-    const authorisationResponse = authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
+    authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
 
-    expect(authorisationResponse).toEqual(next())
+    expect(next).toHaveBeenCalled()
+    expect(res.redirect).not.toHaveBeenCalled()
+  })
+
+  it('should return next when user has authorised role and middleware created with ROLE_ prefix', () => {
+    const res = createResWithToken({ authorities: ['ROLE_SOME_REQUIRED_ROLE'] })
+
+    authorisationMiddleware(['ROLE_SOME_REQUIRED_ROLE'])(req, res, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(res.redirect).not.toHaveBeenCalled()
   })
 })
