@@ -1,6 +1,6 @@
 import createApp from './app'
 import HmppsAuthClient from './data/hmppsAuthClient'
-import TokenStore from './data/tokenStore'
+import TokenStore from './data/tokenStore/redisTokenStore'
 import UserService from './services/userService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import { createMetricsApp } from './monitoring/metricsApp'

@@ -86,6 +86,7 @@
     ]
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.699.0",
     "@ministryofjustice/frontend": "^2.2.4",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^3.5.0",
@@ -140,6 +141,7 @@
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
     "audit-ci": "^7.1.0",
+    "aws-sdk-client-mock": "^4.1.0",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.1.0",
     "cypress": "^13.16.1",
