@@ -1,6 +1,6 @@
 import express, { Router, Express } from 'express'
 import cookieSession from 'cookie-session'
-import createError from 'http-errors'
+import { NotFound } from 'http-errors'
 
 import allRoutes from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
@@ -26,7 +26,7 @@ function appSetup(route: Router, production: boolean): Express {
   app.use(cookieSession({ keys: [''] }))
   app.use(setUpWebRequestParsing())
   app.use('/', route)
-  app.use((req, res, next) => next(createError(404, 'Not found')))
+  app.use((req, res, next) => next(new NotFound()))
   app.use(errorHandler(production))
 
   return app

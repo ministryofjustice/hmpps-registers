@@ -1,6 +1,6 @@
 export default function trimForm<T>(form: Record<string, unknown>): T {
   return Object.keys(form).reduce((acc, curr) => {
-    acc[curr] = trimItem(form[curr])
+    ;(acc as Record<string, unknown>)[curr] = trimItem(form[curr])
     return acc
   }, {} as T)
 }

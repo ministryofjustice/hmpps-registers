@@ -1,5 +1,5 @@
+import type { Express } from 'express'
 import request from 'supertest'
-import { Express } from 'express'
 import appWithAllRoutes from './routes/testutils/appSetup'
 
 let app: Express
@@ -19,7 +19,7 @@ describe('GET 404', () => {
       .expect(404)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('NotFoundError: Not found')
+        expect(res.text).toContain('NotFoundError: Not Found')
         expect(res.text).not.toContain('Something went wrong. The error has been logged. Please try again')
       })
   })
@@ -31,7 +31,7 @@ describe('GET 404', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Something went wrong. The error has been logged. Please try again')
-        expect(res.text).not.toContain('NotFoundError: Not found')
+        expect(res.text).not.toContain('NotFoundError: Not Found')
       })
   })
 })

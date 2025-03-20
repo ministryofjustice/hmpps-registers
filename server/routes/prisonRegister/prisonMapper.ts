@@ -87,7 +87,7 @@ export function addressMapper(address: PrisonAddress): AddressDetail {
   }
 }
 
-export function addWelshAddressMarker(prisonDetails) {
+export function addWelshAddressMarker(prisonDetails: PrisonDetail) {
   const addresses = prisonDetails.addresses.map(address =>
     address.addresstowninwelsh ? { ...address, hasWelshAddress: true } : { ...address, hasWelshAddress: false },
   )
