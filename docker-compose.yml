@@ -68,16 +68,18 @@ services:
 
   hmpps-auth:
     image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - hmpps
     container_name: hmpps-auth
     depends_on:
       - auth-db
     ports:
-      - "9090:9090"
+      - "9090:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
-      - SERVER_PORT=9090
       - SPRING_PROFILES_ACTIVE=dev,local-postgres,auth-seed
+      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
       - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
 
   hmpps-external-users-api:
@@ -113,3 +115,34 @@ services:
       - NOMIS_ENDPOINT_URL=http://nomis-user-roles-api:8080
       - DELIUS_ENDPOINT_URL=http://community-api:8080
       - AUTHORIZATION-SERVER_TOKEN_ENDPOINT_URL=http://hmpps-auth:9090/auth/oauth/token
+
+  app:
+    build:
+      context: .
+      args:
+        BUILD_NUMBER: "1.0.0"
+        GIT_REF: "a1b2c3"
+        GIT_BRANCH: main
+    networks:
+      - hmpps
+    ports:
+      - "3000:3000"
+    environment:
+      - PRODUCT_ID=UNASSIGNED
+      - REDIS_ENABLED=false
+      - REDIS_HOST=localhost
+      - HMPPS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
+      - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
+      # These will need to match new creds in the seed auth service auth
+      - AUTH_CODE_CLIENT_ID=hmpps-registers
+      - AUTH_CODE_CLIENT_SECRET=clientsecret
+      - CLIENT_CREDS_CLIENT_ID=hmpps-registers-system
+      - CLIENT_CREDS_CLIENT_SECRET=clientsecret
+      - SESSION_SECRET=somesecretvalue
+      - TOKEN_VERIFICATION_API_URL=http://hmpps-auth:8080/auth
+      - TOKEN_VERIFICATION_ENABLED=false
+      - INGRESS_URL=http://localhost:3000
+      - NO_HTTPS=true
+
+networks:
+  hmpps:

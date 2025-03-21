@@ -57,6 +57,7 @@ context('Prison register - Add new prison', () => {
 
     describe('add new prison details', () => {
       it('Entering valid data allows moving to build page', () => {
+        cy.task('stubFindPrison')
         fillPrisonDetailsPage()
         AddPrisonAddressPage.verifyOnPage()
       })
@@ -81,6 +82,7 @@ context('Prison register - Add new prison', () => {
 
     describe('add new prison address', () => {
       beforeEach(() => {
+        cy.task('stubFindPrison')
         fillPrisonDetailsPage()
       })
       it('Entering valid data allows moving to summary page', () => {
@@ -105,6 +107,7 @@ context('Prison register - Add new prison', () => {
 
     describe('viewing the summary page', () => {
       beforeEach(() => {
+        cy.task('stubFindPrison')
         fillPrisonDetailsPage()
         fillPrisonAddressPage()
       })
@@ -121,6 +124,7 @@ context('Prison register - Add new prison', () => {
 
         const prisonDetails = AddPrisonDetailsPage.verifyOnPage()
         prisonDetails.id().clear().type('TEST2')
+        cy.task('stubAmendedPrison')
         prisonDetails.continueButton().click()
 
         const summaryPageAfterChange = AddPrisonSummaryPage.verifyOnPage()
@@ -149,6 +153,7 @@ context('Prison register - Add new prison', () => {
 
     describe('when successfully adding a new prison', () => {
       beforeEach(() => {
+        cy.task('stubFindPrison')
         fillPrisonDetailsPage()
         fillPrisonAddressPage()
 

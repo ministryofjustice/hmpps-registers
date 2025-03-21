@@ -15,14 +15,19 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubManageUser: manageUsersApi.stubManageUser,
     stubAuthPing: auth.stubPing,
 
-    stubTokenVerificationPing: tokenVerification.stubPing,
+    stubTokenVerificationPing: tokenVerification.stubTokenVerificationPing,
+
+    stubManageUsersPing: manageUsersApi.stubManageUsersPing,
 
     stubPrisonRegisterPing: prisonRegister.stubPing,
     stubGetPrisonsWithFilter: prisonRegister.stubGetPrisonsWithFilter,
     stubGetPrison: prisonRegister.stubGetPrison,
+    stubFindPrison: prisonRegister.stubFindPrison,
+    stubAmendedPrison: prisonRegister.stubAmendedPrison,
     stubAddPrison: prisonRegister.stubAddPrison,
     stubUpdatePrison: prisonRegister.stubUpdatePrison,
     stubGetPrisonAddress: prisonRegister.stubGetPrisonAddress,
+
     stubUpdatePrisonAddress: prisonRegister.stubUpdatePrisonAddress,
     stubAddPrisonAddress: prisonRegister.stubAddPrisonAddress,
     stubDeletePrisonAddress: prisonRegister.stubDeletePrisonAddress,
