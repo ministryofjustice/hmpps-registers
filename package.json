@@ -71,17 +71,6 @@
       "ts"
     ]
   },
-  "nodemonConfig": {
-    "ignore": [
-      ".circleci/*",
-      "migrations/*",
-      "node_modules/*",
-      "test/*",
-      "integration_tests/*"
-    ],
-    "delay": 2500,
-    "ext": "js,json,html,njk"
-  },
   "lint-staged": {
     "*.{ts,js,css}": [
       "prettier --write",
@@ -127,7 +116,7 @@
     "validatorjs": "^3.22.1"
   },
   "devDependencies": {
-    "@jgoz/esbuild-plugin-typecheck": "^4.0.2",
+    "@jgoz/esbuild-plugin-typecheck": "^4.0.3",
     "@ministryofjustice/eslint-config-hmpps": "^0.0.1-beta.1",
     "@tsconfig/node22": "^22.0.0",
     "@types/bunyan": "^1.8.11",
