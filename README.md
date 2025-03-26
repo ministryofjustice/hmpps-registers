@@ -1,6 +1,5 @@
 # hmpps-registers
 
-[![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-registers/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-registers)
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/hmpps-registers/badge.svg)](https://snyk.io/test/github/ministryofjustice/hmpps-registers)
 
 ## Running the app
@@ -77,7 +76,6 @@ A changelog for the service is available [here](./CHANGELOG.md)
 ### Dependency Checks
 
 The template project has implemented some scheduled checks to ensure that key dependencies are kept up to date.
-If these are not desired in the cloned project, remove references to `check_outdated` job from `.circleci/config.yml`
 
 ### Types
 
