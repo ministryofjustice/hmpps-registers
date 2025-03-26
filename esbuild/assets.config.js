@@ -1,18 +1,13 @@
-const path = require('node:path')
-
 const { copy } = require('esbuild-plugin-copy')
 const { sassPlugin } = require('esbuild-sass-plugin')
 const { clean } = require('esbuild-plugin-clean')
 const manifestPlugin = require('esbuild-plugin-manifest')
 const esbuild = require('esbuild')
+const path = require('path')
 const { glob } = require('glob')
 
-/**
- * Copy additional assets into distribution
- * @type {BuildStep}
- */
-const buildAdditionalAssets = buildConfig => {
-  return esbuild.build({
+const buildAdditionalAssets = buildConfig =>
+  esbuild.build({
     outdir: buildConfig.assets.outDir,
     plugins: [
       copy({
@@ -21,17 +16,12 @@ const buildAdditionalAssets = buildConfig => {
       }),
     ],
   })
-}
 
-/**
- * Build scss and javascript assets
- * @type {BuildStep}
- */
 const buildAssets = buildConfig => {
   return esbuild.build({
     entryPoints: buildConfig.assets.entryPoints,
     outdir: buildConfig.assets.outDir,
-    entryNames: '[ext]/app.[hash]',
+    entryNames: '[ext]/app',
     minify: buildConfig.isProduction,
     sourcemap: !buildConfig.isProduction,
     platform: 'browser',
@@ -54,12 +44,11 @@ const buildAssets = buildConfig => {
   })
 }
 
-/**
- * @param {BuildConfig} buildConfig
- * @returns {Promise}
- */
 module.exports = buildConfig => {
-  process.stderr.write('\u{1b}[1m\u{2728} Building assets...\u{1b}[0m\n')
+  console.log('\u{1b}[1m\u{2728}  Building assets....\u{1b}[0m')
 
-  return Promise.all([buildAssets(buildConfig), buildAdditionalAssets(buildConfig)])
+  Promise.all([buildAssets(buildConfig), buildAdditionalAssets(buildConfig)]).catch(e => {
+    console.log(e)
+    process.exit(1)
+  })
 }
