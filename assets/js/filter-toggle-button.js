@@ -1,4 +1,7 @@
-new MOJFrontend.FilterToggleButton({
+import { FilterToggleButton } from '@ministryofjustice/frontend'
+
+module.exports = () => {
+  new FilterToggleButton({
   bigModeMediaQuery: '(min-width: 48.063em)',
   startHidden: true,
   toggleButton: {
@@ -21,3 +24,4 @@ $('.moj-filter__options')
   .on('click', () => {
     $('#filter-form').submit()
   })
+}

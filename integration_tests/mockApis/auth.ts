@@ -102,7 +102,7 @@ const token = (roles: string[]) =>
 
 export default {
   getSignInUrl,
-  stubPing: (): Promise<Array<Response>> => Promise.all([ping(), tokenVerification.stubPing()]),
+  stubPing: (): Promise<Array<Response>> => Promise.all([ping(), tokenVerification.stubTokenVerificationPing()]),
   stubSignIn: (roles = ['ROLE_HMPPS_REGISTERS_MAINTAINER']): Promise<Array<Response>> =>
     Promise.all([favicon(), redirect(), signOut(), token(roles), tokenVerification.stubVerifyToken()]),
 }

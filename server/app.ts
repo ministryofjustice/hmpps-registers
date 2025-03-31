@@ -14,12 +14,14 @@ import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
-import { metricsMiddleware } from './monitoring/metricsApp'
 import setUpWebSession from './middleware/setUpWebSession'
+import setUpCurrentUser from './middleware/setUpCurrentUser'
+import { ApplicationInfo } from './applicationInfo'
 
 export default function createApp(
   userService: UserService,
   prisonRegisterService: PrisonRegisterService,
+  applicationInfo: ApplicationInfo,
 ): express.Application {
   const app = express()
 
@@ -27,8 +29,7 @@ export default function createApp(
   app.set('trust proxy', true)
   app.set('port', process.env.PORT || 3000)
 
-  app.use(metricsMiddleware)
-  app.use(setUpHealthChecks())
+  app.use(setUpHealthChecks(applicationInfo))
   app.use(setUpWebSecurity())
   app.use(setUpWebSession())
   app.use(setUpWebRequestParsing())
@@ -36,6 +37,7 @@ export default function createApp(
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
+  app.use(setUpCurrentUser())
 
   app.use('/', indexRoutes(standardRouter(userService), { prisonRegisterService }))
 

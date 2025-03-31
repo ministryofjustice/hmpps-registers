@@ -31,6 +31,36 @@ const stubGetPrisonsWithFilter = (prisons: Prison[]): SuperAgentRequest =>
     },
   })
 
+const stubFindPrison = (prison: Prison): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/prisons/id/TEST`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: prison,
+    },
+  })
+
+const stubAmendedPrison = (prison: Prison): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/prisons/id/TEST2`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: prison,
+    },
+  })
+
 const stubGetPrison = (prison: Prison): SuperAgentRequest =>
   stubFor({
     request: {
@@ -152,6 +182,8 @@ export default {
   stubGetPrisonsWithFilter,
   stubAddPrison,
   stubGetPrison,
+  stubFindPrison,
+  stubAmendedPrison,
   stubUpdatePrison,
   stubGetPrisonAddress,
   stubUpdatePrisonAddress,

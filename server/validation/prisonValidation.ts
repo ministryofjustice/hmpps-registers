@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-named-as-default
 import Validator, { ErrorMessages, Rules } from 'validatorjs'
 import { Prison } from '../@types/prisonRegister'
 

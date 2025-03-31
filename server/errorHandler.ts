@@ -7,7 +7,7 @@ export default function createErrorHandler(production: boolean) {
     logger.error(`Error handling request for '${req.originalUrl}', user '${res.locals.user?.username}'`, error)
 
     if (error.status === 401 || error.status === 403) {
-      logger.info('Signing user out')
+      logger.info('Logging user out')
       return res.redirect('/sign-out')
     }
 

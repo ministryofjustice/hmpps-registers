@@ -28,7 +28,7 @@ export default class PrisonRegisterService {
   constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
 
   private static restClient(token: string): RestClient {
-    return new RestClient('PrisonRegister API Client', config.apis.prisonRegister, token)
+    return new RestClient('Prison Register Api Client', config.apis.prisonRegister, token)
   }
 
   async getPrisonsWithFilter(context: Context, filter: AllPrisonsFilter): Promise<Prison[]> {

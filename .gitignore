@@ -126,8 +126,5 @@ test_results/
 integration_tests/videos/
 integration_tests/screenshots/
 */*.iml
-helm_deploy/*/Chart.lock
-helm_deploy/*/charts/
-
-# Jest test-coverage folder output
-coverage/
+**/Chart.lock
+**/.DS_Store

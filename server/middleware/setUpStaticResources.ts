@@ -11,31 +11,31 @@ export default function setUpStaticResources(): Router {
   router.use(compression())
 
   //  Static Resources Configuration
-  const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
+  const staticResourcesConfig = { maxAge: config.staticResourceCacheDuration, redirect: false }
 
   Array.of(
-    '/assets',
-    '/assets/stylesheets',
-    '/assets/js',
+    '/dist/assets',
+    '/dist/assets/stylesheets',
+    '/dist/assets/js',
     '/node_modules/govuk-frontend/dist/govuk/assets',
     '/node_modules/govuk-frontend/dist',
     '/node_modules/@ministryofjustice/frontend/moj/assets',
     '/node_modules/@ministryofjustice/frontend',
     '/node_modules/jquery/dist',
   ).forEach(dir => {
-    router.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
+    router.use('/assets', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
   })
 
   Array.of('/node_modules/govuk_frontend_toolkit/images').forEach(dir => {
-    router.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
+    router.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
   })
 
   Array.of('/node_modules/jquery/dist/jquery.min.js').forEach(dir => {
-    router.use('/assets/js/jquery.min.js', express.static(path.join(process.cwd(), dir), cacheControl))
+    router.use('/assets/js/jquery.min.js', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
   })
 
   Array.of('/node_modules/@ministryofjustice/frontend/moj/assets/images').forEach(dir => {
-    router.use('/assets/images', express.static(path.join(process.cwd(), dir), cacheControl))
+    router.use('/assets/images', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
   })
 
   // Don't cache dynamic resources

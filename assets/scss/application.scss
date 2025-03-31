@@ -1,0 +1,10 @@
+$govuk-global-styles: true;
+$path: "/assets/images/";
+
+@import "govuk-frontend/dist/govuk/all";
+@import "@ministryofjustice/frontend/moj/all";
+
+@import './components/header-bar';
+@import './components/card';
+@import './local';
+@import './components/govuk-overrides';

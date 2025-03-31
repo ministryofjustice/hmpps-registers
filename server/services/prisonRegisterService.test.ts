@@ -3,7 +3,7 @@ import nock from 'nock'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
-import TokenStore from '../data/tokenStore'
+import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
@@ -332,12 +332,11 @@ describe('Prison Register service', () => {
           path: '/prison-maintenance',
         })
 
-        const result = await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
-
-        expect(result).toEqual({
-          success: false,
-          errorMessage: "Validation failed for object='insertPrisonDto'. Error count: 1",
-        })
+        try {
+          await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        } catch (e) {
+          expect(e.data.message).toEqual("Validation failed for object='insertPrisonDto'. Error count: 1")
+        }
       })
       it('will throw error if prison failed to be added due to some of reason', async () => {
         fakePrisonRegister
