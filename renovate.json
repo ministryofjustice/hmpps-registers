@@ -40,5 +40,5 @@
   "vulnerabilityAlerts": {
     "stabilityDays": 0
   },
-  "enabled": false
+  "enabled": true
 }
