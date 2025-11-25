@@ -40,5 +40,6 @@
   "vulnerabilityAlerts": {
     "stabilityDays": 0
   },
-  "enabled": true
+  "schedule": ["before 7am every weekday", "after 1am every weekday"],
+  "enabled": false
 }
