@@ -41,5 +41,5 @@
     "stabilityDays": 0
   },
   "schedule": ["before 7am every weekday", "after 1am every weekday"],
-  "enabled": false
+  "enabled": true
 }
