@@ -67,7 +67,7 @@ services:
       - $PWD/localstack:/docker-entrypoint-initaws.d
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
+    image: ghcr.io/ministryofjustice/hmpps-auth:latest
     networks:
       - hmpps
     container_name: hmpps-auth
@@ -83,7 +83,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
 
   hmpps-external-users-api:
-    image: quay.io/hmpps/hmpps-external-users-api:latest
+    image: ghcr.io/ministryofjustice/hmpps-external-users-api:latest
     container_name: hmpps-external-users-api
     depends_on:
       - hmpps-auth
@@ -99,7 +99,7 @@ services:
       - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
 
   hmpps-manage-users-api:
-    image: quay.io/hmpps/hmpps-manage-users-api:latest
+    image: ghcr.io/ministryofjustice/hmpps-manage-users-api:latest
     container_name: hmpps-manage-users-api
     depends_on:
       - hmpps-external-users-api
