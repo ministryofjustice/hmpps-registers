@@ -5,7 +5,7 @@
   "repository": "git@github.com:ministryofjustice/hmpps-registers.git",
   "license": "MIT",
   "scripts": {
-    "prepare": "hmpps-precommit-hooks-prepare && husky",
+    "prepare": "hmpps-precommit-hooks-prepare",
     "copy-views": "cp -R server/views dist/server/",
     "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice/frontend --load-path=. ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
     "watch-ts": "tsc -w",
@@ -84,9 +84,9 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.995.0",
     "@ministryofjustice/frontend": "^4.0.2",
-    "@ministryofjustice/hmpps-monitoring": "^0.0.2",
+    "@ministryofjustice/hmpps-monitoring": "^1.0.2",
     "agentkeepalive": "^4.6.0",
-    "applicationinsights": "^3.12.1",
+    "applicationinsights": "^3.13.0",
     "body-parser": "^1.20.4",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
@@ -118,7 +118,7 @@
   },
   "devDependencies": {
     "@jgoz/esbuild-plugin-typecheck": "^4.0.4",
-    "@ministryofjustice/eslint-config-hmpps": "^1.0.1",
+    "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
     "@ministryofjustice/hmpps-precommit-hooks": "^2.0.0",
     "@tsconfig/node22": "^22.0.5",
