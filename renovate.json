@@ -2,7 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>ministryofjustice/hmpps-renovate-config:node"],
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{warnings}}}{{{controls}}}",
-  "ignoreDeps": ["esbuild"],
   "packageRules": [
     {
       "matchManagers": ["npm"],
@@ -32,13 +31,22 @@
     },
     {
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["node"],
+      "matchPackageNames": ["node", "hmpps-node"],
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchFileNames": ["**/.github/workflows/**/*.ya?ml"],
+      "separateMinorPatch": true
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "groupName": "all pre-commit dependencies"
     }
   ],
   "vulnerabilityAlerts": {
     "stabilityDays": 0
   },
-  "enabled": false
+  "enabled": true
 }
