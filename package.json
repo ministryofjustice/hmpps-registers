@@ -175,10 +175,10 @@
       }
     },
     "csurf": {
-      "cookie": "0.7.2"
+      "cookie": "1.1.1"
     },
     "applicationinsights": {
-      "cookie": "0.7.2"
+      "cookie": "1.1.1"
     }
   }
 }
