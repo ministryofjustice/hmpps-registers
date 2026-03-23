@@ -1,27 +1,26 @@
 const { copy } = require('esbuild-plugin-copy')
 const { typecheckPlugin } = require('@jgoz/esbuild-plugin-typecheck')
-const esbuild = require('esbuild')
-const glob = require('glob')
+const { globSync } = require('node:fs')
+const { buildNotificationPlugin } = require('./utils')
 
-module.exports = buildConfig => {
-  // eslint-disable-next-line no-console
-  console.log('\u{1b}[1m\u{2728}  Building app....\u{1b}[0m')
+/**
+ * Build typescript application into CommonJS
+ */
+const getAppConfig = buildConfig => ({
+  entryPoints: globSync(buildConfig.app.entryPoints),
+  outdir: buildConfig.app.outDir,
+  bundle: false,
+  sourcemap: true,
+  platform: 'node',
+  format: 'cjs',
+  plugins: [
+    typecheckPlugin({ watch: buildConfig.isWatchMode }),
+    copy({
+      resolveFrom: 'cwd',
+      assets: buildConfig.app.copy,
+    }),
+    buildNotificationPlugin('App', buildConfig.isWatchMode),
+  ],
+})
 
-  esbuild
-    .build({
-      entryPoints: glob.sync(buildConfig.app.entryPoints),
-      outdir: buildConfig.app.outDir,
-      bundle: false,
-      sourcemap: true,
-      platform: 'node',
-      format: 'cjs',
-      plugins: [
-        typecheckPlugin(),
-        copy({
-          resolveFrom: 'cwd',
-          assets: buildConfig.app.copy,
-        }),
-      ],
-    })
-    .catch(() => process.exit(1))
-}
+module.exports = { getAppConfig }
