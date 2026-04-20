@@ -30,7 +30,7 @@
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
-    "node": "^22",
+    "node": "^22.9.0",
     "npm": "^11"
   },
   "jest": {
@@ -132,7 +132,7 @@
     "@types/http-errors": "^2.0.5",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^22.19.1",
+    "@types/node": "^22.19.15",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
     "@types/passport-oauth2": "^1.8.0",
