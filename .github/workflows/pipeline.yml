@@ -68,7 +68,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: none
+      id-token: write
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
