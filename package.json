@@ -179,6 +179,9 @@
     },
     "applicationinsights": {
       "cookie": "1.1.1"
+    },
+    "nunjucks": {
+      "chokidar" : "5.0.0"
     }
   }
 }
