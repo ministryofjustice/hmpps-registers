@@ -58,13 +58,17 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
-  build:
+  docker_build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - node_integration_tests
       - node_unit_tests
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
@@ -74,30 +78,30 @@ jobs:
   deploy_dev:
     name: Deploy to the development environment
     needs:
-      - build
+      - docker_build
       - helm_lint
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
       environment: 'dev'
-      app_version: '${{ needs.build.outputs.app_version }}'
+      app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_preprod:
      name: Deploy to pre-production environment
      needs:
-       - build
+       - docker_build
        - deploy_dev
      uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
      secrets: inherit
      with:
        environment: 'preprod'
-       app_version: '${{ needs.build.outputs.app_version }}'
+       app_version: '${{ needs.docker_build.outputs.app_version }}'
   deploy_prod:
      name: Deploy to production environment
      needs:
-       - build
+       - docker_build
        - deploy_preprod
      uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
      secrets: inherit
      with:
        environment: 'prod'
-       app_version: '${{ needs.build.outputs.app_version }}'
+       app_version: '${{ needs.docker_build.outputs.app_version }}'
