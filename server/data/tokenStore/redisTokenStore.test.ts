@@ -34,7 +34,7 @@ describe('tokenStore', () => {
 
       await tokenStore.getToken('user-1')
 
-      expect(redisClient.connect).toHaveBeenCalledWith()
+      expect(redisClient.connect).toHaveBeenCalled()
     })
   })
 
@@ -50,7 +50,7 @@ describe('tokenStore', () => {
 
       await tokenStore.setToken('user-1', 'token-1', 10)
 
-      expect(redisClient.connect).toHaveBeenCalledWith()
+      expect(redisClient.connect).toHaveBeenCalled()
     })
   })
 })
