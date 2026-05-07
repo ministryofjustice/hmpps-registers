@@ -101,7 +101,9 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, contracted: '' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#contracted', text: 'State whether prison is contracted' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#contracted', text: 'State whether prison is contracted' },
+      ])
     })
   })
 })
