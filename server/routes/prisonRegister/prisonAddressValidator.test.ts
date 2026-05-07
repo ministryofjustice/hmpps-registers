@@ -42,7 +42,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addressline1: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addressline1', text: 'Enter the first line of the address not greater than 80 characters' },
       ])
     })
@@ -50,7 +50,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addressline2: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addressline2', text: 'Enter the second line of the address not greater than 80 characters' },
       ])
     })
@@ -58,13 +58,13 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresstown: '  ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#addresstown', text: 'Enter the town or city' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#addresstown', text: 'Enter the town or city' }])
     })
     it('addresstown must not be greater than 80 characters', async () => {
       const form = { ...validForm, addresstown: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresstown', text: 'Enter the town or city not greater than 80 characters' },
       ])
     })
@@ -72,7 +72,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresscounty: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresscounty', text: 'Enter the county not greater than 80 characters' },
       ])
     })
@@ -80,7 +80,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresspostcode: '  ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         {
           href: '#addresspostcode',
           text: 'Enter the postcode, like AA11AA',
@@ -91,7 +91,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresspostcode: 'S1----2BJ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         {
           href: '#addresspostcode',
           text: 'Enter the postcode, like AA11AA',
@@ -102,7 +102,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresspostcode: 'BANANAS' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         {
           href: '#addresspostcode',
           text: 'Enter a real postcode, like AA11AA',
@@ -125,7 +125,7 @@ describe('prisonAddressValidator', () => {
       const form = { ...validForm, addresscountry: '  ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         {
           href: '#addresscountry',
           text: 'Select the country',
