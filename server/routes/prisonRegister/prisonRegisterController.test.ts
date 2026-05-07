@@ -542,7 +542,7 @@ describe('Prison Register controller', () => {
       it('will not request prison details', async () => {
         await controller.amendPrisonDetails(req, res)
 
-        expect(prisonRegisterService.getPrison).toBeCalledTimes(0)
+        expect(prisonRegisterService.getPrison).not.toHaveBeenCalled()
       })
       it('will render prison details page', async () => {
         await controller.amendPrisonDetails(req, res)
@@ -904,7 +904,7 @@ describe('Prison Register controller', () => {
       it('will not request prison address', async () => {
         await controller.amendPrisonAddress(req, res)
 
-        expect(prisonRegisterService.getPrisonAddress).toBeCalledTimes(0)
+        expect(prisonRegisterService.getPrisonAddress).not.toHaveBeenCalled()
       })
       it('will render prison address page', async () => {
         await controller.amendPrisonAddress(req, res)
