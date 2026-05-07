@@ -545,7 +545,7 @@ describe('Prison Register controller', () => {
           { text: 'Secure Training Centre (STC)', value: 'STC' },
           { text: 'Youth Custody Service (YCS)', value: 'YCS' },
         ],
-        // @ts-ignore
+        // @ts-expect-error Allow any
         errors: [],
       }
       beforeEach(() => {
