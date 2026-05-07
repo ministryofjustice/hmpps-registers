@@ -82,7 +82,7 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1040.0",
+    "@aws-sdk/client-sqs": "^3.1041.0",
     "@ministryofjustice/frontend": "^4.0.2",
     "@ministryofjustice/hmpps-monitoring": "^1.0.2",
     "agentkeepalive": "^4.6.0",
@@ -162,7 +162,7 @@
     "nock": "^14.0.14",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
-    "prettier-plugin-jinja-template": "^2.1.0",
+    "prettier-plugin-jinja-template": "^2.2.0",
     "sass": "^1.99.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
