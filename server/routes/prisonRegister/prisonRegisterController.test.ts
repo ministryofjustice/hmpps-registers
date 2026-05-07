@@ -524,6 +524,30 @@ describe('Prison Register controller', () => {
     })
 
     describe('amendPrisonDetails', () => {
+      const expected = {
+        form: {
+          id: 'MDI',
+          name: 'HMP Moorland',
+          gender: ['male'],
+          prisonTypes: ['HMP'],
+        },
+        genderValues: [
+          { text: 'Male', value: 'male' },
+          {
+            text: 'Female',
+            value: 'female',
+          },
+        ],
+        prisonTypesValues: [
+          { text: "His Majesty's Prison (HMP)", value: 'HMP' },
+          { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
+          { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
+          { text: 'Secure Training Centre (STC)', value: 'STC' },
+          { text: 'Youth Custody Service (YCS)', value: 'YCS' },
+        ],
+        // @ts-ignore
+        errors: [],
+      }
       beforeEach(() => {
         req.session.amendPrisonDetailsForm = {
           id: 'MDI',
@@ -547,39 +571,12 @@ describe('Prison Register controller', () => {
       it('will render prison details page', async () => {
         await controller.amendPrisonDetails(req, res)
 
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
-          form: expect.objectContaining({}),
-          genderValues: expect.objectContaining({}),
-          prisonTypesValues: expect.objectContaining({}),
-          errors: [],
-        })
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', expected)
       })
       it('will pass through form to page', async () => {
         await controller.amendPrisonDetails(req, res)
 
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
-          form: {
-            id: 'MDI',
-            name: 'HMP Moorland',
-            gender: ['male'],
-            prisonTypes: ['HMP'],
-          },
-          genderValues: [
-            { text: 'Male', value: 'male' },
-            {
-              text: 'Female',
-              value: 'female',
-            },
-          ],
-          prisonTypesValues: [
-            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
-            { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
-            { text: 'Secure Training Centre (STC)', value: 'STC' },
-            { text: 'Youth Custody Service (YCS)', value: 'YCS' },
-          ],
-          errors: [],
-        })
+        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', expected)
       })
     })
     describe('submitAmendPrisonDetails', () => {
