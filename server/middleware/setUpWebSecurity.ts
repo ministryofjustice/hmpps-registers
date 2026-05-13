@@ -1,5 +1,6 @@
 import express, { Router } from 'express'
 import helmet from 'helmet'
+import config from '../config'
 
 export default function setUpWebSecurity(): Router {
   const router = express.Router()
@@ -12,10 +13,9 @@ export default function setUpWebSecurity(): Router {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: ["'self'", "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='", '*.google-analytics.com'],
+          scriptSrc: ["'self'", '*.google-analytics.com'],
           styleSrc: ["'self'"],
-          fontSrc: ["'self'"],
+          fontSrc: ["'self'", config.apis.frontendComponents.url],
         },
       },
     }),
