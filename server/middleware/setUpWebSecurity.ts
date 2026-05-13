@@ -14,7 +14,7 @@ export default function setUpWebSecurity(): Router {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'", '*.google-analytics.com'],
-          styleSrc: ["'self'"],
+          styleSrc: ["'self'", 'fonts.googleapis.com'],
           fontSrc: ["'self'", config.apis.frontendComponents.url],
         },
       },
