@@ -4,6 +4,7 @@ import auth from '../mockApis/auth'
 import tokenVerification from '../mockApis/tokenVerification'
 import prisonRegister from '../mockApis/prisonRegister'
 import manageUsersApi from '../mockApis/manageUsersApi'
+import componentsApi from '../mockApis/components'
 
 export default (on: (task: string, tasks: Record<string, unknown>) => void): void => {
   on('task', {
@@ -18,6 +19,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubTokenVerificationPing: tokenVerification.stubTokenVerificationPing,
 
     stubManageUsersPing: manageUsersApi.stubManageUsersPing,
+    stubComponentsPing: componentsApi.stubComponentsPing,
 
     stubPrisonRegisterPing: prisonRegister.stubPing,
     stubGetPrisonsWithFilter: prisonRegister.stubGetPrisonsWithFilter,
