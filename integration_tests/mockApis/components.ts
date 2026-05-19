@@ -1,6 +1,6 @@
 import { stubFor } from './wiremock'
 
-const stubComponentsHealthPing = () =>
+const stubComponentsPing = () =>
   stubFor({
     request: {
       method: 'GET',
@@ -12,5 +12,5 @@ const stubComponentsHealthPing = () =>
   })
 
 export default {
-  stubComponentsHealthPing,
+  stubComponentsPing,
 }

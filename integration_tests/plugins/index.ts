@@ -19,7 +19,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubTokenVerificationPing: tokenVerification.stubTokenVerificationPing,
 
     stubManageUsersPing: manageUsersApi.stubManageUsersPing,
-    stubComponentsPing: componentsApi.stubComponentsHealthPing,
+    stubComponentsPing: componentsApi.stubComponentsPing,
 
     stubPrisonRegisterPing: prisonRegister.stubPing,
     stubGetPrisonsWithFilter: prisonRegister.stubGetPrisonsWithFilter,
