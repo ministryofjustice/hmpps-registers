@@ -170,6 +170,7 @@
   },
   "overrides": {
     "serialize-javascript": ">=7.0.5",
+    "protobufjs": "^8.3.0",
     "jest": {
       "jest-core": {
         "micromatch": "4.0.8"
