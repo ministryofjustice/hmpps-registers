@@ -55,7 +55,7 @@ describe('addNewPrisonSummaryValidator', () => {
         ],
       }
 
-      expect(addPrisonService).toBeCalledWith(expectedPrison)
+      expect(addPrisonService).toHaveBeenCalledWith(expectedPrison)
     })
 
     it('returns next page when add prison succeeds', async () => {
@@ -67,7 +67,7 @@ describe('addNewPrisonSummaryValidator', () => {
       addPrisonService = jest.fn().mockResolvedValue({ success: false, errorMessage: 'service not available' })
       const nextPage = await validate(form, req, addPrisonService)
       expect(nextPage).toEqual('/prison-register/add-new-prison-summary')
-      expect(req.flash).toBeCalledWith('errors', [{ text: 'service not available' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ text: 'service not available' }])
     })
   })
 })

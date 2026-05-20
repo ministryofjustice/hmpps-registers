@@ -46,13 +46,13 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, id: '  ' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#id', text: 'Enter a prison code' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#id', text: 'Enter a prison code' }])
     })
     it('id must be greater than 2 characters', async () => {
       const form = { ...validForm, id: 'A' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#id', text: 'Enter a prison code between 2 and 6 characters' },
       ])
     })
@@ -60,7 +60,7 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, id: 'A'.repeat(7) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#id', text: 'Enter a prison code between 2 and 6 characters' },
       ])
     })
@@ -71,7 +71,7 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, id: 'AA' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#id', text: 'Albany (HMP) already has that code. Choose another code' },
       ])
     })
@@ -79,13 +79,13 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, name: '  ' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#name', text: 'Enter a prison name' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Enter a prison name' }])
     })
     it('name must be greater than 2 characters', async () => {
       const form = { ...validForm, name: 'A' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#name', text: 'Enter a prison name between 2 and 80 characters' },
       ])
     })
@@ -93,7 +93,7 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, name: 'A'.repeat(81) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#name', text: 'Enter a prison name between 2 and 80 characters' },
       ])
     })
@@ -101,7 +101,9 @@ describe('addNewPrisonDetailsValidator', () => {
       const form = { ...validForm, contracted: '' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#contracted', text: 'State whether prison is contracted' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#contracted', text: 'State whether prison is contracted' },
+      ])
     })
   })
 })
