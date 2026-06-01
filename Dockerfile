@@ -18,9 +18,7 @@ RUN test -n "$GIT_BRANCH" || (echo "GIT_BRANCH not set" && false)
 WORKDIR /app
 
 COPY package*.json .allowed-scripts.mjs .npmrc ./
-RUN npm --version && node --version
-RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm ci --no-progress --loglevel verbose
-RUN npx hmpps-npm-script-run-allowlist
+RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
 ENV NODE_ENV='production'
 
 COPY . .
