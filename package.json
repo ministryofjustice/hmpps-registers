@@ -82,7 +82,7 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1052.0",
+    "@aws-sdk/client-sqs": "^3.1060.0",
     "@ministryofjustice/frontend": "^4.0.2",
     "@ministryofjustice/hmpps-monitoring": "^2.1.0",
     "agentkeepalive": "^4.6.0",
@@ -142,9 +142,9 @@
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
     "chokidar": "^5.0.0",
-    "concurrently": "^10.0.0",
+    "concurrently": "^10.0.3",
     "cookie-session": "^2.1.1",
-    "cypress": "^15.15.0",
+    "cypress": "^15.16.0",
     "cypress-multi-reporters": "^2.0.5",
     "del": "8.0.1",
     "esbuild": "^0.28.0",
@@ -157,7 +157,7 @@
     "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "jsonwebtoken": "^9.0.3",
-    "lint-staged": "^17.0.5",
+    "lint-staged": "^17.0.7",
     "mocha-junit-reporter": "^2.2.1",
     "nock": "^14.0.15",
     "nodemon": "^3.1.14",
@@ -170,7 +170,7 @@
   },
   "overrides": {
     "serialize-javascript": ">=7.0.5",
-    "protobufjs": "^8.4.2",
+    "protobufjs": "^8.5.0",
     "jest": {
       "jest-core": {
         "micromatch": "4.0.8"
