@@ -82,12 +82,12 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1045.0",
+    "@aws-sdk/client-sqs": "3.1070.0",
     "@ministryofjustice/frontend": "^4.0.2",
     "@ministryofjustice/hmpps-monitoring": "^1.1.0",
     "agentkeepalive": "^4.6.0",
-    "applicationinsights": "^3.14.0",
-    "body-parser": "^2.2.2",
+    "applicationinsights": "3.15.0",
+    "body-parser": "2.3.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "compression": "^1.8.1",
@@ -101,7 +101,7 @@
     "express-session": "^1.19.0",
     "govuk-elements-sass": "^3.1.3",
     "govuk-frontend": "^5.14.0",
-    "helmet": "^8.1.0",
+    "helmet": "8.2.0",
     "http-errors": "^2.0.1",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
@@ -136,7 +136,7 @@
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
     "@types/passport-oauth2": "^1.8.0",
-    "@types/superagent": "^8.1.9",
+    "@types/superagent": "8.1.10",
     "@types/supertest": "^7.2.0",
     "@types/validatorjs": "^3.15.5",
     "audit-ci": "^7.1.0",
@@ -144,7 +144,7 @@
     "chokidar": "^5.0.0",
     "concurrently": "^9.2.1",
     "cookie-session": "^2.1.1",
-    "cypress": "^15.14.2",
+    "cypress": "15.17.0",
     "cypress-multi-reporters": "^2.0.5",
     "del": "8.0.1",
     "esbuild": "^0.28.0",
@@ -157,18 +157,26 @@
     "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "jsonwebtoken": "^9.0.3",
-    "lint-staged": "^17.0.2",
+    "lint-staged": "17.0.7",
     "mocha-junit-reporter": "^2.2.1",
     "nock": "^14.0.15",
     "nodemon": "^3.1.14",
-    "prettier": "^3.8.3",
+    "prettier": "3.8.4",
     "prettier-plugin-jinja-template": "^2.2.0",
-    "sass": "^1.99.0",
+    "sass": "1.101.0",
     "supertest": "^7.2.2",
-    "ts-jest": "^29.4.9",
+    "ts-jest": "29.4.11",
     "typescript": "^5.9.3"
   },
   "overrides": {
+    "@opentelemetry/core": "2.8.0",
+    "protobufjs": "8.6.0",
+    "js-yaml": "4.2.0",
+    "shell-quote": "1.8.4",
+    "serialize-javascript": "7.0.5",
+    "@azure/functions-old": {
+      "uuid": "11.1.1"
+    },
     "jest": {
       "jest-core": {
         "micromatch": "4.0.8"
@@ -181,7 +189,7 @@
       "cookie": "1.1.1"
     },
     "nunjucks": {
-      "chokidar" : "5.0.0"
+      "chokidar": "5.0.0"
     }
   }
 }
