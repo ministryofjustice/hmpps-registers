@@ -50,13 +50,13 @@ describe('amendPrisonDetailsValidator', () => {
       const form = { ...validForm, name: '  ' }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#name', text: 'Enter a prison name' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Enter a prison name' }])
     })
     it('name must be greater than 3 characters', async () => {
       const form = { ...validForm, name: 'AA' }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#name', text: 'Enter a prison name between 3 and 80 characters' },
       ])
     })
@@ -64,7 +64,7 @@ describe('amendPrisonDetailsValidator', () => {
       const form = { ...validForm, name: 'A'.repeat(81) }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#name', text: 'Enter a prison name between 3 and 80 characters' },
       ])
     })
@@ -73,7 +73,7 @@ describe('amendPrisonDetailsValidator', () => {
       const form = { ...validForm, prisonNameInWelsh: 'A'.repeat(2) }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#prisonNameInWelsh', text: 'Enter a prison name in Welsh between 3 and 80 characters' },
       ])
     })
@@ -82,7 +82,7 @@ describe('amendPrisonDetailsValidator', () => {
       const form = { ...validForm, prisonNameInWelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, updateService)
       expect(nextPage).toEqual('/prison-register/amend-prison-details')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#prisonNameInWelsh', text: 'Enter a prison name in Welsh between 3 and 80 characters' },
       ])
     })

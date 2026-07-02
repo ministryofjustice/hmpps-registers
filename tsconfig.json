@@ -16,6 +16,7 @@
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
+    "isolatedModules": true,
     "useDefineForClassFields": false,
     "experimentalDecorators": true,
     "typeRoots": ["./server/@types", "./node_modules/@types"],

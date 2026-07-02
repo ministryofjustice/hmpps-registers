@@ -40,7 +40,7 @@ describe('welshPrisonAddressValidator', () => {
       const form = { ...validForm, addressline1inwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addressline1inwelsh', text: 'Enter the first line of the address not greater than 80 characters' },
       ])
     })
@@ -48,7 +48,7 @@ describe('welshPrisonAddressValidator', () => {
       const form = { ...validForm, addressline2inwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addressline2inwelsh', text: 'Enter the second line of the address not greater than 80 characters' },
       ])
     })
@@ -56,13 +56,15 @@ describe('welshPrisonAddressValidator', () => {
       const form = { ...validForm, addresstowninwelsh: '  ' }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [{ href: '#addresstowninwelsh', text: 'Enter the town or city' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#addresstowninwelsh', text: 'Enter the town or city' },
+      ])
     })
     it('town must not be greater than 80 characters', async () => {
       const form = { ...validForm, addresstowninwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresstowninwelsh', text: 'Enter the town or city not greater than 80 characters' },
       ])
     })
@@ -70,7 +72,7 @@ describe('welshPrisonAddressValidator', () => {
       const form = { ...validForm, addresscountyinwelsh: 'A'.repeat(81) }
       const nextPage = await validate(form, req, errorUrl, updateService)
       expect(nextPage).toEqual('/prison-register/add-welsh-prison-address')
-      expect(req.flash).toBeCalledWith('errors', [
+      expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresscountyinwelsh', text: 'Enter the county not greater than 80 characters' },
       ])
     })
