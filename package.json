@@ -183,10 +183,10 @@
       }
     },
     "csurf": {
-      "cookie": "2.0.0"
+      "cookie": "1.1.1"
     },
     "applicationinsights": {
-      "cookie": "2.0.0"
+      "cookie": "1.1.1"
     },
     "nunjucks": {
       "chokidar": "$chokidar"
