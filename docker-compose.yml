@@ -12,6 +12,8 @@ services:
   prison-register:
     image: ghcr.io/ministryofjustice/prison-register:latest
     container_name: prison-register
+    networks:
+      - hmpps
     depends_on:
       - prison-register-db
     ports:
@@ -30,6 +32,8 @@ services:
   prison-register-db:
     image: postgres:18
     container_name: prison-register-db
+    networks:
+      - hmpps
     restart: always
     ports:
       - "9432:5432"
@@ -42,6 +46,8 @@ services:
   auth-db:
     image: postgres:18
     container_name: auth-db
+    networks:
+      - hmpps
     restart: always
     ports:
       - "7432:5432"
@@ -85,6 +91,8 @@ services:
   hmpps-external-users-api:
     image: ghcr.io/ministryofjustice/hmpps-external-users-api:latest
     container_name: hmpps-external-users-api
+    networks:
+      - hmpps
     depends_on:
       - hmpps-auth
     ports:
