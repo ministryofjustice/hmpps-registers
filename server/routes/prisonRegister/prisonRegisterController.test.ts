@@ -444,8 +444,8 @@ describe('Prison Register controller', () => {
 
         expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
           form: expect.objectContaining({}),
-          genderValues: expect.objectContaining({}),
-          prisonTypesValues: expect.objectContaining({}),
+          genderValues: expect.any(Array),
+          prisonTypesValues: expect.any(Array),
           errors: [],
         })
       })
