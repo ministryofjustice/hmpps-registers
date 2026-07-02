@@ -11,6 +11,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
     PRISON_REGISTER_API_URL: https://prison-register-dev.hmpps.service.justice.gov.uk
     MANAGE_USERS_API_URL: https://manage-users-api-dev.hmpps.service.justice.gov.uk
+    COMPONENTS_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk
 
     INGRESS_URL: https://registers-dev.hmpps.service.justice.gov.uk
 
