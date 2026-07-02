@@ -110,6 +110,16 @@ export default {
       },
       agent: new AgentConfig(),
     },
+    frontendComponents: {
+      url: get('COMPONENTS_API_URL', 'http://localhost:8082', requiredInProduction),
+      healthPath: '/health',
+      timeout: {
+        response: Number(get('COMPONENTS_API_TIMEOUT_SECONDS', 10000)),
+        deadline: Number(get('COMPONENTS_API_TIMEOUT_SECONDS', 10000)),
+      },
+      agent: new AgentConfig(Number(get('COMPONENTS_API_TIMEOUT_SECONDS', 10000))),
+      enabled: get('COMMON_COMPONENTS_ENABLED', 'true') === 'true',
+    },
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction) as string,
   sqs: {

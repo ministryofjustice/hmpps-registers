@@ -37,7 +37,10 @@ export default function setUpStaticResources(): Router {
   Array.of('/node_modules/@ministryofjustice/frontend/moj/assets/images').forEach(dir => {
     router.use('/assets/images', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
   })
-
+  // Add fonts serving - required for FiraCode and other font files
+  Array.of('/node_modules/@ministryofjustice/frontend/moj/assets/fonts').forEach(dir => {
+    router.use('/__/fonts', express.static(path.join(process.cwd(), dir), staticResourcesConfig))
+  })
   // Don't cache dynamic resources
   router.use(noCache())
 

@@ -13,7 +13,7 @@ export default class MockUserService extends UserService {
     super({} as ManageUsersApiClient)
   }
 
-  async getUser(token: string): Promise<UserDetails> {
+  override async getUser(token: string): Promise<UserDetails> {
     return {
       token,
       ...user,
