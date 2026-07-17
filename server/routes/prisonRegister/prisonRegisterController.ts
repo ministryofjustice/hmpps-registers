@@ -183,7 +183,7 @@ export default class PrisonRegisterController {
           const genderArray = ControllerHelper.parseStringArrayFromQuery(gender) || []
           const prisonTypesArray = (ControllerHelper.parseStringArrayFromQuery(prisonTypes) || []) as (
             'HMP' | 'YOI' | 'STC' | 'IRC'
-            )[]
+          )[]
 
           return this.prisonRegisterService.updatePrisonDetails(
             context(res),
