@@ -1,7 +1,8 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Prison, PrisonAddress } from '../../server/@types/prisonRegister'
+import { Court, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
+import courtData from '../../server/routes/testutils/mockCourtData'
 
 // Mock API responses
 
@@ -177,6 +178,22 @@ const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
       jsonBody: prison,
     },
   })
+
+const stubGetCourts = (courts: Court[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/courts',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: courts,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -190,6 +207,7 @@ export default {
   stubAddPrisonAddress,
   stubDeletePrisonAddress,
   stubPutWelshPrisonAddress,
+  stubGetCourts,
 }
 
 // Mock data
@@ -217,6 +235,7 @@ export const belmarshPrison: Prison = {
   female: false,
   contracted: false,
   lthse: false,
+  categories: [],
   addresses: [
     {
       id: 16,
@@ -238,6 +257,7 @@ export const cardiffPrison: Prison = {
   active: false,
   male: true,
   female: false,
+  categories: [],
   contracted: false,
   lthse: false,
   addresses: [
@@ -263,6 +283,7 @@ export const cardiffPrisonWithWelshAddress: Prison = {
   female: false,
   contracted: false,
   lthse: false,
+  categories: [],
   addresses: [
     {
       id: 16,
@@ -282,3 +303,10 @@ export const cardiffPrisonWithWelshAddress: Prison = {
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
 }
+
+export const sheffieldCrownCourt: Court = courtData.court({
+  courtId: 'SHFCC',
+  courtName: 'Sheffield Crown Court',
+  active: true,
+  courtType: { code: 'CC', description: 'Crown Court' },
+})

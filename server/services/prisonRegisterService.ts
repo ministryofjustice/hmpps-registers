@@ -10,6 +10,7 @@ import {
   UpdatePrisonAddress,
   InsertPrison,
   UpdateWelshPrisonAddress,
+  Court,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 
@@ -105,6 +106,7 @@ export default class PrisonRegisterService {
       female,
       prisonTypes,
       prisonNameInWelsh,
+      categories: prison.categories,
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending prison details for ${prisonId}`)
@@ -172,13 +174,21 @@ export default class PrisonRegisterService {
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const prisonTypes = prison.types.map(type => type.code)
-    const { prisonName, male, female, contracted, lthse } = prison
-    const updatedPrison: UpdatePrison = { active, prisonName, male, female, contracted, lthse, prisonTypes }
+    const { prisonName, male, female, contracted, lthse, categories } = prison
+    const updatedPrison: UpdatePrison = { active, prisonName, male, female, contracted, lthse, prisonTypes, categories }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
     await PrisonRegisterService.restClient(token).put({
       path: `/prison-maintenance/id/${prisonId}`,
       data: updatedPrison,
+    })
+  }
+
+  async getCourts(context: Context): Promise<Court[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting details for courts`)
+    return PrisonRegisterService.restClient(token).get<Court[]>({
+      path: `/courts`,
     })
   }
 }

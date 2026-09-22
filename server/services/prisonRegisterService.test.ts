@@ -5,6 +5,7 @@ import config from '../config'
 import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
+import courtData from '../routes/testutils/mockCourtData'
 import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
@@ -310,6 +311,7 @@ describe('Prison Register service', () => {
         lthse: false,
         prisonName: 'Sheffield Prison',
         prisonTypes: ['HMP'],
+        categories: [],
         addresses: [
           {
             addressLine1: '1 High Street',
@@ -371,6 +373,7 @@ describe('Prison Register service', () => {
           male: true,
           contracted: true,
           lthse: false,
+          categories: [],
           addresses: [
             {
               addressLine1: '1 High Street',
@@ -413,6 +416,7 @@ describe('Prison Register service', () => {
           male: true,
           contracted: true,
           lthse: false,
+          categories: [],
           addresses: [
             {
               addressLine1: '1 High Street',
@@ -475,6 +479,37 @@ describe('Prison Register service', () => {
       await prisonRegisterService.deletePrisonAddress({ username: 'tommy' }, 'MDI', '21')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+  })
+
+  describe('getCourts', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/courts').reply(200, [])
+
+      await prisonRegisterService.getCourts({ username: 'tommy' })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('is ok if there are no courts', async () => {
+      fakePrisonRegister.get('/courts').reply(200, [])
+
+      const result = await prisonRegisterService.getCourts({})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all courts', async () => {
+      fakePrisonRegister.get('/courts').reply(200, [courtData.court({}), courtData.court({})])
+
+      const result = await prisonRegisterService.getCourts({})
+
+      expect(result).toHaveLength(2)
     })
   })
 })

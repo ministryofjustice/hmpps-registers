@@ -43,6 +43,7 @@ describe('addNewPrisonSummaryValidator', () => {
         contracted: true,
         lthse: false,
         active: true,
+        categories: [],
         addresses: [
           {
             addressLine1: '',
