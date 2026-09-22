@@ -4,6 +4,7 @@ import type { Page } from './page'
 const index = {
   headerUserName: () => cy.get('[data-qa=header-user-name]'),
   prisonRegisterLink: () => cy.get('[href="/prison-register"]'),
+  courtRegisterLink: () => cy.get('[href="/court-register"]'),
 }
 
 const verifyOnPage = (): Page & typeof index => page('HMPPS Registers', index)

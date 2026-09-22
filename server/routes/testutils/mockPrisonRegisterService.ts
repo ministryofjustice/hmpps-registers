@@ -16,6 +16,7 @@ prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([
     addresses: [],
     types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators: [{ name: 'PSP' }],
+    categories: [],
   },
 ])
 prisonRegisterService.getPrison.mockResolvedValue({
@@ -39,5 +40,6 @@ prisonRegisterService.getPrison.mockResolvedValue({
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  categories: [],
 })
 export default prisonRegisterService

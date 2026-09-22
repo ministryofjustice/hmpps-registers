@@ -44,5 +44,6 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
         country: form.addresscountry as string,
       },
     ],
+    categories: [],
   }
 }

@@ -449,7 +449,10 @@ export default class PrisonRegisterController {
   }
 
   async submitDeleteWelshPrisonAddress(req: Request, res: Response): Promise<void> {
-    const form: UpdateWelshPrisonAddress = trimForm(req.body)
+    const form: UpdateWelshPrisonAddress & {
+      prisonId: string
+      addressId: string
+    } = trimForm(req.body)
 
     this.prisonRegisterService.updateAddressWithWelshPrisonAddress(context(res), form.prisonId, form.addressId, {
       addressLine1InWelsh: null,

@@ -23,6 +23,7 @@ declare module 'express-session' {
     addWelshPrisonAddressForm: AddWelshPrisonAddressForm
     deleteWelshPrisonAddressForm: DeleteWelshPrisonAddressForm
     prisonListPageLink: string
+    allListPageLink: string
   }
 }
 
