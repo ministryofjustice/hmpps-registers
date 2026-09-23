@@ -48,7 +48,7 @@ describe('Court Register controller', () => {
       }
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/court-register/allCourts',
         expect.objectContaining({
@@ -57,10 +57,40 @@ describe('Court Register controller', () => {
       )
     })
 
-    it('it will call court register service with no filter params', async () => {
+    it('it will call register service with no filter params', async () => {
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({})
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, {})
+    })
+
+    it('it will call register service with no filter params', async () => {
+      await controller.showAllCourts(req, res)
+
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, {})
+    })
+
+    it('it will call register service with active filter param', async () => {
+      req.query.active = 'true'
+
+      await controller.showAllCourts(req, res)
+
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { active: true })
+    })
+
+    it('it will call register service with textSearch filter param', async () => {
+      req.query.textSearch = 'Sheffield'
+
+      await controller.showAllCourts(req, res)
+
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+    })
+
+    it('it will call register service with type filter param', async () => {
+      req.query.courtTypeCodes = ['CC', 'MC']
+
+      await controller.showAllCourts(req, res)
+
+      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { courtTypeCodes: ['CC', 'MC'] })
     })
 
     it('will set the list page link in the session', async () => {
