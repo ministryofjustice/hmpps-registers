@@ -24,3 +24,9 @@ export function courtsPageMapper(courtResults: Court[]): CourtPageView {
   const courts = courtResults.map((court: Court) => courtMapper(court))
   return { courts }
 }
+
+export type CourtsFilter = {
+  active?: boolean
+  textSearch?: string
+  courtTypeCodes?: string[]
+}

@@ -13,6 +13,7 @@ import {
   Court,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
+import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 
 export interface Context {
   username?: string
@@ -184,11 +185,12 @@ export default class PrisonRegisterService {
     })
   }
 
-  async getCourts(context: Context): Promise<Court[]> {
+  async getCourts(context: Context, filter: CourtsFilter): Promise<Court[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
-    logger.info(`getting details for courts`)
+    logger.info(`getting all courts with filter ${JSON.stringify(filter)}`)
     return PrisonRegisterService.restClient(token).get<Court[]>({
       path: `/courts`,
+      query: `${querystring.stringify(filter)}`,
     })
   }
 }

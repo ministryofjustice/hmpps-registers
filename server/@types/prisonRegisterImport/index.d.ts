@@ -460,7 +460,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}': {
+  '/approved-premises/id/{approvedPremisesId}': {
     parameters: {
       query?: never
       header?: never
@@ -468,27 +468,27 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Get specified approved premise
-     * @description Information on a specific approved premise
+     * Get specified approved premises
+     * @description Information on a specific approved premises
      */
-    get: operations['getApprovedPremiseFromId']
+    get: operations['getApprovedPremisesFromId']
     /**
-     * Update specified approved premise details
-     * @description Updates approved premise information, excluding its addresses, email addresses and phone numbers. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Update specified approved premises details
+     * @description Updates approved premises information, excluding its addresses, email addresses and phone numbers. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    put: operations['updateApprovedPremise']
+    put: operations['updateApprovedPremises']
     post?: never
     /**
-     * Delete specified approved premise
-     * @description Deletes a approved premise, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Delete specified approved premises
+     * @description Deletes a approved premises, along with any addresses, email addresses and phone numbers associated with it. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    delete: operations['deleteApprovedPremise']
+    delete: operations['deleteApprovedPremises']
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/phone-number/{phoneNumberId}': {
+  '/approved-premises/id/{approvedPremisesId}/phone-number/{phoneNumberId}': {
     parameters: {
       query?: never
       header?: never
@@ -497,22 +497,22 @@ export interface paths {
     }
     get?: never
     /**
-     * Update specified approved premise phone number
-     * @description Updates a single phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Update specified approved premises phone number
+     * @description Updates a single phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    put: operations['updateApprovedPremisePhoneNumber']
+    put: operations['updateApprovedPremisesPhoneNumber']
     post?: never
     /**
-     * Delete specified approved premise phone number
-     * @description Deletes a single phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Delete specified approved premises phone number
+     * @description Deletes a single phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    delete: operations['deleteApprovedPremisePhoneNumber']
+    delete: operations['deleteApprovedPremisesPhoneNumber']
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/email-address/{emailAddressId}': {
+  '/approved-premises/id/{approvedPremisesId}/email-address/{emailAddressId}': {
     parameters: {
       query?: never
       header?: never
@@ -521,22 +521,22 @@ export interface paths {
     }
     get?: never
     /**
-     * Update specified approved premise email address
-     * @description Updates a single email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Update specified approved premises email address
+     * @description Updates a single email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    put: operations['updateApprovedPremiseEmailAddress']
+    put: operations['updateApprovedPremisesEmailAddress']
     post?: never
     /**
-     * Delete specified approved premise email address
-     * @description Deletes a single email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Delete specified approved premises email address
+     * @description Deletes a single email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    delete: operations['deleteApprovedPremiseEmailAddress']
+    delete: operations['deleteApprovedPremisesEmailAddress']
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/address/{addressId}': {
+  '/approved-premises/id/{approvedPremisesId}/address/{addressId}': {
     parameters: {
       query?: never
       header?: never
@@ -545,16 +545,16 @@ export interface paths {
     }
     get?: never
     /**
-     * Update specified approved premise address
-     * @description Updates a single address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Update specified approved premises address
+     * @description Updates a single address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    put: operations['updateApprovedPremiseAddress']
+    put: operations['updateApprovedPremisesAddress']
     post?: never
     /**
-     * Delete specified approved premise address
-     * @description Deletes a single address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Delete specified approved premises address
+     * @description Deletes a single address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    delete: operations['deleteApprovedPremiseAddress']
+    delete: operations['deleteApprovedPremisesAddress']
     options?: never
     head?: never
     patch?: never
@@ -1090,17 +1090,17 @@ export interface paths {
     get: operations['getApprovedPremises']
     put?: never
     /**
-     * Create a new approved premise
-     * @description Creates a approved premise, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Create a new approved premises
+     * @description Creates a approved premises, along with any addresses, email addresses and phone numbers supplied. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    post: operations['createApprovedPremise']
+    post: operations['createApprovedPremises']
     delete?: never
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/phone-number': {
+  '/approved-premises/id/{approvedPremisesId}/phone-number': {
     parameters: {
       query?: never
       header?: never
@@ -1110,17 +1110,17 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Create a approved premise phone number
-     * @description Creates a new phone number for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Create a approved premises phone number
+     * @description Creates a new phone number for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    post: operations['createApprovedPremisePhoneNumber']
+    post: operations['createApprovedPremisesPhoneNumber']
     delete?: never
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/email-address': {
+  '/approved-premises/id/{approvedPremisesId}/email-address': {
     parameters: {
       query?: never
       header?: never
@@ -1130,17 +1130,17 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Create a approved premise email address
-     * @description Creates a new email address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Create a approved premises email address
+     * @description Creates a new email address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    post: operations['createApprovedPremiseEmailAddress']
+    post: operations['createApprovedPremisesEmailAddress']
     delete?: never
     options?: never
     head?: never
     patch?: never
     trace?: never
   }
-  '/approved-premises/id/{approvedPremiseId}/address': {
+  '/approved-premises/id/{approvedPremisesId}/address': {
     parameters: {
       query?: never
       header?: never
@@ -1150,10 +1150,10 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Create a approved premise address
-     * @description Creates a new address for a approved premise. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * Create a approved premises address
+     * @description Creates a new address for a approved premises. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
-    post: operations['createApprovedPremiseAddress']
+    post: operations['createApprovedPremisesAddress']
     delete?: never
     options?: never
     head?: never
@@ -1353,7 +1353,7 @@ export interface paths {
     }
     /**
      * Returns details of an agency of any type for reconciliation
-     * @description Returns the details of any agency (court, hospital, probation office, approved premise, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['getAgencyDetails']
     put?: never
@@ -2180,16 +2180,16 @@ export interface components {
       /** @description phoneNumbers */
       phoneNumbers: components['schemas']['AgencyPhoneDto'][]
     }
-    /** @description Approved Premise Update Record */
-    UpdateApprovedPremiseDto: {
+    /** @description Approved Premises Update Record */
+    UpdateApprovedPremisesDto: {
       /**
        * @description Name
-       * @example Sheffield Approved Premise
+       * @example Sheffield Approved Premises
        */
-      approvedPremiseName: string
+      approvedPremisesName: string
       /**
        * @description Description
-       * @example Sheffield City Centre Approved Premise
+       * @example Sheffield City Centre Approved Premises
        */
       description?: string | null
       /**
@@ -2242,21 +2242,21 @@ export interface components {
        */
       payrollRegionCode?: string | null
     }
-    /** @description Approved Premise Information */
-    ApprovedPremiseDto: {
+    /** @description Approved Premises Information */
+    ApprovedPremisesDto: {
       /**
-       * @description Approved Premise ID
+       * @description Approved Premises ID
        * @example SHEFAP
        */
-      approvedPremiseId: string
+      approvedPremisesId: string
       /**
        * @description Name
-       * @example Sheffield Approved Premise
+       * @example Sheffield Approved Premises
        */
-      approvedPremiseName: string
+      approvedPremisesName: string
       /**
        * @description Description
-       * @example Sheffield City Centre Approved Premise
+       * @example Sheffield City Centre Approved Premises
        */
       description?: string | null
       /**
@@ -2753,7 +2753,7 @@ export interface components {
       | 'SECURE_HOSPITAL'
       | 'PROBATION_OFFICE'
       | 'POLICE_CUSTODY_SUITE'
-      | 'APPROVED_PREMISE'
+      | 'APPROVED_PREMISES'
       | 'AIRPORT'
       | 'PROBATION_CRC'
       | 'FOREIGN_NATIONAL_PRISON'
@@ -2903,21 +2903,21 @@ export interface components {
       /** @description Phone numbers */
       phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
     }
-    /** @description Approved Premise Create Record */
-    CreateApprovedPremiseDto: {
+    /** @description Approved Premises Create Record */
+    CreateApprovedPremisesDto: {
       /**
-       * @description Approved Premise ID
+       * @description Approved Premises ID
        * @example SHEFAP
        */
-      approvedPremiseId: string
+      approvedPremisesId: string
       /**
        * @description Name
-       * @example Sheffield Approved Premise
+       * @example Sheffield Approved Premises
        */
-      approvedPremiseName: string
+      approvedPremisesName: string
       /**
        * @description Description
-       * @example Sheffield City Centre Approved Premise
+       * @example Sheffield City Centre Approved Premises
        */
       description?: string | null
       /**
@@ -5559,16 +5559,16 @@ export interface operations {
       }
     }
   }
-  getApprovedPremiseFromId: {
+  getApprovedPremisesFromId: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
@@ -5580,40 +5580,40 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['ApprovedPremiseDto']
+          'application/json': components['schemas']['ApprovedPremisesDto']
         }
       }
     }
   }
-  updateApprovedPremise: {
+  updateApprovedPremises: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateApprovedPremiseDto']
+        'application/json': components['schemas']['UpdateApprovedPremisesDto']
       }
     }
     responses: {
-      /** @description Approved Premise Information Updated */
+      /** @description Approved Premises Information Updated */
       200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['ApprovedPremiseDto']
+          'application/json': components['schemas']['ApprovedPremisesDto']
         }
       }
-      /** @description Bad information provided to update approved premise */
+      /** @description Bad information provided to update approved premises */
       400: {
         headers: {
           [name: string]: unknown
@@ -5631,7 +5631,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to make approved premise update */
+      /** @description Incorrect permissions to make approved premises update */
       403: {
         headers: {
           [name: string]: unknown
@@ -5640,7 +5640,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id not found */
+      /** @description Approved Premises Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5651,22 +5651,22 @@ export interface operations {
       }
     }
   }
-  deleteApprovedPremise: {
+  deleteApprovedPremises: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
     requestBody?: never
     responses: {
-      /** @description Approved Premise Deleted */
+      /** @description Approved Premises Deleted */
       204: {
         headers: {
           [name: string]: unknown
@@ -5682,7 +5682,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to delete a approved premise */
+      /** @description Incorrect permissions to delete a approved premises */
       403: {
         headers: {
           [name: string]: unknown
@@ -5691,7 +5691,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id not found */
+      /** @description Approved Premises Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5702,16 +5702,16 @@ export interface operations {
       }
     }
   }
-  updateApprovedPremisePhoneNumber: {
+  updateApprovedPremisesPhoneNumber: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Phone Number Id
          * @example 234231
@@ -5726,7 +5726,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Phone Number Updated */
+      /** @description Approved Premises Phone Number Updated */
       200: {
         headers: {
           [name: string]: unknown
@@ -5735,7 +5735,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyPhoneDto']
         }
       }
-      /** @description Bad information provided to update approved premise phone number */
+      /** @description Bad information provided to update approved premises phone number */
       400: {
         headers: {
           [name: string]: unknown
@@ -5753,7 +5753,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to make approved premise phone number update */
+      /** @description Incorrect permissions to make approved premises phone number update */
       403: {
         headers: {
           [name: string]: unknown
@@ -5762,7 +5762,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Phone Number Id not found */
+      /** @description Approved Premises Id or Phone Number Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5773,16 +5773,16 @@ export interface operations {
       }
     }
   }
-  deleteApprovedPremisePhoneNumber: {
+  deleteApprovedPremisesPhoneNumber: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Phone Number Id
          * @example 234231
@@ -5793,7 +5793,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Approved Premise Phone Number Deleted */
+      /** @description Approved Premises Phone Number Deleted */
       204: {
         headers: {
           [name: string]: unknown
@@ -5809,7 +5809,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to delete a approved premise phone number */
+      /** @description Incorrect permissions to delete a approved premises phone number */
       403: {
         headers: {
           [name: string]: unknown
@@ -5818,7 +5818,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Phone Number Id not found */
+      /** @description Approved Premises Id or Phone Number Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5829,16 +5829,16 @@ export interface operations {
       }
     }
   }
-  updateApprovedPremiseEmailAddress: {
+  updateApprovedPremisesEmailAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Email Address Id
          * @example 234231
@@ -5853,7 +5853,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Email Address Updated */
+      /** @description Approved Premises Email Address Updated */
       200: {
         headers: {
           [name: string]: unknown
@@ -5862,7 +5862,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyEmailDto']
         }
       }
-      /** @description Bad information provided to update approved premise email address */
+      /** @description Bad information provided to update approved premises email address */
       400: {
         headers: {
           [name: string]: unknown
@@ -5880,7 +5880,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to make approved premise email address update */
+      /** @description Incorrect permissions to make approved premises email address update */
       403: {
         headers: {
           [name: string]: unknown
@@ -5889,7 +5889,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Email Address Id not found */
+      /** @description Approved Premises Id or Email Address Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5900,16 +5900,16 @@ export interface operations {
       }
     }
   }
-  deleteApprovedPremiseEmailAddress: {
+  deleteApprovedPremisesEmailAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Email Address Id
          * @example 234231
@@ -5920,7 +5920,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Approved Premise Email Address Deleted */
+      /** @description Approved Premises Email Address Deleted */
       204: {
         headers: {
           [name: string]: unknown
@@ -5936,7 +5936,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to delete a approved premise email address */
+      /** @description Incorrect permissions to delete a approved premises email address */
       403: {
         headers: {
           [name: string]: unknown
@@ -5945,7 +5945,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Email Address Id not found */
+      /** @description Approved Premises Id or Email Address Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -5956,16 +5956,16 @@ export interface operations {
       }
     }
   }
-  updateApprovedPremiseAddress: {
+  updateApprovedPremisesAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Address Id
          * @example 234231
@@ -5980,7 +5980,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Address Updated */
+      /** @description Approved Premises Address Updated */
       200: {
         headers: {
           [name: string]: unknown
@@ -5989,7 +5989,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyAddressDto']
         }
       }
-      /** @description Bad information provided to update approved premise address */
+      /** @description Bad information provided to update approved premises address */
       400: {
         headers: {
           [name: string]: unknown
@@ -6007,7 +6007,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to make approved premise address update */
+      /** @description Incorrect permissions to make approved premises address update */
       403: {
         headers: {
           [name: string]: unknown
@@ -6016,7 +6016,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Address Id not found */
+      /** @description Approved Premises Id or Address Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -6027,16 +6027,16 @@ export interface operations {
       }
     }
   }
-  deleteApprovedPremiseAddress: {
+  deleteApprovedPremisesAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
         /**
          * @description Address Id
          * @example 234231
@@ -6047,7 +6047,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Approved Premise Address Deleted */
+      /** @description Approved Premises Address Deleted */
       204: {
         headers: {
           [name: string]: unknown
@@ -6063,7 +6063,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to delete a approved premise address */
+      /** @description Incorrect permissions to delete a approved premises address */
       403: {
         headers: {
           [name: string]: unknown
@@ -6072,7 +6072,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id or Address Id not found */
+      /** @description Approved Premises Id or Address Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -7650,7 +7650,23 @@ export interface operations {
   }
   getCourts: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+        /**
+         * @description Court type codes to filter by
+         * @example CACD, CB
+         */
+        courtTypeCodes?: ('CACD' | 'CB' | 'CC' | 'CO' | 'DCM' | 'GCM' | 'IMM' | 'MC' | 'OTHER' | 'YC')[]
+      }
       header?: never
       path?: never
       cookie?: never
@@ -7950,12 +7966,12 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['ApprovedPremiseDto'][]
+          'application/json': components['schemas']['ApprovedPremisesDto'][]
         }
       }
     }
   }
-  createApprovedPremise: {
+  createApprovedPremises: {
     parameters: {
       query?: never
       header?: never
@@ -7964,17 +7980,17 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['CreateApprovedPremiseDto']
+        'application/json': components['schemas']['CreateApprovedPremisesDto']
       }
     }
     responses: {
-      /** @description Approved Premise Created */
+      /** @description Approved Premises Created */
       201: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['ApprovedPremiseDto']
+          'application/json': components['schemas']['ApprovedPremisesDto']
         }
       }
       /** @description Bad request */
@@ -7995,7 +8011,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to create a approved premise */
+      /** @description Incorrect permissions to create a approved premises */
       403: {
         headers: {
           [name: string]: unknown
@@ -8006,16 +8022,16 @@ export interface operations {
       }
     }
   }
-  createApprovedPremisePhoneNumber: {
+  createApprovedPremisesPhoneNumber: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
@@ -8025,7 +8041,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Phone Number Created */
+      /** @description Approved Premises Phone Number Created */
       201: {
         headers: {
           [name: string]: unknown
@@ -8034,7 +8050,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyPhoneDto']
         }
       }
-      /** @description Bad information provided to create approved premise phone number */
+      /** @description Bad information provided to create approved premises phone number */
       400: {
         headers: {
           [name: string]: unknown
@@ -8052,7 +8068,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to create a approved premise phone number */
+      /** @description Incorrect permissions to create a approved premises phone number */
       403: {
         headers: {
           [name: string]: unknown
@@ -8061,7 +8077,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id not found */
+      /** @description Approved Premises Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -8081,16 +8097,16 @@ export interface operations {
       }
     }
   }
-  createApprovedPremiseEmailAddress: {
+  createApprovedPremisesEmailAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
@@ -8100,7 +8116,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Email Address Created */
+      /** @description Approved Premises Email Address Created */
       201: {
         headers: {
           [name: string]: unknown
@@ -8109,7 +8125,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyEmailDto']
         }
       }
-      /** @description Bad information provided to create approved premise email address */
+      /** @description Bad information provided to create approved premises email address */
       400: {
         headers: {
           [name: string]: unknown
@@ -8127,7 +8143,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to create a approved premise email address */
+      /** @description Incorrect permissions to create a approved premises email address */
       403: {
         headers: {
           [name: string]: unknown
@@ -8136,7 +8152,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id not found */
+      /** @description Approved Premises Id not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -8156,16 +8172,16 @@ export interface operations {
       }
     }
   }
-  createApprovedPremiseAddress: {
+  createApprovedPremisesAddress: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Approved Premise ID
+         * @description Approved Premises ID
          * @example SHEFAP
          */
-        approvedPremiseId: string
+        approvedPremisesId: string
       }
       cookie?: never
     }
@@ -8175,7 +8191,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description Approved Premise Address Created */
+      /** @description Approved Premises Address Created */
       201: {
         headers: {
           [name: string]: unknown
@@ -8184,7 +8200,7 @@ export interface operations {
           'application/json': components['schemas']['AgencyAddressDto']
         }
       }
-      /** @description Bad information provided to create approved premise address */
+      /** @description Bad information provided to create approved premises address */
       400: {
         headers: {
           [name: string]: unknown
@@ -8202,7 +8218,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Incorrect permissions to create a approved premise address */
+      /** @description Incorrect permissions to create a approved premises address */
       403: {
         headers: {
           [name: string]: unknown
@@ -8211,7 +8227,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Approved Premise Id not found */
+      /** @description Approved Premises Id not found */
       404: {
         headers: {
           [name: string]: unknown

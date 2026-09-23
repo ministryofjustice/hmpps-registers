@@ -491,15 +491,23 @@ describe('Prison Register service', () => {
     it('username will be used by client', async () => {
       fakePrisonRegister.get('/courts').reply(200, [])
 
-      await prisonRegisterService.getCourts({ username: 'tommy' })
+      await prisonRegisterService.getCourts({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister.get('/courts?active=true&textSearch=Sheffield').reply(200, [data.prison({}), data.prison({})])
+
+      const result = await prisonRegisterService.getCourts({}, { active: true, textSearch: 'Sheffield' })
+
+      expect(result).toHaveLength(2)
     })
 
     it('is ok if there are no courts', async () => {
       fakePrisonRegister.get('/courts').reply(200, [])
 
-      const result = await prisonRegisterService.getCourts({})
+      const result = await prisonRegisterService.getCourts({}, {})
 
       expect(result).toEqual([])
     })
@@ -507,7 +515,7 @@ describe('Prison Register service', () => {
     it('will return all courts', async () => {
       fakePrisonRegister.get('/courts').reply(200, [courtData.court({}), courtData.court({})])
 
-      const result = await prisonRegisterService.getCourts({})
+      const result = await prisonRegisterService.getCourts({}, {})
 
       expect(result).toHaveLength(2)
     })
