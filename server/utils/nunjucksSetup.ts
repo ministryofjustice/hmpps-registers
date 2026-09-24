@@ -10,6 +10,9 @@ import { prisonTypes } from '../routes/prisonRegister/prisonData'
 import config from '../config'
 
 import logger from '../../logger'
+import { courtTypes } from '../routes/courtRegister/courtData'
+import { CourtsFilter } from '../routes/courtRegister/courtMapper'
+import { AgencyFilter } from '../routes/utils/filter'
 
 type Error = {
   href: string
@@ -193,6 +196,48 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     }
   })
 
+  njkEnv.addFilter('toCourtListFilter', (filterOptionsHtml: string, filter: CourtsFilter) => {
+    const hrefBase = '/court-register?'
+    const textSearchFilterTags = getTextSearchFilterTags(filter, hrefBase)
+    const activeFilterTags = getActiveFilterTags(filter, hrefBase)
+    const courtTypeFilterTags = getCourtTypeFilterTags(filter, hrefBase)
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/court-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: textSearchFilterTags,
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: activeFilterTags,
+          },
+          {
+            heading: {
+              text: 'Court Types',
+            },
+            items: courtTypeFilterTags,
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
   njkEnv.addFilter('toPrisonTextSearchInput', (allPrisonsFilter: AllPrisonsFilter) => {
     return {
       label: {
@@ -205,6 +250,21 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         text: 'Search for a prison by name or code',
       },
       value: allPrisonsFilter?.textSearch,
+    }
+  })
+
+  njkEnv.addFilter('toTextSearchInput', (textSearch: string | undefined) => {
+    return {
+      label: {
+        text: 'Search',
+        classes: 'govuk-label--m',
+      },
+      id: 'textSearch',
+      name: 'textSearch',
+      hint: {
+        text: 'Search by name, description or code',
+      },
+      value: textSearch,
     }
   })
 
@@ -237,6 +297,40 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
           value: false,
           text: 'Inactive',
           checked: allPrisonsFilter.active === false,
+        },
+      ],
+    }
+  })
+
+  njkEnv.addFilter('toActiveFilterRadioButtons', (active: boolean | undefined) => {
+    return {
+      idPrefix: 'active',
+      name: 'active',
+      classes: 'govuk-radios--inline',
+      fieldset: {
+        legend: {
+          text: 'Active or Inactive',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display active or inactive only',
+      },
+      items: [
+        {
+          value: '',
+          text: 'All',
+          checked: active === undefined,
+        },
+        {
+          value: true,
+          text: 'Active',
+          checked: active === true,
+        },
+        {
+          value: false,
+          text: 'Inactive',
+          checked: active === false,
         },
       ],
     }
@@ -296,6 +390,31 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     }
   })
 
+  njkEnv.addFilter('toCourtTypeCheckboxes', (courtTypeCodes: string[] | undefined) => {
+    const courtTypeItems = courtTypes.map(courtType => {
+      return {
+        value: courtType.value,
+        text: courtType.text,
+        checked: courtTypeCodes?.includes(courtType.value) || false,
+      }
+    })
+    return {
+      idPrefix: 'courtTypeCode',
+      name: 'courtTypeCodes',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Prison Types',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display selected court types only',
+      },
+      items: courtTypeItems,
+    }
+  })
+
   njkEnv.addFilter('toPrisonLthseCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
     return {
       idPrefix: 'lthse',
@@ -341,6 +460,27 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     return null
   }
 
+  function getActiveFilterTags(filter: AgencyFilter, hrefBase: string) {
+    const { active, ...newFilter }: ParsedUrlQueryInput = filter
+    if (filter.active === true) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Active',
+        },
+      ]
+    }
+    if (filter.active === false) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Inactive',
+        },
+      ]
+    }
+    return null
+  }
+
   function getCancelPrisonGenderFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     return allPrisonsFilter.genders?.map(gender => {
       const newFilter = removeGender(allPrisonsFilter, gender)
@@ -367,6 +507,16 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     })
   }
 
+  function getCourtTypeFilterTags(filter: CourtsFilter, hrefBase: string) {
+    return filter.courtTypeCodes?.map(type => {
+      const newFilter = removeCourtTypes(filter, type)
+      return {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: type,
+      }
+    })
+  }
+
   function getCancelLthseFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { lthse, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
     if (allPrisonsFilter.lthse === true) {
@@ -386,6 +536,12 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     return { ...allPrisonsFilter, prisonTypeCodes }
   }
 
+  function removeCourtTypes(filter: CourtsFilter, type: string): CourtsFilter {
+    const courtTypeCodes = filter.courtTypeCodes?.map(x => x) || []
+    courtTypeCodes.splice(courtTypeCodes.indexOf(type), 1)
+    return { ...filter, courtTypeCodes }
+  }
+
   function getPrisonTextSearchFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { textSearch, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
     if (textSearch) {
@@ -393,6 +549,19 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         {
           href: `${hrefBase}${querystring.stringify(newFilter)}`,
           text: allPrisonsFilter.textSearch,
+        },
+      ]
+    }
+    return undefined
+  }
+
+  function getTextSearchFilterTags(filter: AgencyFilter, hrefBase: string) {
+    const { textSearch, ...newFilter }: ParsedUrlQueryInput = filter
+    if (textSearch) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: filter.textSearch,
         },
       ]
     }

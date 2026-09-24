@@ -1,5 +1,6 @@
 import express from 'express'
 import nunjucksSetup from './nunjucksSetup'
+import { courtTypes } from '../routes/courtRegister/courtData'
 
 describe('toPrisonListFilter', () => {
   const app = express()
@@ -373,5 +374,147 @@ describe('setChecked', () => {
         checked: false,
       },
     ])
+  })
+})
+
+describe('toCourtListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should show filter headings', () => {
+    const result = njk.getFilter('toCourtListFilter')([], {})
+    expect(result.heading.text).toBeTruthy()
+    expect(result.selectedFilters.heading.text).toBeTruthy()
+    expect(result.selectedFilters.clearLink.text).toBeTruthy()
+  })
+
+  it('should show active Active cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { active: true })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Active or Inactive',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'Active',
+            },
+          ],
+        }),
+      ]),
+    )
+  })
+
+  it('should show active Inactive cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { active: false })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Active or Inactive',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'Inactive',
+            },
+          ],
+        }),
+      ]),
+    )
+  })
+
+  it('should show textSearch cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { textSearch: 'some-text-search' })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'some-text-search',
+            },
+          ],
+        }),
+      ]),
+    )
+  })
+
+  it('should NOT show textSearch cancel tag if no text search', () => {
+    const result = njk.getFilter('toCourtListFilter')([], {})
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Search',
+          },
+          items: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should show CC cancel tag', () => {
+    const result = njk.getFilter('toCourtListFilter')([], { courtTypeCodes: ['CC'] })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: {
+            text: 'Court Types',
+          },
+          items: [
+            {
+              href: '/court-register?',
+              text: 'CC',
+            },
+          ],
+        }),
+      ]),
+    )
+  })
+
+  it('should pass in options html', () => {
+    const result = njk.getFilter('toPrisonListFilter')('some-options-html', { active: false })
+    expect(result.optionsHtml).toEqual('some-options-html')
+  })
+})
+
+describe('toTextSearchInput', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create text search metadata', () => {
+    const result = njk.getFilter('toTextSearchInput')()
+    expect(result.label.text).toBeTruthy()
+    expect(result.label.classes).toContain('govuk-label')
+    expect(result.id).toEqual('textSearch')
+    expect(result.name).toEqual('textSearch')
+  })
+})
+
+describe('toCourtTypeCheckboxes', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should create checkboxes metadata', () => {
+    const result = njk.getFilter('toCourtTypeCheckboxes')()
+    expect(result.idPrefix).toEqual('courtTypeCode')
+    expect(result.name).toEqual('courtTypeCodes')
+    expect(result.classes).toContain('govuk-checkboxes')
+    expect(result.fieldset.legend.text).toBeTruthy()
+    expect(result.fieldset.legend.classes).toContain('govuk-fieldset')
+  })
+
+  it('should map an empty filter to checked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeCheckboxes')()
+    expect(result.items).toHaveLength(courtTypes.length)
+  })
+
+  it('should map a CC and MC filter to checked checkboxes', () => {
+    const result = njk.getFilter('toCourtTypeCheckboxes')(['CC', 'MC'])
+    expect(result.items.filter((item: { checked: boolean }) => item.checked)).toHaveLength(2)
   })
 })

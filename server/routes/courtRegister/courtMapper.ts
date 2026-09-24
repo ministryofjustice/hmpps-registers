@@ -1,4 +1,5 @@
 import { Court } from '../../@types/prisonRegister'
+import { AgencyFilter } from '../utils/filter'
 
 export type CourtDetail = {
   id: string
@@ -9,6 +10,7 @@ export type CourtDetail = {
 
 export type CourtPageView = {
   courts: CourtDetail[]
+  filter: CourtsFilter
 }
 
 export default function courtMapper(court: Court): CourtDetail {
@@ -20,13 +22,11 @@ export default function courtMapper(court: Court): CourtDetail {
   }
 }
 
-export function courtsPageMapper(courtResults: Court[]): CourtPageView {
+export function courtsPageMapper(courtResults: Court[], filter: CourtsFilter): CourtPageView {
   const courts = courtResults.map((court: Court) => courtMapper(court))
-  return { courts }
+  return { courts, filter }
 }
 
-export type CourtsFilter = {
-  active?: boolean
-  textSearch?: string
+export type CourtsFilter = AgencyFilter & {
   courtTypeCodes?: string[]
 }

@@ -1,10 +1,13 @@
 import { Court } from '../../@types/prisonRegister'
-import { CourtPageView, courtsPageMapper } from './courtMapper'
+import { CourtPageView, CourtsFilter, courtsPageMapper } from './courtMapper'
 
 export default class AllCourtsView {
-  constructor(private readonly courts: Court[]) {}
+  constructor(
+    private readonly courts: Court[],
+    private readonly filter: CourtsFilter,
+  ) {}
 
-  readonly courtPageView = courtsPageMapper(this.courts)
+  readonly courtPageView = courtsPageMapper(this.courts, this.filter)
 
   get renderArgs(): CourtPageView {
     return { ...this.courtPageView }

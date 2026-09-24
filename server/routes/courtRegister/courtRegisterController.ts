@@ -18,7 +18,7 @@ export default class PrisonRegisterController {
 
     req.session.allListPageLink = '/court-register'
     const courts = await this.prisonRegisterService.getCourts(context(res), filter)
-    const view = new AllCourtsView(courts)
+    const view = new AllCourtsView(courts, filter)
     res.render('pages/court-register/allCourts', view.renderArgs)
   }
 
