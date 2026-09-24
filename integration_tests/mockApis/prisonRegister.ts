@@ -183,7 +183,7 @@ const stubGetCourts = (courts: Court[]): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/prison-register/courts',
+      urlPattern: '/prison-register/courts.*',
     },
     response: {
       status: 200,

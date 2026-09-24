@@ -33,7 +33,7 @@ describe('courtsPageMapper', () => {
   let courts: CourtDetail[]
 
   beforeEach(() => {
-    courts = courtsPageMapper([data.court({}), data.court({})]).courts
+    courts = courtsPageMapper([data.court({}), data.court({})], {}).courts
   })
 
   it('will contain two courts', () => {

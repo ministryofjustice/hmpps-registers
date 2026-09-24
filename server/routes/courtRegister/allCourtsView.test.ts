@@ -6,7 +6,7 @@ describe('AllCourtsView', () => {
 
   describe('with no courts', () => {
     beforeEach(() => {
-      view = new AllCourtsView([])
+      view = new AllCourtsView([], {})
     })
 
     it('can handle when there are no courts', () => {
@@ -16,7 +16,7 @@ describe('AllCourtsView', () => {
 
   describe('with many courts', () => {
     beforeEach(() => {
-      view = new AllCourtsView([data.court({}), data.court({})])
+      view = new AllCourtsView([data.court({}), data.court({})], {})
     })
 
     it('will map each prison', () => {
