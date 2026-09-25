@@ -8,6 +8,11 @@ const courtDetails = {
   inactiveDate: () => cy.get('dt:contains("Date deactivated")').next(),
   accessibleAccess: () => cy.get('dt:contains("Accessible access")').next(),
   cjitCode: () => cy.get('dt:contains("CJIT Code")').next(),
+  area: () => cy.get('dt:contains("Area")').next(),
+  region: () => cy.get('dt:contains("Region")').next(),
+  geographicalArea: () => cy.get('dt:contains("Geographical area")').next(),
+  localAuthority: () => cy.get('dt:contains("Local Authority")').next(),
+  payrollRegion: () => cy.get('dt:contains("Payroll region")').next(),
 }
 
 const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)

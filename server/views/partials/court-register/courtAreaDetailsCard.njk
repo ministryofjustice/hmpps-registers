@@ -1,0 +1,73 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro courtAreaDetailsCard(opts) %}
+
+  {% set court = opts.court %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: court.area.description if court.area else 'Not provided'
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: court.region.description if court.region else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: court.geographicalArea.description if court.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: court.localAuthority.description if court.localAuthority else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: court.payrollRegion.description if court.payrollRegion else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

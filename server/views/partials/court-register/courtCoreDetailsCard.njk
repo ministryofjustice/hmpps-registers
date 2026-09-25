@@ -84,7 +84,7 @@
           text: 'CJIT Code'
         },
         value: {
-          text: court.cjitCode
+          text: court.cjitCode if court.cjitCode else 'Not provided'
         },
         actions: {
         items: [ ]
