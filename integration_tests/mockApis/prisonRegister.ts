@@ -194,6 +194,21 @@ const stubGetCourts = (courts: Court[]): SuperAgentRequest =>
     },
   })
 
+const stubGetCourt = (court: Court): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/courts/id/${court.courtId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: court,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -208,6 +223,7 @@ export default {
   stubDeletePrisonAddress,
   stubPutWelshPrisonAddress,
   stubGetCourts,
+  stubGetCourt,
 }
 
 // Mock data
