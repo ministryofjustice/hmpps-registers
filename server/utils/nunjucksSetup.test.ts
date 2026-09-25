@@ -518,3 +518,16 @@ describe('toCourtTypeCheckboxes', () => {
     expect(result.items.filter((item: { checked: boolean }) => item.checked)).toHaveLength(2)
   })
 })
+
+describe('formatDate', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should format date', () => {
+    const result = njk.getFilter('formatDate')('2000-11-01')
+    expect(result).toEqual('1 November 2000')
+  })
+  it('should ignore undefined', () => {
+    const result = njk.getFilter('formatDate')(undefined)
+    expect(result).toBeUndefined()
+  })
+})
