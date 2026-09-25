@@ -103,4 +103,32 @@ describe('Court Register controller', () => {
       expect(reqWithQueryParms.session.allListPageLink).toEqual('/court-register')
     })
   })
+
+  describe('viewCourt', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ courtId: 'SHFCC' }))
+      req.query.id = 'SHFCC'
+    })
+
+    it('will render court page with court', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewCourt(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/courtDetails',
+        expect.objectContaining({
+          court: expect.objectContaining({ courtId: 'SHFCC' }),
+        }),
+      )
+    })
+
+    it('it will call register service with court Id parameter', async () => {
+      await controller.viewCourt(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({}, 'SHFCC')
+    })
+  })
 })

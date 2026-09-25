@@ -3,6 +3,7 @@ import PrisonRegisterService, { Context } from '../../services/prisonRegisterSer
 import AllCourtsView from './allCourtsView'
 import ControllerHelper from '../utils/controllerHelper'
 import { CourtsFilter } from './courtMapper'
+import CourtDetailsView, { Action } from './courtDetailsView'
 
 function context(res: Response): Context {
   return {
@@ -20,6 +21,13 @@ export default class PrisonRegisterController {
     const courts = await this.prisonRegisterService.getCourts(context(res), filter)
     const view = new AllCourtsView(courts, filter)
     res.render('pages/court-register/allCourts', view.renderArgs)
+  }
+
+  async viewCourt(req: Request, res: Response): Promise<void> {
+    const { id, action } = req.query as { id: string; action: Action }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const view = new CourtDetailsView(court, (action || 'NONE') as Action)
+    res.render('pages/court-register/courtDetails', view.renderArgs)
   }
 
   parseFilter(req: Request): CourtsFilter {

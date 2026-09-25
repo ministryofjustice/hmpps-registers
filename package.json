@@ -90,6 +90,7 @@
     "connect-redis": "^10.0.0",
     "cookie-session": "^2.1.1",
     "csrf-sync": "4.2.1",
+    "date-fns": "4.4.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-prom-bundle": "^8.0.0",

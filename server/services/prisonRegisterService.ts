@@ -193,6 +193,14 @@ export default class PrisonRegisterService {
       query: `${querystring.stringify(filter)}`,
     })
   }
+
+  async getCourt(context: Context, courtId: string): Promise<Court> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting court with id ${courtId}`)
+    return PrisonRegisterService.restClient(token).get<Court>({
+      path: `/courts/id/${courtId}`,
+    })
+  }
 }
 
 const undefinedWhenAbsent = (value: string | undefined): string | undefined =>

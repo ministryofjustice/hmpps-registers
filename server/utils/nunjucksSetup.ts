@@ -13,6 +13,7 @@ import logger from '../../logger'
 import { courtTypes } from '../routes/courtRegister/courtData'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 import { AgencyFilter } from '../routes/utils/filter'
+import { formatDate } from './utils'
 
 type Error = {
   href: string
@@ -438,6 +439,8 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       ],
     }
   })
+
+  njkEnv.addFilter('formatDate', formatDate)
 
   function getCancelPrisonActiveFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { active, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter

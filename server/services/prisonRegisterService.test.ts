@@ -520,4 +520,28 @@ describe('Prison Register service', () => {
       expect(result).toHaveLength(2)
     })
   })
+
+  describe('getCourt', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/courts/id/SHFCC').reply(200, [])
+
+      await prisonRegisterService.getCourt({ username: 'tommy' }, 'SHFCC')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return a court', async () => {
+      fakePrisonRegister.get('/courts/id/SHFCC').reply(200, courtData.court({ courtId: 'SHFCC' }))
+
+      const result = await prisonRegisterService.getCourt({}, 'SHFCC')
+
+      expect(result).toBeDefined()
+      expect(result).toHaveProperty('courtId', 'SHFCC')
+    })
+  })
 })

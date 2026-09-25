@@ -1,0 +1,73 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro courtCoreDetailsCard(opts) %}
+
+  {% set court = opts.court %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Court details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: court.courtName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: court.description
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if court.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: court.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if court.inactiveDate,
+      {
+        key: {
+          text: 'Court Type'
+        },
+        value: {
+          text: court.courtType.description if court.courtType else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
