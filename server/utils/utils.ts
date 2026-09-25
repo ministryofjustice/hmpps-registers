@@ -1,4 +1,5 @@
 import { format, isValid, parseISO } from 'date-fns'
+import { AgencyAddress } from '../@types/prisonRegister'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -23,4 +24,17 @@ export const formatDate = (date?: string | Date, fmt = 'd MMMM yyyy') => {
   const richDate = typeof date === 'string' ? parseISO(date) : date
   if (!isValid(richDate)) return undefined
   return format(richDate, fmt)
+}
+
+export const addressToLines = ({
+  addressLine1,
+  addressLine2,
+  town,
+  county,
+  postcode,
+  country,
+}: Partial<AgencyAddress>): string | null => {
+  const addressArray = [addressLine1, addressLine2, town, county, postcode, country].filter(s => s)
+
+  return addressArray.length ? addressArray.join('\n') : null
 }

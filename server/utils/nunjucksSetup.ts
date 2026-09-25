@@ -13,7 +13,7 @@ import logger from '../../logger'
 import { courtTypes } from '../routes/courtRegister/courtData'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 import { AgencyFilter } from '../routes/utils/filter'
-import { formatDate } from './utils'
+import { formatDate, addressToLines } from './utils'
 
 type Error = {
   href: string
@@ -441,6 +441,7 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
   })
 
   njkEnv.addFilter('formatDate', formatDate)
+  njkEnv.addFilter('addressToLines', addressToLines)
 
   njkEnv.addFilter('accessibleAccessDescription', (accessibleAccess: string) => {
     if (accessibleAccess === 'WHEELCHAIR_ACCESS') {

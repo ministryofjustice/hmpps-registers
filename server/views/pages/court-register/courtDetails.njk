@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/court-register/courtCoreDetailsCard.njk" import courtCoreDetailsCard %}
 {% from "partials/court-register/courtAreaDetailsCard.njk" import courtAreaDetailsCard %}
+{% from "partials/addressCard.njk" import addressCard %}
 
 {% set pageTitle = applicationName + " - Court Details" %}
 
@@ -45,6 +46,13 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
       {{  courtAreaDetailsCard({ court: court }) }}
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+    {% for item in court.addresses %}
+      {% set summaryCard = addressCard({ address: item }) %}
+      {{ summaryCard }}
+    {% endfor %}
     </div>
   </div>
   </main>

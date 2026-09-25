@@ -13,6 +13,7 @@ const courtDetails = {
   geographicalArea: () => cy.get('dt:contains("Geographical area")').next(),
   localAuthority: () => cy.get('dt:contains("Local Authority")').next(),
   payrollRegion: () => cy.get('dt:contains("Payroll region")').next(),
+  address: () => cy.get('dt:contains("Details")').next(),
 }
 
 const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)
