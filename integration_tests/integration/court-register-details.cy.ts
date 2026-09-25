@@ -12,6 +12,11 @@ const sheffieldCrownCourt = courtData.court({
   courtType: { code: 'CC', description: 'Crown Court' },
   accessibleAccess: 'WHEELCHAIR_ACCESS',
   cjitCode: 'C00SH00',
+  area: { code: '52', description: 'South Yorkshire' },
+  region: { code: 'YOHUM', description: 'Yorkshire & Humberside' },
+  geographicalArea: { code: 'YORK', description: 'Yorkshire and Humberside' },
+  localAuthority: { code: '00CG', description: 'Sheffield City Council' },
+  payrollRegion: { code: 'NEY', description: 'North East & Yorkshire' },
 })
 
 context('Court register - court details navigation', () => {
@@ -38,5 +43,11 @@ context('Court register - court details navigation', () => {
     courtDetailsPage.courtType().should('contain.text', 'Crown Court')
     courtDetailsPage.inactiveDate().should('contain.text', '1 January 2023')
     courtDetailsPage.accessibleAccess().should('contain.text', 'Wheelchair access')
+    courtDetailsPage.cjitCode().should('contain.text', 'C00SH00')
+    courtDetailsPage.area().should('contain.text', 'South Yorkshire')
+    courtDetailsPage.region().should('contain.text', 'Yorkshire & Humberside')
+    courtDetailsPage.geographicalArea().should('contain.text', 'Yorkshire and Humberside')
+    courtDetailsPage.localAuthority().should('contain.text', 'Sheffield City Council')
+    courtDetailsPage.payrollRegion().should('contain.text', 'North East & Yorkshire')
   })
 })

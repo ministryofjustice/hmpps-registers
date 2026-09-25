@@ -531,3 +531,16 @@ describe('formatDate', () => {
     expect(result).toBeUndefined()
   })
 })
+
+describe('accessibleAccessDescription', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+  it('should get accessible access description', () => {
+    const filter = njk.getFilter('accessibleAccessDescription')
+    expect(filter('WHEELCHAIR_ACCESS')).toEqual('Wheelchair access')
+    expect(filter('NONE')).toEqual('None')
+    expect(filter('BY_ARRANGEMENT_ONLY')).toEqual('By arrangement only')
+    expect(filter('ACCESSIBLE')).toEqual('Accessible')
+    expect(filter('BANANAS')).toEqual('Not provided')
+  })
+})
