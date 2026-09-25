@@ -1,0 +1,30 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro addressCard(opts) %}
+
+  {% set address = opts.address %}
+
+  {% set rows = [
+    {
+      key: { text: 'Details' },
+      value: { html: address | addressToLines | escape | nl2br },
+      actions: {
+      items: []
+      }
+    }
+  ] %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: (classes + " summary-card-wider-key-column") if classes else "summary-card-wider-key-column",
+      title: {
+        text: "Address"
+      },
+      actions: {
+        items: []
+      }
+    },
+    rows: rows
+  }) }}
+{% endmacro %}

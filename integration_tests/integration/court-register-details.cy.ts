@@ -17,6 +17,16 @@ const sheffieldCrownCourt = courtData.court({
   geographicalArea: { code: 'YORK', description: 'Yorkshire and Humberside' },
   localAuthority: { code: '00CG', description: 'Sheffield City Council' },
   payrollRegion: { code: 'NEY', description: 'North East & Yorkshire' },
+  addresses: [
+    courtData.address({
+      addressLine1: '1 Test Street',
+      addressLine2: 'Testington',
+      town: 'Testville',
+      county: 'Testshire',
+      postcode: 'TE1 1ST',
+      country: 'Testland',
+    }),
+  ],
 })
 
 context('Court register - court details navigation', () => {
@@ -49,5 +59,11 @@ context('Court register - court details navigation', () => {
     courtDetailsPage.geographicalArea().should('contain.text', 'Yorkshire and Humberside')
     courtDetailsPage.localAuthority().should('contain.text', 'Sheffield City Council')
     courtDetailsPage.payrollRegion().should('contain.text', 'North East & Yorkshire')
+    courtDetailsPage.address().should('contain.text', '1 Test Street')
+    courtDetailsPage.address().should('contain.text', 'Testington')
+    courtDetailsPage.address().should('contain.text', 'Testville')
+    courtDetailsPage.address().should('contain.text', 'Testshire')
+    courtDetailsPage.address().should('contain.text', 'TE1 1ST')
+    courtDetailsPage.address().should('contain.text', 'Testland')
   })
 })
