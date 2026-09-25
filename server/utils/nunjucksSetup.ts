@@ -442,6 +442,22 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
 
   njkEnv.addFilter('formatDate', formatDate)
 
+  njkEnv.addFilter('accessibleAccessDescription', (accessibleAccess: string) => {
+    if (accessibleAccess === 'WHEELCHAIR_ACCESS') {
+      return 'Wheelchair access'
+    }
+    if (accessibleAccess === 'NONE') {
+      return 'None'
+    }
+    if (accessibleAccess === 'ACCESSIBLE') {
+      return 'Accessible'
+    }
+    if (accessibleAccess === 'BY_ARRANGEMENT_ONLY') {
+      return 'By arrangement only'
+    }
+    return 'Not provided'
+  })
+
   function getCancelPrisonActiveFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
     const { active, ...newFilter }: ParsedUrlQueryInput = allPrisonsFilter
     if (allPrisonsFilter.active === true) {

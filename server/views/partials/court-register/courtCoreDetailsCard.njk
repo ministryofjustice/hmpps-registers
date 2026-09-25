@@ -9,7 +9,7 @@
     card: {
       classes: 'summary-card-wider-key-column',
       title: {
-        text: 'Court details'
+        text: 'Main details'
       }
     },
     rows: [
@@ -63,6 +63,28 @@
         },
         value: {
           text: court.courtType.description if court.courtType else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Accessible access'
+        },
+        value: {
+          text: court.accessibleAccess | accessibleAccessDescription
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: court.cjitCode
         },
         actions: {
         items: [ ]

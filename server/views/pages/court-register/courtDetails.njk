@@ -23,7 +23,7 @@
 
   <!--suppress HtmlUnknownTarget -->
   <main class="app-container govuk-body">
-    <h1 class="govuk-heading-l">{{ court.name }}</h1>
+    <h1 class="govuk-heading-l">{{ court.courtName }}</h1>
 
     {% if action == 'UPDATED' %}
       {{ confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
