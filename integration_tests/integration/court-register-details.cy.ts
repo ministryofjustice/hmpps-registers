@@ -27,6 +27,14 @@ const sheffieldCrownCourt = courtData.court({
       country: 'Testland',
     }),
   ],
+  emailAddresses: [
+    { id: 1, address: 'test1@example.com' },
+    { id: 2, address: 'test2@example.com' },
+  ],
+  phoneNumbers: [
+    { id: 1, number: '0014 555 5555' },
+    { id: 2, number: '0014 555 6666' },
+  ],
 })
 
 context('Court register - court details navigation', () => {
@@ -65,5 +73,9 @@ context('Court register - court details navigation', () => {
     courtDetailsPage.address().should('contain.text', 'Testshire')
     courtDetailsPage.address().should('contain.text', 'TE1 1ST')
     courtDetailsPage.address().should('contain.text', 'Testland')
+    courtDetailsPage.emailAddress().should('contain.text', 'test1@example.com')
+    courtDetailsPage.emailAddress().should('contain.text', 'test2@example.com')
+    courtDetailsPage.phoneNumber().should('contain.text', '0014 555 5555')
+    courtDetailsPage.phoneNumber().should('contain.text', '0014 555 6666')
   })
 })

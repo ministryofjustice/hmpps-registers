@@ -34,6 +34,8 @@ export default {
     localAuthority = { code: 'YH', description: 'Yorkshire and the Humber' },
     payrollRegion = { code: 'YH', description: 'Yorkshire and the Humber' },
     addresses = [],
+    phoneNumbers = [],
+    emailAddresses = [],
   }: Partial<Court>): Court =>
     ({
       courtId,
@@ -50,5 +52,7 @@ export default {
       localAuthority,
       payrollRegion,
       addresses,
+      phoneNumbers,
+      emailAddresses,
     }) as Court,
 }

@@ -1,0 +1,45 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro emailAddressesCard(opts) %}
+
+  {% set emailAddresses = opts.emailAddresses %}
+  {% set data = [] %}
+
+
+  {% if emailAddresses and emailAddresses.length > 0 %}
+    {% for item in emailAddresses %}
+      {% set data = data.concat([{
+
+        key: {
+          text: "Email"
+        },
+        value: {
+          text: item.address
+        },
+        actions: {
+          items: []
+        }
+      }]) %}
+    {% endfor %}
+  {% else %}
+    {% set data = data.concat([{
+      key: {
+        text: 'No email addresses provided.',
+        classes: 'govuk-!-font-weight-regular govuk-!-width-full'
+      }
+    }]) %}
+  {% endif %}
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: "Email addresses"
+      },
+      actions: {
+        items: []
+        }
+    },
+    rows: data
+  }) }}
+{% endmacro %}
