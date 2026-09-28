@@ -225,6 +225,21 @@ const stubGetOtherAgencies = (otherAgencies: OtherAgency[]): SuperAgentRequest =
     },
   })
 
+const stubGetOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/other-agencies/id/${otherAgency.agencyId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: otherAgency,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -241,6 +256,7 @@ export default {
   stubGetCourts,
   stubGetCourt,
   stubGetOtherAgencies,
+  stubGetOtherAgency,
 }
 
 // Mock data

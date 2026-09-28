@@ -14,6 +14,7 @@ export default function routes(router: Router, services: Services): Router {
   const otherAgencyRegisterController = new OtherAgencyRegisterController(services.prisonRegisterService)
 
   get('/other-agency-register', (req, res) => otherAgencyRegisterController.showAllOtherAgencies(req, res))
+  get('/other-agency-register/details', (req, res) => otherAgencyRegisterController.viewOtherAgency(req, res))
 
   return router
 }

@@ -100,4 +100,32 @@ describe('Other Agency Register controller', () => {
       expect(reqWithQueryParms.session.allListPageLink).toEqual('/other-agency-register')
     })
   })
+
+  describe('viewOtherAgency', () => {
+    beforeEach(() => {
+      prisonRegisterService.getOtherAgency.mockResolvedValue(data.otherAgency({ agencyId: 'SHFPECS' }))
+      req.query.id = 'SHFPECS'
+    })
+
+    it('will render other agency page with other agency', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewOtherAgency(req, res)
+
+      expect(prisonRegisterService.getOtherAgency).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPECS')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/other-agency-register/otherAgencyDetails',
+        expect.objectContaining({
+          otherAgency: expect.objectContaining({ agencyId: 'SHFPECS' }),
+        }),
+      )
+    })
+
+    it('it will call register service with agency Id parameter', async () => {
+      await controller.viewOtherAgency(req, res)
+
+      expect(prisonRegisterService.getOtherAgency).toHaveBeenCalledWith({}, 'SHFPECS')
+    })
+  })
 })

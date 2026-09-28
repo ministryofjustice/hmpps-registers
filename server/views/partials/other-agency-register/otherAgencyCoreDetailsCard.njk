@@ -1,0 +1,106 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro otherAgencyCoreDetailsCard(opts) %}
+
+  {% set otherAgency = opts.otherAgency %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Main details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Code'
+        },
+        value: {
+          text: otherAgency.agencyId
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: otherAgency.agencyName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: otherAgency.description if otherAgency.description else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if otherAgency.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: otherAgency.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if otherAgency.inactiveDate,
+      {
+        key: {
+          text: 'Other Agency Type'
+        },
+        value: {
+          text: otherAgency.agencyType | otherAgencyTypeDescription
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Accessible access'
+        },
+        value: {
+          text: otherAgency.accessibleAccess | accessibleAccessDescription
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: otherAgency.cjitCode if otherAgency.cjitCode else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

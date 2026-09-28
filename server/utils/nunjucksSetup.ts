@@ -12,7 +12,7 @@ import config from '../config'
 import logger from '../../logger'
 import { courtTypes } from '../routes/courtRegister/courtData'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
-import { otherAgencyTypes } from '../routes/otherAgencyRegister/otherAgencyData'
+import { otherAgencyTypes, otherAgencyTypeDescription } from '../routes/otherAgencyRegister/otherAgencyData'
 import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
@@ -508,6 +508,10 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
       ],
     }
   })
+
+  njkEnv.addFilter('otherAgencyTypeDescription', (agencyType: string) =>
+    agencyType ? otherAgencyTypeDescription(agencyType) : 'Not provided',
+  )
 
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('addressToLines', addressToLines)
