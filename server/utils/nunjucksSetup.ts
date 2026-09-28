@@ -12,6 +12,8 @@ import config from '../config'
 import logger from '../../logger'
 import { courtTypes } from '../routes/courtRegister/courtData'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
+import { otherAgencyTypes } from '../routes/otherAgencyRegister/otherAgencyData'
+import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
 
@@ -239,6 +241,48 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     }
   })
 
+  njkEnv.addFilter('toOtherAgencyListFilter', (filterOptionsHtml: string, filter: OtherAgencyFilter) => {
+    const hrefBase = '/other-agency-register?'
+    const textSearchFilterTags = getTextSearchFilterTags(filter, hrefBase)
+    const activeFilterTags = getActiveFilterTags(filter, hrefBase)
+    const otherAgencyTypeFilterTags = getOtherAgencyTypeFilterTags(filter, hrefBase)
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/other-agency-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: textSearchFilterTags,
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: activeFilterTags,
+          },
+          {
+            heading: {
+              text: 'Other Agency Types',
+            },
+            items: otherAgencyTypeFilterTags,
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
   njkEnv.addFilter('toPrisonTextSearchInput', (allPrisonsFilter: AllPrisonsFilter) => {
     return {
       label: {
@@ -416,6 +460,31 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     }
   })
 
+  njkEnv.addFilter('toOtherAgencyTypeCheckboxes', (otherAgencyTypeCodes: string[] | undefined) => {
+    const otherAgencyTypeItems = otherAgencyTypes.map(otherAgencyType => {
+      return {
+        value: otherAgencyType.value,
+        text: otherAgencyType.text,
+        checked: otherAgencyTypeCodes?.includes(otherAgencyType.value) || false,
+      }
+    })
+    return {
+      idPrefix: 'otherAgencyTypeCode',
+      name: 'otherAgencyTypeCodes',
+      classes: 'govuk-checkboxes--small',
+      fieldset: {
+        legend: {
+          text: 'Other Agency Types',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display selected other agency types only',
+      },
+      items: otherAgencyTypeItems,
+    }
+  })
+
   njkEnv.addFilter('toPrisonLthseCheckboxes', (allPrisonsFilter: AllPrisonsFilter) => {
     return {
       idPrefix: 'lthse',
@@ -560,6 +629,22 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
     const courtTypeCodes = filter.courtTypeCodes?.map(x => x) || []
     courtTypeCodes.splice(courtTypeCodes.indexOf(type), 1)
     return { ...filter, courtTypeCodes }
+  }
+
+  function getOtherAgencyTypeFilterTags(filter: OtherAgencyFilter, hrefBase: string) {
+    return filter.otherAgencyTypeCodes?.map(type => {
+      const newFilter = removeOtherAgencyTypes(filter, type)
+      return {
+        href: `${hrefBase}${querystring.stringify(newFilter)}`,
+        text: type,
+      }
+    })
+  }
+
+  function removeOtherAgencyTypes(filter: OtherAgencyFilter, type: string): OtherAgencyFilter {
+    const otherAgencyTypeCodes = filter.otherAgencyTypeCodes?.map(x => x) || []
+    otherAgencyTypeCodes.splice(otherAgencyTypeCodes.indexOf(type), 1)
+    return { ...filter, otherAgencyTypeCodes }
   }
 
   function getPrisonTextSearchFilterTags(allPrisonsFilter: AllPrisonsFilter, hrefBase: string) {
