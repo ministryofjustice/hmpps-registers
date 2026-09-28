@@ -1,8 +1,9 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Court, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
+import { Court, OtherAgency, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
+import otherAgencyData from '../../server/routes/testutils/mockOtherAgencyData'
 
 // Mock API responses
 
@@ -209,6 +210,21 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
     },
   })
 
+const stubGetOtherAgencies = (otherAgencies: OtherAgency[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/other-agencies.*',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: otherAgencies,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -224,6 +240,7 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubGetOtherAgencies,
 }
 
 // Mock data
@@ -325,4 +342,11 @@ export const sheffieldCrownCourt: Court = courtData.court({
   courtName: 'Sheffield Crown Court',
   active: true,
   courtType: { code: 'CC', description: 'Crown Court' },
+})
+
+export const sheffieldPecsAgency: OtherAgency = otherAgencyData.otherAgency({
+  agencyId: 'SHFPECS',
+  agencyName: 'Sheffield PECS Agency',
+  active: true,
+  agencyType: 'PECS',
 })

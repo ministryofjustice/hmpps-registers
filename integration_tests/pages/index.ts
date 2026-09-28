@@ -5,6 +5,7 @@ const index = {
   headerUserName: () => cy.get('[data-qa=header-user-name]'),
   prisonRegisterLink: () => cy.get('[href="/prison-register"]'),
   courtRegisterLink: () => cy.get('[href="/court-register"]'),
+  otherAgencyRegisterLink: () => cy.get('[href="/other-agency-register"]'),
 }
 
 const verifyOnPage = (): Page & typeof index => page('HMPPS Registers', index)

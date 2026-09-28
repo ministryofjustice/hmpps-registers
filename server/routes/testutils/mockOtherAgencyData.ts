@@ -1,0 +1,40 @@
+import { OtherAgency } from '../../@types/prisonRegister'
+
+export default {
+  otherAgency: ({
+    agencyId = 'SHFPECS',
+    agencyName = 'Sheffield PECS Agency',
+    description = 'Sheffield City Centre PECS Agency',
+    active = true,
+    inactiveDate = undefined,
+    agencyType = 'PECS',
+    accessibleAccess = 'NONE',
+    cjitCode = 'C00SH00',
+    area = { code: 'YH', description: 'Yorkshire and the Humber' },
+    region = { code: 'YH', description: 'Yorkshire and the Humber' },
+    geographicalArea = { code: 'YH', description: 'Yorkshire and the Humber' },
+    localAuthority = { code: 'YH', description: 'Yorkshire and the Humber' },
+    payrollRegion = { code: 'YH', description: 'Yorkshire and the Humber' },
+    addresses = [],
+    phoneNumbers = [],
+    emailAddresses = [],
+  }: Partial<OtherAgency>): OtherAgency =>
+    ({
+      agencyId,
+      agencyName,
+      description,
+      active,
+      inactiveDate,
+      agencyType,
+      accessibleAccess,
+      cjitCode,
+      area,
+      region,
+      geographicalArea,
+      localAuthority,
+      payrollRegion,
+      addresses,
+      phoneNumbers,
+      emailAddresses,
+    }) as OtherAgency,
+}
