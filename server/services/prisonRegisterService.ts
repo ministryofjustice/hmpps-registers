@@ -11,9 +11,11 @@ import {
   InsertPrison,
   UpdateWelshPrisonAddress,
   Court,
+  OtherAgency,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
+import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
 
 export interface Context {
   username?: string
@@ -199,6 +201,23 @@ export default class PrisonRegisterService {
     logger.info(`getting court with id ${courtId}`)
     return PrisonRegisterService.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
+    })
+  }
+
+  async getOtherAgencies(context: Context, filter: OtherAgencyFilter): Promise<OtherAgency[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all other agencies with filter ${JSON.stringify(filter)}`)
+    return PrisonRegisterService.restClient(token).get<OtherAgency[]>({
+      path: `/other-agencies`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getOtherAgency(context: Context, agencyId: string): Promise<OtherAgency> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting other agency with id ${agencyId}`)
+    return PrisonRegisterService.restClient(token).get<OtherAgency>({
+      path: `/other-agencies/id/${agencyId}`,
     })
   }
 }

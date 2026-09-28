@@ -6,7 +6,7 @@ import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
-import { InsertPrison, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
+import { InsertPrison, OtherAgency, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
@@ -542,6 +542,92 @@ describe('Prison Register service', () => {
 
       expect(result).toBeDefined()
       expect(result).toHaveProperty('courtId', 'SHFCC')
+    })
+  })
+
+  describe('getOtherAgencies', () => {
+    const agency: OtherAgency = {
+      agencyId: 'SHEF',
+      agencyName: 'Sheffield Agency',
+      active: true,
+      agencyType: 'PECS',
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+    }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/other-agencies').reply(200, [])
+
+      await prisonRegisterService.getOtherAgencies({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister
+        .get('/other-agencies?active=true&textSearch=Sheffield&otherAgencyTypeCodes=PECS')
+        .reply(200, [agency])
+
+      const result = await prisonRegisterService.getOtherAgencies(
+        {},
+        { active: true, textSearch: 'Sheffield', otherAgencyTypeCodes: ['PECS'] },
+      )
+
+      expect(result).toEqual([agency])
+    })
+
+    it('is ok if there are no other agencies', async () => {
+      fakePrisonRegister.get('/other-agencies').reply(200, [])
+
+      const result = await prisonRegisterService.getOtherAgencies({}, {})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all other agencies', async () => {
+      fakePrisonRegister.get('/other-agencies').reply(200, [agency, { ...agency, agencyId: 'LEED' }])
+
+      const result = await prisonRegisterService.getOtherAgencies({}, {})
+
+      expect(result).toEqual([agency, { ...agency, agencyId: 'LEED' }])
+    })
+  })
+
+  describe('getOtherAgency', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/other-agencies/id/SHEF').reply(200, {})
+
+      await prisonRegisterService.getOtherAgency({ username: 'tommy' }, 'SHEF')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return an other agency', async () => {
+      const agency: OtherAgency = {
+        agencyId: 'SHEF',
+        agencyName: 'Sheffield Agency',
+        active: true,
+        agencyType: 'PECS',
+        addresses: [],
+        emailAddresses: [],
+        phoneNumbers: [],
+      }
+      fakePrisonRegister.get('/other-agencies/id/SHEF').reply(200, agency)
+
+      const result = await prisonRegisterService.getOtherAgency({}, 'SHEF')
+
+      expect(result).toEqual(agency)
     })
   })
 })
