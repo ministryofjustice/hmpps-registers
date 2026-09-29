@@ -6,6 +6,7 @@ import courtRoutes from './courtRegister/courtRegisterRouter'
 import otherAgencyRoutes from './otherAgencyRegister/otherAgencyRegisterRouter'
 import hospitalRoutes from './hospitalRegister/hospitalRegisterRouter'
 import policeCustodySuiteRoutes from './policeCustodySuiteRegister/policeCustodySuiteRegisterRouter'
+import probationOfficeRoutes from './probationOfficeRegister/probationOfficeRegisterRouter'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import { extractRoles, MAINTAINER_ROLE } from '../authentication/roles'
 import config from '../config'
@@ -61,6 +62,14 @@ export default function routes(router: Router, services: Services): Router {
           roles: [MAINTAINER_ROLE],
           enabled: config.agencyRegistersEnabled,
         },
+        {
+          id: 'probation-office-register',
+          heading: 'Probation office register',
+          description: 'View probation office details.',
+          href: '/probation-office-register',
+          roles: [MAINTAINER_ROLE],
+          enabled: config.agencyRegistersEnabled,
+        },
       ].filter(
         register =>
           Boolean(register.roles === null || register.roles.find(role => roles.includes(role))) && register.enabled,
@@ -73,5 +82,6 @@ export default function routes(router: Router, services: Services): Router {
   otherAgencyRoutes(router, services)
   hospitalRoutes(router, services)
   policeCustodySuiteRoutes(router, services)
+  probationOfficeRoutes(router, services)
   return router
 }

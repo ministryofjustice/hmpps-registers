@@ -608,6 +608,33 @@ describe('toPoliceCustodySuiteListFilter', () => {
   })
 })
 
+describe('toProbationOfficeListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should only have search and active filter categories', () => {
+    const result = njk.getFilter('toProbationOfficeListFilter')([], {})
+    expect(
+      result.selectedFilters.categories.map((category: { heading: { text: string } }) => category.heading.text),
+    ).toEqual(['Search', 'Active or Inactive'])
+    expect(result.selectedFilters.clearLink.href).toEqual('/probation-office-register')
+  })
+
+  it('should show active and text search cancel tags that link to the remaining filter', () => {
+    const result = njk.getFilter('toProbationOfficeListFilter')([], { active: true, textSearch: 'Sheffield' })
+    expect(result.selectedFilters.categories).toEqual([
+      {
+        heading: { text: 'Search' },
+        items: [{ href: '/probation-office-register?active=true', text: 'Sheffield' }],
+      },
+      {
+        heading: { text: 'Active or Inactive' },
+        items: [{ href: '/probation-office-register?textSearch=Sheffield', text: 'Active' }],
+      },
+    ])
+  })
+})
+
 describe('toHighSecurityFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)
