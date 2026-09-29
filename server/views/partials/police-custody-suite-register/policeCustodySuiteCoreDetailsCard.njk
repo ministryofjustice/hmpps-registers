@@ -1,0 +1,84 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro policeCustodySuiteCoreDetailsCard(opts) %}
+
+  {% set policeCustodySuite = opts.policeCustodySuite %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Main details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Code'
+        },
+        value: {
+          text: policeCustodySuite.policeCustodySuiteId
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: policeCustodySuite.policeCustodySuiteName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: policeCustodySuite.description if policeCustodySuite.description else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if policeCustodySuite.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: policeCustodySuite.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if policeCustodySuite.inactiveDate,
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: policeCustodySuite.cjitCode if policeCustodySuite.cjitCode else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

@@ -51,13 +51,13 @@ describe('Police Custody Suite Register controller', () => {
       )
     })
 
-    it('it will call register service with no filter params', async () => {
+    it('will call register service with no filter params', async () => {
       await controller.showAllPoliceCustodySuites(req, res)
 
       expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, {})
     })
 
-    it('it will call register service with active filter param', async () => {
+    it('will call register service with active filter param', async () => {
       req.query.active = 'false'
 
       await controller.showAllPoliceCustodySuites(req, res)
@@ -65,7 +65,7 @@ describe('Police Custody Suite Register controller', () => {
       expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, { active: false })
     })
 
-    it('it will call register service with textSearch filter param', async () => {
+    it('will call register service with textSearch filter param', async () => {
       req.query.textSearch = 'Sheffield'
 
       await controller.showAllPoliceCustodySuites(req, res)
@@ -85,6 +85,36 @@ describe('Police Custody Suite Register controller', () => {
       await controller.showAllPoliceCustodySuites(req, res)
 
       expect(req.session.allListPageLink).toEqual('/police-custody-suite-register')
+    })
+  })
+
+  describe('viewPoliceCustodySuite', () => {
+    beforeEach(() => {
+      prisonRegisterService.getPoliceCustodySuite.mockResolvedValue(
+        data.policeCustodySuite({ policeCustodySuiteId: 'SHFPCS' }),
+      )
+      req.query.id = 'SHFPCS'
+    })
+
+    it('will render police custody suite page with police custody suite', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewPoliceCustodySuite(req, res)
+
+      expect(prisonRegisterService.getPoliceCustodySuite).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPCS')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/police-custody-suite-register/policeCustodySuiteDetails',
+        expect.objectContaining({
+          policeCustodySuite: expect.objectContaining({ policeCustodySuiteId: 'SHFPCS' }),
+        }),
+      )
+    })
+
+    it('will call register service with police custody suite Id parameter', async () => {
+      await controller.viewPoliceCustodySuite(req, res)
+
+      expect(prisonRegisterService.getPoliceCustodySuite).toHaveBeenCalledWith({}, 'SHFPCS')
     })
   })
 })

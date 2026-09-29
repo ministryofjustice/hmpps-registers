@@ -16,6 +16,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/police-custody-suite-register', (req, res) =>
     policeCustodySuiteRegisterController.showAllPoliceCustodySuites(req, res),
   )
+  get('/police-custody-suite-register/details', (req, res) =>
+    policeCustodySuiteRegisterController.viewPoliceCustodySuite(req, res),
+  )
 
   return router
 }

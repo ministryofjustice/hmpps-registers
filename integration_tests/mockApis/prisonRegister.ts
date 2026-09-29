@@ -293,6 +293,21 @@ const stubGetPoliceCustodySuites = (policeCustodySuites: PoliceCustodySuite[]): 
     },
   })
 
+const stubGetPoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/police-custody-suites/id/${policeCustodySuite.policeCustodySuiteId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: policeCustodySuite,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -313,6 +328,7 @@ export default {
   stubGetHospitals,
   stubGetHospital,
   stubGetPoliceCustodySuites,
+  stubGetPoliceCustodySuite,
 }
 
 // Mock data
