@@ -256,6 +256,21 @@ const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
     },
   })
 
+const stubGetHospital = (hospital: Hospital): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/hospitals/id/${hospital.hospitalId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: hospital,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -274,6 +289,7 @@ export default {
   stubGetOtherAgencies,
   stubGetOtherAgency,
   stubGetHospitals,
+  stubGetHospital,
 }
 
 // Mock data

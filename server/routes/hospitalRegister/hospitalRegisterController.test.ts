@@ -93,4 +93,32 @@ describe('Hospital Register controller', () => {
       expect(req.session.allListPageLink).toEqual('/hospital-register')
     })
   })
+
+  describe('viewHospital', () => {
+    beforeEach(() => {
+      prisonRegisterService.getHospital.mockResolvedValue(data.hospital({ hospitalId: 'SHEFH' }))
+      req.query.id = 'SHEFH'
+    })
+
+    it('will render hospital page with hospital', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewHospital(req, res)
+
+      expect(prisonRegisterService.getHospital).toHaveBeenCalledWith({ username: 'tom' }, 'SHEFH')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/hospital-register/hospitalDetails',
+        expect.objectContaining({
+          hospital: expect.objectContaining({ hospitalId: 'SHEFH' }),
+        }),
+      )
+    })
+
+    it('it will call register service with hospital Id parameter', async () => {
+      await controller.viewHospital(req, res)
+
+      expect(prisonRegisterService.getHospital).toHaveBeenCalledWith({}, 'SHEFH')
+    })
+  })
 })

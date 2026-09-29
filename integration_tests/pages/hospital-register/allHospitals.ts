@@ -25,6 +25,7 @@ const allHospitals = {
   cancelHighSecurityFilter: () => cy.get('.moj-filter-tags').contains('High security'),
   cancelNotHighSecurityFilter: () => cy.get('.moj-filter-tags').contains('Not high security'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  viewHospitalLink: (hospitalId: string) => cy.get(`[href="/hospital-register/details?id=${hospitalId}"]`).first(),
 }
 
 const verifyOnPage = (): typeof allHospitals & Page => page('Hospital Register', allHospitals)

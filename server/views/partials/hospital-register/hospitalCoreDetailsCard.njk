@@ -1,0 +1,95 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro hospitalCoreDetailsCard(opts) %}
+
+  {% set hospital = opts.hospital %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Main details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Code'
+        },
+        value: {
+          text: hospital.hospitalId
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: hospital.hospitalName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: hospital.description if hospital.description else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if hospital.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: hospital.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if hospital.inactiveDate,
+      {
+        key: {
+          text: 'High security'
+        },
+        value: {
+          text: 'Yes' if hospital.highSecurity else 'No'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: hospital.cjitCode if hospital.cjitCode else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

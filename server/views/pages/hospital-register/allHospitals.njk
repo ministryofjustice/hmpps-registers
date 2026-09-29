@@ -59,7 +59,9 @@
                                     {% for hospital in hospitals %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ hospital.id }}</td>
-                                            <td class="govuk-table__cell">{{ hospital.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/hospital-register/details?id={{ hospital.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ hospital.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if hospital.active %}
                                                     Active
