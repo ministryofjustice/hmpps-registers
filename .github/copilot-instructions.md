@@ -39,4 +39,4 @@ stale code and tests will fail or pass misleadingly against the previous build.
 
 Use `npm run start-feature:dev` if you want auto-restart on changes while iterating.
 
-At the end of a change if you start a fresh instance of the server using start-feature task, you don't need to wait for the process to finish since it never will.
+If you start a fresh instance of the server using the `start-feature` task at the end of a change, you do not need to wait for the process to finish because it runs indefinitely.
