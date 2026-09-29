@@ -48,5 +48,6 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubGetProbationOffices: prisonRegister.stubGetProbationOffices,
     stubGetProbationOffice: prisonRegister.stubGetProbationOffice,
     stubGetAllApprovedPremises: prisonRegister.stubGetAllApprovedPremises,
+    stubGetApprovedPremises: prisonRegister.stubGetApprovedPremises,
   })
 }

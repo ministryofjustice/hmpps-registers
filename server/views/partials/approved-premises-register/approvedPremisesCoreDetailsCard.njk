@@ -1,0 +1,106 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro approvedPremisesCoreDetailsCard(opts) %}
+
+  {% set approvedPremises = opts.approvedPremises %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Main details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Code'
+        },
+        value: {
+          text: approvedPremises.approvedPremisesId
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: approvedPremises.approvedPremisesName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: approvedPremises.description if approvedPremises.description else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Contact'
+        },
+        value: {
+          text: approvedPremises.contact if approvedPremises.contact else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if approvedPremises.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: approvedPremises.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if approvedPremises.inactiveDate,
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: approvedPremises.cjitCode if approvedPremises.cjitCode else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Accessible access'
+        },
+        value: {
+          text: approvedPremises.accessibleAccess | accessibleAccessDescription
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

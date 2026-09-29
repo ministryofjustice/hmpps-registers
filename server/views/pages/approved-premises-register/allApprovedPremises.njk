@@ -57,7 +57,9 @@
                                     {% for approvedPremises in approvedPremisesList %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ approvedPremises.id }}</td>
-                                            <td class="govuk-table__cell">{{ approvedPremises.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/approved-premises-register/details?id={{ approvedPremises.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ approvedPremises.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if approvedPremises.active %}
                                                     Active

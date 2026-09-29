@@ -14,6 +14,9 @@ export default function routes(router: Router, services: Services): Router {
   const approvedPremisesRegisterController = new ApprovedPremisesRegisterController(services.prisonRegisterService)
 
   get('/approved-premises-register', (req, res) => approvedPremisesRegisterController.showAllApprovedPremises(req, res))
+  get('/approved-premises-register/details', (req, res) =>
+    approvedPremisesRegisterController.viewApprovedPremises(req, res),
+  )
 
   return router
 }

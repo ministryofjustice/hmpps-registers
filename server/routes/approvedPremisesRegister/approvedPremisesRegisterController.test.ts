@@ -87,4 +87,34 @@ describe('Approved Premises Register controller', () => {
       expect(req.session.allListPageLink).toEqual('/approved-premises-register')
     })
   })
+
+  describe('viewApprovedPremises', () => {
+    beforeEach(() => {
+      prisonRegisterService.getApprovedPremises.mockResolvedValue(
+        data.approvedPremises({ approvedPremisesId: 'SHFAP' }),
+      )
+      req.query.id = 'SHFAP'
+    })
+
+    it('will render approved premises page with approved premises', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewApprovedPremises(req, res)
+
+      expect(prisonRegisterService.getApprovedPremises).toHaveBeenCalledWith({ username: 'tom' }, 'SHFAP')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/approved-premises-register/approvedPremisesDetails',
+        expect.objectContaining({
+          approvedPremises: expect.objectContaining({ approvedPremisesId: 'SHFAP' }),
+        }),
+      )
+    })
+
+    it('will call register service with approved premises Id parameter', async () => {
+      await controller.viewApprovedPremises(req, res)
+
+      expect(prisonRegisterService.getApprovedPremises).toHaveBeenCalledWith({}, 'SHFAP')
+    })
+  })
 })

@@ -1,0 +1,73 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro approvedPremisesAreaDetailsCard(opts) %}
+
+  {% set approvedPremises = opts.approvedPremises %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: approvedPremises.area.description if approvedPremises.area else 'Not provided'
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: approvedPremises.region.description if approvedPremises.region else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: approvedPremises.geographicalArea.description if approvedPremises.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: approvedPremises.localAuthority.description if approvedPremises.localAuthority else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: approvedPremises.payrollRegion.description if approvedPremises.payrollRegion else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
