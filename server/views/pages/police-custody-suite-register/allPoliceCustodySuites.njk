@@ -57,7 +57,9 @@
                                     {% for policeCustodySuite in policeCustodySuites %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ policeCustodySuite.id }}</td>
-                                            <td class="govuk-table__cell">{{ policeCustodySuite.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/police-custody-suite-register/details?id={{ policeCustodySuite.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ policeCustodySuite.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if policeCustodySuite.active %}
                                                     Active

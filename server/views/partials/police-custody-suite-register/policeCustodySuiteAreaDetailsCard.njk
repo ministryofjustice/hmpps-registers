@@ -1,0 +1,73 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro policeCustodySuiteAreaDetailsCard(opts) %}
+
+  {% set policeCustodySuite = opts.policeCustodySuite %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: policeCustodySuite.area.description if policeCustodySuite.area else 'Not provided'
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: policeCustodySuite.region.description if policeCustodySuite.region else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: policeCustodySuite.geographicalArea.description if policeCustodySuite.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: policeCustodySuite.localAuthority.description if policeCustodySuite.localAuthority else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: policeCustodySuite.payrollRegion.description if policeCustodySuite.payrollRegion else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
