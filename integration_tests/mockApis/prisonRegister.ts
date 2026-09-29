@@ -324,6 +324,21 @@ const stubGetProbationOffices = (probationOffices: ProbationOffice[]): SuperAgen
     },
   })
 
+const stubGetProbationOffice = (probationOffice: ProbationOffice): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/probation-offices/id/${probationOffice.probationOfficeId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: probationOffice,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -346,6 +361,7 @@ export default {
   stubGetPoliceCustodySuites,
   stubGetPoliceCustodySuite,
   stubGetProbationOffices,
+  stubGetProbationOffice,
 }
 
 // Mock data

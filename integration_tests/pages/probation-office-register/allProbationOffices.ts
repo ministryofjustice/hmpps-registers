@@ -22,6 +22,8 @@ const allProbationOffices = {
   textSearchFilter: () => cy.get('#textSearch'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  viewProbationOfficeLink: (probationOfficeId: string) =>
+    cy.get(`[href="/probation-office-register/details?id=${probationOfficeId}"]`).first(),
 }
 
 const verifyOnPage = (): typeof allProbationOffices & Page => page('Probation Office Register', allProbationOffices)

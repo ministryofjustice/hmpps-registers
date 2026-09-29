@@ -14,6 +14,9 @@ export default function routes(router: Router, services: Services): Router {
   const probationOfficeRegisterController = new ProbationOfficeRegisterController(services.prisonRegisterService)
 
   get('/probation-office-register', (req, res) => probationOfficeRegisterController.showAllProbationOffices(req, res))
+  get('/probation-office-register/details', (req, res) =>
+    probationOfficeRegisterController.viewProbationOffice(req, res),
+  )
 
   return router
 }

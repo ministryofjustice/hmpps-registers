@@ -1,0 +1,106 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro probationOfficeCoreDetailsCard(opts) %}
+
+  {% set probationOffice = opts.probationOffice %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Main details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Code'
+        },
+        value: {
+          text: probationOffice.probationOfficeId
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Name'
+        },
+        value: {
+          text: probationOffice.probationOfficeName
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Description'
+        },
+        value: {
+          text: probationOffice.description if probationOffice.description else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Contact'
+        },
+        value: {
+          text: probationOffice.contact if probationOffice.contact else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Active'
+        },
+        value: {
+        text: 'Active' if probationOffice.active else 'Inactive'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Date deactivated'
+        },
+        value: {
+          text: probationOffice.inactiveDate | formatDate
+        },
+        actions: {
+        items: [ ]
+        }
+      } if probationOffice.inactiveDate,
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: probationOffice.cjitCode if probationOffice.cjitCode else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Accessible access'
+        },
+        value: {
+          text: probationOffice.accessibleAccess | accessibleAccessDescription
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
