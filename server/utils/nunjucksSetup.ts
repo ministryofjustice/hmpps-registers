@@ -17,6 +17,7 @@ import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapp
 import { HospitalFilter } from '../routes/hospitalRegister/hospitalMapper'
 import { PoliceCustodySuiteFilter } from '../routes/policeCustodySuiteRegister/policeCustodySuiteMapper'
 import { ProbationOfficeFilter } from '../routes/probationOfficeRegister/probationOfficeMapper'
+import { ApprovedPremisesFilter } from '../routes/approvedPremisesRegister/approvedPremisesMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
 
@@ -374,6 +375,39 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         clearLink: {
           text: 'Clear filters',
           href: '/probation-office-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: getTextSearchFilterTags(filter, hrefBase),
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: getActiveFilterTags(filter, hrefBase),
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toApprovedPremisesListFilter', (filterOptionsHtml: string, filter: ApprovedPremisesFilter) => {
+    const hrefBase = '/approved-premises-register?'
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/approved-premises-register',
         },
         categories: [
           {

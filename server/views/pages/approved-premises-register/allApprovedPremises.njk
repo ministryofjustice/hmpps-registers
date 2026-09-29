@@ -1,0 +1,87 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/filter/macro.njk" import mojFilter %}
+
+{% set pageTitle = applicationName + " - Approved Premises Register" %}
+
+{% set filterOptionsHtml %}
+    <form id="filter-form" action="/approved-premises-register" novalidate>
+        {{ govukInput( filter.textSearch | toTextSearchInput ) }}
+        {{ govukRadios( filter.active | toActiveFilterRadioButtons ) }}
+    </form>
+{% endset %}
+
+
+{% block content %}
+    <!--suppress HtmlUnknownTarget -->
+    <div class="govuk-width-container">
+        {{ govukBackLink({
+            text: "Back",
+            href: "/"
+        }) }}
+
+        <main class="app-container govuk-body">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <h1 class="govuk-heading-xl">Approved Premises Register</h1>
+                </div>
+            </div>
+
+            <div class="moj-filter-layout">
+                <div class="moj-filter-layout__filter">{{ mojFilter(filterOptionsHtml | toApprovedPremisesListFilter(filter)) }}</div>
+
+                <div class="moj-filter-layout__content">
+
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <div class="moj-action-bar__filter"></div>
+                        </div>
+                    </div>
+
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            {% if approvedPremisesList.length %}
+                                <table class="govuk-table incidents govuk-!-margin-bottom-3" data-qa="approved-premises">
+                                    <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Code</th>
+                                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Name</th>
+                                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">Active</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody class="govuk-table__body">
+                                    {% for approvedPremises in approvedPremisesList %}
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell">{{ approvedPremises.id }}</td>
+                                            <td class="govuk-table__cell">{{ approvedPremises.name }}</td>
+                                            <td class="govuk-table__cell">
+                                                {% if approvedPremises.active %}
+                                                    Active
+                                                {% else %}
+                                                    Inactive
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p data-qa=no-approved-premises class="govuk-body">There are no approved premises</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
+
+{% block bodyEnd %}
+    {{ super() }}
+{% endblock %}
