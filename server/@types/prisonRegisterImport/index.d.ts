@@ -1384,7 +1384,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/api': {
+  '/api/agencies': {
     parameters: {
       query?: never
       header?: never
@@ -1396,6 +1396,46 @@ export interface paths {
      * @description Summary information on all agencies, including prisons, probation offices, police custody suites, courts, hospitals and other agencies ordered by agency ID ascending
      */
     get: operations['getAgencies']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/agencies/{agencyId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get details of an agency
+     * @description Details of a single agency of any type (court, hospital, police custody suite, probation office, approved premises, prison or other agency)
+     */
+    get: operations['getAgency']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/agencies/type/{type}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all agencies of a type
+     * @description Details of all agencies of the specified type (for example: court, hospital, secure hospital, police custody suite, probation office, approved premises, prison)
+     */
+    get: operations['getAgenciesByType']
     put?: never
     post?: never
     delete?: never
@@ -3143,6 +3183,76 @@ export interface components {
         | 'YOT'
       /** @description Whether still active */
       active: boolean
+    }
+    /** @description Details of an agency */
+    AgencyDetailsDto: {
+      /**
+       * @description Agency ID
+       * @example SHEFCC
+       */
+      agencyId: string
+      /**
+       * @description Description
+       * @example Sheffield Crown Court
+       */
+      description?: string | null
+      /**
+       * @description Long description
+       * @example Sheffield Central Court
+       */
+      longDescription?: string | null
+      /**
+       * @description Agency type
+       * @example COURT
+       * @enum {string}
+       */
+      agencyType:
+        | 'PRISON'
+        | 'COURT'
+        | 'HOSPITAL'
+        | 'SECURE_HOSPITAL'
+        | 'PROBATION_OFFICE'
+        | 'POLICE_CUSTODY_SUITE'
+        | 'APPROVED_PREMISES'
+        | 'AIRPORT'
+        | 'PROBATION_CRC'
+        | 'FOREIGN_NATIONAL_PRISON'
+        | 'VOLUNTARY_HOSTEL'
+        | 'IMMIGRATION_DETENTION_CENTRE'
+        | 'OUTSIDE'
+        | 'PECS'
+        | 'PSYCHIATRIC_CARE'
+        | 'CHILDREN_SECURE_HOME'
+        | 'SECURE_TRAINING_CENTRE'
+        | 'YOT'
+      /** @description Whether still active */
+      active: boolean
+      /**
+       * @description Court Type code
+       * @example CC
+       */
+      courtType?: string | null
+      /**
+       * @description Court Type description
+       * @example Crown Court
+       */
+      courtTypeDescription?: string | null
+      /**
+       * Format: date
+       * @description Date made inactive
+       * @example 2023-12-31
+       */
+      inactiveDate?: string | null
+      /** @description Addresses */
+      addresses: components['schemas']['AgencyAddressDto'][]
+      /** @description Phone numbers */
+      phones: components['schemas']['AgencyPhoneDto'][]
+      /** @description Email addresses */
+      emails: components['schemas']['AgencyEmailDto'][]
+      /** @description Area */
+      area?: components['schemas']['CodeDescription'] | null
+      /** @description Region */
+      region?: components['schemas']['CodeDescription'] | null
     }
   }
   responses: never
@@ -6668,7 +6778,18 @@ export interface operations {
   }
   getProbationOffices: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -7096,7 +7217,18 @@ export interface operations {
   }
   getPoliceCustodySuites: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -7812,7 +7944,23 @@ export interface operations {
   }
   getHospitals: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+        /**
+         * @description High security
+         * @example true
+         */
+        highSecurity?: boolean
+      }
       header?: never
       path?: never
       cookie?: never
@@ -8327,7 +8475,18 @@ export interface operations {
   }
   getApprovedPremises: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+      }
       header?: never
       path?: never
       cookie?: never
@@ -8873,6 +9032,91 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AgencySummaryDto'][]
+        }
+      }
+    }
+  }
+  getAgency: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Agency ID
+         * @example SHEFCC
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AgencyDetailsDto']
+        }
+      }
+      /** @description Agency not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getAgenciesByType: {
+    parameters: {
+      query?: {
+        /**
+         * @description When true (the default) only active agencies are returned
+         * @example true
+         */
+        activeOnly?: boolean
+      }
+      header?: never
+      path: {
+        /**
+         * @description Agency type
+         * @example COURT
+         */
+        type:
+          | 'PRISON'
+          | 'COURT'
+          | 'HOSPITAL'
+          | 'SECURE_HOSPITAL'
+          | 'PROBATION_OFFICE'
+          | 'POLICE_CUSTODY_SUITE'
+          | 'APPROVED_PREMISES'
+          | 'AIRPORT'
+          | 'PROBATION_CRC'
+          | 'FOREIGN_NATIONAL_PRISON'
+          | 'VOLUNTARY_HOSTEL'
+          | 'IMMIGRATION_DETENTION_CENTRE'
+          | 'OUTSIDE'
+          | 'PECS'
+          | 'PSYCHIATRIC_CARE'
+          | 'CHILDREN_SECURE_HOME'
+          | 'SECURE_TRAINING_CENTRE'
+          | 'YOT'
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AgencyDetailsDto'][]
         }
       }
     }

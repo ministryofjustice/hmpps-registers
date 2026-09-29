@@ -12,10 +12,18 @@ import {
   UpdateWelshPrisonAddress,
   Court,
   OtherAgency,
+  Hospital,
+  ProbationOffice,
+  PoliceCustodySuite,
+  ApprovedPremises,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
+import { HospitalFilter } from '../routes/hospitalRegister/hospitalMapper'
+import { ProbationOfficeFilter } from '../routes/probationOfficeRegister/probationOfficeMapper'
+import { PoliceCustodySuiteFilter } from '../routes/policeCustodySuiteRegister/policeCustodySuiteMapper'
+import { ApprovedPremisesFilter } from '../routes/approvedPremisesRegister/approvedPremisesMapper'
 
 export interface Context {
   username?: string
@@ -218,6 +226,74 @@ export default class PrisonRegisterService {
     logger.info(`getting other agency with id ${agencyId}`)
     return PrisonRegisterService.restClient(token).get<OtherAgency>({
       path: `/other-agencies/id/${agencyId}`,
+    })
+  }
+
+  async getHospitals(context: Context, filter: HospitalFilter): Promise<Hospital[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all hospitals with filter ${JSON.stringify(filter)}`)
+    return PrisonRegisterService.restClient(token).get<Hospital[]>({
+      path: `/hospitals`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getHospital(context: Context, hospitalId: string): Promise<Hospital> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting hospital with id ${hospitalId}`)
+    return PrisonRegisterService.restClient(token).get<Hospital>({
+      path: `/hospitals/id/${hospitalId}`,
+    })
+  }
+
+  async getProbationOffices(context: Context, filter: ProbationOfficeFilter): Promise<ProbationOffice[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all probation offices with filter ${JSON.stringify(filter)}`)
+    return PrisonRegisterService.restClient(token).get<ProbationOffice[]>({
+      path: `/probation-offices`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getProbationOffice(context: Context, probationOfficeId: string): Promise<ProbationOffice> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting probation office with id ${probationOfficeId}`)
+    return PrisonRegisterService.restClient(token).get<ProbationOffice>({
+      path: `/probation-offices/id/${probationOfficeId}`,
+    })
+  }
+
+  async getPoliceCustodySuites(context: Context, filter: PoliceCustodySuiteFilter): Promise<PoliceCustodySuite[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all police custody suites with filter ${JSON.stringify(filter)}`)
+    return PrisonRegisterService.restClient(token).get<PoliceCustodySuite[]>({
+      path: `/police-custody-suites`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getPoliceCustodySuite(context: Context, policeCustodySuiteId: string): Promise<PoliceCustodySuite> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting police custody suite with id ${policeCustodySuiteId}`)
+    return PrisonRegisterService.restClient(token).get<PoliceCustodySuite>({
+      path: `/police-custody-suites/id/${policeCustodySuiteId}`,
+    })
+  }
+
+  async getAllApprovedPremises(context: Context, filter: ApprovedPremisesFilter): Promise<ApprovedPremises[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting all approved premises with filter ${JSON.stringify(filter)}`)
+    return PrisonRegisterService.restClient(token).get<ApprovedPremises[]>({
+      path: `/approved-premises`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getApprovedPremises(context: Context, approvedPremisesId: string): Promise<ApprovedPremises> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting approved premises with id ${approvedPremisesId}`)
+    return PrisonRegisterService.restClient(token).get<ApprovedPremises>({
+      path: `/approved-premises/id/${approvedPremisesId}`,
     })
   }
 }
