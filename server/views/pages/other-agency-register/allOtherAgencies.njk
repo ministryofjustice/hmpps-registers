@@ -60,7 +60,9 @@
                                     {% for otherAgency in otherAgencies %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ otherAgency.id }}</td>
-                                            <td class="govuk-table__cell">{{ otherAgency.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/other-agency-register/details?id={{ otherAgency.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ otherAgency.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if otherAgency.active %}
                                                     Active

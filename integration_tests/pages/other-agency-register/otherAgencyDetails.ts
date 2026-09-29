@@ -1,0 +1,24 @@
+import page, { Page } from '../page'
+
+const otherAgencyDetails = {
+  agencyId: () => cy.get('dt:contains("Code")').next(),
+  agencyName: () => cy.get('dt:contains("Name")').next(),
+  description: () => cy.get('dt:contains("Description")').next(),
+  active: () => cy.get('dt:contains("Active")').next(),
+  agencyType: () => cy.get('dt:contains("Other Agency Type")').next(),
+  inactiveDate: () => cy.get('dt:contains("Date deactivated")').next(),
+  accessibleAccess: () => cy.get('dt:contains("Accessible access")').next(),
+  cjitCode: () => cy.get('dt:contains("CJIT Code")').next(),
+  area: () => cy.get('dt:contains("Area")').next(),
+  region: () => cy.get('dt:contains("Region")').next(),
+  geographicalArea: () => cy.get('dt:contains("Geographical area")').next(),
+  localAuthority: () => cy.get('dt:contains("Local Authority")').next(),
+  payrollRegion: () => cy.get('dt:contains("Payroll region")').next(),
+  address: () => cy.get('dt:contains("Address")').next(),
+  emailAddress: () => cy.get('dt:contains("Email")').next(),
+  phoneNumber: () => cy.get('dt:contains("Number")').next(),
+}
+
+const verifyOnPage = (agencyName: string): typeof otherAgencyDetails & Page => page(agencyName, otherAgencyDetails)
+
+export default { verifyOnPage }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import AllOtherAgenciesView from './allOtherAgenciesView'
+import OtherAgencyDetailsView from './otherAgencyDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
 import { OtherAgencyFilter } from './otherAgencyMapper'
 
@@ -20,6 +21,13 @@ export default class OtherAgencyRegisterController {
     const otherAgencies = await this.prisonRegisterService.getOtherAgencies(context(res), filter)
     const view = new AllOtherAgenciesView(otherAgencies, filter)
     res.render('pages/other-agency-register/allOtherAgencies', view.renderArgs)
+  }
+
+  async viewOtherAgency(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const otherAgency = await this.prisonRegisterService.getOtherAgency(context(res), id)
+    const view = new OtherAgencyDetailsView(otherAgency)
+    res.render('pages/other-agency-register/otherAgencyDetails', view.renderArgs)
   }
 
   parseFilter(req: Request): OtherAgencyFilter {

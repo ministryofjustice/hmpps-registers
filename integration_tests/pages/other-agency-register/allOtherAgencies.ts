@@ -23,6 +23,7 @@ const allOtherAgencies = {
   cancelPecsFilter: () => cy.get('.moj-filter-tags').contains('PECS'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  viewOtherAgencyLink: (agencyId: string) => cy.get(`[href="/other-agency-register/details?id=${agencyId}"]`).first(),
 }
 
 const verifyOnPage = (): typeof allOtherAgencies & Page => page('Other Agency Register', allOtherAgencies)
