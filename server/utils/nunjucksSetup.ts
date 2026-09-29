@@ -15,6 +15,7 @@ import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 import { otherAgencyTypes, otherAgencyTypeDescription } from '../routes/otherAgencyRegister/otherAgencyData'
 import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
 import { HospitalFilter } from '../routes/hospitalRegister/hospitalMapper'
+import { PoliceCustodySuiteFilter } from '../routes/policeCustodySuiteRegister/policeCustodySuiteMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
 
@@ -319,6 +320,39 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
               text: 'High security',
             },
             items: highSecurityFilterTags,
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toPoliceCustodySuiteListFilter', (filterOptionsHtml: string, filter: PoliceCustodySuiteFilter) => {
+    const hrefBase = '/police-custody-suite-register?'
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/police-custody-suite-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: getTextSearchFilterTags(filter, hrefBase),
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: getActiveFilterTags(filter, hrefBase),
           },
         ],
       },

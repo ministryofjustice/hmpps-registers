@@ -1,6 +1,13 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Court, Hospital, OtherAgency, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
+import {
+  Court,
+  Hospital,
+  OtherAgency,
+  PoliceCustodySuite,
+  Prison,
+  PrisonAddress,
+} from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
 import otherAgencyData from '../../server/routes/testutils/mockOtherAgencyData'
@@ -271,6 +278,21 @@ const stubGetHospital = (hospital: Hospital): SuperAgentRequest =>
     },
   })
 
+const stubGetPoliceCustodySuites = (policeCustodySuites: PoliceCustodySuite[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/police-custody-suites.*',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: policeCustodySuites,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -290,6 +312,7 @@ export default {
   stubGetOtherAgency,
   stubGetHospitals,
   stubGetHospital,
+  stubGetPoliceCustodySuites,
 }
 
 // Mock data
