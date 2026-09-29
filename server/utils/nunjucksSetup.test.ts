@@ -544,3 +544,53 @@ describe('accessibleAccessDescription', () => {
     expect(filter('BANANAS')).toEqual('Not provided')
   })
 })
+
+describe('toHospitalListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should show high security cancel tag', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], { active: true, highSecurity: true })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: { text: 'High security' },
+          items: [{ href: '/hospital-register?active=true', text: 'High security' }],
+        }),
+      ]),
+    )
+  })
+
+  it('should show not high security cancel tag', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], { highSecurity: false })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: { text: 'High security' },
+          items: [{ href: '/hospital-register?', text: 'Not high security' }],
+        }),
+      ]),
+    )
+  })
+
+  it('should show no high security cancel tag when not filtering', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], {})
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([expect.objectContaining({ heading: { text: 'High security' }, items: null })]),
+    )
+  })
+})
+
+describe('toHighSecurityFilterRadioButtons', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it.each([
+    [undefined, [true, false, false]],
+    [true, [false, true, false]],
+    [false, [false, false, true]],
+  ])('checks the correct radio when highSecurity is %s', (highSecurity, expected) => {
+    const result = njk.getFilter('toHighSecurityFilterRadioButtons')(highSecurity)
+    expect(result.items.map((item: { checked: boolean }) => item.checked)).toEqual(expected)
+  })
+})
