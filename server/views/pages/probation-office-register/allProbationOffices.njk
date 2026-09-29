@@ -57,7 +57,9 @@
                                     {% for probationOffice in probationOffices %}
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell">{{ probationOffice.id }}</td>
-                                            <td class="govuk-table__cell">{{ probationOffice.name }}</td>
+                                            <td class="govuk-table__cell"><a href="/probation-office-register/details?id={{ probationOffice.id }}"
+                                                                             class="govuk-link govuk-link--no-visited-state">{{ probationOffice.name }}</a>
+                                            </td>
                                             <td class="govuk-table__cell">
                                                 {% if probationOffice.active %}
                                                     Active

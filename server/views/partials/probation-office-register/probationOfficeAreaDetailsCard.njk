@@ -1,0 +1,84 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro probationOfficeAreaDetailsCard(opts) %}
+
+  {% set probationOffice = opts.probationOffice %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: probationOffice.area.description if probationOffice.area else 'Not provided'
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Subarea'
+        },
+        value: {
+          text: probationOffice.subarea.description if probationOffice.subarea else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: probationOffice.region.description if probationOffice.region else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: probationOffice.geographicalArea.description if probationOffice.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: probationOffice.localAuthority.description if probationOffice.localAuthority else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: probationOffice.payrollRegion.description if probationOffice.payrollRegion else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

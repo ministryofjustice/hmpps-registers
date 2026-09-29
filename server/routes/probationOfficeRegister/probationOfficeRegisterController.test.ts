@@ -87,4 +87,32 @@ describe('Probation Office Register controller', () => {
       expect(req.session.allListPageLink).toEqual('/probation-office-register')
     })
   })
+
+  describe('viewProbationOffice', () => {
+    beforeEach(() => {
+      prisonRegisterService.getProbationOffice.mockResolvedValue(data.probationOffice({ probationOfficeId: 'SHFPO' }))
+      req.query.id = 'SHFPO'
+    })
+
+    it('will render probation office page with probation office', async () => {
+      res.locals.user = {
+        username: 'tom',
+      }
+      await controller.viewProbationOffice(req, res)
+
+      expect(prisonRegisterService.getProbationOffice).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPO')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/probation-office-register/probationOfficeDetails',
+        expect.objectContaining({
+          probationOffice: expect.objectContaining({ probationOfficeId: 'SHFPO' }),
+        }),
+      )
+    })
+
+    it('will call register service with probation office Id parameter', async () => {
+      await controller.viewProbationOffice(req, res)
+
+      expect(prisonRegisterService.getProbationOffice).toHaveBeenCalledWith({}, 'SHFPO')
+    })
+  })
 })
