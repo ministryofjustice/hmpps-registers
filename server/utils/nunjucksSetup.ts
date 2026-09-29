@@ -16,6 +16,7 @@ import { otherAgencyTypes, otherAgencyTypeDescription } from '../routes/otherAge
 import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
 import { HospitalFilter } from '../routes/hospitalRegister/hospitalMapper'
 import { PoliceCustodySuiteFilter } from '../routes/policeCustodySuiteRegister/policeCustodySuiteMapper'
+import { ProbationOfficeFilter } from '../routes/probationOfficeRegister/probationOfficeMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
 
@@ -340,6 +341,39 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         clearLink: {
           text: 'Clear filters',
           href: '/police-custody-suite-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: getTextSearchFilterTags(filter, hrefBase),
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: getActiveFilterTags(filter, hrefBase),
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toProbationOfficeListFilter', (filterOptionsHtml: string, filter: ProbationOfficeFilter) => {
+    const hrefBase = '/probation-office-register?'
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/probation-office-register',
         },
         categories: [
           {

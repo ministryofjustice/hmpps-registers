@@ -1,0 +1,42 @@
+import { ProbationOffice } from '../../@types/prisonRegister'
+
+export default {
+  probationOffice: ({
+    probationOfficeId = 'SHFPO',
+    probationOfficeName = 'Sheffield Probation Office',
+    description = 'Sheffield City Centre Probation Office',
+    contact = 'Duty Officer',
+    active = true,
+    accessibleAccess = undefined,
+    inactiveDate = undefined,
+    cjitCode = 'C00SH00',
+    area = { code: 'YH', description: 'Yorkshire and the Humber' },
+    subarea = { code: 'SY', description: 'South Yorkshire' },
+    region = { code: 'YH', description: 'Yorkshire and the Humber' },
+    geographicalArea = { code: 'YH', description: 'Yorkshire and the Humber' },
+    localAuthority = { code: 'YH', description: 'Yorkshire and the Humber' },
+    payrollRegion = { code: 'YH', description: 'Yorkshire and the Humber' },
+    addresses = [],
+    emailAddresses = [],
+    phoneNumbers = [],
+  }: Partial<ProbationOffice>): ProbationOffice =>
+    ({
+      probationOfficeId,
+      probationOfficeName,
+      description,
+      contact,
+      active,
+      accessibleAccess,
+      inactiveDate,
+      cjitCode,
+      area,
+      subarea,
+      region,
+      geographicalArea,
+      localAuthority,
+      payrollRegion,
+      addresses,
+      emailAddresses,
+      phoneNumbers,
+    }) as ProbationOffice,
+}
