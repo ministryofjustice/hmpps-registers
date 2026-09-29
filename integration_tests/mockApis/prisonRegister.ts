@@ -1,9 +1,10 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { Court, OtherAgency, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
+import { Court, Hospital, OtherAgency, Prison, PrisonAddress } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
 import otherAgencyData from '../../server/routes/testutils/mockOtherAgencyData'
+import hospitalData from '../../server/routes/testutils/mockHospitalData'
 
 // Mock API responses
 
@@ -240,6 +241,21 @@ const stubGetOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
     },
   })
 
+const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/hospitals.*',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: hospitals,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -257,6 +273,7 @@ export default {
   stubGetCourt,
   stubGetOtherAgencies,
   stubGetOtherAgency,
+  stubGetHospitals,
 }
 
 // Mock data
@@ -365,4 +382,11 @@ export const sheffieldPecsAgency: OtherAgency = otherAgencyData.otherAgency({
   agencyName: 'Sheffield PECS Agency',
   active: true,
   agencyType: 'PECS',
+})
+
+export const rampton: Hospital = hospitalData.hospital({
+  hospitalId: 'RAMPTON',
+  hospitalName: 'Rampton Secure Hospital',
+  active: true,
+  highSecurity: true,
 })

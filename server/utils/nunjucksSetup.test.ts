@@ -544,3 +544,75 @@ describe('accessibleAccessDescription', () => {
     expect(filter('BANANAS')).toEqual('Not provided')
   })
 })
+
+describe('toHospitalListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should show high security cancel tag', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], { active: true, highSecurity: true })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: { text: 'High security' },
+          items: [{ href: '/hospital-register?active=true', text: 'High security' }],
+        }),
+      ]),
+    )
+  })
+
+  it('should show not high security cancel tag', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], { highSecurity: false })
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          heading: { text: 'High security' },
+          items: [{ href: '/hospital-register?', text: 'Not high security' }],
+        }),
+      ]),
+    )
+  })
+
+  it('should show no high security cancel tag when not filtering', () => {
+    const result = njk.getFilter('toHospitalListFilter')([], {})
+    expect(result.selectedFilters.categories).toEqual(
+      expect.arrayContaining([expect.objectContaining({ heading: { text: 'High security' }, items: null })]),
+    )
+  })
+})
+
+describe('toHighSecurityFilterRadioButtons', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  type RadioItem = { text: string; value: string | boolean; checked: boolean }
+
+  const checkedOptions = (highSecurity: boolean | undefined): string[] =>
+    njk
+      .getFilter('toHighSecurityFilterRadioButtons')(highSecurity)
+      .items.filter((item: RadioItem) => item.checked)
+      .map((item: RadioItem) => item.text)
+
+  it('should offer All, Yes and No options', () => {
+    const result = njk.getFilter('toHighSecurityFilterRadioButtons')(undefined)
+
+    expect(result.name).toEqual('highSecurity')
+    expect(result.items).toEqual([
+      expect.objectContaining({ text: 'All', value: '' }),
+      expect.objectContaining({ text: 'Yes', value: true }),
+      expect.objectContaining({ text: 'No', value: false }),
+    ])
+  })
+
+  it('should check All when not filtering on high security', () => {
+    expect(checkedOptions(undefined)).toEqual(['All'])
+  })
+
+  it('should check Yes when filtering on high security hospitals', () => {
+    expect(checkedOptions(true)).toEqual(['Yes'])
+  })
+
+  it('should check No when filtering on hospitals that are not high security', () => {
+    expect(checkedOptions(false)).toEqual(['No'])
+  })
+})

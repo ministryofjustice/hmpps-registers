@@ -14,6 +14,7 @@ import { courtTypes } from '../routes/courtRegister/courtData'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
 import { otherAgencyTypes, otherAgencyTypeDescription } from '../routes/otherAgencyRegister/otherAgencyData'
 import { OtherAgencyFilter } from '../routes/otherAgencyRegister/otherAgencyMapper'
+import { HospitalFilter } from '../routes/hospitalRegister/hospitalMapper'
 import { AgencyFilter } from '../routes/utils/filter'
 import { formatDate, addressToLines } from './utils'
 
@@ -280,6 +281,82 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         ],
       },
       optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toHospitalListFilter', (filterOptionsHtml: string, filter: HospitalFilter) => {
+    const hrefBase = '/hospital-register?'
+    const textSearchFilterTags = getTextSearchFilterTags(filter, hrefBase)
+    const activeFilterTags = getActiveFilterTags(filter, hrefBase)
+    const highSecurityFilterTags = getHighSecurityFilterTags(filter, hrefBase)
+    return {
+      heading: {
+        text: 'Filter',
+      },
+      selectedFilters: {
+        heading: {
+          text: 'Selected filters',
+        },
+        clearLink: {
+          text: 'Clear filters',
+          href: '/hospital-register',
+        },
+        categories: [
+          {
+            heading: {
+              text: 'Search',
+            },
+            items: textSearchFilterTags,
+          },
+          {
+            heading: {
+              text: 'Active or Inactive',
+            },
+            items: activeFilterTags,
+          },
+          {
+            heading: {
+              text: 'High security',
+            },
+            items: highSecurityFilterTags,
+          },
+        ],
+      },
+      optionsHtml: filterOptionsHtml,
+    }
+  })
+
+  njkEnv.addFilter('toHighSecurityFilterRadioButtons', (highSecurity: boolean | undefined) => {
+    return {
+      idPrefix: 'highSecurity',
+      name: 'highSecurity',
+      classes: 'govuk-radios--inline',
+      fieldset: {
+        legend: {
+          text: 'High security',
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Display high security hospitals only, or exclude them',
+      },
+      items: [
+        {
+          value: '',
+          text: 'All',
+          checked: highSecurity === undefined,
+        },
+        {
+          value: true,
+          text: 'Yes',
+          checked: highSecurity === true,
+        },
+        {
+          value: false,
+          text: 'No',
+          checked: highSecurity === false,
+        },
+      ],
     }
   })
 
@@ -568,6 +645,27 @@ export default function nunjucksSetup(app: express.Express): nunjucks.Environmen
         {
           href: `${hrefBase}${querystring.stringify(newFilter)}`,
           text: 'Inactive',
+        },
+      ]
+    }
+    return null
+  }
+
+  function getHighSecurityFilterTags(filter: HospitalFilter, hrefBase: string) {
+    const { highSecurity, ...newFilter }: ParsedUrlQueryInput = filter
+    if (filter.highSecurity === true) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'High security',
+        },
+      ]
+    }
+    if (filter.highSecurity === false) {
+      return [
+        {
+          href: `${hrefBase}${querystring.stringify(newFilter)}`,
+          text: 'Not high security',
         },
       ]
     }
