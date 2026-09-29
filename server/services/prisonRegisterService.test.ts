@@ -6,7 +6,16 @@ import PrisonRegisterService from './prisonRegisterService'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
-import { InsertPrison, OtherAgency, UpdatePrison, UpdatePrisonAddress } from '../@types/prisonRegister'
+import {
+  InsertPrison,
+  ApprovedPremises,
+  Hospital,
+  OtherAgency,
+  PoliceCustodySuite,
+  ProbationOffice,
+  UpdatePrison,
+  UpdatePrisonAddress,
+} from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
@@ -628,6 +637,389 @@ describe('Prison Register service', () => {
       const result = await prisonRegisterService.getOtherAgency({}, 'SHEF')
 
       expect(result).toEqual(agency)
+    })
+  })
+
+  describe('getHospitals', () => {
+    const hospital: Hospital = {
+      hospitalId: 'SHEFH',
+      hospitalName: 'Sheffield Hospital',
+      active: true,
+      highSecurity: false,
+      addresses: [],
+      phoneNumbers: [],
+    }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/hospitals').reply(200, [])
+
+      await prisonRegisterService.getHospitals({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister
+        .get('/hospitals?active=true&textSearch=Sheffield&highSecurity=true')
+        .reply(200, [{ ...hospital, highSecurity: true }])
+
+      const result = await prisonRegisterService.getHospitals(
+        {},
+        { active: true, textSearch: 'Sheffield', highSecurity: true },
+      )
+
+      expect(result).toEqual([{ ...hospital, highSecurity: true }])
+    })
+
+    it('is ok if there are no hospitals', async () => {
+      fakePrisonRegister.get('/hospitals').reply(200, [])
+
+      const result = await prisonRegisterService.getHospitals({}, {})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all hospitals', async () => {
+      fakePrisonRegister.get('/hospitals').reply(200, [hospital, { ...hospital, hospitalId: 'LEEDH' }])
+
+      const result = await prisonRegisterService.getHospitals({}, {})
+
+      expect(result).toEqual([hospital, { ...hospital, hospitalId: 'LEEDH' }])
+    })
+  })
+
+  describe('getHospital', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(200, {})
+
+      await prisonRegisterService.getHospital({ username: 'tommy' }, 'SHEFH')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return a hospital', async () => {
+      const hospital: Hospital = {
+        hospitalId: 'SHEFH',
+        hospitalName: 'Sheffield Hospital',
+        active: true,
+        highSecurity: true,
+        addresses: [],
+        phoneNumbers: [],
+      }
+      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(200, hospital)
+
+      const result = await prisonRegisterService.getHospital({}, 'SHEFH')
+
+      expect(result).toEqual(hospital)
+    })
+
+    it('will throw error when not found', async () => {
+      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(404, {
+        status: 404,
+        developerMessage: 'Hospital SHEFH not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getHospital({}, 'SHEFH')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+
+  describe('getProbationOffices', () => {
+    const probationOffice: ProbationOffice = {
+      probationOfficeId: 'SHEFPB',
+      probationOfficeName: 'Sheffield Probation Office',
+      active: true,
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+    }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/probation-offices').reply(200, [])
+
+      await prisonRegisterService.getProbationOffices({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister.get('/probation-offices?active=true&textSearch=Sheffield').reply(200, [probationOffice])
+
+      const result = await prisonRegisterService.getProbationOffices({}, { active: true, textSearch: 'Sheffield' })
+
+      expect(result).toEqual([probationOffice])
+    })
+
+    it('is ok if there are no probation offices', async () => {
+      fakePrisonRegister.get('/probation-offices').reply(200, [])
+
+      const result = await prisonRegisterService.getProbationOffices({}, {})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all probation offices', async () => {
+      fakePrisonRegister
+        .get('/probation-offices')
+        .reply(200, [probationOffice, { ...probationOffice, probationOfficeId: 'LEEDPB' }])
+
+      const result = await prisonRegisterService.getProbationOffices({}, {})
+
+      expect(result).toEqual([probationOffice, { ...probationOffice, probationOfficeId: 'LEEDPB' }])
+    })
+  })
+
+  describe('getProbationOffice', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(200, {})
+
+      await prisonRegisterService.getProbationOffice({ username: 'tommy' }, 'SHEFPB')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return a probation office', async () => {
+      const probationOffice: ProbationOffice = {
+        probationOfficeId: 'SHEFPB',
+        probationOfficeName: 'Sheffield Probation Office',
+        active: true,
+        addresses: [],
+        emailAddresses: [],
+        phoneNumbers: [],
+      }
+      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(200, probationOffice)
+
+      const result = await prisonRegisterService.getProbationOffice({}, 'SHEFPB')
+
+      expect(result).toEqual(probationOffice)
+    })
+
+    it('will throw error when not found', async () => {
+      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(404, {
+        status: 404,
+        developerMessage: 'Probation office SHEFPB not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getProbationOffice({}, 'SHEFPB')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+
+  describe('getPoliceCustodySuites', () => {
+    const policeCustodySuite: PoliceCustodySuite = {
+      policeCustodySuiteId: 'SHFPCS',
+      policeCustodySuiteName: 'Sheffield Police Custody Suite',
+      active: true,
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+    }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/police-custody-suites').reply(200, [])
+
+      await prisonRegisterService.getPoliceCustodySuites({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister.get('/police-custody-suites?active=true&textSearch=Sheffield').reply(200, [policeCustodySuite])
+
+      const result = await prisonRegisterService.getPoliceCustodySuites({}, { active: true, textSearch: 'Sheffield' })
+
+      expect(result).toEqual([policeCustodySuite])
+    })
+
+    it('is ok if there are no police custody suites', async () => {
+      fakePrisonRegister.get('/police-custody-suites').reply(200, [])
+
+      const result = await prisonRegisterService.getPoliceCustodySuites({}, {})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all police custody suites', async () => {
+      fakePrisonRegister
+        .get('/police-custody-suites')
+        .reply(200, [policeCustodySuite, { ...policeCustodySuite, policeCustodySuiteId: 'LEEDPCS' }])
+
+      const result = await prisonRegisterService.getPoliceCustodySuites({}, {})
+
+      expect(result).toEqual([policeCustodySuite, { ...policeCustodySuite, policeCustodySuiteId: 'LEEDPCS' }])
+    })
+  })
+
+  describe('getPoliceCustodySuite', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(200, {})
+
+      await prisonRegisterService.getPoliceCustodySuite({ username: 'tommy' }, 'SHFPCS')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return a police custody suite', async () => {
+      const policeCustodySuite: PoliceCustodySuite = {
+        policeCustodySuiteId: 'SHFPCS',
+        policeCustodySuiteName: 'Sheffield Police Custody Suite',
+        active: true,
+        addresses: [],
+        emailAddresses: [],
+        phoneNumbers: [],
+      }
+      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(200, policeCustodySuite)
+
+      const result = await prisonRegisterService.getPoliceCustodySuite({}, 'SHFPCS')
+
+      expect(result).toEqual(policeCustodySuite)
+    })
+
+    it('will throw error when not found', async () => {
+      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(404, {
+        status: 404,
+        developerMessage: 'Police custody suite SHFPCS not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getPoliceCustodySuite({}, 'SHFPCS')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+
+  describe('getAllApprovedPremises', () => {
+    const approvedPremises: ApprovedPremises = {
+      approvedPremisesId: 'SHEFAP',
+      approvedPremisesName: 'Sheffield Approved Premises',
+      active: true,
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+    }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/approved-premises').reply(200, [])
+
+      await prisonRegisterService.getAllApprovedPremises({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will pass filter to service', async () => {
+      fakePrisonRegister.get('/approved-premises?active=true&textSearch=Sheffield').reply(200, [approvedPremises])
+
+      const result = await prisonRegisterService.getAllApprovedPremises({}, { active: true, textSearch: 'Sheffield' })
+
+      expect(result).toEqual([approvedPremises])
+    })
+
+    it('is ok if there are no approved premises', async () => {
+      fakePrisonRegister.get('/approved-premises').reply(200, [])
+
+      const result = await prisonRegisterService.getAllApprovedPremises({}, {})
+
+      expect(result).toEqual([])
+    })
+
+    it('will return all approved premises', async () => {
+      fakePrisonRegister
+        .get('/approved-premises')
+        .reply(200, [approvedPremises, { ...approvedPremises, approvedPremisesId: 'LEEDAP' }])
+
+      const result = await prisonRegisterService.getAllApprovedPremises({}, {})
+
+      expect(result).toEqual([approvedPremises, { ...approvedPremises, approvedPremisesId: 'LEEDAP' }])
+    })
+  })
+
+  describe('getApprovedPremises', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(200, {})
+
+      await prisonRegisterService.getApprovedPremises({ username: 'tommy' }, 'SHEFAP')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return approved premises', async () => {
+      const approvedPremises: ApprovedPremises = {
+        approvedPremisesId: 'SHEFAP',
+        approvedPremisesName: 'Sheffield Approved Premises',
+        active: true,
+        addresses: [],
+        emailAddresses: [],
+        phoneNumbers: [],
+      }
+      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(200, approvedPremises)
+
+      const result = await prisonRegisterService.getApprovedPremises({}, 'SHEFAP')
+
+      expect(result).toEqual(approvedPremises)
+    })
+
+    it('will throw error when not found', async () => {
+      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(404, {
+        status: 404,
+        developerMessage: 'Approved premises SHEFAP not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await prisonRegisterService.getApprovedPremises({}, 'SHEFAP')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
     })
   })
 })
