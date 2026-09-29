@@ -581,6 +581,33 @@ describe('toHospitalListFilter', () => {
   })
 })
 
+describe('toPoliceCustodySuiteListFilter', () => {
+  const app = express()
+  const njk = nunjucksSetup(app)
+
+  it('should only have search and active filter categories', () => {
+    const result = njk.getFilter('toPoliceCustodySuiteListFilter')([], {})
+    expect(
+      result.selectedFilters.categories.map((category: { heading: { text: string } }) => category.heading.text),
+    ).toEqual(['Search', 'Active or Inactive'])
+    expect(result.selectedFilters.clearLink.href).toEqual('/police-custody-suite-register')
+  })
+
+  it('should show active and text search cancel tags that link to the remaining filter', () => {
+    const result = njk.getFilter('toPoliceCustodySuiteListFilter')([], { active: true, textSearch: 'Sheffield' })
+    expect(result.selectedFilters.categories).toEqual([
+      {
+        heading: { text: 'Search' },
+        items: [{ href: '/police-custody-suite-register?active=true', text: 'Sheffield' }],
+      },
+      {
+        heading: { text: 'Active or Inactive' },
+        items: [{ href: '/police-custody-suite-register?textSearch=Sheffield', text: 'Active' }],
+      },
+    ])
+  })
+})
+
 describe('toHighSecurityFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)

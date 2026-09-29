@@ -7,6 +7,7 @@ const index = {
   courtRegisterLink: () => cy.get('[href="/court-register"]'),
   otherAgencyRegisterLink: () => cy.get('[href="/other-agency-register"]'),
   hospitalRegisterLink: () => cy.get('[href="/hospital-register"]'),
+  policeCustodySuiteRegisterLink: () => cy.get('[href="/police-custody-suite-register"]'),
 }
 
 const verifyOnPage = (): Page & typeof index => page('HMPPS Registers', index)
