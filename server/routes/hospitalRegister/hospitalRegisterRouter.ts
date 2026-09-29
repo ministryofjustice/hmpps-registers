@@ -14,6 +14,7 @@ export default function routes(router: Router, services: Services): Router {
   const hospitalRegisterController = new HospitalRegisterController(services.prisonRegisterService)
 
   get('/hospital-register', (req, res) => hospitalRegisterController.showAllHospitals(req, res))
+  get('/hospital-register/details', (req, res) => hospitalRegisterController.viewHospital(req, res))
 
   return router
 }

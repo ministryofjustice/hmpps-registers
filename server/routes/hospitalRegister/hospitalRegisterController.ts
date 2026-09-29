@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import AllHospitalsView from './allHospitalsView'
+import HospitalDetailsView from './hospitalDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
 import { HospitalFilter } from './hospitalMapper'
 
@@ -20,6 +21,13 @@ export default class HospitalRegisterController {
     const hospitals = await this.prisonRegisterService.getHospitals(context(res), filter)
     const view = new AllHospitalsView(hospitals, filter)
     res.render('pages/hospital-register/allHospitals', view.renderArgs)
+  }
+
+  async viewHospital(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const hospital = await this.prisonRegisterService.getHospital(context(res), id)
+    const view = new HospitalDetailsView(hospital)
+    res.render('pages/hospital-register/hospitalDetails', view.renderArgs)
   }
 
   parseFilter(req: Request): HospitalFilter {

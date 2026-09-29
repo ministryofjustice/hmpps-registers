@@ -1,0 +1,73 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro hospitalAreaDetailsCard(opts) %}
+
+  {% set hospital = opts.hospital %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: hospital.area.description if hospital.area else 'Not provided'
+        },
+        actions: {
+         items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: hospital.region.description if hospital.region else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: hospital.geographicalArea.description if hospital.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: hospital.localAuthority.description if hospital.localAuthority else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: hospital.payrollRegion.description if hospital.payrollRegion else 'Not provided'
+        },
+        actions: {
+        items: [ ]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
