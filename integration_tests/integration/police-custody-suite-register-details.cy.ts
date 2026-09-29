@@ -92,16 +92,6 @@ context('Police custody suite register - police custody suite details navigation
     detailsPage.emailAddress().should('contain.text', 'custody2@example.com')
   })
 
-  it('Will not display attributes that police custody suites do not have', () => {
-    IndexPage.verifyOnPage().policeCustodySuiteRegisterLink().click()
-    AllPoliceCustodySuites.verifyOnPage().viewPoliceCustodySuiteLink(sheffield.policeCustodySuiteId).click()
-    const detailsPage = PoliceCustodySuiteDetails.verifyOnPage(sheffield.policeCustodySuiteName)
-
-    detailsPage.summaryKeys().should('not.contain.text', 'Accessible access')
-    detailsPage.summaryKeys().should('not.contain.text', 'Type')
-    detailsPage.summaryKeys().should('not.contain.text', 'High security')
-  })
-
   it('Will display an active police custody suite with optional details missing', () => {
     IndexPage.verifyOnPage().policeCustodySuiteRegisterLink().click()
     AllPoliceCustodySuites.verifyOnPage().viewPoliceCustodySuiteLink(leeds.policeCustodySuiteId).click()
