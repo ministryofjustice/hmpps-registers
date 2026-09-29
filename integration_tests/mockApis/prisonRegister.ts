@@ -8,6 +8,7 @@ import {
   Prison,
   PrisonAddress,
   ProbationOffice,
+  ApprovedPremises,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -339,6 +340,21 @@ const stubGetProbationOffice = (probationOffice: ProbationOffice): SuperAgentReq
     },
   })
 
+const stubGetAllApprovedPremises = (approvedPremisesList: ApprovedPremises[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/approved-premises.*',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: approvedPremisesList,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -362,6 +378,7 @@ export default {
   stubGetPoliceCustodySuite,
   stubGetProbationOffices,
   stubGetProbationOffice,
+  stubGetAllApprovedPremises,
 }
 
 // Mock data

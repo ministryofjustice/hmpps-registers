@@ -1,0 +1,40 @@
+import { ApprovedPremises } from '../../@types/prisonRegister'
+
+export default {
+  approvedPremises: ({
+    approvedPremisesId = 'SHFAP',
+    approvedPremisesName = 'Sheffield Approved Premises',
+    description = 'Sheffield City Centre Approved Premises',
+    contact = 'Duty Officer',
+    active = true,
+    accessibleAccess = undefined,
+    inactiveDate = undefined,
+    cjitCode = 'C00SH00',
+    area = { code: 'YH', description: 'Yorkshire and the Humber' },
+    region = { code: 'YH', description: 'Yorkshire and the Humber' },
+    geographicalArea = { code: 'YH', description: 'Yorkshire and the Humber' },
+    localAuthority = { code: 'YH', description: 'Yorkshire and the Humber' },
+    payrollRegion = { code: 'YH', description: 'Yorkshire and the Humber' },
+    addresses = [],
+    emailAddresses = [],
+    phoneNumbers = [],
+  }: Partial<ApprovedPremises>): ApprovedPremises =>
+    ({
+      approvedPremisesId,
+      approvedPremisesName,
+      description,
+      contact,
+      active,
+      accessibleAccess,
+      inactiveDate,
+      cjitCode,
+      area,
+      region,
+      geographicalArea,
+      localAuthority,
+      payrollRegion,
+      addresses,
+      emailAddresses,
+      phoneNumbers,
+    }) as ApprovedPremises,
+}
