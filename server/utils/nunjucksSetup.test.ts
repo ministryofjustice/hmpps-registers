@@ -585,12 +585,34 @@ describe('toHighSecurityFilterRadioButtons', () => {
   const app = express()
   const njk = nunjucksSetup(app)
 
-  it.each([
-    [undefined, [true, false, false]],
-    [true, [false, true, false]],
-    [false, [false, false, true]],
-  ])('checks the correct radio when highSecurity is %s', (highSecurity, expected) => {
-    const result = njk.getFilter('toHighSecurityFilterRadioButtons')(highSecurity)
-    expect(result.items.map((item: { checked: boolean }) => item.checked)).toEqual(expected)
+  type RadioItem = { text: string; value: string | boolean; checked: boolean }
+
+  const checkedOptions = (highSecurity: boolean | undefined): string[] =>
+    njk
+      .getFilter('toHighSecurityFilterRadioButtons')(highSecurity)
+      .items.filter((item: RadioItem) => item.checked)
+      .map((item: RadioItem) => item.text)
+
+  it('should offer All, Yes and No options', () => {
+    const result = njk.getFilter('toHighSecurityFilterRadioButtons')(undefined)
+
+    expect(result.name).toEqual('highSecurity')
+    expect(result.items).toEqual([
+      expect.objectContaining({ text: 'All', value: '' }),
+      expect.objectContaining({ text: 'Yes', value: true }),
+      expect.objectContaining({ text: 'No', value: false }),
+    ])
+  })
+
+  it('should check All when not filtering on high security', () => {
+    expect(checkedOptions(undefined)).toEqual(['All'])
+  })
+
+  it('should check Yes when filtering on high security hospitals', () => {
+    expect(checkedOptions(true)).toEqual(['Yes'])
+  })
+
+  it('should check No when filtering on hospitals that are not high security', () => {
+    expect(checkedOptions(false)).toEqual(['No'])
   })
 })
