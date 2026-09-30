@@ -38,3 +38,5 @@ stale code and tests will fail or pass misleadingly against the previous build.
 5. Run the tests: `npm run int-test` (or `npx cypress run --spec <spec>` for a single spec).
 
 Use `npm run start-feature:dev` if you want auto-restart on changes while iterating.
+
+If you start a fresh instance of the server using the `start-feature` task at the end of a change, you do not need to wait for the process to finish because it runs indefinitely.

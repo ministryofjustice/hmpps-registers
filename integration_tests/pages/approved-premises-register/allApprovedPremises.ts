@@ -22,6 +22,8 @@ const allApprovedPremises = {
   textSearchFilter: () => cy.get('#textSearch'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  viewApprovedPremisesLink: (approvedPremisesId: string) =>
+    cy.get(`[href="/approved-premises-register/details?id=${approvedPremisesId}"]`).first(),
 }
 
 const verifyOnPage = (): typeof allApprovedPremises & Page => page('Approved Premises Register', allApprovedPremises)

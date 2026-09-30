@@ -355,6 +355,21 @@ const stubGetAllApprovedPremises = (approvedPremisesList: ApprovedPremises[]): S
     },
   })
 
+const stubGetApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/approved-premises/id/${approvedPremises.approvedPremisesId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: approvedPremises,
+    },
+  })
+
 export default {
   stubPing,
   stubGetPrisonsWithFilter,
@@ -379,6 +394,7 @@ export default {
   stubGetProbationOffices,
   stubGetProbationOffice,
   stubGetAllApprovedPremises,
+  stubGetApprovedPremises,
 }
 
 // Mock data

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import AllApprovedPremisesView from './allApprovedPremisesView'
+import ApprovedPremisesDetailsView from './approvedPremisesDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
 import { ApprovedPremisesFilter } from './approvedPremisesMapper'
 
@@ -20,6 +21,13 @@ export default class ApprovedPremisesRegisterController {
     const approvedPremisesList = await this.prisonRegisterService.getAllApprovedPremises(context(res), filter)
     const view = new AllApprovedPremisesView(approvedPremisesList, filter)
     res.render('pages/approved-premises-register/allApprovedPremises', view.renderArgs)
+  }
+
+  async viewApprovedPremises(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const approvedPremises = await this.prisonRegisterService.getApprovedPremises(context(res), id)
+    const view = new ApprovedPremisesDetailsView(approvedPremises)
+    res.render('pages/approved-premises-register/approvedPremisesDetails', view.renderArgs)
   }
 
   parseFilter(req: Request): ApprovedPremisesFilter {
