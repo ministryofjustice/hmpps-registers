@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import type { AddEmailAddressForm } from 'prisonForms'
+import type { AddEmailAddressForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
 import { AgencyEmailAddress, EmailAddress } from '../../@types/prisonRegister'
 

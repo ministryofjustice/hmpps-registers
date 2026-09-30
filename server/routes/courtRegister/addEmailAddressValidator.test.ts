@@ -1,4 +1,4 @@
-import type { AddEmailAddressForm } from 'prisonForms'
+import type { AddEmailAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addEmailAddressValidator'
 import { AgencyEmailAddress, EmailAddress } from '../../@types/prisonRegister'
