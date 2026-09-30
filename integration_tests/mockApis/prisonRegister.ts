@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
+import { stubFor, getRequests } from './wiremock'
 import {
   Court,
   Hospital,
@@ -220,6 +220,31 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
     },
   })
 
+const stubAddCourtEmailAddress = (courtId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/prison-register/courts/id/${courtId}/email-address`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { id: 100, address: 'new.email@example.com' },
+    },
+  })
+
+const getAddedCourtEmailAddresses = (courtId: string): Promise<Array<{ address: string }>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === `/prison-register/courts/id/${courtId}/email-address`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubGetOtherAgencies = (otherAgencies: OtherAgency[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -385,6 +410,8 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubAddCourtEmailAddress,
+  getAddedCourtEmailAddresses,
   stubGetOtherAgencies,
   stubGetOtherAgency,
   stubGetHospitals,

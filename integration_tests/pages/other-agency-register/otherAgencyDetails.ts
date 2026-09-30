@@ -17,6 +17,7 @@ const otherAgencyDetails = {
   address: () => cy.get('dt:contains("Address")').next(),
   emailAddress: () => cy.get('dt:contains("Email")').next(),
   phoneNumber: () => cy.get('dt:contains("Number")').next(),
+  addEmailAddressLink: () => cy.get('[data-qa=add-email-address-link]'),
 }
 
 const verifyOnPage = (agencyName: string): typeof otherAgencyDetails & Page => page(agencyName, otherAgencyDetails)

@@ -4,18 +4,20 @@ import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
 import {
-  Prison,
-  UpdatePrison,
-  PrisonAddress,
-  UpdatePrisonAddress,
-  InsertPrison,
-  UpdateWelshPrisonAddress,
-  Court,
-  OtherAgency,
-  Hospital,
-  ProbationOffice,
-  PoliceCustodySuite,
+  AgencyEmailAddress,
   ApprovedPremises,
+  Court,
+  EmailAddress,
+  Hospital,
+  InsertPrison,
+  OtherAgency,
+  PoliceCustodySuite,
+  Prison,
+  PrisonAddress,
+  ProbationOffice,
+  UpdatePrison,
+  UpdatePrisonAddress,
+  UpdateWelshPrisonAddress,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -209,6 +211,19 @@ export default class PrisonRegisterService {
     logger.info(`getting court with id ${courtId}`)
     return PrisonRegisterService.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
+    })
+  }
+
+  async addCourtEmailAddress(
+    context: Context,
+    courtId: string,
+    emailAddress: EmailAddress,
+  ): Promise<AgencyEmailAddress> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding email address to court with id ${courtId}`)
+    return PrisonRegisterService.restClient(token).post<AgencyEmailAddress>({
+      path: `/courts/id/${courtId}/email-address`,
+      data: emailAddress,
     })
   }
 

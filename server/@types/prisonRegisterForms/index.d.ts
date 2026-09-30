@@ -44,4 +44,7 @@ declare module 'prisonForms' {
     addresscountyinwelsh?: string
     addresscountryinwelsh?: string
   }
+  export interface AddEmailAddressForm {
+    emailAddress: string
+  }
 }

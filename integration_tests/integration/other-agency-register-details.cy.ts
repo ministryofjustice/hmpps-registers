@@ -80,4 +80,13 @@ context('Other agency register - other agency details navigation', () => {
     otherAgencyDetailsPage.phoneNumber().should('contain.text', '0014 555 5555')
     otherAgencyDetailsPage.phoneNumber().should('contain.text', '0014 555 6666')
   })
+
+  it('Will not display a link to add an email address', () => {
+    IndexPage.verifyOnPage().otherAgencyRegisterLink().click()
+    AllOtherAgencies.verifyOnPage().viewOtherAgencyLink(sheffieldPecsAgency.agencyId).click()
+
+    const otherAgencyDetailsPage = OtherAgencyDetails.verifyOnPage(sheffieldPecsAgency.agencyName)
+    otherAgencyDetailsPage.emailAddress().should('contain.text', 'test1@example.com')
+    otherAgencyDetailsPage.addEmailAddressLink().should('not.exist')
+  })
 })
