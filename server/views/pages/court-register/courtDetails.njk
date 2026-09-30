@@ -59,7 +59,7 @@
       {{  phoneNumbersCard({ phoneNumbers: court.phoneNumbers }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: court.emailAddresses }) }}
+      {{  emailAddressesCard({ emailAddresses: court.emailAddresses, id: court.courtId, baseRegisterUrl: "/court-register" }) }}
     </div>
   </div>
   </main>

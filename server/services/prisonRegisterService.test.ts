@@ -7,6 +7,8 @@ import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
 import {
+  AgencyEmailAddress,
+  EmailAddress,
   InsertPrison,
   ApprovedPremises,
   Hospital,
@@ -551,6 +553,55 @@ describe('Prison Register service', () => {
 
       expect(result).toBeDefined()
       expect(result).toHaveProperty('courtId', 'SHFCC')
+    })
+  })
+
+  describe('addCourtEmailAddress', () => {
+    const emailAddress: EmailAddress = { address: 'sheffield.court@example.com' }
+    const createdEmailAddress: AgencyEmailAddress = { id: 10000, address: 'sheffield.court@example.com' }
+    let sentEmailAddress: EmailAddress
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .post('/courts/id/SHFCC/email-address', body => {
+            sentEmailAddress = body
+            return true
+          })
+          .reply(200, createdEmailAddress)
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.addCourtEmailAddress({ username: 'tommy' }, 'SHFCC', emailAddress)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send the email address in the request body', async () => {
+        await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
+
+        expect(sentEmailAddress).toEqual(emailAddress)
+      })
+
+      it('will return the created email address', async () => {
+        const result = await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
+
+        expect(result).toEqual(createdEmailAddress)
+      })
+    })
+
+    it('will throw error when the court is not found', async () => {
+      fakePrisonRegister.post('/courts/id/UNKNOWN/email-address').reply(404, {
+        status: 404,
+        developerMessage: 'Court UNKNOWN not found',
+      })
+
+      await expect(prisonRegisterService.addCourtEmailAddress({}, 'UNKNOWN', emailAddress)).rejects.toThrow('Not Found')
     })
   })
 

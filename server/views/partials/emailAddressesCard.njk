@@ -3,6 +3,8 @@
 {% macro emailAddressesCard(opts) %}
 
   {% set emailAddresses = opts.emailAddresses %}
+  {% set baseRegisterUrl = opts.baseRegisterUrl %}
+  {% set id = opts.id %}
   {% set data = [] %}
 
 
@@ -37,7 +39,14 @@
         text: "Email addresses"
       },
       actions: {
-        items: []
+        items: [
+          {
+            href: baseRegisterUrl + "/email/create?id=" + id,
+            text: "Add email address",
+            attributes: {"data-qa": "add-email-address-link"},
+            classes: "govuk-link--no-visited-state"
+          }
+        ] if baseRegisterUrl else []
         }
     },
     rows: data
