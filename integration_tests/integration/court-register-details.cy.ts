@@ -55,6 +55,7 @@ context('Court register - court details navigation', () => {
       .click()
     const courtDetailsPage = CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
 
+    courtDetailsPage.courtId().should('contain.text', sheffieldCrownCourt.courtId)
     courtDetailsPage.courtName().should('contain.text', sheffieldCrownCourt.courtName)
     courtDetailsPage.description().should('contain.text', sheffieldCrownCourt.description)
     courtDetailsPage.active().should('contain.text', 'Inactive')

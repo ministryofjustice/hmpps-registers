@@ -1,6 +1,7 @@
 import page, { Page } from '../page'
 
 const courtDetails = {
+  courtId: () => cy.get('dt:contains("Code")').next(),
   courtName: () => cy.get('dt:contains("Name")').next(),
   description: () => cy.get('dt:contains("Description")').next(),
   active: () => cy.get('dt:contains("Active")').next(),
