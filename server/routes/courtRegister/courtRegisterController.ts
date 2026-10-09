@@ -7,7 +7,9 @@ import CourtDetailsView, { Action } from './courtDetailsView'
 import AddAgencyEmailView from '../agencyRegisters/addEmailView'
 import trimForm from '../../utils/trim'
 import addEmailAddressValidator from './addEmailAddressValidator'
-import { AgencyEmailAddress, EmailAddress } from '../../@types/prisonRegister'
+import updateEmailAddressValidator from './updateEmailAddressValidator'
+import { AgencyEmailAddress, EmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
+import UpdateAgencyEmailView from '../agencyRegisters/updateEmailView'
 
 function context(res: Response): Context {
   return {
@@ -64,6 +66,46 @@ export default class PrisonRegisterController {
             addEmailAddress,
           )
           delete req.session.addEmailAddressForm
+          return emailAddress
+        },
+      ),
+    )
+  }
+
+  async updateEmail(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const emailId = Number(req.query.emailId)
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateEmailAddressForm
+    }
+    const view = new UpdateAgencyEmailView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session?.updateEmailAddressForm?.emailAddress ??
+        court.emailAddresses.find(email => email.id === emailId)?.address,
+      emailId,
+    )
+    res.render('pages/components/edit/updateAgencyEmail', view.renderArgs)
+  }
+
+  async submitUpdateEmail(req: Request, res: Response): Promise<void> {
+    req.session.updateEmailAddressForm = trimForm(req.body)
+
+    res.redirect(
+      await updateEmailAddressValidator(
+        req.session.updateEmailAddressForm,
+        req,
+        async (updateEmailAddress: UpdateEmailAddress): Promise<AgencyEmailAddress> => {
+          const emailAddress = await this.prisonRegisterService.updateCourtEmailAddress(
+            context(res),
+            req.query.id as string,
+            Number(req.session.updateEmailAddressForm.emailId),
+            updateEmailAddress,
+          )
+          delete req.session.updateEmailAddressForm
           return emailAddress
         },
       ),

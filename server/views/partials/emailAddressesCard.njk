@@ -19,7 +19,15 @@
           text: item.address
         },
         actions: {
-          items: []
+          items: [
+            {
+              href: baseRegisterUrl + "/email/update?id=" + id + "&emailId=" + item.id,
+              text: "Update",
+              visuallyHiddenText: "email address " + item.address,
+              attributes: {"data-qa": "update-email-address-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ] if baseRegisterUrl else []
         }
       }]) %}
     {% endfor %}

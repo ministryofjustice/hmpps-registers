@@ -18,8 +18,10 @@ const courtDetails = {
   emailAddress: () => cy.get('dt:contains("Email")').next(),
   phoneNumber: () => cy.get('dt:contains("Number")').next(),
   addEmailAddressLink: () => cy.get('[data-qa=add-email-address-link]'),
+  updateEmailAddressLink: () => cy.get('[data-qa=update-email-address-link]'),
 }
 
-const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)
+const verifyOnPage = (courtName: string): typeof courtDetails & Page =>
+  page(`Court details for ${courtName}`, courtDetails)
 
 export default { verifyOnPage }
