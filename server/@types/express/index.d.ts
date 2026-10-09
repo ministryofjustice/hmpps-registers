@@ -8,7 +8,7 @@ import type {
   DeleteWelshPrisonAddressForm,
 } from '../prisonRegisterForms'
 
-import type { AddEmailAddressForm } from '../agencyEditForms'
+import type { AddEmailAddressForm, UpdateEmailAddressForm } from '../agencyEditForms'
 
 export default {}
 
@@ -27,6 +27,7 @@ declare module 'express-session' {
     prisonListPageLink: string
     allListPageLink: string
     addEmailAddressForm: AddEmailAddressForm
+    updateEmailAddressForm: UpdateEmailAddressForm
   }
 }
 

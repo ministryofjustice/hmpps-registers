@@ -307,4 +307,144 @@ describe('Court Register controller', () => {
       expect(res.redirect).toHaveBeenCalledWith('/court-register/email/create?id=SHFCC')
     })
   })
+
+  describe('updateEmail', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          emailAddresses: [{ id: 10000, address: 'sheffield.court@example.com' }],
+        }),
+      )
+      req.query.id = 'SHFCC'
+      req.query.emailId = '10000'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateEmail(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render update email page with court name, email address, email id and cancel link', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyEmail', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        emailAddress: 'sheffield.court@example.com',
+        emailId: 10000,
+      })
+    })
+
+    it('will redisplay the submitted email address when there are validation errors', async () => {
+      const errors = [{ href: '#emailAddress', text: 'Enter a valid email address' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateEmailAddressForm = { emailId: 10000, emailAddress: 'not-an-email' }
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ errors, emailAddress: 'not-an-email', emailId: 10000 }),
+      )
+    })
+
+    it('will start with the selected email address and clear any previous form when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.updateEmailAddressForm = { emailId: 10000, emailAddress: 'previous@example.com' }
+
+      await controller.updateEmail(req, res)
+
+      expect(req.session.updateEmailAddressForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ emailAddress: 'sheffield.court@example.com', emailId: 10000 }),
+      )
+    })
+  })
+
+  describe('submitUpdateEmail', () => {
+    beforeEach(() => {
+      prisonRegisterService.updateCourtEmailAddress.mockResolvedValue({
+        id: 10000,
+        address: 'sheffield.court.updated@example.com',
+      })
+      req.query.id = 'SHFCC'
+      req.body = { emailId: '10000', emailAddress: 'sheffield.court.updated@example.com' }
+    })
+
+    it('will update the email address for the court', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(prisonRegisterService.updateCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000, {
+        address: 'sheffield.court.updated@example.com',
+      })
+    })
+
+    it('will redirect to the court details page', async () => {
+      await controller.submitUpdateEmail(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+    })
+
+    it('will clear the form from the session once the email address has been updated', async () => {
+      req.session.updateEmailAddressForm = { emailId: 10000, emailAddress: 'previous@example.com' }
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(req.session.updateEmailAddressForm).toBeUndefined()
+    })
+
+    it('will keep the form in the session when updating the email address fails', async () => {
+      prisonRegisterService.updateCourtEmailAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdateEmail(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updateEmailAddressForm).toEqual({
+        emailId: '10000',
+        emailAddress: 'sheffield.court.updated@example.com',
+      })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('will trim the email address before updating it', async () => {
+      req.body.emailAddress = '  sheffield.court.updated@example.com  '
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(prisonRegisterService.updateCourtEmailAddress).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
+        address: 'sheffield.court.updated@example.com',
+      })
+    })
+
+    it('will not update the email address when it is invalid', async () => {
+      req.body.emailAddress = 'not-an-email'
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(prisonRegisterService.updateCourtEmailAddress).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Enter a valid email address' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
+      expect(req.session.updateEmailAddressForm).toEqual({ emailId: '10000', emailAddress: 'not-an-email' })
+    })
+
+    it('will redirect back to the update email page when the email address is missing', async () => {
+      req.body.emailAddress = ''
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(prisonRegisterService.updateCourtEmailAddress).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Enter an email address' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
+    })
+  })
 })

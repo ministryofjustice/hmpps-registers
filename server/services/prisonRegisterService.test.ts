@@ -17,6 +17,7 @@ import {
   ProbationOffice,
   UpdatePrison,
   UpdatePrisonAddress,
+  UpdateEmailAddress,
 } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
@@ -602,6 +603,57 @@ describe('Prison Register service', () => {
       })
 
       await expect(prisonRegisterService.addCourtEmailAddress({}, 'UNKNOWN', emailAddress)).rejects.toThrow('Not Found')
+    })
+  })
+
+  describe('updateCourtEmailAddress', () => {
+    const emailAddress: UpdateEmailAddress = { address: 'sheffield.court.updated@example.com' }
+    const updatedEmailAddress: AgencyEmailAddress = { id: 10000, address: 'sheffield.court.updated@example.com' }
+    let sentEmailAddress: UpdateEmailAddress
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .put('/courts/id/SHFCC/email-address/10000', body => {
+            sentEmailAddress = body
+            return true
+          })
+          .reply(200, updatedEmailAddress)
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.updateCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000, emailAddress)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send the email address in the request body', async () => {
+        await prisonRegisterService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
+
+        expect(sentEmailAddress).toEqual(emailAddress)
+      })
+
+      it('will return the updated email address', async () => {
+        const result = await prisonRegisterService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
+
+        expect(result).toEqual(updatedEmailAddress)
+      })
+    })
+
+    it('will throw error when the court is not found', async () => {
+      fakePrisonRegister.put('/courts/id/UNKNOWN/email-address/10000').reply(404, {
+        status: 404,
+        developerMessage: 'Court UNKNOWN not found',
+      })
+
+      await expect(prisonRegisterService.updateCourtEmailAddress({}, 'UNKNOWN', 10000, emailAddress)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 

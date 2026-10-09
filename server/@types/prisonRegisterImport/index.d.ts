@@ -1444,6 +1444,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/agencies/legacy-type/{type}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all agencies using the NOMIS type
+     * @description Details of all agencies of the specified legacy (NOMIS) agency type code, e.g. INST, CRT, HOSPITAL, HSHOSP, COMM, CRC, POLICE, POLSTN, APPR, AIRPORT, HOST, IMDC, OUT, PECS, PSY, SCH, STC, YOT, FNP
+     */
+    get: operations['getAgenciesByLegacyType']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/legacy/admin/sync/agency/all': {
     parameters: {
       query?: never
@@ -9018,7 +9038,13 @@ export interface operations {
   }
   getAgencies: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description When true (the default) only active agencies are returned
+         * @example true
+         */
+        activeOnly?: boolean
+      }
       header?: never
       path?: never
       cookie?: never
@@ -9117,6 +9143,47 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AgencyDetailsDto'][]
+        }
+      }
+    }
+  }
+  getAgenciesByLegacyType: {
+    parameters: {
+      query?: {
+        /**
+         * @description When true (the default) only active agencies are returned
+         * @example true
+         */
+        activeOnly?: boolean
+      }
+      header?: never
+      path: {
+        /**
+         * @description Legacy agency type
+         * @example CRT
+         */
+        type: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AgencyDetailsDto'][]
+        }
+      }
+      /** @description Legacy agency type not recognised */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }

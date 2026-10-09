@@ -15,6 +15,7 @@ import {
   Prison,
   PrisonAddress,
   ProbationOffice,
+  UpdateEmailAddress,
   UpdatePrison,
   UpdatePrisonAddress,
   UpdateWelshPrisonAddress,
@@ -223,6 +224,20 @@ export default class PrisonRegisterService {
     logger.info(`adding email address to court with id ${courtId}`)
     return PrisonRegisterService.restClient(token).post<AgencyEmailAddress>({
       path: `/courts/id/${courtId}/email-address`,
+      data: emailAddress,
+    })
+  }
+
+  async updateCourtEmailAddress(
+    context: Context,
+    courtId: string,
+    emailId: number,
+    emailAddress: UpdateEmailAddress,
+  ): Promise<AgencyEmailAddress> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating email address for court with id ${courtId}`)
+    return PrisonRegisterService.restClient(token).put<AgencyEmailAddress>({
+      path: `/courts/id/${courtId}/email-address/${emailId}`,
       data: emailAddress,
     })
   }
