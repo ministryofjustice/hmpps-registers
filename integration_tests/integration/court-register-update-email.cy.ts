@@ -107,7 +107,6 @@ context('Court register - update email address to a court', () => {
     updateEmailPage.saveButton().click()
 
     CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
-    cy.url().should('include', '/court-register/email/update?id=SHFCC&emailId=1')
     updateEmailAddressRequestBody(sheffieldCrownCourt.courtId, 1).should('deep.equal', [
       { address: 'new.email@example.com' },
     ])

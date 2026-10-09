@@ -21,6 +21,7 @@ const courtDetails = {
   updateEmailAddressLink: () => cy.get('[data-qa=update-email-address-link]'),
 }
 
-const verifyOnPage = (courtName: string): typeof courtDetails & Page => page(courtName, courtDetails)
+const verifyOnPage = (courtName: string): typeof courtDetails & Page =>
+  page(`Court details for ${courtName}`, courtDetails)
 
 export default { verifyOnPage }
