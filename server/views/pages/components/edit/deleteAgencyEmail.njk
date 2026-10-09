@@ -1,0 +1,46 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set mainClasses = "app-container govuk-body" %}
+
+{% set pageTitle = "Delete email address - DPS" %}
+{% set title = "Delete email address for " + (name) %}
+
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <span class="govuk-caption-l">Delete email address</span>
+            <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                <input type="hidden" name="emailId" value="{{ emailId }}" />
+                {{ govukSummaryList({
+                    attributes: { "data-qa": "email-details-section"},
+                    rows: [
+                        {
+                            key: {
+                            text: "Email address"
+                            },
+                            value: {
+                            html: emailAddress,
+                            classes: "address-details"
+                            }
+                        }
+                    ]
+                }) }}
+
+                <div class="govuk-button-group">
+                    {{ govukButton({
+                        text: "Delete email",
+                        classes: "govuk-button--warning"
+                    }) }}
+                    <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

@@ -447,4 +447,66 @@ describe('Court Register controller', () => {
       expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
     })
   })
+
+  describe('deleteEmail', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          emailAddresses: [{ id: 10000, address: 'sheffield.court@example.com' }],
+        }),
+      )
+      req.query.id = 'SHFCC'
+      req.query.emailId = '10000'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.deleteEmail(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the delete email page with the court, selected email address and cancel link', async () => {
+      await controller.deleteEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/deleteAgencyEmail', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        emailAddress: 'sheffield.court@example.com',
+        emailId: 10000,
+      })
+    })
+  })
+
+  describe('submitDeleteEmail', () => {
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { emailId: '10000' }
+    })
+
+    it('will delete the email address using the court, email and user details', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitDeleteEmail(req, res)
+
+      expect(prisonRegisterService.deleteCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000)
+    })
+
+    it('will redirect to the court details page after deleting the email address', async () => {
+      await controller.submitDeleteEmail(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+    })
+
+    it('will not redirect when the delete fails', async () => {
+      prisonRegisterService.deleteCourtEmailAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitDeleteEmail(req, res)).rejects.toThrow('Server error')
+
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+  })
 })

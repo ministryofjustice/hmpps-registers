@@ -657,6 +657,29 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('deleteCourtEmailAddress', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      fakePrisonRegister.delete('/courts/id/SHFCC/email-address/10000').reply(204)
+    })
+
+    it('will use the username to get an API token and delete the court email address', async () => {
+      await prisonRegisterService.deleteCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will throw an error when the court email address is not found', async () => {
+      fakePrisonRegister.delete('/courts/id/UNKNOWN/email-address/10000').reply(404, {
+        status: 404,
+        developerMessage: 'Court email address not found',
+      })
+
+      await expect(prisonRegisterService.deleteCourtEmailAddress({}, 'UNKNOWN', 10000)).rejects.toThrow('Not Found')
+    })
+  })
+
   describe('getOtherAgencies', () => {
     const agency: OtherAgency = {
       agencyId: 'SHEF',

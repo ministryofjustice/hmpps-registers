@@ -112,6 +112,28 @@ export default class PrisonRegisterController {
     )
   }
 
+  async deleteEmail(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const emailId = Number(req.query.emailId)
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const emailAddress = court.emailAddresses.find(email => email.id === emailId)?.address
+    res.render('pages/components/edit/deleteAgencyEmail', {
+      name: court.courtName,
+      navigation: { cancelButton: `/court-register/details?id=${court.courtId}` },
+      emailAddress,
+      emailId,
+    })
+  }
+
+  async submitDeleteEmail(req: Request, res: Response): Promise<void> {
+    await this.prisonRegisterService.deleteCourtEmailAddress(
+      context(res),
+      req.query.id as string,
+      Number(req.body.emailId),
+    )
+    res.redirect(`/court-register/details?id=${req.query.id}`)
+  }
+
   parseFilter(req: Request): CourtsFilter {
     const filter: CourtsFilter = {
       active: ControllerHelper.parseBooleanFromQuery(req.query.active as string),
