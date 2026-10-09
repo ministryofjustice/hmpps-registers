@@ -250,6 +250,33 @@ const stubUpdateCourtEmailAddress = ({ courtId, emailId }: { courtId: string; em
     },
   })
 
+const stubDeleteCourtEmailAddress = ({ courtId, emailId }: { courtId: string; emailId: number }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'DELETE',
+      urlPattern: `/prison-register/courts/id/${courtId}/email-address/${emailId}`,
+    },
+    response: {
+      status: 204,
+    },
+  })
+
+const getDeletedCourtEmailAddressRequests = ({
+  courtId,
+  emailId,
+}: {
+  courtId: string
+  emailId: number
+}): Promise<number> =>
+  getRequests().then(
+    response =>
+      response.body.requests.filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'DELETE' &&
+          request.url === `/prison-register/courts/id/${courtId}/email-address/${emailId}`,
+      ).length,
+  )
+
 const getAddedCourtEmailAddresses = (courtId: string): Promise<Array<{ address: string }>> =>
   getRequests().then(response =>
     response.body.requests
@@ -442,8 +469,10 @@ export default {
   stubGetCourt,
   stubAddCourtEmailAddress,
   stubUpdateCourtEmailAddress,
+  stubDeleteCourtEmailAddress,
   getAddedCourtEmailAddresses,
   getUpdatedCourtEmailAddresses,
+  getDeletedCourtEmailAddressRequests,
   stubGetOtherAgencies,
   stubGetOtherAgency,
   stubGetHospitals,

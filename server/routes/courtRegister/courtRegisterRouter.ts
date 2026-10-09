@@ -20,6 +20,8 @@ export default function routes(router: Router, services: Services): Router {
   post('/court-register/email/create', (req, res) => courtRegisterController.submitAddEmail(req, res))
   get('/court-register/email/update', (req, res) => courtRegisterController.updateEmail(req, res))
   post('/court-register/email/update', (req, res) => courtRegisterController.submitUpdateEmail(req, res))
+  get('/court-register/email/delete', (req, res) => courtRegisterController.deleteEmail(req, res))
+  post('/court-register/email/delete', (req, res) => courtRegisterController.submitDeleteEmail(req, res))
 
   return router
 }

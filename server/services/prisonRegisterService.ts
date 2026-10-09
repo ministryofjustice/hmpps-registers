@@ -242,6 +242,14 @@ export default class PrisonRegisterService {
     })
   }
 
+  async deleteCourtEmailAddress(context: Context, courtId: string, emailId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting email address for court with id ${courtId}`)
+    await PrisonRegisterService.restClient(token).delete({
+      path: `/courts/id/${courtId}/email-address/${emailId}`,
+    })
+  }
+
   async getOtherAgencies(context: Context, filter: OtherAgencyFilter): Promise<OtherAgency[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting all other agencies with filter ${JSON.stringify(filter)}`)

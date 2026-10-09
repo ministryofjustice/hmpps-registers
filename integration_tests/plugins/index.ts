@@ -41,6 +41,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     getAddedCourtEmailAddresses: prisonRegister.getAddedCourtEmailAddresses,
     stubUpdateCourtEmailAddress: prisonRegister.stubUpdateCourtEmailAddress,
     getUpdatedCourtEmailAddresses: prisonRegister.getUpdatedCourtEmailAddresses,
+    stubDeleteCourtEmailAddress: prisonRegister.stubDeleteCourtEmailAddress,
+    getDeletedCourtEmailAddressRequests: prisonRegister.getDeletedCourtEmailAddressRequests,
 
     stubGetOtherAgencies: prisonRegister.stubGetOtherAgencies,
     stubGetOtherAgency: prisonRegister.stubGetOtherAgency,

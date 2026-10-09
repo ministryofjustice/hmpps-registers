@@ -19,6 +19,7 @@ const courtDetails = {
   phoneNumber: () => cy.get('dt:contains("Number")').next(),
   addEmailAddressLink: () => cy.get('[data-qa=add-email-address-link]'),
   updateEmailAddressLink: () => cy.get('[data-qa=update-email-address-link]'),
+  deleteEmailAddressLink: () => cy.get('[data-qa=delete-email-address-link]'),
 }
 
 const verifyOnPage = (courtName: string): typeof courtDetails & Page =>

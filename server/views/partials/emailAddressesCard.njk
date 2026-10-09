@@ -26,6 +26,13 @@
               visuallyHiddenText: "email address " + item.address,
               attributes: {"data-qa": "update-email-address-link"},
               classes: "govuk-link--no-visited-state"
+            },
+            {
+              href: baseRegisterUrl + "/email/delete?id=" + id + "&emailId=" + item.id,
+              text: "Delete",
+              visuallyHiddenText: "email address " + item.address,
+              attributes: {"data-qa": "delete-email-address-link"},
+              classes: "govuk-link--no-visited-state"
             }
           ] if baseRegisterUrl else []
         }
