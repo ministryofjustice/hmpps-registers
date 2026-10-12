@@ -1717,7 +1717,7 @@ export interface components {
       phoneNumbers: components['schemas']['AgencyPhoneDto'][]
     }
     /** @description Phone Number Update Record */
-    UpdatePhoneNumberDto: {
+    CreateOrUpdatePhoneNumberDto: {
       /**
        * @description Phone number
        * @example 0114 555 9898
@@ -1725,7 +1725,7 @@ export interface components {
       number: string
     }
     /** @description Email Address Update Record */
-    UpdateEmailAddressDto: {
+    CreateOrUpdateEmailAddressDto: {
       /**
        * Format: email
        * @description Email address
@@ -2584,9 +2584,9 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Email addresses */
-      emailAddresses: components['schemas']['UpdateEmailAddressDto'][]
+      emailAddresses: components['schemas']['CreateOrUpdateEmailAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     PrisonRequest: {
       /** @description List of prison ids */
@@ -2692,9 +2692,9 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Email addresses */
-      emailAddresses: components['schemas']['UpdateEmailAddressDto'][]
+      emailAddresses: components['schemas']['CreateOrUpdateEmailAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     /** @description Other Agency Create Record */
     CreateOtherAgencyDto: {
@@ -2777,9 +2777,9 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Email addresses */
-      emailAddresses: components['schemas']['UpdateEmailAddressDto'][]
+      emailAddresses: components['schemas']['CreateOrUpdateEmailAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     LegacyAgencyAddressDto: {
       /**
@@ -2993,7 +2993,7 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     /** @description Court Create Record */
     CreateCourtDto: {
@@ -3064,9 +3064,9 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Email addresses */
-      emailAddresses: components['schemas']['UpdateEmailAddressDto'][]
+      emailAddresses: components['schemas']['CreateOrUpdateEmailAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     /** @description Approved Premises Create Record */
     CreateApprovedPremisesDto: {
@@ -3137,9 +3137,9 @@ export interface components {
       /** @description Addresses */
       addresses: components['schemas']['UpdateAddressDto'][]
       /** @description Email addresses */
-      emailAddresses: components['schemas']['UpdateEmailAddressDto'][]
+      emailAddresses: components['schemas']['CreateOrUpdateEmailAddressDto'][]
       /** @description Phone numbers */
-      phoneNumbers: components['schemas']['UpdatePhoneNumberDto'][]
+      phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
     /** @description Full name of prison with id */
     PrisonNameDto: {
@@ -3714,7 +3714,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -3841,7 +3841,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -4466,7 +4466,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -4593,7 +4593,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -4990,7 +4990,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -5117,7 +5117,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -5514,7 +5514,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -5911,7 +5911,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -6038,7 +6038,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -6435,7 +6435,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -6562,7 +6562,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -6893,7 +6893,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -6968,7 +6968,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -7332,7 +7332,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -7407,7 +7407,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -7647,7 +7647,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -7722,7 +7722,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -8064,7 +8064,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -8292,7 +8292,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -8367,7 +8367,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {
@@ -8590,7 +8590,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdatePhoneNumberDto']
+        'application/json': components['schemas']['CreateOrUpdatePhoneNumberDto']
       }
     }
     responses: {
@@ -8665,7 +8665,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['UpdateEmailAddressDto']
+        'application/json': components['schemas']['CreateOrUpdateEmailAddressDto']
       }
     }
     responses: {

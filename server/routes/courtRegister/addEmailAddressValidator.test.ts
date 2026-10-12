@@ -24,7 +24,7 @@ describe('addEmailAddressValidator', () => {
     it('returns to court details page when valid', async () => {
       const nextPage = await validate(validForm, req, addEmailAddress)
 
-      expect(nextPage).toEqual('/court-register/details?id=SHFCC')
+      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.flash).toHaveBeenCalledTimes(0)
     })
 
