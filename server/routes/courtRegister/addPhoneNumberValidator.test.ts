@@ -17,7 +17,7 @@ describe('addPhoneNumberValidator', () => {
   })
 
   it('returns to court details page when valid', async () => {
-    expect(await validate(validForm, req, addPhoneNumber)).toEqual('/court-register/details?id=SHFCC')
+    expect(await validate(validForm, req, addPhoneNumber)).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
     expect(req.flash).not.toHaveBeenCalled()
   })
 

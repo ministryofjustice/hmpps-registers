@@ -27,5 +27,5 @@ export default async function validate(
 
   await addPhoneNumber({ number: form.phoneNumber })
 
-  return `/court-register/details?id=${id}`
+  return `/court-register/details?id=${id}&action=UPDATED`
 }

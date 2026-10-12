@@ -206,7 +206,7 @@ describe('Court Register controller', () => {
       expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         number: '0114 555 9898',
       })
-      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
       expect(req.session.addPhoneNumberForm).toBeUndefined()
     })
 
@@ -340,7 +340,7 @@ describe('Court Register controller', () => {
       it('will redirect to the court details page', async () => {
         await controller.submitAddEmail(req, res)
 
-        expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
       })
 
       it('will clear the form from the session once the email address has been added', async () => {
@@ -507,7 +507,7 @@ describe('Court Register controller', () => {
     it('will redirect to the court details page', async () => {
       await controller.submitUpdateEmail(req, res)
 
-      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
     it('will clear the form from the session once the email address has been updated', async () => {
@@ -612,7 +612,7 @@ describe('Court Register controller', () => {
     it('will redirect to the court details page after deleting the email address', async () => {
       await controller.submitDeleteEmail(req, res)
 
-      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
     it('will not redirect when the delete fails', async () => {

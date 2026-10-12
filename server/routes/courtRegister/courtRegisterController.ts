@@ -165,7 +165,7 @@ export default class PrisonRegisterController {
       req.query.id as string,
       Number(req.body.emailId),
     )
-    res.redirect(`/court-register/details?id=${req.query.id}`)
+    res.redirect(`/court-register/details?id=${req.query.id}&action=UPDATED`)
   }
 
   parseFilter(req: Request): CourtsFilter {

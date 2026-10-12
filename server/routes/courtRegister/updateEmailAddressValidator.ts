@@ -27,7 +27,7 @@ export default async function validate(
 
   await updateEmailAddress(asEmailAddress(form))
 
-  return `/court-register/details?id=${id}`
+  return `/court-register/details?id=${id}&action=UPDATED`
 }
 
 function asEmailAddress(form: UpdateEmailAddressForm): UpdateEmailAddress {
