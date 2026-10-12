@@ -3,6 +3,8 @@
 {% macro phoneNumbersCard(opts) %}
 
   {% set phoneNumbers = opts.phoneNumbers %}
+  {% set baseRegisterUrl = opts.baseRegisterUrl %}
+  {% set id = opts.id %}
   {% set data = [] %}
 
   {% if phoneNumbers and phoneNumbers.length > 0 %}
@@ -35,7 +37,14 @@
         text: "Phone numbers"
       },
       actions: {
-        items: []
+        items: [
+          {
+            href: baseRegisterUrl + "/phone/create?id=" + id,
+            text: "Add phone number",
+            attributes: {"data-qa": "add-phone-number-link"},
+            classes: "govuk-link--no-visited-state"
+          }
+        ] if baseRegisterUrl else []
         }
     },
     rows: data

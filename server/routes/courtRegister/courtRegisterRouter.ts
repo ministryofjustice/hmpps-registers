@@ -16,6 +16,8 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
+  get('/court-register/phone/create', (req, res) => courtRegisterController.addPhone(req, res))
+  post('/court-register/phone/create', (req, res) => courtRegisterController.submitAddPhone(req, res))
   get('/court-register/email/create', (req, res) => courtRegisterController.addEmail(req, res))
   post('/court-register/email/create', (req, res) => courtRegisterController.submitAddEmail(req, res))
   get('/court-register/email/update', (req, res) => courtRegisterController.updateEmail(req, res))

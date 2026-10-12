@@ -9,6 +9,7 @@ import {
   PrisonAddress,
   ProbationOffice,
   ApprovedPremises,
+  PhoneNumber,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -219,6 +220,31 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
       jsonBody: court,
     },
   })
+
+const stubAddCourtPhoneNumber = (courtId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/prison-register/courts/id/${courtId}/phone-number`,
+    },
+    response: {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { id: 100, number: '+44 114-555-9898' },
+    },
+  })
+
+const getAddedCourtPhoneNumbers = (courtId: string): Promise<PhoneNumber[]> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === `/prison-register/courts/id/${courtId}/phone-number`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
 
 const stubAddCourtEmailAddress = (courtId: string): SuperAgentRequest =>
   stubFor({
@@ -467,6 +493,8 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubAddCourtPhoneNumber,
+  getAddedCourtPhoneNumbers,
   stubAddCourtEmailAddress,
   stubUpdateCourtEmailAddress,
   stubDeleteCourtEmailAddress,

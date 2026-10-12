@@ -132,6 +132,120 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('addPhone', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
+      )
+      req.query.id = 'SHFCC'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.addPhone(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render add phone page with court name and cancel link back to court details', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.addPhone(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/addAgencyPhone', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        phoneNumber: undefined,
+      })
+    })
+
+    it('will render validation errors and redisplay the submitted phone number', async () => {
+      const errors = [
+        { href: '#phoneNumber', text: 'Enter a phone number using only numbers, spaces, plus signs and dashes' },
+      ]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.addPhoneNumberForm = { phoneNumber: 'not-a-number' }
+
+      await controller.addPhone(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/addAgencyPhone',
+        expect.objectContaining({ errors, phoneNumber: 'not-a-number' }),
+      )
+    })
+
+    it('will clear any previous form when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.addPhoneNumberForm = { phoneNumber: '0114 555 9898' }
+
+      await controller.addPhone(req, res)
+
+      expect(req.session.addPhoneNumberForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/addAgencyPhone',
+        expect.objectContaining({ phoneNumber: undefined }),
+      )
+    })
+  })
+
+  describe('submitAddPhone', () => {
+    beforeEach(() => {
+      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({ id: 1, number: '0114 555 9898' })
+      req.query.id = 'SHFCC'
+      req.body = { phoneNumber: '0114 555 9898' }
+    })
+
+    it('will add the phone number to the court using the username and redirect to court details', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitAddPhone(req, res)
+
+      expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        number: '0114 555 9898',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC')
+      expect(req.session.addPhoneNumberForm).toBeUndefined()
+    })
+
+    it('will trim the phone number before adding it', async () => {
+      req.body = { phoneNumber: '  +44 114-555-9898  ' }
+
+      await controller.submitAddPhone(req, res)
+
+      expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', {
+        number: '+44 114-555-9898',
+      })
+    })
+
+    it('will keep the form in the session when adding the phone number fails', async () => {
+      prisonRegisterService.addCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitAddPhone(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.addPhoneNumberForm).toEqual({ phoneNumber: '0114 555 9898' })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      ['', 'Enter a phone number'],
+      ['   ', 'Enter a phone number'],
+      ['not-a-number', 'Enter a phone number using only numbers, spaces, plus signs and dashes'],
+    ])('will reject an invalid phone number and retain the trimmed form: %s', async (phoneNumber, text) => {
+      req.session.addPhoneNumberForm = { phoneNumber: 'previous number' }
+      req.body = { phoneNumber }
+
+      await controller.submitAddPhone(req, res)
+
+      expect(prisonRegisterService.addCourtPhoneNumber).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#phoneNumber', text }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/create?id=SHFCC')
+      expect(req.session.addPhoneNumberForm).toEqual({ phoneNumber: phoneNumber.trim() })
+    })
+  })
+
   describe('addEmail', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

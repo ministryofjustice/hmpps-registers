@@ -10,6 +10,8 @@ import addEmailAddressValidator from './addEmailAddressValidator'
 import updateEmailAddressValidator from './updateEmailAddressValidator'
 import { AgencyEmailAddress, EmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
 import UpdateAgencyEmailView from '../agencyRegisters/updateEmailView'
+import AddAgencyPhoneView from '../agencyRegisters/addPhoneView'
+import addPhoneNumberValidator from './addPhoneNumberValidator'
 
 function context(res: Response): Context {
   return {
@@ -34,6 +36,38 @@ export default class PrisonRegisterController {
     const court = await this.prisonRegisterService.getCourt(context(res), id)
     const view = new CourtDetailsView(court, (action || 'NONE') as Action)
     res.render('pages/court-register/courtDetails', view.renderArgs)
+  }
+
+  async addPhone(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.addPhoneNumberForm
+    }
+    const view = new AddAgencyPhoneView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.addPhoneNumberForm?.phoneNumber,
+    )
+    res.render('pages/components/edit/addAgencyPhone', view.renderArgs)
+  }
+
+  async submitAddPhone(req: Request, res: Response): Promise<void> {
+    req.session.addPhoneNumberForm = trimForm(req.body)
+
+    res.redirect(
+      await addPhoneNumberValidator(req.session.addPhoneNumberForm, req, async phoneNumber => {
+        const addedPhoneNumber = await this.prisonRegisterService.addCourtPhoneNumber(
+          context(res),
+          req.query.id as string,
+          phoneNumber,
+        )
+        delete req.session.addPhoneNumberForm
+        return addedPhoneNumber
+      }),
+    )
   }
 
   async addEmail(req: Request, res: Response): Promise<void> {

@@ -56,7 +56,7 @@
       {{  addressesCard({ addresses: court.addresses }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: court.phoneNumbers }) }}
+      {{  phoneNumbersCard({ phoneNumbers: court.phoneNumbers, id: court.courtId, baseRegisterUrl: "/court-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
       {{  emailAddressesCard({ emailAddresses: court.emailAddresses, id: court.courtId, baseRegisterUrl: "/court-register" }) }}

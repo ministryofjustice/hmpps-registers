@@ -1,4 +1,7 @@
 declare module 'agencyForms' {
+  export interface AddPhoneNumberForm {
+    phoneNumber: string
+  }
   export interface AddEmailAddressForm {
     emailAddress: string
   }
