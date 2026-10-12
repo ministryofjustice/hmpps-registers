@@ -657,6 +657,56 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('updateCourtPhoneNumber', () => {
+    const phoneNumber: PhoneNumber = { number: '+44 114-555-9898' }
+    const updatedPhoneNumber: AgencyPhoneNumber = { id: 10000, number: phoneNumber.number }
+    let sentPhoneNumber: PhoneNumber
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .put('/courts/id/SHFCC/phone-number/10000', body => {
+            sentPhoneNumber = body
+            return true
+          })
+          .reply(200, updatedPhoneNumber)
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.updateCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000, phoneNumber)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send the phone number in the request body', async () => {
+        await prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
+
+        expect(sentPhoneNumber).toEqual(phoneNumber)
+      })
+
+      it('will return the updated phone number', async () => {
+        const result = await prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
+
+        expect(result).toEqual(updatedPhoneNumber)
+      })
+    })
+
+    it.each([400, 404, 500])('will propagate an API error with status %s', async status => {
+      fakePrisonRegister.put('/courts/id/SHFCC/phone-number/10000').reply(status, { status })
+
+      await expect(prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)).rejects.toMatchObject(
+        {
+          status,
+        },
+      )
+    })
+  })
+
   describe('updateCourtEmailAddress', () => {
     const emailAddress: UpdateEmailAddress = { address: 'sheffield.court.updated@example.com' }
     const updatedEmailAddress: AgencyEmailAddress = { id: 10000, address: 'sheffield.court.updated@example.com' }

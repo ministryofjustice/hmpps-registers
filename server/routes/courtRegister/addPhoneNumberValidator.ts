@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import type { AddPhoneNumberForm } from 'agencyForms'
-import { validateAsync } from '../../validation/agencyValidation'
+import validatePhoneNumber from '../../validation/phoneNumberValidation'
 import { AgencyPhoneNumber, PhoneNumber } from '../../@types/prisonRegister'
 
 export default async function validate(
@@ -9,16 +9,7 @@ export default async function validate(
   addPhoneNumber: (phoneNumber: PhoneNumber) => Promise<AgencyPhoneNumber>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
-  const errors = await validateAsync(
-    form,
-    {
-      phoneNumber: ['required', 'regex:/^[0-9 +\\-]+$/'],
-    },
-    {
-      'required.phoneNumber': 'Enter a phone number',
-      'regex.phoneNumber': 'Enter a phone number using only numbers, spaces, plus signs and dashes',
-    },
-  )
+  const errors = await validatePhoneNumber(form)
 
   if (errors.length > 0) {
     req.flash('errors', errors)
