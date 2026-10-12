@@ -246,6 +246,37 @@ const getAddedCourtPhoneNumbers = (courtId: string): Promise<PhoneNumber[]> =>
       .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
   )
 
+const stubUpdateCourtPhoneNumber = ({ courtId, phoneId }: { courtId: string; phoneId: number }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/courts/id/${courtId}/phone-number/${phoneId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { id: phoneId, number: '+44 114-555-9898' },
+    },
+  })
+
+const getUpdatedCourtPhoneNumbers = ({
+  courtId,
+  phoneId,
+}: {
+  courtId: string
+  phoneId: number
+}): Promise<PhoneNumber[]> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'PUT' && request.url === `/prison-register/courts/id/${courtId}/phone-number/${phoneId}`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubAddCourtEmailAddress = (courtId: string): SuperAgentRequest =>
   stubFor({
     request: {
@@ -495,6 +526,8 @@ export default {
   stubGetCourt,
   stubAddCourtPhoneNumber,
   getAddedCourtPhoneNumbers,
+  stubUpdateCourtPhoneNumber,
+  getUpdatedCourtPhoneNumbers,
   stubAddCourtEmailAddress,
   stubUpdateCourtEmailAddress,
   stubDeleteCourtEmailAddress,

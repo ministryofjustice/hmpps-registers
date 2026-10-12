@@ -12,6 +12,8 @@ import { AgencyEmailAddress, EmailAddress, UpdateEmailAddress } from '../../@typ
 import UpdateAgencyEmailView from '../agencyRegisters/updateEmailView'
 import AddAgencyPhoneView from '../agencyRegisters/addPhoneView'
 import addPhoneNumberValidator from './addPhoneNumberValidator'
+import UpdateAgencyPhoneView from '../agencyRegisters/updatePhoneView'
+import updatePhoneNumberValidator from './updatePhoneNumberValidator'
 
 function context(res: Response): Context {
   return {
@@ -103,6 +105,41 @@ export default class PrisonRegisterController {
           return emailAddress
         },
       ),
+    )
+  }
+
+  async updatePhone(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const phoneId = Number(req.query.phoneId)
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updatePhoneNumberForm
+    }
+    const view = new UpdateAgencyPhoneView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.updatePhoneNumberForm?.phoneNumber ?? court.phoneNumbers.find(phone => phone.id === phoneId)?.number,
+      phoneId,
+    )
+    res.render('pages/components/edit/updateAgencyPhone', view.renderArgs)
+  }
+
+  async submitUpdatePhone(req: Request, res: Response): Promise<void> {
+    req.session.updatePhoneNumberForm = trimForm(req.body)
+
+    res.redirect(
+      await updatePhoneNumberValidator(req.session.updatePhoneNumberForm, req, async phoneNumber => {
+        const updatedPhoneNumber = await this.prisonRegisterService.updateCourtPhoneNumber(
+          context(res),
+          req.query.id as string,
+          Number(req.session.updatePhoneNumberForm.phoneId),
+          phoneNumber,
+        )
+        delete req.session.updatePhoneNumberForm
+        return updatedPhoneNumber
+      }),
     )
   }
 

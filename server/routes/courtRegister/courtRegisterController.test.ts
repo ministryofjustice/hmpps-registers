@@ -422,6 +422,139 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updatePhone', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          phoneNumbers: [
+            { id: 1, number: '0114 555 1111' },
+            { id: 10000, number: '0114 555 9898' },
+          ],
+        }),
+      )
+      req.query.id = 'SHFCC'
+      req.query.phoneId = '10000'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updatePhone(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render update phone page with the selected number, id, court name and cancel link', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.updatePhone(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyPhone', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        phoneNumber: '0114 555 9898',
+        phoneId: 10000,
+      })
+    })
+
+    it.each(['not-a-number', ''])(
+      'will redisplay submitted input when there are validation errors: %s',
+      async phoneNumber => {
+        const errors = [{ href: '#phoneNumber', text: 'Enter a phone number' }]
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updatePhoneNumberForm = { phoneId: 10000, phoneNumber }
+
+        await controller.updatePhone(req, res)
+
+        expect(req.flash).toHaveBeenCalledWith('errors')
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyPhone',
+          expect.objectContaining({ errors, phoneNumber, phoneId: 10000 }),
+        )
+      },
+    )
+
+    it('will clear the previous form and show the current number when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.updatePhoneNumberForm = { phoneId: 10000, phoneNumber: 'previous number' }
+
+      await controller.updatePhone(req, res)
+
+      expect(req.session.updatePhoneNumberForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyPhone',
+        expect.objectContaining({ phoneNumber: '0114 555 9898', phoneId: 10000 }),
+      )
+    })
+  })
+
+  describe('submitUpdatePhone', () => {
+    beforeEach(() => {
+      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({ id: 10000, number: '+44 114-555-9898' })
+      req.query.id = 'SHFCC'
+      req.body = { phoneId: '10000', phoneNumber: '+44 114-555-9898' }
+    })
+
+    it('will update the selected court phone number using the username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdatePhone(req, res)
+
+      expect(prisonRegisterService.updateCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000, {
+        number: '+44 114-555-9898',
+      })
+    })
+
+    it('will redirect to court details with a success confirmation and clear the form', async () => {
+      req.session.updatePhoneNumberForm = { phoneId: 10000, phoneNumber: 'previous number' }
+
+      await controller.submitUpdatePhone(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updatePhoneNumberForm).toBeUndefined()
+    })
+
+    it('will trim the phone number before updating it', async () => {
+      req.body.phoneNumber = '  +44 114-555-9898  '
+
+      await controller.submitUpdatePhone(req, res)
+
+      expect(prisonRegisterService.updateCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
+        number: '+44 114-555-9898',
+      })
+    })
+
+    it('will retain the form and propagate errors when updating fails', async () => {
+      prisonRegisterService.updateCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdatePhone(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updatePhoneNumberForm).toEqual({ phoneId: '10000', phoneNumber: '+44 114-555-9898' })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      ['', 'Enter a phone number'],
+      ['   ', 'Enter a phone number'],
+      ['not-a-number', 'Enter a phone number using only numbers, spaces, plus signs and dashes'],
+    ])(
+      'will reject invalid input, retain the form and redirect to the selected phone number: %s',
+      async (phoneNumber, text) => {
+        req.body.phoneNumber = phoneNumber
+
+        await controller.submitUpdatePhone(req, res)
+
+        expect(prisonRegisterService.updateCourtPhoneNumber).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#phoneNumber', text }])
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/update?id=SHFCC&phoneId=10000')
+        expect(req.session.updatePhoneNumberForm).toEqual({ phoneId: '10000', phoneNumber: phoneNumber.trim() })
+      },
+    )
+  })
+
   describe('updateEmail', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(
