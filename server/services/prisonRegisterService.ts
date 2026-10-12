@@ -5,6 +5,7 @@ import config from '../config'
 import logger from '../../logger'
 import {
   AgencyEmailAddress,
+  AgencyPhoneNumber,
   ApprovedPremises,
   Court,
   EmailAddress,
@@ -12,6 +13,7 @@ import {
   InsertPrison,
   OtherAgency,
   PoliceCustodySuite,
+  PhoneNumber,
   Prison,
   PrisonAddress,
   ProbationOffice,
@@ -212,6 +214,15 @@ export default class PrisonRegisterService {
     logger.info(`getting court with id ${courtId}`)
     return PrisonRegisterService.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
+    })
+  }
+
+  async addCourtPhoneNumber(context: Context, courtId: string, phoneNumber: PhoneNumber): Promise<AgencyPhoneNumber> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to court with id ${courtId}`)
+    return PrisonRegisterService.restClient(token).post<AgencyPhoneNumber>({
+      path: `/courts/id/${courtId}/phone-number`,
+      data: phoneNumber,
     })
   }
 

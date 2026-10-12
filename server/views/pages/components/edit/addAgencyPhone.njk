@@ -1,0 +1,45 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set mainClasses = "app-container govuk-body" %}
+{% set pageTitle = "Add phone number - DPS" %}
+{% set title = "Add phone number for " + (name) %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Add phone number</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {{ govukInput({
+          id: "phoneNumber",
+          name: "phoneNumber",
+          type: "tel",
+          label: { text: "Phone number" },
+          hint: { text: "Use only numbers, spaces, plus sign and dashes." },
+          classes: "govuk-input--width-20",
+          value: phoneNumber,
+          errorMessage: errors | findError('phoneNumber'),
+          attributes: {
+            "data-id": "phoneNumber",
+            "data-name": "phoneNumber",
+            "data-qa": "phoneNumber"
+          }
+        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

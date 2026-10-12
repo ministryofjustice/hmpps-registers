@@ -8,6 +8,8 @@ import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
 import {
   AgencyEmailAddress,
+  AgencyPhoneNumber,
+  PhoneNumber,
   EmailAddress,
   InsertPrison,
   ApprovedPremises,
@@ -554,6 +556,55 @@ describe('Prison Register service', () => {
 
       expect(result).toBeDefined()
       expect(result).toHaveProperty('courtId', 'SHFCC')
+    })
+  })
+
+  describe('addCourtPhoneNumber', () => {
+    const phoneNumber: PhoneNumber = { number: '+44 114-555-9898' }
+    const createdPhoneNumber: AgencyPhoneNumber = { id: 10000, number: phoneNumber.number }
+    let sentPhoneNumber: PhoneNumber
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .post('/courts/id/SHFCC/phone-number', body => {
+            sentPhoneNumber = body
+            return true
+          })
+          .reply(201, createdPhoneNumber)
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.addCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', phoneNumber)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send the phone number in the request body', async () => {
+        await prisonRegisterService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
+
+        expect(sentPhoneNumber).toEqual(phoneNumber)
+      })
+
+      it('will return the created phone number', async () => {
+        const result = await prisonRegisterService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
+
+        expect(result).toEqual(createdPhoneNumber)
+      })
+    })
+
+    it('will throw error when the court is not found', async () => {
+      fakePrisonRegister.post('/courts/id/UNKNOWN/phone-number').reply(404, {
+        status: 404,
+        developerMessage: 'Court UNKNOWN not found',
+      })
+
+      await expect(prisonRegisterService.addCourtPhoneNumber({}, 'UNKNOWN', phoneNumber)).rejects.toThrow('Not Found')
     })
   })
 
