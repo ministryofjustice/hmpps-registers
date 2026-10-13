@@ -7,6 +7,7 @@ import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
 import {
+  AgencyAddress,
   AgencyEmailAddress,
   AgencyPhoneNumber,
   PhoneNumber,
@@ -556,6 +557,67 @@ describe('Prison Register service', () => {
 
       expect(result).toBeDefined()
       expect(result).toHaveProperty('courtId', 'SHFCC')
+    })
+  })
+
+  describe('addCourtAddress', () => {
+    const address: UpdatePrisonAddress = {
+      addressLine1: '1 High Street',
+      addressLine2: '',
+      town: 'Sheffield',
+      county: '  ',
+      postcode: 'S1 2BJ',
+      country: 'England',
+    }
+    const createdAddress: AgencyAddress = { id: 10000, addressLine1: '1 High Street', town: 'Sheffield' }
+    let sentAddress: UpdatePrisonAddress
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .post('/courts/id/SHFCC/address', body => {
+            sentAddress = body
+            return true
+          })
+          .reply(201, createdAddress)
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.addCourtAddress({ username: 'tommy' }, 'SHFCC', address)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send the address and omit blank optional fields', async () => {
+        await prisonRegisterService.addCourtAddress({}, 'SHFCC', address)
+
+        expect(sentAddress).toEqual({
+          addressLine1: '1 High Street',
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          country: 'England',
+        })
+      })
+
+      it('will return the created address', async () => {
+        const result = await prisonRegisterService.addCourtAddress({}, 'SHFCC', address)
+
+        expect(result).toEqual(createdAddress)
+      })
+    })
+
+    it('will throw error when the court is not found', async () => {
+      fakePrisonRegister.post('/courts/id/UNKNOWN/address').reply(404, {
+        status: 404,
+        developerMessage: 'Court UNKNOWN not found',
+      })
+
+      await expect(prisonRegisterService.addCourtAddress({}, 'UNKNOWN', address)).rejects.toThrow('Not Found')
     })
   })
 

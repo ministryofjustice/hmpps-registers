@@ -12,6 +12,8 @@ import { AgencyEmailAddress, EmailAddress, UpdateEmailAddress } from '../../@typ
 import UpdateAgencyEmailView from '../agencyRegisters/updateEmailView'
 import AddAgencyPhoneView from '../agencyRegisters/addPhoneView'
 import addPhoneNumberValidator from './addPhoneNumberValidator'
+import AddAgencyAddressView from '../agencyRegisters/addAddressView'
+import addAddressValidator from './addAddressValidator'
 import UpdateAgencyPhoneView from '../agencyRegisters/updatePhoneView'
 import updatePhoneNumberValidator from './updatePhoneNumberValidator'
 
@@ -38,6 +40,38 @@ export default class PrisonRegisterController {
     const court = await this.prisonRegisterService.getCourt(context(res), id)
     const view = new CourtDetailsView(court, (action || 'NONE') as Action)
     res.render('pages/court-register/courtDetails', view.renderArgs)
+  }
+
+  async addAddress(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.addAddressForm
+    }
+    const view = new AddAgencyAddressView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.addAddressForm,
+    )
+    res.render('pages/components/edit/addAgencyAddress', view.renderArgs)
+  }
+
+  async submitAddAddress(req: Request, res: Response): Promise<void> {
+    req.session.addAddressForm = trimForm(req.body)
+
+    res.redirect(
+      await addAddressValidator(req.session.addAddressForm, req, async address => {
+        const addedAddress = await this.prisonRegisterService.addCourtAddress(
+          context(res),
+          req.query.id as string,
+          address,
+        )
+        delete req.session.addAddressForm
+        return addedAddress
+      }),
+    )
   }
 
   async addPhone(req: Request, res: Response): Promise<void> {

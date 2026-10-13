@@ -221,6 +221,31 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
     },
   })
 
+const stubAddCourtAddress = (courtId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: `/prison-register/courts/id/${courtId}/address`,
+    },
+    response: {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { id: 100, town: 'Sheffield', postcode: 'S1 2BJ', country: 'England' },
+    },
+  })
+
+const getAddedCourtAddresses = (courtId: string): Promise<Array<Record<string, string>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === `/prison-register/courts/id/${courtId}/address`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubAddCourtPhoneNumber = (courtId: string): SuperAgentRequest =>
   stubFor({
     request: {
@@ -551,6 +576,8 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubAddCourtAddress,
+  getAddedCourtAddresses,
   stubAddCourtPhoneNumber,
   getAddedCourtPhoneNumbers,
   stubUpdateCourtPhoneNumber,
