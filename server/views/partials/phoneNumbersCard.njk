@@ -24,6 +24,13 @@
               visuallyHiddenText: "phone number " + item.number,
               attributes: {"data-qa": "update-phone-number-link"},
               classes: "govuk-link--no-visited-state"
+            },
+            {
+              href: baseRegisterUrl + "/phone/delete?id=" + id + "&phoneId=" + item.id,
+              text: "Delete",
+              visuallyHiddenText: "phone number " + item.number,
+              attributes: {"data-qa": "delete-phone-number-link"},
+              classes: "govuk-link--no-visited-state"
             }
           ] if baseRegisterUrl else []
         }
