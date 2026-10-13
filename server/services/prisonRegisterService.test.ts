@@ -758,6 +758,31 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('deleteCourtPhoneNumber', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('will use the username to get an API token and delete the court phone number', async () => {
+      const scope = fakePrisonRegister.delete('/courts/id/SHFCC/phone-number/10000').reply(204)
+
+      await prisonRegisterService.deleteCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('will throw an error when the court phone number is not found', async () => {
+      fakePrisonRegister.delete('/courts/id/UNKNOWN/phone-number/10000').reply(404, {
+        status: 404,
+        developerMessage: 'Court phone number not found',
+      })
+
+      await expect(prisonRegisterService.deleteCourtPhoneNumber({}, 'UNKNOWN', 10000)).rejects.toThrow('Not Found')
+    })
+  })
+
   describe('deleteCourtEmailAddress', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

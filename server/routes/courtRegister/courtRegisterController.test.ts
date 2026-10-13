@@ -695,6 +695,77 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('deletePhone', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          phoneNumbers: [
+            { id: 1, number: '0114 555 1111' },
+            { id: 10000, number: '0114 555 9898' },
+          ],
+        }),
+      )
+      req.query.id = 'SHFCC'
+      req.query.phoneId = '10000'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.deletePhone(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the delete phone page with the court, selected phone number and cancel link', async () => {
+      await controller.deletePhone(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/deleteAgencyPhone', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        phoneNumber: '0114 555 9898',
+        phoneId: 10000,
+      })
+    })
+
+    it('will not call the delete API when showing the confirmation page', async () => {
+      await controller.deletePhone(req, res)
+
+      expect(prisonRegisterService.deleteCourtPhoneNumber).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('submitDeletePhone', () => {
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { phoneId: '10000' }
+    })
+
+    it('will delete the phone number using the court, phone and user details', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitDeletePhone(req, res)
+
+      expect(prisonRegisterService.deleteCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000)
+    })
+
+    it('will redirect to the court details page after deleting the phone number', async () => {
+      await controller.submitDeletePhone(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('will not redirect when the delete fails', async () => {
+      prisonRegisterService.deleteCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitDeletePhone(req, res)).rejects.toThrow('Server error')
+
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+  })
+
   describe('deleteEmail', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

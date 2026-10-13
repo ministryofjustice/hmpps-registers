@@ -143,6 +143,28 @@ export default class PrisonRegisterController {
     )
   }
 
+  async deletePhone(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const phoneId = Number(req.query.phoneId)
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const phoneNumber = court.phoneNumbers.find(phone => phone.id === phoneId)?.number
+    res.render('pages/components/edit/deleteAgencyPhone', {
+      name: court.courtName,
+      navigation: { cancelButton: `/court-register/details?id=${court.courtId}` },
+      phoneNumber,
+      phoneId,
+    })
+  }
+
+  async submitDeletePhone(req: Request, res: Response): Promise<void> {
+    await this.prisonRegisterService.deleteCourtPhoneNumber(
+      context(res),
+      req.query.id as string,
+      Number(req.body.phoneId),
+    )
+    res.redirect(`/court-register/details?id=${req.query.id}&action=UPDATED`)
+  }
+
   async updateEmail(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const emailId = Number(req.query.emailId)
