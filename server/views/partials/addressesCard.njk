@@ -3,6 +3,8 @@
 {% macro addressesCard(opts) %}
 
   {% set addresses = opts.addresses %}
+  {% set baseRegisterUrl = opts.baseRegisterUrl %}
+  {% set id = opts.id %}
   {% set data = [] %}
 
 
@@ -37,7 +39,14 @@
         text: "Addresses"
       },
       actions: {
-        items: []
+        items: [
+          {
+            href: baseRegisterUrl + "/address/create?id=" + id,
+            text: "Add address",
+            attributes: {"data-qa": "add-address-link"},
+            classes: "govuk-link--no-visited-state"
+          }
+        ] if baseRegisterUrl else []
       }
     },
     rows: data

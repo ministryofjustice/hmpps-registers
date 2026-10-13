@@ -1,4 +1,12 @@
 declare module 'agencyForms' {
+  export interface AddAddressForm {
+    addressline1?: string
+    addressline2?: string
+    addresstown: string
+    addresscounty?: string
+    addresspostcode: string
+    addresscountry: string
+  }
   export interface AddPhoneNumberForm {
     phoneNumber: string
   }

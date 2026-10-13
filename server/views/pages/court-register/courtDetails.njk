@@ -53,7 +53,7 @@
     <div class="govuk-grid-column-two-thirds">
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: court.addresses }) }}
+      {{  addressesCard({ addresses: court.addresses, id: court.courtId, baseRegisterUrl: "/court-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
       {{  phoneNumbersCard({ phoneNumbers: court.phoneNumbers, id: court.courtId, baseRegisterUrl: "/court-register" }) }}

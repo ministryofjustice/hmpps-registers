@@ -4,6 +4,7 @@ import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
 import {
+  AgencyAddress,
   AgencyEmailAddress,
   AgencyPhoneNumber,
   ApprovedPremises,
@@ -214,6 +215,20 @@ export default class PrisonRegisterService {
     logger.info(`getting court with id ${courtId}`)
     return PrisonRegisterService.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
+    })
+  }
+
+  async addCourtAddress(context: Context, courtId: string, address: UpdatePrisonAddress): Promise<AgencyAddress> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to court with id ${courtId}`)
+    return PrisonRegisterService.restClient(token).post<AgencyAddress>({
+      path: `/courts/id/${courtId}/address`,
+      data: {
+        ...address,
+        addressLine1: undefinedWhenAbsent(address.addressLine1),
+        addressLine2: undefinedWhenAbsent(address.addressLine2),
+        county: undefinedWhenAbsent(address.county),
+      },
     })
   }
 

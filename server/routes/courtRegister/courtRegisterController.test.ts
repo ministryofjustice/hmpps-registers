@@ -132,6 +132,139 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('addAddress', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
+      )
+      req.query.id = 'SHFCC'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.addAddress(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the add address page with an empty form and a cancel link', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.addAddress(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/addAgencyAddress', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: {},
+      })
+    })
+
+    it('will render validation errors and redisplay the submitted address', async () => {
+      const errors = [{ href: '#addresstown', text: 'Enter the town or city' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.addAddressForm = { addresstown: '', addresspostcode: 'S1 2BJ', addresscountry: 'England' }
+
+      await controller.addAddress(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/addAgencyAddress',
+        expect.objectContaining({
+          errors,
+          form: { addresstown: '', addresspostcode: 'S1 2BJ', addresscountry: 'England' },
+        }),
+      )
+    })
+
+    it('will clear any previous form when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.addAddressForm = { addresstown: 'Leeds', addresspostcode: 'LS1 1AA', addresscountry: 'England' }
+
+      await controller.addAddress(req, res)
+
+      expect(req.session.addAddressForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/addAgencyAddress',
+        expect.objectContaining({ form: {} }),
+      )
+    })
+  })
+
+  describe('submitAddAddress', () => {
+    const validBody = {
+      addressline1: '1 High Street',
+      addressline2: '',
+      addresstown: 'Sheffield',
+      addresscounty: 'South Yorkshire',
+      addresspostcode: 'S1 2BJ',
+      addresscountry: 'England',
+    }
+
+    beforeEach(() => {
+      prisonRegisterService.addCourtAddress.mockResolvedValue({ id: 1, town: 'Sheffield' })
+      req.query.id = 'SHFCC'
+      req.body = { ...validBody }
+    })
+
+    it('will add the address to the court using the username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitAddAddress(req, res)
+
+      expect(prisonRegisterService.addCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        addressLine1: '1 High Street',
+        addressLine2: '',
+        town: 'Sheffield',
+        county: 'South Yorkshire',
+        postcode: 'S1 2BJ',
+        country: 'England',
+      })
+    })
+
+    it('will redirect to court details with a success confirmation and clear the form', async () => {
+      await controller.submitAddAddress(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.addAddressForm).toBeUndefined()
+    })
+
+    it('will trim the address fields before adding them', async () => {
+      req.body = { ...validBody, addressline1: '  1 High Street  ', addresstown: '  Sheffield  ' }
+
+      await controller.submitAddAddress(req, res)
+
+      expect(prisonRegisterService.addCourtAddress).toHaveBeenCalledWith(
+        {},
+        'SHFCC',
+        expect.objectContaining({ addressLine1: '1 High Street', town: 'Sheffield' }),
+      )
+    })
+
+    it('will keep the form in the session when adding the address fails', async () => {
+      prisonRegisterService.addCourtAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitAddAddress(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.addAddressForm).toEqual(validBody)
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('will reject an invalid address, keep the form and redirect back to the add address page', async () => {
+      req.body = { ...validBody, addresspostcode: 'BANANAS' }
+
+      await controller.submitAddAddress(req, res)
+
+      expect(prisonRegisterService.addCourtAddress).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#addresspostcode', text: 'Enter a real postcode, like AA11AA' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/address/create?id=SHFCC')
+      expect(req.session.addAddressForm).toEqual({ ...validBody, addresspostcode: 'BANANAS' })
+    })
+  })
+
   describe('addPhone', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(
