@@ -7,6 +7,9 @@ declare module 'agencyForms' {
     addresspostcode: string
     addresscountry: string
   }
+  export interface UpdateAddressForm extends AddAddressForm {
+    addressId: number
+  }
   export interface AddPhoneNumberForm {
     phoneNumber: string
   }

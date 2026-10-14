@@ -8,8 +8,9 @@
 
 {% set mainClasses = "app-container govuk-body" %}
 
-{% set pageTitle = "Add address - DPS" %}
-{% set title = "Add address for " + (name) %}
+{% set addressAction = addressAction or "Add" %}
+{% set pageTitle = addressAction + " address - DPS" %}
+{% set title = addressAction + " address for " + (name) %}
 
 
 {% block content %}
@@ -23,13 +24,16 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <span class="govuk-caption-l">Add address</span>
+      <span class="govuk-caption-l">{{ addressAction }} address</span>
       <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {% if addressAction == "Update" %}
+          <input type="hidden" name="addressId" value="{{ form.addressId }}" />
+        {% endif %}
         {% call govukFieldset({
           legend: {
-            text: "What is the new address?",
+            text: "What is the address?" if addressAction == "Update" else "What is the new address?",
             classes: "govuk-fieldset__legend--l",
             isPageHeading: false
           }

@@ -622,6 +622,56 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('updateCourtAddress', () => {
+    const address: UpdatePrisonAddress = {
+      addressLine1: '1 High Street',
+      addressLine2: 'City Centre',
+      town: 'Sheffield',
+      county: 'South Yorkshire',
+      postcode: 'S1 2BJ',
+      country: 'England',
+    }
+    const updatedAddress: AgencyAddress = { id: 2, ...address }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('will use the username and send the updated address to the selected address endpoint', async () => {
+      const scope = fakePrisonRegister.put('/courts/id/SHFCC/address/2', address).reply(200, updatedAddress)
+
+      const result = await prisonRegisterService.updateCourtAddress({ username: 'tommy' }, 'SHFCC', 2, address)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+      expect(result).toEqual(updatedAddress)
+    })
+
+    it('will omit blank optional fields when clearing them', async () => {
+      const scope = fakePrisonRegister
+        .put('/courts/id/SHFCC/address/2', { town: 'Sheffield', postcode: 'S1 2BJ', country: 'England' })
+        .reply(200, updatedAddress)
+
+      await prisonRegisterService.updateCourtAddress({}, 'SHFCC', 2, {
+        ...address,
+        addressLine1: '',
+        addressLine2: '  ',
+        county: '',
+      })
+
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([400, 404, 500])('will propagate API errors with status %s', async status => {
+      fakePrisonRegister.put('/courts/id/SHFCC/address/2').reply(status, { status })
+
+      await expect(prisonRegisterService.updateCourtAddress({}, 'SHFCC', 2, address)).rejects.toMatchObject({
+        status,
+      })
+    })
+  })
+
   describe('addCourtPhoneNumber', () => {
     const phoneNumber: PhoneNumber = { number: '+44 114-555-9898' }
     const createdPhoneNumber: AgencyPhoneNumber = { id: 10000, number: phoneNumber.number }
