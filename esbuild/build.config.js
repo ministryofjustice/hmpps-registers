@@ -29,7 +29,12 @@ const getBuildConfig = () => {
 
     assets: {
       outDir: path.join(cwd, 'dist/assets'),
-      entryPoints: globSync([path.join(cwd, 'assets/js/index.js'), path.join(cwd, 'assets/scss/application.scss')]),
+      entryPoints: {
+        'js/app': path.join(cwd, 'assets/js/index.js'),
+        'js/autoCompleteTown': path.join(cwd, 'assets/js/autoCompleteTown.js'),
+        'js/autoCompleteCounty': path.join(cwd, 'assets/js/autoCompleteCounty.js'),
+        'css/app': path.join(cwd, 'assets/scss/application.scss'),
+      },
       copy: [
         {
           from: path.join(cwd, 'assets/images/**/*'),

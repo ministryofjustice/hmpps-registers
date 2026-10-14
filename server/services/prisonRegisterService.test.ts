@@ -10,6 +10,7 @@ import {
   AgencyAddress,
   AgencyEmailAddress,
   AgencyPhoneNumber,
+  CodeDescription,
   PhoneNumber,
   EmailAddress,
   InsertPrison,
@@ -1289,6 +1290,94 @@ describe('Prison Register service', () => {
       const result = await prisonRegisterService.getAllApprovedPremises({}, {})
 
       expect(result).toEqual([approvedPremises, { ...approvedPremises, approvedPremisesId: 'LEEDAP' }])
+    })
+  })
+
+  describe('getTownSuggestions', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, [])
+
+      await prisonRegisterService.getTownSuggestions({ username: 'tommy' })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return town suggestions', async () => {
+      const suggestions: CodeDescription[] = [
+        { code: 'SHEF', description: 'Sheffield' },
+        { code: 'LEED', description: 'Leeds' },
+      ]
+      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, suggestions)
+
+      const result = await prisonRegisterService.getTownSuggestions({})
+
+      expect(result).toEqual(suggestions)
+    })
+
+    it('is ok if there are no town suggestions', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, [])
+
+      const result = await prisonRegisterService.getTownSuggestions({})
+
+      expect(result).toEqual([])
+    })
+
+    it('will throw an error when town suggestions cannot be retrieved', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(404, {
+        status: 404,
+        developerMessage: 'Town suggestions not found',
+      })
+
+      await expect(prisonRegisterService.getTownSuggestions({})).rejects.toThrow('Not Found')
+    })
+  })
+
+  describe('getCountySuggestions', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, [])
+
+      await prisonRegisterService.getCountySuggestions({ username: 'tommy' })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return county suggestions', async () => {
+      const suggestions: CodeDescription[] = [
+        { code: 'SY', description: 'South Yorkshire' },
+        { code: 'WY', description: 'West Yorkshire' },
+      ]
+      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, suggestions)
+
+      const result = await prisonRegisterService.getCountySuggestions({})
+
+      expect(result).toEqual(suggestions)
+    })
+
+    it('is ok if there are no county suggestions', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, [])
+
+      const result = await prisonRegisterService.getCountySuggestions({})
+
+      expect(result).toEqual([])
+    })
+
+    it('will throw an error when county suggestions cannot be retrieved', async () => {
+      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(404, {
+        status: 404,
+        developerMessage: 'County suggestions not found',
+      })
+
+      await expect(prisonRegisterService.getCountySuggestions({})).rejects.toThrow('Not Found')
     })
   })
 

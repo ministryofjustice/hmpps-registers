@@ -22,6 +22,7 @@ import {
   UpdatePrison,
   UpdatePrisonAddress,
   UpdateWelshPrisonAddress,
+  CodeDescription,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -380,6 +381,22 @@ export default class PrisonRegisterService {
     logger.info(`getting approved premises with id ${approvedPremisesId}`)
     return PrisonRegisterService.restClient(token).get<ApprovedPremises>({
       path: `/approved-premises/id/${approvedPremisesId}`,
+    })
+  }
+
+  async getTownSuggestions(context: Context): Promise<CodeDescription[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting town suggestions`)
+    return PrisonRegisterService.restClient(token).get<CodeDescription[]>({
+      path: `/reference-data/suggestions/towns`,
+    })
+  }
+
+  async getCountySuggestions(context: Context): Promise<CodeDescription[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting county suggestions`)
+    return PrisonRegisterService.restClient(token).get<CodeDescription[]>({
+      path: `/reference-data/suggestions/counties`,
     })
   }
 }

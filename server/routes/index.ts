@@ -8,6 +8,7 @@ import hospitalRoutes from './hospitalRegister/hospitalRegisterRouter'
 import policeCustodySuiteRoutes from './policeCustodySuiteRegister/policeCustodySuiteRegisterRouter'
 import probationOfficeRoutes from './probationOfficeRegister/probationOfficeRegisterRouter'
 import approvedPremisesRoutes from './approvedPremisesRegister/approvedPremisesRegisterRouter'
+import apiRoutes from './api/apiRouter'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import { extractRoles, MAINTAINER_ROLE } from '../authentication/roles'
 import config from '../config'
@@ -93,5 +94,6 @@ export default function routes(router: Router, services: Services): Router {
   policeCustodySuiteRoutes(router, services)
   probationOfficeRoutes(router, services)
   approvedPremisesRoutes(router, services)
+  apiRoutes(router, services)
   return router
 }

@@ -3,6 +3,7 @@ $path: "/assets/images/";
 
 @import "govuk-frontend/dist/govuk/index";
 @import "@ministryofjustice/frontend/moj/all";
+@import "accessible-autocomplete/dist/accessible-autocomplete.min";
 
 @import './components/header-bar';
 @import './components/card';

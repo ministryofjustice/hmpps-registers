@@ -54,26 +54,35 @@
             errorMessage: errors | findError('addressline2')
           }) }}
 
-          {{ govukInput({
+
+          {{ govukSelect({
             label: {
-              text: "Town or city"
+              text: "Town or city",
+              classes: "govuk-!-width-two-thirds",
+              isPageHeading: false,
+              for: "addresstown",
+              attributes: { id: "addresstown-label" }
             },
-            classes: "govuk-!-width-two-thirds",
             id: "addresstown",
             name: "addresstown",
-            value: form.addresstown,
-            errorMessage: errors | findError('addresstown')
+            classes: "govuk-visually-hidden",
+            errorMessage: errors | findError('addresstown'),
+            items: []
           }) }}
 
-          {{ govukInput({
+          {{ govukSelect({
             label: {
-              text: "County"
+              text: "County",
+              classes: "govuk-!-width-two-thirds",
+              isPageHeading: false,
+              for: "addresscounty",
+              attributes: { id: "addresscounty-label" }
             },
-            classes: "govuk-!-width-two-thirds",
             id: "addresscounty",
             name: "addresscounty",
-            value: form.addresscounty,
-            errorMessage: errors | findError('addresscounty')
+            classes: "govuk-visually-hidden",
+            errorMessage: errors | findError('addresscounty'),
+            items: []
           }) }}
 
           {{ govukInput({
@@ -114,4 +123,10 @@
     </div>
   </div>
 
+{% endblock %}
+
+{% block javascripts %}
+  <script src="/assets/accessible-autocomplete.min.js"></script>
+  <script id="autocomplete-town-script" src="/assets/js/autoCompleteTown.js" data-addresstown-name="{{ form.addresstown if form.addresstown else ''}}"></script>
+  <script id="autocomplete-county-script" src="/assets/js/autoCompleteCounty.js" data-addresscounty-name="{{ form.addresscounty if form.addresscounty else ''}}"></script>
 {% endblock %}
