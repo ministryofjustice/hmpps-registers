@@ -22,6 +22,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubComponentsPing: componentsApi.stubComponentsPing,
 
     stubPrisonRegisterPing: prisonRegister.stubPing,
+    stubGetTownSuggestions: prisonRegister.stubGetTownSuggestions,
+    stubGetCountySuggestions: prisonRegister.stubGetCountySuggestions,
     stubGetPrisonsWithFilter: prisonRegister.stubGetPrisonsWithFilter,
     stubGetPrison: prisonRegister.stubGetPrison,
     stubFindPrison: prisonRegister.stubFindPrison,

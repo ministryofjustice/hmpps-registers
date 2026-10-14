@@ -20,6 +20,16 @@ context('Court register - add address to a court', () => {
     cy.task('stubGetCourts', [sheffieldCrownCourt])
     cy.task('stubGetCourt', sheffieldCrownCourt)
     cy.task('stubAddCourtAddress', sheffieldCrownCourt.courtId)
+    cy.task('stubGetTownSuggestions', [
+      { code: 'SHEF', description: 'Sheffield' },
+      { code: 'SHEP', description: 'Shepton Mallet' },
+      { code: 'LEED', description: 'Leeds' },
+    ])
+    cy.task('stubGetCountySuggestions', [
+      { code: 'SY', description: 'South Yorkshire' },
+      { code: 'WY', description: 'West Yorkshire' },
+      { code: 'DERB', description: 'Derbyshire' },
+    ])
     cy.signIn()
 
     IndexPage.verifyOnPage().courtRegisterLink().click()
@@ -67,6 +77,44 @@ context('Court register - add address to a court', () => {
     CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
     cy.url().should('include', '/court-register/details?id=SHFCC')
     addedAddresses().should('be.empty')
+  })
+
+  it('will retrieve matching towns and counties as you type and save the selected suggestions', () => {
+    cy.intercept('GET', '/api/search-town?*').as('searchTown')
+    cy.intercept('GET', '/api/search-county?*').as('searchCounty')
+    CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName).addAddressLink().click()
+
+    const addAddressPage = AddAgencyAddress.verifyOnPage(sheffieldCrownCourt.courtName)
+    addAddressPage.town().type('sHe', { delay: 0 })
+    cy.wait('@searchTown')
+      .its('response.body')
+      .should('deep.equal', [
+        { code: 'SHEF', description: 'Sheffield' },
+        { code: 'SHEP', description: 'Shepton Mallet' },
+      ])
+    addAddressPage.townSuggestions().should('have.length', 2)
+    addAddressPage.townSuggestions().contains('Sheffield').click()
+    addAddressPage.town().should('have.value', 'Sheffield')
+
+    addAddressPage.county().type('yOrK', { delay: 0 })
+    cy.wait('@searchCounty')
+      .its('response.body')
+      .should('deep.equal', [
+        { code: 'SY', description: 'South Yorkshire' },
+        { code: 'WY', description: 'West Yorkshire' },
+      ])
+    addAddressPage.countySuggestions().should('have.length', 2)
+    addAddressPage.countySuggestions().contains('South Yorkshire').click()
+    addAddressPage.county().should('have.value', 'South Yorkshire')
+
+    addAddressPage.postcode().type('S1 2BJ')
+    addAddressPage.country('England').check()
+    addAddressPage.saveButton().click()
+
+    CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
+    addedAddresses().should('deep.equal', [
+      { town: 'Sheffield', county: 'South Yorkshire', postcode: 'S1 2BJ', country: 'England' },
+    ])
   })
 
   it('will require the town, postcode and country', () => {

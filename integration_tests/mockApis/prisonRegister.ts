@@ -10,6 +10,7 @@ import {
   ProbationOffice,
   ApprovedPremises,
   PhoneNumber,
+  CodeDescription,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -17,6 +18,36 @@ import otherAgencyData from '../../server/routes/testutils/mockOtherAgencyData'
 import hospitalData from '../../server/routes/testutils/mockHospitalData'
 
 // Mock API responses
+
+const stubGetTownSuggestions = (suggestions: CodeDescription[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/reference-data/suggestions/towns',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: suggestions,
+    },
+  })
+
+const stubGetCountySuggestions = (suggestions: CodeDescription[]): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/prison-register/reference-data/suggestions/counties',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: suggestions,
+    },
+  })
 
 const stubPing = (): SuperAgentRequest =>
   stubFor({
@@ -562,6 +593,8 @@ const stubGetApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgent
   })
 
 export default {
+  stubGetTownSuggestions,
+  stubGetCountySuggestions,
   stubPing,
   stubGetPrisonsWithFilter,
   stubAddPrison,
