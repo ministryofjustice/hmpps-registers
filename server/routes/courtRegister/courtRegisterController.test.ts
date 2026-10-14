@@ -203,7 +203,7 @@ describe('Court Register controller', () => {
     }
 
     beforeEach(() => {
-      prisonRegisterService.addCourtAddress.mockResolvedValue({ id: 1, town: 'Sheffield' })
+      prisonRegisterService.addCourtAddress.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { ...validBody }
     })
@@ -249,6 +249,20 @@ describe('Court Register controller', () => {
 
       expect(req.session.addAddressForm).toEqual(validBody)
       expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('will retain the form and show the API user message when the address is rejected', async () => {
+      req.body = { ...validBody, addressline1: '  1 High Street  ' }
+      prisonRegisterService.addCourtAddress.mockResolvedValue({
+        success: false,
+        userMessage: 'This address already exists',
+      })
+
+      await controller.submitAddAddress(req, res)
+
+      expect(req.session.addAddressForm).toEqual(validBody)
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#addressline1', text: 'This address already exists' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/address/create?id=SHFCC')
     })
 
     it('will reject an invalid address, keep the form and redirect back to the add address page', async () => {
@@ -403,7 +417,7 @@ describe('Court Register controller', () => {
     beforeEach(() => {
       req.query.id = 'SHFCC'
       req.body = { ...validForm }
-      prisonRegisterService.updateCourtAddress.mockResolvedValue({ id: 2 })
+      prisonRegisterService.updateCourtAddress.mockResolvedValue({ success: true })
     })
 
     it('will update the selected address using the username and clear the form on success', async () => {
@@ -443,6 +457,20 @@ describe('Court Register controller', () => {
         postcode: 'S1 2BJ',
         country: 'England',
       })
+    })
+
+    it('will retain the form and show the API user message when the address update is rejected', async () => {
+      req.body.addressline1 = '  1 High Street  '
+      prisonRegisterService.updateCourtAddress.mockResolvedValue({
+        success: false,
+        userMessage: 'This address already exists',
+      })
+
+      await controller.submitUpdateAddress(req, res)
+
+      expect(req.session.updateAddressForm).toEqual({ ...validForm, addressId: 2 })
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#addressline1', text: 'This address already exists' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/address/update?id=SHFCC&addressId=2')
     })
 
     it('will retain an invalid form and redirect to the selected address', async () => {
@@ -529,7 +557,7 @@ describe('Court Register controller', () => {
 
   describe('submitAddPhone', () => {
     beforeEach(() => {
-      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({ id: 1, number: '0114 555 9898' })
+      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { phoneNumber: '0114 555 9898' }
     })
@@ -554,6 +582,22 @@ describe('Court Register controller', () => {
       expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', {
         number: '+44 114-555-9898',
       })
+    })
+
+    it('will retain the form and show the API user message when the phone number is rejected', async () => {
+      req.body.phoneNumber = '  0114 555 9898  '
+      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({
+        success: false,
+        userMessage: 'This phone number already exists',
+      })
+
+      await controller.submitAddPhone(req, res)
+
+      expect(req.session.addPhoneNumberForm).toEqual({ phoneNumber: '0114 555 9898' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#phoneNumber', text: 'This phone number already exists' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/create?id=SHFCC')
     })
 
     it('will keep the form in the session when adding the phone number fails', async () => {
@@ -653,7 +697,7 @@ describe('Court Register controller', () => {
 
   describe('submitAddEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.addCourtEmailAddress.mockResolvedValue({ id: 1, address: 'sheffield.court@example.com' })
+      prisonRegisterService.addCourtEmailAddress.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
     })
 
@@ -696,6 +740,22 @@ describe('Court Register controller', () => {
 
       expect(req.session.addEmailAddressForm).toEqual({ emailAddress: 'sheffield.court@example.com' })
       expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('will retain the form and show the API user message when the email address is rejected', async () => {
+      req.body = { emailAddress: '  sheffield.court@example.com  ' }
+      prisonRegisterService.addCourtEmailAddress.mockResolvedValue({
+        success: false,
+        userMessage: 'This email address already exists',
+      })
+
+      await controller.submitAddEmail(req, res)
+
+      expect(req.session.addEmailAddressForm).toEqual({ emailAddress: 'sheffield.court@example.com' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#emailAddress', text: 'This email address already exists' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/email/create?id=SHFCC')
     })
 
     it('will trim the email address before adding it', async () => {
@@ -829,7 +889,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdatePhone', () => {
     beforeEach(() => {
-      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({ id: 10000, number: '+44 114-555-9898' })
+      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { phoneId: '10000', phoneNumber: '+44 114-555-9898' }
     })
@@ -861,6 +921,22 @@ describe('Court Register controller', () => {
       expect(prisonRegisterService.updateCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
         number: '+44 114-555-9898',
       })
+    })
+
+    it('will retain the form and show the API user message when the phone update is rejected', async () => {
+      req.body.phoneNumber = '  +44 114-555-9898  '
+      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({
+        success: false,
+        userMessage: 'This phone number already exists',
+      })
+
+      await controller.submitUpdatePhone(req, res)
+
+      expect(req.session.updatePhoneNumberForm).toEqual({ phoneId: '10000', phoneNumber: '+44 114-555-9898' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#phoneNumber', text: 'This phone number already exists' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/update?id=SHFCC&phoneId=10000')
     })
 
     it('will retain the form and propagate errors when updating fails', async () => {
@@ -956,8 +1032,7 @@ describe('Court Register controller', () => {
   describe('submitUpdateEmail', () => {
     beforeEach(() => {
       prisonRegisterService.updateCourtEmailAddress.mockResolvedValue({
-        id: 10000,
-        address: 'sheffield.court.updated@example.com',
+        success: true,
       })
       req.query.id = 'SHFCC'
       req.body = { emailId: '10000', emailAddress: 'sheffield.court.updated@example.com' }
@@ -985,6 +1060,25 @@ describe('Court Register controller', () => {
       await controller.submitUpdateEmail(req, res)
 
       expect(req.session.updateEmailAddressForm).toBeUndefined()
+    })
+
+    it('will retain the form and show the API user message when the email update is rejected', async () => {
+      req.body.emailAddress = '  sheffield.court.updated@example.com  '
+      prisonRegisterService.updateCourtEmailAddress.mockResolvedValue({
+        success: false,
+        userMessage: 'This email address already exists',
+      })
+
+      await controller.submitUpdateEmail(req, res)
+
+      expect(req.session.updateEmailAddressForm).toEqual({
+        emailId: '10000',
+        emailAddress: 'sheffield.court.updated@example.com',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#emailAddress', text: 'This email address already exists' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
     })
 
     it('will keep the form in the session when updating the email address fails', async () => {

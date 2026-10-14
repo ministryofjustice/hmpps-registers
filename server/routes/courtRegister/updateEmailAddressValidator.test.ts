@@ -1,7 +1,8 @@
 import type { UpdateEmailAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateEmailAddressValidator'
-import { AgencyEmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
+import { UpdateEmailAddress } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('updateEmailAddressValidator', () => {
   const req = {
@@ -9,7 +10,7 @@ describe('updateEmailAddressValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const updateEmailAddress = jest.fn<Promise<AgencyEmailAddress>, [UpdateEmailAddress]>()
+  const updateEmailAddress = jest.fn<Promise<CourtMutationResponse>, [UpdateEmailAddress]>()
 
   const validForm: UpdateEmailAddressForm = {
     emailAddress: 'sheffield.court@example.com',
@@ -19,7 +20,7 @@ describe('updateEmailAddressValidator', () => {
   describe('validate', () => {
     beforeEach(() => {
       jest.resetAllMocks()
-      updateEmailAddress.mockResolvedValue({ id: 10000, address: 'sheffield.court@example.com' })
+      updateEmailAddress.mockResolvedValue({ success: true })
     })
 
     it('returns to court details page when valid', async () => {
@@ -33,6 +34,24 @@ describe('updateEmailAddressValidator', () => {
       await validate(validForm, req, updateEmailAddress)
 
       expect(updateEmailAddress).toHaveBeenCalledWith({ address: 'sheffield.court@example.com' })
+    })
+
+    it('flashes the API user message and returns to the selected email form when updating fails', async () => {
+      updateEmailAddress.mockResolvedValue({ success: false, userMessage: 'This email address already exists' })
+
+      expect(await validate(validForm, req, updateEmailAddress)).toEqual(
+        '/court-register/email/update?id=SHFCC&emailId=10000',
+      )
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#emailAddress', text: 'This email address already exists' },
+      ])
+    })
+
+    it('propagates unexpected API errors', async () => {
+      updateEmailAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(validate(validForm, req, updateEmailAddress)).rejects.toThrow('Server error')
+      expect(req.flash).not.toHaveBeenCalled()
     })
 
     it('emailAddress must be present', async () => {

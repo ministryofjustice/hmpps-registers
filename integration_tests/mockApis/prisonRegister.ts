@@ -384,6 +384,45 @@ const stubAddCourtEmailAddress = (courtId: string): SuperAgentRequest =>
     },
   })
 
+const stubCourtMutationError = ({
+  courtId,
+  endpoint,
+  method,
+  userMessage,
+}: {
+  courtId: string
+  endpoint: string
+  method: 'POST' | 'PUT'
+  userMessage: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method,
+      urlPattern: `/prison-register/courts/id/${courtId}/${endpoint}`,
+    },
+    response: {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { userMessage },
+    },
+  })
+
+const stubAddCourtEmailAddressError = ({
+  courtId,
+  userMessage,
+}: {
+  courtId: string
+  userMessage: string
+}): SuperAgentRequest =>
+  stubCourtMutationError({
+    courtId,
+    endpoint: 'email-address',
+    method: 'POST',
+    userMessage,
+  })
+
 const stubUpdateCourtEmailAddress = ({ courtId, emailId }: { courtId: string; emailId: number }): SuperAgentRequest =>
   stubFor({
     request: {
@@ -656,6 +695,8 @@ export default {
   stubDeleteCourtPhoneNumber,
   getDeletedCourtPhoneNumberRequests,
   stubAddCourtEmailAddress,
+  stubAddCourtEmailAddressError,
+  stubCourtMutationError,
   stubUpdateCourtEmailAddress,
   stubDeleteCourtEmailAddress,
   getAddedCourtEmailAddresses,

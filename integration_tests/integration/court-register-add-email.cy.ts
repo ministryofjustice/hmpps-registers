@@ -119,4 +119,35 @@ context('Court register - add email address to a court', () => {
       { address: 'new.email@example.com' },
     ])
   })
+
+  it('will show the API user message, retain the email and allow a corrected submission', () => {
+    cy.task('stubAddCourtEmailAddressError', {
+      courtId: sheffieldCrownCourt.courtId,
+      userMessage: 'This email address already exists',
+    })
+    CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName).addEmailAddressLink().click()
+
+    const addEmailPage = AddAgencyEmail.verifyOnPage(sheffieldCrownCourt.courtName)
+    addEmailPage.emailAddress().type('  test1@example.com  ')
+    addEmailPage.saveButton().click()
+
+    const pageWithErrors = AddAgencyEmail.verifyOnPage(sheffieldCrownCourt.courtName)
+    pageWithErrors.emailAddressError().should('contain.text', 'This email address already exists')
+    pageWithErrors.emailAddress().should('have.value', 'test1@example.com')
+    cy.url().should('include', '/court-register/email/create?id=SHFCC')
+    cy.task('getAddedCourtEmailAddresses', sheffieldCrownCourt.courtId).should('deep.equal', [
+      { address: 'test1@example.com' },
+    ])
+
+    cy.task('stubAddCourtEmailAddress', sheffieldCrownCourt.courtId)
+    pageWithErrors.emailAddress().clear().type('new.email@example.com')
+    pageWithErrors.saveButton().click()
+
+    CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
+    cy.url().should('include', '/court-register/details?id=SHFCC&action=UPDATED')
+    cy.task('getAddedCourtEmailAddresses', sheffieldCrownCourt.courtId).should('have.deep.members', [
+      { address: 'test1@example.com' },
+      { address: 'new.email@example.com' },
+    ])
+  })
 })

@@ -1,7 +1,8 @@
 import type { AddAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addAddressValidator'
-import { AgencyAddress, UpdatePrisonAddress } from '../../@types/prisonRegister'
+import { UpdatePrisonAddress } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('addAddressValidator', () => {
   const req = {
@@ -9,7 +10,7 @@ describe('addAddressValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const addAddress = jest.fn<Promise<AgencyAddress>, [UpdatePrisonAddress]>()
+  const addAddress = jest.fn<Promise<CourtMutationResponse>, [UpdatePrisonAddress]>()
 
   const validForm: AddAddressForm = {
     addressline1: '1 High Street',
@@ -24,7 +25,7 @@ describe('addAddressValidator', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    addAddress.mockResolvedValue({ id: 1, town: 'Sheffield' })
+    addAddress.mockResolvedValue({ success: true })
   })
 
   it('returns to court details page with a success confirmation when valid', async () => {
@@ -43,6 +44,13 @@ describe('addAddressValidator', () => {
       postcode: 'S1 2BJ',
       country: 'England',
     })
+  })
+
+  it('flashes the API user message and returns to the form when adding fails', async () => {
+    addAddress.mockResolvedValue({ success: false, userMessage: 'This address already exists' })
+
+    expect(await validate(validForm, req, addAddress)).toEqual(createPage)
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#addressline1', text: 'This address already exists' }])
   })
 
   it('allows the optional fields to be empty', async () => {
@@ -90,5 +98,6 @@ describe('addAddressValidator', () => {
     addAddress.mockRejectedValue(new Error('Server error'))
 
     await expect(validate(validForm, req, addAddress)).rejects.toThrow('Server error')
+    expect(req.flash).not.toHaveBeenCalled()
   })
 })
