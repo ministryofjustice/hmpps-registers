@@ -1,7 +1,8 @@
 import type { AddEmailAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addEmailAddressValidator'
-import { AgencyEmailAddress, EmailAddress } from '../../@types/prisonRegister'
+import { EmailAddress } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('addEmailAddressValidator', () => {
   const req = {
@@ -9,7 +10,7 @@ describe('addEmailAddressValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const addEmailAddress = jest.fn<Promise<AgencyEmailAddress>, [EmailAddress]>()
+  const addEmailAddress = jest.fn<Promise<CourtMutationResponse>, [EmailAddress]>()
 
   const validForm: AddEmailAddressForm = {
     emailAddress: 'sheffield.court@example.com',
@@ -18,7 +19,7 @@ describe('addEmailAddressValidator', () => {
   describe('validate', () => {
     beforeEach(() => {
       jest.resetAllMocks()
-      addEmailAddress.mockResolvedValue({ id: 1, address: 'sheffield.court@example.com' })
+      addEmailAddress.mockResolvedValue({ success: true })
     })
 
     it('returns to court details page when valid', async () => {
@@ -32,6 +33,22 @@ describe('addEmailAddressValidator', () => {
       await validate(validForm, req, addEmailAddress)
 
       expect(addEmailAddress).toHaveBeenCalledWith({ address: 'sheffield.court@example.com' })
+    })
+
+    it('flashes the API user message and returns to the form when adding fails', async () => {
+      addEmailAddress.mockResolvedValue({ success: false, userMessage: 'This email address already exists' })
+
+      expect(await validate(validForm, req, addEmailAddress)).toEqual('/court-register/email/create?id=SHFCC')
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#emailAddress', text: 'This email address already exists' },
+      ])
+    })
+
+    it('propagates unexpected API errors', async () => {
+      addEmailAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(validate(validForm, req, addEmailAddress)).rejects.toThrow('Server error')
+      expect(req.flash).not.toHaveBeenCalled()
     })
 
     it('emailAddress must be present', async () => {

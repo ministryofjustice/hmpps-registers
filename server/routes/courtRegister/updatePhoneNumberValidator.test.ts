@@ -1,19 +1,20 @@
 import type { UpdatePhoneNumberForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updatePhoneNumberValidator'
-import { AgencyPhoneNumber, PhoneNumber } from '../../@types/prisonRegister'
+import { PhoneNumber } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('updatePhoneNumberValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const updatePhoneNumber = jest.fn<Promise<AgencyPhoneNumber>, [PhoneNumber]>()
+  const updatePhoneNumber = jest.fn<Promise<CourtMutationResponse>, [PhoneNumber]>()
   const validForm: UpdatePhoneNumberForm = { phoneNumber: '0114 555 9898', phoneId: 10000 }
 
   beforeEach(() => {
     jest.resetAllMocks()
-    updatePhoneNumber.mockResolvedValue({ id: 10000, number: validForm.phoneNumber })
+    updatePhoneNumber.mockResolvedValue({ success: true })
   })
 
   it('returns to court details with a success confirmation when valid', async () => {
@@ -30,6 +31,17 @@ describe('updatePhoneNumberValidator', () => {
       expect(req.flash).not.toHaveBeenCalled()
     },
   )
+
+  it('flashes the API user message and returns to the selected phone form when updating fails', async () => {
+    updatePhoneNumber.mockResolvedValue({ success: false, userMessage: 'This phone number already exists' })
+
+    expect(await validate(validForm, req, updatePhoneNumber)).toEqual(
+      '/court-register/phone/update?id=SHFCC&phoneId=10000',
+    )
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#phoneNumber', text: 'This phone number already exists' },
+    ])
+  })
 
   it('phoneNumber must be present', async () => {
     const form = { phoneId: 10000 } as UpdatePhoneNumberForm
@@ -64,5 +76,6 @@ describe('updatePhoneNumberValidator', () => {
     updatePhoneNumber.mockRejectedValue(new Error('Server error'))
 
     await expect(validate(validForm, req, updatePhoneNumber)).rejects.toThrow('Server error')
+    expect(req.flash).not.toHaveBeenCalled()
   })
 })

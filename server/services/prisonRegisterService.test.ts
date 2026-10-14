@@ -605,10 +605,10 @@ describe('Prison Register service', () => {
         })
       })
 
-      it('will return the created address', async () => {
+      it('will return success when the address is created', async () => {
         const result = await prisonRegisterService.addCourtAddress({}, 'SHFCC', address)
 
-        expect(result).toEqual(createdAddress)
+        expect(result).toEqual({ success: true })
       })
     })
 
@@ -645,7 +645,7 @@ describe('Prison Register service', () => {
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
-      expect(result).toEqual(updatedAddress)
+      expect(result).toEqual({ success: true })
     })
 
     it('will omit blank optional fields when clearing them', async () => {
@@ -704,10 +704,10 @@ describe('Prison Register service', () => {
         expect(sentPhoneNumber).toEqual(phoneNumber)
       })
 
-      it('will return the created phone number', async () => {
+      it('will return success when the phone number is created', async () => {
         const result = await prisonRegisterService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
 
-        expect(result).toEqual(createdPhoneNumber)
+        expect(result).toEqual({ success: true })
       })
     })
 
@@ -753,10 +753,41 @@ describe('Prison Register service', () => {
         expect(sentEmailAddress).toEqual(emailAddress)
       })
 
-      it('will return the created email address', async () => {
+      it('will return success when the email address is created', async () => {
         const result = await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
 
-        expect(result).toEqual(createdEmailAddress)
+        expect(result).toEqual({ success: true })
+      })
+    })
+
+    it('will return the user message from a 400 response without requiring an error property', async () => {
+      fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(400, {
+        userMessage: 'This email address already exists',
+        developerMessage: 'Duplicate email',
+      })
+
+      expect(await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).toEqual({
+        success: false,
+        userMessage: 'This email address already exists',
+      })
+    })
+
+    it.each([{}, { userMessage: null }, { userMessage: '' }, { userMessage: '   ' }])(
+      'will propagate a 400 response without a usable user message: %j',
+      async body => {
+        fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(400, body)
+
+        await expect(prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject({
+          status: 400,
+        })
+      },
+    )
+
+    it('will propagate a server error even when it contains a user message', async () => {
+      fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(500, { userMessage: 'Service unavailable' })
+
+      await expect(prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject({
+        status: 500,
       })
     })
 
@@ -802,10 +833,10 @@ describe('Prison Register service', () => {
         expect(sentPhoneNumber).toEqual(phoneNumber)
       })
 
-      it('will return the updated phone number', async () => {
+      it('will return success when the phone number is updated', async () => {
         const result = await prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
 
-        expect(result).toEqual(updatedPhoneNumber)
+        expect(result).toEqual({ success: true })
       })
     })
 
@@ -852,10 +883,10 @@ describe('Prison Register service', () => {
         expect(sentEmailAddress).toEqual(emailAddress)
       })
 
-      it('will return the updated email address', async () => {
+      it('will return success when the email address is updated', async () => {
         const result = await prisonRegisterService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
 
-        expect(result).toEqual(updatedEmailAddress)
+        expect(result).toEqual({ success: true })
       })
     })
 
@@ -868,6 +899,94 @@ describe('Prison Register service', () => {
       await expect(prisonRegisterService.updateCourtEmailAddress({}, 'UNKNOWN', 10000, emailAddress)).rejects.toThrow(
         'Not Found',
       )
+    })
+  })
+
+  describe.each([
+    {
+      method: 'addCourtEmailAddress',
+      httpMethod: 'post' as const,
+      path: '/courts/id/SHFCC/email-address',
+      invoke: (service: PrisonRegisterService) =>
+        service.addCourtEmailAddress({}, 'SHFCC', { address: 'sheffield.court@example.com' }),
+    },
+    {
+      method: 'updateCourtEmailAddress',
+      httpMethod: 'put' as const,
+      path: '/courts/id/SHFCC/email-address/10000',
+      invoke: (service: PrisonRegisterService) =>
+        service.updateCourtEmailAddress({}, 'SHFCC', 10000, { address: 'sheffield.court@example.com' }),
+    },
+    {
+      method: 'addCourtPhoneNumber',
+      httpMethod: 'post' as const,
+      path: '/courts/id/SHFCC/phone-number',
+      invoke: (service: PrisonRegisterService) => service.addCourtPhoneNumber({}, 'SHFCC', { number: '0114 555 9898' }),
+    },
+    {
+      method: 'updateCourtPhoneNumber',
+      httpMethod: 'put' as const,
+      path: '/courts/id/SHFCC/phone-number/10000',
+      invoke: (service: PrisonRegisterService) =>
+        service.updateCourtPhoneNumber({}, 'SHFCC', 10000, { number: '0114 555 9898' }),
+    },
+    {
+      method: 'addCourtAddress',
+      httpMethod: 'post' as const,
+      path: '/courts/id/SHFCC/address',
+      invoke: (service: PrisonRegisterService) =>
+        service.addCourtAddress({}, 'SHFCC', { town: 'Sheffield', postcode: 'S1 2BJ', country: 'England' }),
+    },
+    {
+      method: 'updateCourtAddress',
+      httpMethod: 'put' as const,
+      path: '/courts/id/SHFCC/address/2',
+      invoke: (service: PrisonRegisterService) =>
+        service.updateCourtAddress({}, 'SHFCC', 2, {
+          town: 'Sheffield',
+          postcode: 'S1 2BJ',
+          country: 'England',
+        }),
+    },
+  ])('$method API errors', ({ httpMethod, path, invoke }) => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('returns a 400 user message without requiring an error property', async () => {
+      const scope = fakePrisonRegister[httpMethod](path).reply(400, {
+        userMessage: 'This value already exists',
+        developerMessage: 'Duplicate value',
+      })
+
+      await expect(invoke(prisonRegisterService)).resolves.toEqual({
+        success: false,
+        userMessage: 'This value already exists',
+      })
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([
+      {},
+      { userMessage: null },
+      { userMessage: '' },
+      { userMessage: '   ' },
+      { userMessage: '\t\n' },
+      { userMessage: 123 },
+      { userMessage: false },
+      { userMessage: [] },
+      { userMessage: {} },
+    ])('propagates a 400 response without a usable user message: %j', async body => {
+      fakePrisonRegister[httpMethod](path).reply(400, body)
+
+      await expect(invoke(prisonRegisterService)).rejects.toMatchObject({ status: 400 })
+    })
+
+    it('propagates a server error even when it contains a user message', async () => {
+      fakePrisonRegister[httpMethod](path).reply(500, { userMessage: 'Service unavailable' })
+
+      await expect(invoke(prisonRegisterService)).rejects.toMatchObject({ status: 500 })
     })
   })
 

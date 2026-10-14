@@ -50,6 +50,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubDeleteCourtPhoneNumber: prisonRegister.stubDeleteCourtPhoneNumber,
     getDeletedCourtPhoneNumberRequests: prisonRegister.getDeletedCourtPhoneNumberRequests,
     stubAddCourtEmailAddress: prisonRegister.stubAddCourtEmailAddress,
+    stubAddCourtEmailAddressError: prisonRegister.stubAddCourtEmailAddressError,
+    stubCourtMutationError: prisonRegister.stubCourtMutationError,
     getAddedCourtEmailAddresses: prisonRegister.getAddedCourtEmailAddresses,
     stubUpdateCourtEmailAddress: prisonRegister.stubUpdateCourtEmailAddress,
     getUpdatedCourtEmailAddresses: prisonRegister.getUpdatedCourtEmailAddresses,

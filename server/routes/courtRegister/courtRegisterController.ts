@@ -9,7 +9,7 @@ import AddAgencyEmailView from '../agencyRegisters/addEmailView'
 import trimForm from '../../utils/trim'
 import addEmailAddressValidator from './addEmailAddressValidator'
 import updateEmailAddressValidator from './updateEmailAddressValidator'
-import { AgencyEmailAddress, EmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
+import { EmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
 import UpdateAgencyEmailView from '../agencyRegisters/updateEmailView'
 import AddAgencyPhoneView from '../agencyRegisters/addPhoneView'
 import addPhoneNumberValidator from './addPhoneNumberValidator'
@@ -71,7 +71,9 @@ export default class PrisonRegisterController {
           req.query.id as string,
           address,
         )
-        delete req.session.addAddressForm
+        if (addedAddress.success) {
+          delete req.session.addAddressForm
+        }
         return addedAddress
       }),
     )
@@ -119,7 +121,9 @@ export default class PrisonRegisterController {
           req.session.updateAddressForm.addressId,
           address,
         )
-        delete req.session.updateAddressForm
+        if (updatedAddress.success) {
+          delete req.session.updateAddressForm
+        }
         return updatedAddress
       }),
     )
@@ -151,7 +155,9 @@ export default class PrisonRegisterController {
           req.query.id as string,
           phoneNumber,
         )
-        delete req.session.addPhoneNumberForm
+        if (addedPhoneNumber.success) {
+          delete req.session.addPhoneNumberForm
+        }
         return addedPhoneNumber
       }),
     )
@@ -177,19 +183,17 @@ export default class PrisonRegisterController {
     req.session.addEmailAddressForm = trimForm(req.body)
 
     res.redirect(
-      await addEmailAddressValidator(
-        req.session.addEmailAddressForm,
-        req,
-        async (addEmailAddress: EmailAddress): Promise<AgencyEmailAddress> => {
-          const emailAddress = await this.prisonRegisterService.addCourtEmailAddress(
-            context(res),
-            req.query.id as string,
-            addEmailAddress,
-          )
+      await addEmailAddressValidator(req.session.addEmailAddressForm, req, async (addEmailAddress: EmailAddress) => {
+        const result = await this.prisonRegisterService.addCourtEmailAddress(
+          context(res),
+          req.query.id as string,
+          addEmailAddress,
+        )
+        if (result.success) {
           delete req.session.addEmailAddressForm
-          return emailAddress
-        },
-      ),
+        }
+        return result
+      }),
     )
   }
 
@@ -222,7 +226,9 @@ export default class PrisonRegisterController {
           Number(req.session.updatePhoneNumberForm.phoneId),
           phoneNumber,
         )
-        delete req.session.updatePhoneNumberForm
+        if (updatedPhoneNumber.success) {
+          delete req.session.updatePhoneNumberForm
+        }
         return updatedPhoneNumber
       }),
     )
@@ -276,14 +282,16 @@ export default class PrisonRegisterController {
       await updateEmailAddressValidator(
         req.session.updateEmailAddressForm,
         req,
-        async (updateEmailAddress: UpdateEmailAddress): Promise<AgencyEmailAddress> => {
+        async (updateEmailAddress: UpdateEmailAddress) => {
           const emailAddress = await this.prisonRegisterService.updateCourtEmailAddress(
             context(res),
             req.query.id as string,
             Number(req.session.updateEmailAddressForm.emailId),
             updateEmailAddress,
           )
-          delete req.session.updateEmailAddressForm
+          if (emailAddress.success) {
+            delete req.session.updateEmailAddressForm
+          }
           return emailAddress
         },
       ),

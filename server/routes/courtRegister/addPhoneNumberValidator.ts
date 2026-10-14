@@ -1,12 +1,13 @@
 import { Request } from 'express'
 import type { AddPhoneNumberForm } from 'agencyForms'
 import validatePhoneNumber from '../../validation/phoneNumberValidation'
-import { AgencyPhoneNumber, PhoneNumber } from '../../@types/prisonRegister'
+import { PhoneNumber } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 export default async function validate(
   form: AddPhoneNumberForm,
   req: Request,
-  addPhoneNumber: (phoneNumber: PhoneNumber) => Promise<AgencyPhoneNumber>,
+  addPhoneNumber: (phoneNumber: PhoneNumber) => Promise<CourtMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validatePhoneNumber(form)
@@ -16,7 +17,11 @@ export default async function validate(
     return `/court-register/phone/create?id=${id}`
   }
 
-  await addPhoneNumber({ number: form.phoneNumber })
+  const result = await addPhoneNumber({ number: form.phoneNumber })
+  if (result.success === false) {
+    req.flash('errors', [{ href: '#phoneNumber', text: result.userMessage }])
+    return `/court-register/phone/create?id=${id}`
+  }
 
   return `/court-register/details?id=${id}&action=UPDATED`
 }

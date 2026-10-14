@@ -41,6 +41,8 @@ export interface AddUpdateResponse {
   errorMessage?: string
 }
 
+export type CourtMutationResponse = { success: true } | { success: false; userMessage: string }
+
 type ServerError = { status: number; error: string; message: string }
 
 export default class PrisonRegisterService {
@@ -48,6 +50,28 @@ export default class PrisonRegisterService {
 
   private static restClient(token: string): RestClient {
     return new RestClient('Prison Register Api Client', config.apis.prisonRegister, token)
+  }
+
+  private static async courtMutation(request: () => Promise<unknown>): Promise<CourtMutationResponse> {
+    try {
+      await request()
+      return { success: true }
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        'status' in error &&
+        error.status === 400 &&
+        'data' in error &&
+        typeof error.data === 'object' &&
+        error.data !== null &&
+        'userMessage' in error.data &&
+        typeof error.data.userMessage === 'string' &&
+        error.data.userMessage.trim().length > 0
+      ) {
+        return { success: false, userMessage: error.data.userMessage }
+      }
+      throw error
+    }
   }
 
   async getPrisonsWithFilter(context: Context, filter: AllPrisonsFilter): Promise<Prison[]> {
@@ -219,18 +243,24 @@ export default class PrisonRegisterService {
     })
   }
 
-  async addCourtAddress(context: Context, courtId: string, address: UpdatePrisonAddress): Promise<AgencyAddress> {
+  async addCourtAddress(
+    context: Context,
+    courtId: string,
+    address: UpdatePrisonAddress,
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding address to court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).post<AgencyAddress>({
-      path: `/courts/id/${courtId}/address`,
-      data: {
-        ...address,
-        addressLine1: undefinedWhenAbsent(address.addressLine1),
-        addressLine2: undefinedWhenAbsent(address.addressLine2),
-        county: undefinedWhenAbsent(address.county),
-      },
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).post<AgencyAddress>({
+        path: `/courts/id/${courtId}/address`,
+        data: {
+          ...address,
+          addressLine1: undefinedWhenAbsent(address.addressLine1),
+          addressLine2: undefinedWhenAbsent(address.addressLine2),
+          county: undefinedWhenAbsent(address.county),
+        },
+      }),
+    )
   }
 
   async updateCourtAddress(
@@ -238,40 +268,50 @@ export default class PrisonRegisterService {
     courtId: string,
     addressId: number,
     address: UpdatePrisonAddress,
-  ): Promise<AgencyAddress> {
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating address for court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).put<AgencyAddress>({
-      path: `/courts/id/${courtId}/address/${addressId}`,
-      data: {
-        ...address,
-        addressLine1: undefinedWhenAbsent(address.addressLine1),
-        addressLine2: undefinedWhenAbsent(address.addressLine2),
-        county: undefinedWhenAbsent(address.county),
-      },
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).put<AgencyAddress>({
+        path: `/courts/id/${courtId}/address/${addressId}`,
+        data: {
+          ...address,
+          addressLine1: undefinedWhenAbsent(address.addressLine1),
+          addressLine2: undefinedWhenAbsent(address.addressLine2),
+          county: undefinedWhenAbsent(address.county),
+        },
+      }),
+    )
   }
 
-  async addCourtPhoneNumber(context: Context, courtId: string, phoneNumber: PhoneNumber): Promise<AgencyPhoneNumber> {
+  async addCourtPhoneNumber(
+    context: Context,
+    courtId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding phone number to court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).post<AgencyPhoneNumber>({
-      path: `/courts/id/${courtId}/phone-number`,
-      data: phoneNumber,
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).post<AgencyPhoneNumber>({
+        path: `/courts/id/${courtId}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
   }
 
   async addCourtEmailAddress(
     context: Context,
     courtId: string,
     emailAddress: EmailAddress,
-  ): Promise<AgencyEmailAddress> {
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding email address to court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).post<AgencyEmailAddress>({
-      path: `/courts/id/${courtId}/email-address`,
-      data: emailAddress,
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).post<AgencyEmailAddress>({
+        path: `/courts/id/${courtId}/email-address`,
+        data: emailAddress,
+      }),
+    )
   }
 
   async updateCourtPhoneNumber(
@@ -279,13 +319,15 @@ export default class PrisonRegisterService {
     courtId: string,
     phoneId: number,
     phoneNumber: PhoneNumber,
-  ): Promise<AgencyPhoneNumber> {
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating phone number for court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).put<AgencyPhoneNumber>({
-      path: `/courts/id/${courtId}/phone-number/${phoneId}`,
-      data: phoneNumber,
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).put<AgencyPhoneNumber>({
+        path: `/courts/id/${courtId}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
   }
 
   async updateCourtEmailAddress(
@@ -293,13 +335,15 @@ export default class PrisonRegisterService {
     courtId: string,
     emailId: number,
     emailAddress: UpdateEmailAddress,
-  ): Promise<AgencyEmailAddress> {
+  ): Promise<CourtMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating email address for court with id ${courtId}`)
-    return PrisonRegisterService.restClient(token).put<AgencyEmailAddress>({
-      path: `/courts/id/${courtId}/email-address/${emailId}`,
-      data: emailAddress,
-    })
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).put<AgencyEmailAddress>({
+        path: `/courts/id/${courtId}/email-address/${emailId}`,
+        data: emailAddress,
+      }),
+    )
   }
 
   async deleteCourtPhoneNumber(context: Context, courtId: string, phoneId: number): Promise<void> {

@@ -1,12 +1,13 @@
 import { Request } from 'express'
 import type { UpdateEmailAddressForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import { AgencyEmailAddress, UpdateEmailAddress } from '../../@types/prisonRegister'
+import { UpdateEmailAddress } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 export default async function validate(
   form: UpdateEmailAddressForm,
   req: Request,
-  updateEmailAddress: (addEmailAddress: UpdateEmailAddress) => Promise<AgencyEmailAddress>,
+  updateEmailAddress: (emailAddress: UpdateEmailAddress) => Promise<CourtMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validateAsync(
@@ -25,7 +26,11 @@ export default async function validate(
     return `/court-register/email/update?id=${id}&emailId=${form.emailId}`
   }
 
-  await updateEmailAddress(asEmailAddress(form))
+  const result = await updateEmailAddress(asEmailAddress(form))
+  if (result.success === false) {
+    req.flash('errors', [{ href: '#emailAddress', text: result.userMessage }])
+    return `/court-register/email/update?id=${id}&emailId=${form.emailId}`
+  }
 
   return `/court-register/details?id=${id}&action=UPDATED`
 }

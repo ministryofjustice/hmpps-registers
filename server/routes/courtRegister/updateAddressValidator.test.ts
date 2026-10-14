@@ -1,14 +1,15 @@
 import type { UpdateAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateAddressValidator'
-import { AgencyAddress, UpdatePrisonAddress } from '../../@types/prisonRegister'
+import { UpdatePrisonAddress } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('updateAddressValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const updateAddress = jest.fn<Promise<AgencyAddress>, [UpdatePrisonAddress]>()
+  const updateAddress = jest.fn<Promise<CourtMutationResponse>, [UpdatePrisonAddress]>()
   const validForm: UpdateAddressForm = {
     addressId: 2,
     addressline1: '1 High Street',
@@ -21,7 +22,7 @@ describe('updateAddressValidator', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    updateAddress.mockResolvedValue({ id: 2, town: 'Sheffield' })
+    updateAddress.mockResolvedValue({ success: true })
   })
 
   it('updates the address and returns to court details with a success confirmation', async () => {
@@ -35,6 +36,13 @@ describe('updateAddressValidator', () => {
       country: 'England',
     })
     expect(req.flash).not.toHaveBeenCalled()
+  })
+
+  it('flashes the API user message and returns to the selected address form when updating fails', async () => {
+    updateAddress.mockResolvedValue({ success: false, userMessage: 'This address already exists' })
+
+    expect(await validate(validForm, req, updateAddress)).toEqual('/court-register/address/update?id=SHFCC&addressId=2')
+    expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#addressline1', text: 'This address already exists' }])
   })
 
   it('allows optional address fields to be cleared', async () => {
@@ -86,5 +94,6 @@ describe('updateAddressValidator', () => {
     updateAddress.mockRejectedValue(new Error('Server error'))
 
     await expect(validate(validForm, req, updateAddress)).rejects.toThrow('Server error')
+    expect(req.flash).not.toHaveBeenCalled()
   })
 })

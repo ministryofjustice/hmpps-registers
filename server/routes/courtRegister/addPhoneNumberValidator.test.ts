@@ -1,19 +1,20 @@
 import type { AddPhoneNumberForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addPhoneNumberValidator'
-import { AgencyPhoneNumber, PhoneNumber } from '../../@types/prisonRegister'
+import { PhoneNumber } from '../../@types/prisonRegister'
+import type { CourtMutationResponse } from '../../services/prisonRegisterService'
 
 describe('addPhoneNumberValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const addPhoneNumber = jest.fn<Promise<AgencyPhoneNumber>, [PhoneNumber]>()
+  const addPhoneNumber = jest.fn<Promise<CourtMutationResponse>, [PhoneNumber]>()
   const validForm: AddPhoneNumberForm = { phoneNumber: '0114 555 9898' }
 
   beforeEach(() => {
     jest.resetAllMocks()
-    addPhoneNumber.mockResolvedValue({ id: 1, number: validForm.phoneNumber })
+    addPhoneNumber.mockResolvedValue({ success: true })
   })
 
   it('returns to court details page when valid', async () => {
@@ -30,6 +31,15 @@ describe('addPhoneNumberValidator', () => {
       expect(req.flash).not.toHaveBeenCalled()
     },
   )
+
+  it('flashes the API user message and returns to the form when adding fails', async () => {
+    addPhoneNumber.mockResolvedValue({ success: false, userMessage: 'This phone number already exists' })
+
+    expect(await validate(validForm, req, addPhoneNumber)).toEqual('/court-register/phone/create?id=SHFCC')
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#phoneNumber', text: 'This phone number already exists' },
+    ])
+  })
 
   it('phoneNumber must be present', async () => {
     const form = {} as AddPhoneNumberForm
@@ -60,5 +70,6 @@ describe('addPhoneNumberValidator', () => {
     addPhoneNumber.mockRejectedValue(new Error('Server error'))
 
     await expect(validate(validForm, req, addPhoneNumber)).rejects.toThrow('Server error')
+    expect(req.flash).not.toHaveBeenCalled()
   })
 })
