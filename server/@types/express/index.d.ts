@@ -1,4 +1,4 @@
-import type { AddAddressForm, AddPhoneNumberForm, UpdatePhoneNumberForm } from 'agencyForms'
+import type { AddAddressForm, UpdateAddressForm, AddPhoneNumberForm, UpdatePhoneNumberForm } from 'agencyForms'
 import type {
   AddNewPrisonForm,
   AmendPrisonDetailsForm,
@@ -29,6 +29,7 @@ declare module 'express-session' {
     allListPageLink: string
     addEmailAddressForm: AddEmailAddressForm
     addAddressForm: AddAddressForm
+    updateAddressForm: UpdateAddressForm
     addPhoneNumberForm: AddPhoneNumberForm
     updatePhoneNumberForm: UpdatePhoneNumberForm
     updateEmailAddressForm: UpdateEmailAddressForm

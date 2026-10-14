@@ -265,6 +265,209 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateAddress', () => {
+    const currentAddress = {
+      addressId: 2,
+      addressline1: '1 High Street',
+      addressline2: 'City Centre',
+      addresstown: 'Sheffield',
+      addresscounty: 'South Yorkshire',
+      addresspostcode: 'S1 2BJ',
+      addresscountry: 'England',
+    }
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.query.addressId = '2'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          addresses: [
+            data.address({ id: 1 }),
+            data.address({
+              id: 2,
+              addressLine1: '1 High Street',
+              addressLine2: 'City Centre',
+              town: 'Sheffield',
+              county: 'South Yorkshire',
+              postcode: 'S1 2BJ',
+              country: 'England',
+            }),
+          ],
+        }),
+      )
+    })
+
+    it('will load the selected address using the username and render the prefilled form', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateAddress(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyAddress', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: currentAddress,
+      })
+    })
+
+    it('will retain all submitted fields including empty values on validation errors', async () => {
+      const errors = [{ href: '#addresstown', text: 'Enter the town or city' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      const form = { ...currentAddress, addresstown: '', addresscounty: '', addresscountry: '' }
+      req.session.updateAddressForm = form
+
+      await controller.updateAddress(req, res)
+
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyAddress',
+        expect.objectContaining({ errors, form }),
+      )
+    })
+
+    it('will clear a previous submission on a fresh visit', async () => {
+      req.session.updateAddressForm = { ...currentAddress, addresstown: 'Leeds' }
+
+      await controller.updateAddress(req, res)
+
+      expect(req.session.updateAddressForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyAddress',
+        expect.objectContaining({ form: currentAddress }),
+      )
+    })
+
+    it('will not display a submitted form for a different address', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([{ href: '#addresstown', text: 'Enter the town or city' }])
+      req.session.updateAddressForm = { ...currentAddress, addressId: 1, addresstown: 'Leeds' }
+
+      await controller.updateAddress(req, res)
+
+      expect(req.session.updateAddressForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyAddress',
+        expect.objectContaining({ form: currentAddress }),
+      )
+    })
+
+    it('will display null address fields as empty values', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          addresses: [
+            { id: 2, addressLine1: null, addressLine2: null, town: null, county: null, postcode: null, country: null },
+          ],
+        }),
+      )
+
+      await controller.updateAddress(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyAddress',
+        expect.objectContaining({
+          form: {
+            addressId: 2,
+            addressline1: '',
+            addressline2: '',
+            addresstown: '',
+            addresscounty: '',
+            addresspostcode: '',
+            addresscountry: '',
+          },
+        }),
+      )
+    })
+
+    it('will return not found for an address not belonging to the court', async () => {
+      req.query.addressId = '99'
+
+      await expect(controller.updateAddress(req, res)).rejects.toMatchObject({ status: 404 })
+      expect(res.render).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('submitUpdateAddress', () => {
+    const validForm = {
+      addressId: '2',
+      addressline1: '1 High Street',
+      addressline2: 'City Centre',
+      addresstown: 'Sheffield',
+      addresscounty: 'South Yorkshire',
+      addresspostcode: 'S1 2BJ',
+      addresscountry: 'England',
+    }
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { ...validForm }
+      prisonRegisterService.updateCourtAddress.mockResolvedValue({ id: 2 })
+    })
+
+    it('will update the selected address using the username and clear the form on success', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateAddress(req, res)
+
+      expect(prisonRegisterService.updateCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 2, {
+        addressLine1: '1 High Street',
+        addressLine2: 'City Centre',
+        town: 'Sheffield',
+        county: 'South Yorkshire',
+        postcode: 'S1 2BJ',
+        country: 'England',
+      })
+      expect(req.session.updateAddressForm).toBeUndefined()
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('will trim submitted address fields', async () => {
+      req.body = {
+        ...validForm,
+        addressline1: '  1 High Street  ',
+        addressline2: '  City Centre  ',
+        addresstown: '  Sheffield  ',
+        addresscounty: '  South Yorkshire  ',
+        addresspostcode: '  S1 2BJ  ',
+      }
+
+      await controller.submitUpdateAddress(req, res)
+
+      expect(prisonRegisterService.updateCourtAddress).toHaveBeenCalledWith({}, 'SHFCC', 2, {
+        addressLine1: '1 High Street',
+        addressLine2: 'City Centre',
+        town: 'Sheffield',
+        county: 'South Yorkshire',
+        postcode: 'S1 2BJ',
+        country: 'England',
+      })
+    })
+
+    it('will retain an invalid form and redirect to the selected address', async () => {
+      req.body.addresspostcode = 'BANANAS'
+
+      await controller.submitUpdateAddress(req, res)
+
+      expect(prisonRegisterService.updateCourtAddress).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#addresspostcode', text: 'Enter a real postcode, like AA11AA' },
+      ])
+      expect(req.session.updateAddressForm).toEqual({ ...validForm, addressId: 2, addresspostcode: 'BANANAS' })
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/address/update?id=SHFCC&addressId=2')
+    })
+
+    it('will propagate API errors and retain the form without redirecting', async () => {
+      prisonRegisterService.updateCourtAddress.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdateAddress(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updateAddressForm).toEqual({ ...validForm, addressId: 2 })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+  })
+
   describe('addPhone', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

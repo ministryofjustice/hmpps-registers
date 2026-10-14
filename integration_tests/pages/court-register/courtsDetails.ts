@@ -18,6 +18,7 @@ const courtDetails = {
   emailAddress: () => cy.get('dt:contains("Email")').next(),
   phoneNumber: () => cy.get('dt:contains("Number")').next(),
   addAddressLink: () => cy.get('[data-qa=add-address-link]'),
+  updateAddressLink: () => cy.get('[data-qa=update-address-link]'),
   addPhoneNumberLink: () => cy.get('[data-qa=add-phone-number-link]'),
   updatePhoneNumberLink: () => cy.get('[data-qa=update-phone-number-link]'),
   deletePhoneNumberLink: () => cy.get('[data-qa=delete-phone-number-link]'),

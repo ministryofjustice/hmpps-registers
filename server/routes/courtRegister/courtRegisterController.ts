@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import AllCourtsView from './allCourtsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -16,6 +17,8 @@ import AddAgencyAddressView from '../agencyRegisters/addAddressView'
 import addAddressValidator from './addAddressValidator'
 import UpdateAgencyPhoneView from '../agencyRegisters/updatePhoneView'
 import updatePhoneNumberValidator from './updatePhoneNumberValidator'
+import UpdateAgencyAddressView from '../agencyRegisters/updateAddressView'
+import updateAddressValidator from './updateAddressValidator'
 
 function context(res: Response): Context {
   return {
@@ -70,6 +73,54 @@ export default class PrisonRegisterController {
         )
         delete req.session.addAddressForm
         return addedAddress
+      }),
+    )
+  }
+
+  async updateAddress(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const addressId = Number(req.query.addressId)
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const address = court.addresses.find(item => item.id === addressId)
+    if (!address) {
+      throw createError(404, 'Court address not found')
+    }
+    const errors = req.flash('errors')
+    if (!errors?.length || req.session.updateAddressForm?.addressId !== addressId) {
+      delete req.session.updateAddressForm
+    }
+    const form = req.session.updateAddressForm ?? {
+      addressId,
+      addressline1: address.addressLine1 ?? '',
+      addressline2: address.addressLine2 ?? '',
+      addresstown: address.town ?? '',
+      addresscounty: address.county ?? '',
+      addresspostcode: address.postcode ?? '',
+      addresscountry: address.country ?? '',
+    }
+    const view = new UpdateAgencyAddressView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      form,
+      errors,
+    )
+    res.render('pages/components/edit/updateAgencyAddress', view.renderArgs)
+  }
+
+  async submitUpdateAddress(req: Request, res: Response): Promise<void> {
+    req.session.updateAddressForm = trimForm(req.body)
+    req.session.updateAddressForm.addressId = Number(req.session.updateAddressForm.addressId)
+
+    res.redirect(
+      await updateAddressValidator(req.session.updateAddressForm, req, async address => {
+        const updatedAddress = await this.prisonRegisterService.updateCourtAddress(
+          context(res),
+          req.query.id as string,
+          req.session.updateAddressForm.addressId,
+          address,
+        )
+        delete req.session.updateAddressForm
+        return updatedAddress
       }),
     )
   }
