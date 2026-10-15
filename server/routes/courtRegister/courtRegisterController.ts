@@ -28,6 +28,8 @@ import UpdateAccessibleAccessView from './updateAccessibleAccessView'
 import updateAccessibleAccessValidator from './updateAccessibleAccessValidator'
 import UpdateAgencyCjitCodeView from '../agencyRegisters/updateCjitCodeView'
 import updateCjitCodeValidator from './updateCjitCodeValidator'
+import UpdateAgencyActiveView from '../agencyRegisters/updateActiveView'
+import updateActiveValidator from './updateActiveValidator'
 
 function context(res: Response): Context {
   return {
@@ -452,6 +454,43 @@ export default class PrisonRegisterController {
         })
         if (result.success) {
           delete req.session.updateCjitCodeForm
+        }
+        return result
+      }),
+    )
+  }
+
+  async updateActive(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateActiveForm
+    }
+    const view = new UpdateAgencyActiveView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      court.active,
+      court.inactiveDate,
+      errors,
+      req.session.updateActiveForm,
+    )
+    res.render('pages/components/edit/updateAgencyActive', view.renderArgs)
+  }
+
+  async submitUpdateActive(req: Request, res: Response): Promise<void> {
+    req.session.updateActiveForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updateActiveValidator(req.session.updateActiveForm, req, async update => {
+        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const updatedCourt = { ...updateCourtMapper(court), ...update }
+        if (update.active) {
+          delete updatedCourt.inactiveDate
+        }
+        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, updatedCourt)
+        if (result.success) {
+          delete req.session.updateActiveForm
         }
         return result
       }),

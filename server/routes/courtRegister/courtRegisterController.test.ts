@@ -1347,6 +1347,291 @@ describe('Court Register controller', () => {
     )
   })
 
+  describe('updateActive', () => {
+    beforeEach(() => {
+      jest.useFakeTimers({
+        now: new Date(2026, 9, 15, 9, 0),
+        doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'],
+      })
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', active: true }),
+      )
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
+    it('fetches the court with the user context and renders the current status, today and cancel link', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateActive(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyActive', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { active: 'true', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' },
+      })
+    })
+
+    it('preselects inactive and prefills the existing inactive date', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ active: false, inactiveDate: '2025-03-09' }))
+
+      await controller.updateActive(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyActive',
+        expect.objectContaining({
+          form: { active: 'false', inactiveDay: '9', inactiveMonth: '3', inactiveYear: '2025' },
+        }),
+      )
+    })
+
+    it.each([null, undefined])('defaults the date to today when the inactive date is %j', async inactiveDate => {
+      const court = data.court({ active: false })
+      court.inactiveDate = inactiveDate
+      prisonRegisterService.getCourt.mockResolvedValue(court)
+
+      await controller.updateActive(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyActive',
+        expect.objectContaining({
+          form: { active: 'false', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' },
+        }),
+      )
+    })
+
+    it.each([{ errors: [] }, { errors: undefined }])(
+      'clears a stale form on a fresh visit with no errors: %j',
+      async ({ errors }) => {
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updateActiveForm = { active: 'false', inactiveDay: '1', inactiveMonth: '1', inactiveYear: '2020' }
+
+        await controller.updateActive(req, res)
+
+        expect(req.session.updateActiveForm).toBeUndefined()
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyActive',
+          expect.objectContaining({
+            errors: [],
+            form: { active: 'true', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' },
+          }),
+        )
+      },
+    )
+
+    it.each([
+      { active: 'false', inactiveDay: '31', inactiveMonth: '2', inactiveYear: '2026' },
+      { active: 'false', inactiveDay: '', inactiveMonth: '', inactiveYear: '' },
+      {},
+    ])('retains the submitted form, including blank fields, when errors exist: %j', async form => {
+      const errors = [{ href: '#inactiveDate', text: 'Date deactivated must be a real date' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateActiveForm = form
+
+      await controller.updateActive(req, res)
+
+      expect(req.session.updateActiveForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyActive', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors,
+        form,
+      })
+    })
+
+    it('uses the current values when errors exist but there is no saved form', async () => {
+      const errors = [{ href: '#active', text: 'Court could not be updated' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updateActive(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyActive',
+        expect.objectContaining({
+          errors,
+          form: { active: 'true', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' },
+        }),
+      )
+    })
+  })
+
+  describe('submitUpdateActive', () => {
+    const latestCourt = () =>
+      data.court({
+        courtName: 'Latest court name',
+        description: 'Latest description',
+        active: false,
+        inactiveDate: '2025-01-01',
+        cjitCode: 'LATEST',
+        courtType: { code: 'MC', description: 'Magistrates Court' },
+        accessibleAccess: 'BY_ARRANGEMENT_ONLY',
+        area: { code: 'AREA', description: 'Area' },
+        region: { code: 'REGION', description: 'Region' },
+        geographicalArea: { code: 'GEO', description: 'Geographical area' },
+        localAuthority: { code: 'LOCAL', description: 'Local authority' },
+        payrollRegion: { code: 'PAYROLL', description: 'Payroll region' },
+      })
+    const preservedFields = {
+      courtName: 'Latest court name',
+      description: 'Latest description',
+      cjitCode: 'LATEST',
+      courtTypeCode: 'MC',
+      accessibleAccess: 'BY_ARRANGEMENT_ONLY',
+      areaCode: 'AREA',
+      regionCode: 'REGION',
+      geographicalAreaCode: 'GEO',
+      localAuthorityCode: 'LOCAL',
+      payrollRegionCode: 'PAYROLL',
+    }
+
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(latestCourt())
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFCC'
+      req.body = { active: 'false', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' }
+    })
+
+    it('fetches the latest court with the user context and preserves every other field when deactivating', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateActive(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledTimes(1)
+      expect(prisonRegisterService.updateCourtDetails.mock.calls[0]).toStrictEqual([
+        { username: 'tom' },
+        'SHFCC',
+        { ...preservedFields, active: false, inactiveDate: '2026-10-15' },
+      ])
+    })
+
+    it('omits the inactive date property entirely when activating, ignoring any submitted date', async () => {
+      req.body = { active: 'true', inactiveDay: '31', inactiveMonth: '2', inactiveYear: 'bad' }
+
+      await controller.submitUpdateActive(req, res)
+
+      const update = prisonRegisterService.updateCourtDetails.mock.calls[0][2]
+      expect(update).toStrictEqual({ ...preservedFields, active: true })
+      expect(Object.prototype.hasOwnProperty.call(update, 'inactiveDate')).toBe(false)
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('assigns the submitted date when the court has no existing inactive date', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ active: true, inactiveDate: undefined }))
+      req.body = { active: 'false', inactiveDay: '29', inactiveMonth: '2', inactiveYear: '2024' }
+
+      await controller.submitUpdateActive(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        {},
+        'SHFCC',
+        expect.objectContaining({ active: false, inactiveDate: '2024-02-29' }),
+      )
+    })
+
+    it('trims the submitted values before validating and retains the trimmed form until success', async () => {
+      req.body = { active: ' false ', inactiveDay: ' 05 ', inactiveMonth: ' 3 ', inactiveYear: ' 2026 ' }
+      prisonRegisterService.updateCourtDetails.mockImplementation(async () => {
+        expect(req.session.updateActiveForm).toEqual({
+          active: 'false',
+          inactiveDay: '05',
+          inactiveMonth: '3',
+          inactiveYear: '2026',
+        })
+        return { success: true }
+      })
+
+      await controller.submitUpdateActive(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        {},
+        'SHFCC',
+        expect.objectContaining({ active: false, inactiveDate: '2026-03-05' }),
+      )
+    })
+
+    it('redirects to court details and clears the form only after a successful update', async () => {
+      req.session.updateActiveForm = { active: 'true' }
+
+      await controller.submitUpdateActive(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updateActiveForm).toBeUndefined()
+      expect(req.flash).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      [{}, { href: '#active', text: 'Select active or inactive' }],
+      [{ active: '  ' }, { href: '#active', text: 'Select active or inactive' }],
+      [
+        { active: 'false', inactiveDay: ' ', inactiveMonth: '10', inactiveYear: '2026' },
+        { href: '#inactiveDate', text: 'Enter the date deactivated, including a day, month and year' },
+      ],
+      [
+        { active: 'false', inactiveDay: '31', inactiveMonth: '4', inactiveYear: '2026' },
+        { href: '#inactiveDate', text: 'Date deactivated must be a real date' },
+      ],
+      [
+        { active: 'false', inactiveDay: '1', inactiveMonth: '1', inactiveYear: '26' },
+        { href: '#inactiveDate', text: 'Date deactivated must be a real date' },
+      ],
+    ])('rejects invalid input before fetching or updating and retains the trimmed form: %j', async (body, error) => {
+      req.body = body
+
+      await controller.submitUpdateActive(req, res)
+
+      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateActiveForm).toEqual(
+        Object.fromEntries(Object.entries(body).map(([key, value]) => [key, value.trim()])),
+      )
+      expect(req.flash).toHaveBeenCalledWith('errors', [error])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/active/update?id=SHFCC')
+    })
+
+    it.each([{ active: 'true' }, { active: ' false ', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' }])(
+      'retains the submitted form and flashes the API user message when rejected: %j',
+      async body => {
+        req.body = body
+        prisonRegisterService.updateCourtDetails.mockResolvedValue({
+          success: false,
+          userMessage: 'Court could not be updated',
+        })
+
+        await controller.submitUpdateActive(req, res)
+
+        expect(req.session.updateActiveForm).toEqual({ ...body, active: body.active.trim() })
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#active', text: 'Court could not be updated' }])
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/active/update?id=SHFCC')
+      },
+    )
+
+    it.each(['getCourt', 'updateCourtDetails'] as const)(
+      'retains the trimmed form and propagates unexpected %s errors',
+      async method => {
+        const error = new Error('Server error')
+        req.body = { active: ' true ' }
+        prisonRegisterService[method].mockRejectedValue(error)
+
+        await expect(controller.submitUpdateActive(req, res)).rejects.toBe(error)
+
+        expect(req.session.updateActiveForm).toEqual({ active: 'true' })
+        expect(res.redirect).not.toHaveBeenCalled()
+        expect(req.flash).not.toHaveBeenCalled()
+        if (method === 'getCourt') {
+          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        }
+      },
+    )
+  })
+
   describe('updateNameDescription', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

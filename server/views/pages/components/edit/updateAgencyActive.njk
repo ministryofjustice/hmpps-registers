@@ -1,0 +1,64 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set mainClasses = "app-container govuk-body" %}
+{% set pageTitle = "Update active status - DPS" %}
+{% set title = "Update active status for " + (name) %}
+
+{% block content %}
+  {% if errors.length > 0 %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: errors,
+      attributes: { "data-qa-errors": true }
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Update active status</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {% set inactiveDateHtml %}
+          {{ govukDateInput({
+            id: "inactiveDate",
+            fieldset: {
+              legend: { text: "Date deactivated", classes: "govuk-fieldset__legend--m" }
+            },
+            hint: { text: "For example, 27 3 2026" },
+            errorMessage: errors | findError('inactiveDate'),
+            items: [
+              { name: "inactiveDay", label: "Day", value: form.inactiveDay, classes: "govuk-input--width-2" },
+              { name: "inactiveMonth", label: "Month", value: form.inactiveMonth, classes: "govuk-input--width-2" },
+              { name: "inactiveYear", label: "Year", value: form.inactiveYear, classes: "govuk-input--width-4" }
+            ]
+          }) }}
+        {% endset %}
+        {{ govukRadios({
+          idPrefix: "active",
+          name: "active",
+          fieldset: { legend: { text: "Active status", classes: "govuk-fieldset__legend--m" } },
+          errorMessage: errors | findError('active'),
+          items: [
+            { value: "true", text: "Active", checked: form.active == "true" },
+            { value: "false", text: "Inactive", checked: form.active == "false", conditional: { html: inactiveDateHtml } }
+          ]
+        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
