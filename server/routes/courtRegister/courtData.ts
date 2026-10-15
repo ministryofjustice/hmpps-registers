@@ -10,5 +10,19 @@ export const courtTypes = [
   { value: 'YC', text: 'Youth Court (YC)' },
 ]
 
-const data = { courtTypes }
+export const allCourtTypes = [
+  { code: 'CACD', description: 'Court of Appeal - Criminal Division' },
+  { code: 'CB', description: 'Combined Court' },
+  { code: 'CC', description: 'Crown Court' },
+  { code: 'CO', description: 'County Court' },
+  { code: 'DCM', description: 'District Court Marshal' },
+  { code: 'GCM', description: 'General Court Marshal' },
+  { code: 'IMM', description: 'Immigration Court' },
+  { code: 'MC', description: 'Magistrates Court' },
+  { code: 'OTHER', description: 'Courts Outside England and Wales' },
+  { code: 'YC', description: 'Youth Court' },
+  { code: 'UNK', description: 'Unknown' },
+]
+
+const data = { courtTypes, allCourtTypes }
 export default data

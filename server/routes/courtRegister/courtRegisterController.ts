@@ -21,6 +21,9 @@ import UpdateAgencyAddressView from '../agencyRegisters/updateAddressView'
 import updateAddressValidator from './updateAddressValidator'
 import UpdateAgencyNameDescriptionView from '../agencyRegisters/updateNameDescriptionView'
 import updateNameDescriptionValidator from './updateNameDescriptionValidator'
+import UpdateCourtTypeView from './updateCourtTypeView'
+import updateCourtTypeValidator from './updateCourtTypeValidator'
+import { allCourtTypes } from './courtData'
 
 function context(res: Response): Context {
   return {
@@ -337,6 +340,42 @@ export default class PrisonRegisterController {
           return result
         },
       ),
+    )
+  }
+
+  async updateCourtType(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateCourtTypeForm
+    }
+    const view = new UpdateCourtTypeView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      allCourtTypes,
+      errors,
+      req.session.updateCourtTypeForm ? req.session.updateCourtTypeForm.courtType : court.courtType?.code,
+    )
+    res.render('pages/court-register/updateCourtType', view.renderArgs)
+  }
+
+  async submitUpdateCourtType(req: Request, res: Response): Promise<void> {
+    req.session.updateCourtTypeForm = trimForm(req.body)
+    const courtId = req.query.id as string
+
+    res.redirect(
+      await updateCourtTypeValidator(req.session.updateCourtTypeForm, req, async courtTypeCode => {
+        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+          ...updateCourtMapper(court),
+          courtTypeCode,
+        })
+        if (result.success) {
+          delete req.session.updateCourtTypeForm
+        }
+        return result
+      }),
     )
   }
 

@@ -1287,6 +1287,167 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateCourtType', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          courtType: { code: 'CC', description: 'Crown Court' },
+        }),
+      )
+      req.query.id = 'SHFCC'
+    })
+
+    const checkedTypes = () =>
+      (res.render as jest.Mock).mock.calls[0][1].courtTypes
+        .filter((type: { checked: boolean }) => type.checked)
+        .map((type: { value: string }) => type.value)
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateCourtType(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the update court type page with all types and the current type checked', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.updateCourtType(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/updateCourtType',
+        expect.objectContaining({
+          name: 'Sheffield Crown Court',
+          navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+          errors: [],
+        }),
+      )
+      expect((res.render as jest.Mock).mock.calls[0][1].courtTypes).toHaveLength(11)
+      expect(checkedTypes()).toEqual(['CC'])
+    })
+
+    it('will check nothing when the court has no type', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ courtType: null }))
+
+      await controller.updateCourtType(req, res)
+
+      expect(checkedTypes()).toEqual([])
+    })
+
+    it('will redisplay the submitted type when there are errors', async () => {
+      const errors = [{ href: '#courtType', text: 'Court type not allowed' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateCourtTypeForm = { courtType: 'MC' }
+
+      await controller.updateCourtType(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/updateCourtType',
+        expect.objectContaining({ errors }),
+      )
+      expect(checkedTypes()).toEqual(['MC'])
+    })
+
+    it('will check nothing when the submitted form had no type selected', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([{ href: '#courtType', text: 'Select a court type' }])
+      req.session.updateCourtTypeForm = { courtType: '' }
+
+      await controller.updateCourtType(req, res)
+
+      expect(checkedTypes()).toEqual([])
+    })
+
+    it('will clear any previous form when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.updateCourtTypeForm = { courtType: 'MC' }
+
+      await controller.updateCourtType(req, res)
+
+      expect(req.session.updateCourtTypeForm).toBeUndefined()
+      expect(checkedTypes()).toEqual(['CC'])
+    })
+  })
+
+  describe('submitUpdateCourtType', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          description: 'Sheffield Main Crown Court',
+          active: true,
+          cjitCode: 'C00SH00',
+          accessibleAccess: 'NONE',
+          courtType: { code: 'CC', description: 'Crown Court' },
+        }),
+      )
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFCC'
+      req.body = { courtType: 'MC' }
+    })
+
+    it('will update the court with all existing fields and the new court type', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateCourtType(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: 'Sheffield Crown Court',
+        description: 'Sheffield Main Crown Court',
+        active: true,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        accessibleAccess: 'NONE',
+        areaCode: 'YH',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+        courtTypeCode: 'MC',
+      })
+    })
+
+    it('will redirect to the court details page and clear the form', async () => {
+      await controller.submitUpdateCourtType(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updateCourtTypeForm).toBeUndefined()
+    })
+
+    it('will retain the form and show the API user message when the update is rejected', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: false, userMessage: 'Not allowed' })
+
+      await controller.submitUpdateCourtType(req, res)
+
+      expect(req.session.updateCourtTypeForm).toEqual({ courtType: 'MC' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#courtType', text: 'Not allowed' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/court-type/update?id=SHFCC')
+    })
+
+    it('will keep the form in the session when updating fails unexpectedly', async () => {
+      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdateCourtType(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updateCourtTypeForm).toEqual({ courtType: 'MC' })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it.each([{}, { courtType: 'XX' }])('will not update the court when the type is invalid: %j', async body => {
+      req.body = body
+
+      await controller.submitUpdateCourtType(req, res)
+
+      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/court-type/update?id=SHFCC')
+    })
+  })
+
   describe('deletePhone', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

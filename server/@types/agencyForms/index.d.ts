@@ -27,4 +27,7 @@ declare module 'agencyForms' {
     name: string
     description: string
   }
+  export interface UpdateCourtTypeForm {
+    courtType: string
+  }
 }
