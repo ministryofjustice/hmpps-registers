@@ -6,6 +6,7 @@ import type {
   UpdateNameDescriptionForm,
   UpdateCourtTypeForm,
   UpdateAccessibleAccessForm,
+  UpdateCjitCodeForm,
 } from 'agencyForms'
 import type {
   AddNewPrisonForm,
@@ -44,6 +45,7 @@ declare module 'express-session' {
     updateNameDescriptionForm: UpdateNameDescriptionForm
     updateCourtTypeForm: UpdateCourtTypeForm
     updateAccessibleAccessForm: UpdateAccessibleAccessForm
+    updateCjitCodeForm: UpdateCjitCodeForm
   }
 }
 

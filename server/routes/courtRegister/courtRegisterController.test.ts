@@ -1125,6 +1125,228 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateCjitCode', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', cjitCode: 'C00SH00' }),
+      )
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('fetches the court with the user context and renders the current code and cancel link', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateCjitCode(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyCjitCode', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        cjitCode: 'C00SH00',
+      })
+    })
+
+    it.each([null, undefined])('prefills an empty code when the current value is %j', async cjitCode => {
+      const court = data.court({})
+      court.cjitCode = cjitCode
+      prisonRegisterService.getCourt.mockResolvedValue(court)
+
+      await controller.updateCjitCode(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyCjitCode',
+        expect.objectContaining({ cjitCode: '' }),
+      )
+    })
+
+    it.each([{ errors: [] }, { errors: undefined }])(
+      'clears a stale form when there are no errors: %j',
+      async ({ errors }) => {
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updateCjitCodeForm = { cjitCode: 'OLD' }
+
+        await controller.updateCjitCode(req, res)
+
+        expect(req.session.updateCjitCodeForm).toBeUndefined()
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyCjitCode',
+          expect.objectContaining({ errors: [], cjitCode: 'C00SH00' }),
+        )
+      },
+    )
+
+    it.each([{ cjitCode: '1234567890123' }, { cjitCode: '' }, {}])(
+      'retains the submitted code rather than the current value when errors exist: %j',
+      async form => {
+        const errors = [{ href: '#cjitCode', text: 'Could not update CJIT code' }]
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updateCjitCodeForm = form
+
+        await controller.updateCjitCode(req, res)
+
+        expect(req.session.updateCjitCodeForm).toEqual(form)
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyCjitCode',
+          expect.objectContaining({ errors, cjitCode: form.cjitCode }),
+        )
+      },
+    )
+
+    it('uses the current code when errors exist but there is no saved form', async () => {
+      const errors = [{ href: '#cjitCode', text: 'Could not update CJIT code' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updateCjitCode(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyCjitCode',
+        expect.objectContaining({ errors, cjitCode: 'C00SH00' }),
+      )
+    })
+  })
+
+  describe('submitUpdateCjitCode', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ cjitCode: 'C00SH00' }))
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFCC'
+      req.body = { cjitCode: 'NEWCODE' }
+    })
+
+    it('fetches the latest court and preserves every other update field with the user context', async () => {
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtName: 'Latest court name',
+          description: 'Latest description',
+          active: false,
+          inactiveDate: '2026-10-01',
+          courtType: { code: 'MC', description: 'Magistrates Court' },
+          accessibleAccess: 'BY_ARRANGEMENT_ONLY',
+          area: { code: 'AREA', description: 'Area' },
+          region: { code: 'REGION', description: 'Region' },
+          geographicalArea: { code: 'GEO', description: 'Geographical area' },
+          localAuthority: { code: 'LOCAL', description: 'Local authority' },
+          payrollRegion: { code: 'PAYROLL', description: 'Payroll region' },
+        }),
+      )
+
+      await controller.submitUpdateCjitCode(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: 'Latest court name',
+        description: 'Latest description',
+        active: false,
+        inactiveDate: '2026-10-01',
+        courtTypeCode: 'MC',
+        accessibleAccess: 'BY_ARRANGEMENT_ONLY',
+        areaCode: 'AREA',
+        regionCode: 'REGION',
+        geographicalAreaCode: 'GEO',
+        localAuthorityCode: 'LOCAL',
+        payrollRegionCode: 'PAYROLL',
+        cjitCode: 'NEWCODE',
+      })
+    })
+
+    it('redirects to court details and clears the form only after a successful update', async () => {
+      req.session.updateCjitCodeForm = { cjitCode: 'OLD' }
+
+      await controller.submitUpdateCjitCode(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updateCjitCodeForm).toBeUndefined()
+      expect(req.flash).not.toHaveBeenCalled()
+    })
+
+    it('trims before validating so a padded 12-character code is accepted', async () => {
+      req.body.cjitCode = '  123456789012  '
+
+      await controller.submitUpdateCjitCode(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        {},
+        'SHFCC',
+        expect.objectContaining({ cjitCode: '123456789012' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it.each([{ cjitCode: '' }, { cjitCode: '   ' }, {}])(
+      'clears the code for a blank or missing value: %j',
+      async body => {
+        req.body = body
+
+        await controller.submitUpdateCjitCode(req, res)
+
+        expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+          {},
+          'SHFCC',
+          expect.objectContaining({ cjitCode: '' }),
+        )
+        expect(req.session.updateCjitCodeForm).toBeUndefined()
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      },
+    )
+
+    it('rejects a 13-character code before fetching or updating the court and retains the trimmed form', async () => {
+      req.body.cjitCode = '  1234567890123  '
+
+      await controller.submitUpdateCjitCode(req, res)
+
+      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateCjitCodeForm).toEqual({ cjitCode: '1234567890123' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#cjitCode', text: 'CJIT code must be 12 characters or fewer' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/cjit-code/update?id=SHFCC')
+    })
+
+    it.each([{ cjitCode: '  NEWCODE  ' }, { cjitCode: '' }, {}])(
+      'retains the submitted form and flashes the API user message when rejected: %j',
+      async body => {
+        req.body = body
+        prisonRegisterService.updateCourtDetails.mockResolvedValue({
+          success: false,
+          userMessage: 'CJIT code could not be updated',
+        })
+
+        await controller.submitUpdateCjitCode(req, res)
+
+        expect(req.session.updateCjitCodeForm).toEqual(
+          body.cjitCode === undefined ? {} : { cjitCode: body.cjitCode.trim() },
+        )
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#cjitCode', text: 'CJIT code could not be updated' },
+        ])
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/cjit-code/update?id=SHFCC')
+      },
+    )
+
+    it.each(['getCourt', 'updateCourtDetails'] as const)(
+      'retains the trimmed form and propagates unexpected %s errors',
+      async method => {
+        const error = new Error('Server error')
+        req.body.cjitCode = '  NEWCODE  '
+        prisonRegisterService[method].mockRejectedValue(error)
+
+        await expect(controller.submitUpdateCjitCode(req, res)).rejects.toBe(error)
+
+        expect(req.session.updateCjitCodeForm).toEqual({ cjitCode: 'NEWCODE' })
+        expect(res.redirect).not.toHaveBeenCalled()
+        expect(req.flash).not.toHaveBeenCalled()
+        if (method === 'getCourt') {
+          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        }
+      },
+    )
+  })
+
   describe('updateNameDescription', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

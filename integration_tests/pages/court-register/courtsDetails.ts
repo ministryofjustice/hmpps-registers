@@ -21,6 +21,7 @@ const courtDetails = {
   updateDescriptionLink: () => cy.get('[data-qa=update-description-link]'),
   updateCourtTypeLink: () => cy.get('[data-qa=update-court-type-link]'),
   updateAccessibleAccessLink: () => cy.get('[data-qa=update-accessible-access-link]'),
+  updateCjitCodeLink: () => cy.get('[data-qa=update-cjit-code-link]'),
   addAddressLink: () => cy.get('[data-qa=add-address-link]'),
   updateAddressLink: () => cy.get('[data-qa=update-address-link]'),
   addPhoneNumberLink: () => cy.get('[data-qa=add-phone-number-link]'),
