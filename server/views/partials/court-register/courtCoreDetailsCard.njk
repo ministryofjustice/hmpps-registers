@@ -111,7 +111,15 @@
           text: court.accessibleAccess | accessibleAccessDescription
         },
         actions: {
-        items: [ ]
+          items: [
+            {
+              href: "/court-register/accessible-access/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "accessible access",
+              attributes: {"data-qa": "update-accessible-access-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       },
       {

@@ -30,4 +30,7 @@ declare module 'agencyForms' {
   export interface UpdateCourtTypeForm {
     courtType: string
   }
+  export interface UpdateAccessibleAccessForm {
+    accessibleAccess: string
+  }
 }

@@ -24,6 +24,8 @@ import updateNameDescriptionValidator from './updateNameDescriptionValidator'
 import UpdateCourtTypeView from './updateCourtTypeView'
 import updateCourtTypeValidator from './updateCourtTypeValidator'
 import { allCourtTypes } from './courtData'
+import UpdateAccessibleAccessView from './updateAccessibleAccessView'
+import updateAccessibleAccessValidator from './updateAccessibleAccessValidator'
 
 function context(res: Response): Context {
   return {
@@ -373,6 +375,46 @@ export default class PrisonRegisterController {
         })
         if (result.success) {
           delete req.session.updateCourtTypeForm
+        }
+        return result
+      }),
+    )
+  }
+
+  async updateAccessibleAccess(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateAccessibleAccessForm
+    }
+    const view = new UpdateAccessibleAccessView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.updateAccessibleAccessForm
+        ? req.session.updateAccessibleAccessForm.accessibleAccess
+        : (court.accessibleAccess ?? 'UNKNOWN'),
+    )
+    res.render('pages/court-register/updateAccessibleAccess', view.renderArgs)
+  }
+
+  async submitUpdateAccessibleAccess(req: Request, res: Response): Promise<void> {
+    req.session.updateAccessibleAccessForm = trimForm(req.body)
+    const courtId = req.query.id as string
+
+    res.redirect(
+      await updateAccessibleAccessValidator(req.session.updateAccessibleAccessForm, req, async accessibleAccess => {
+        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const updateCourt = updateCourtMapper(court)
+        if (accessibleAccess === undefined) {
+          delete updateCourt.accessibleAccess
+        } else {
+          updateCourt.accessibleAccess = accessibleAccess
+        }
+        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, updateCourt)
+        if (result.success) {
+          delete req.session.updateAccessibleAccessForm
         }
         return result
       }),
