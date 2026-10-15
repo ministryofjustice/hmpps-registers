@@ -400,7 +400,7 @@ export default class PrisonRegisterController {
         ? req.session.updateAccessibleAccessForm.accessibleAccess
         : (court.accessibleAccess ?? 'UNKNOWN'),
     )
-    res.render('pages/court-register/updateAccessibleAccess', view.renderArgs)
+    res.render('pages/components/edit/updateAgencyAccessibleAccess', view.renderArgs)
   }
 
   async submitUpdateAccessibleAccess(req: Request, res: Response): Promise<void> {
