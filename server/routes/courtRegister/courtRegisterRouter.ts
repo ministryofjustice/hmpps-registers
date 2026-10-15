@@ -22,6 +22,12 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/court-register/court-type/update', (req, res) => courtRegisterController.updateCourtType(req, res))
   post('/court-register/court-type/update', (req, res) => courtRegisterController.submitUpdateCourtType(req, res))
+  get('/court-register/accessible-access/update', (req, res) =>
+    courtRegisterController.updateAccessibleAccess(req, res),
+  )
+  post('/court-register/accessible-access/update', (req, res) =>
+    courtRegisterController.submitUpdateAccessibleAccess(req, res),
+  )
   get('/court-register/address/create', (req, res) => courtRegisterController.addAddress(req, res))
   post('/court-register/address/create', (req, res) => courtRegisterController.submitAddAddress(req, res))
   get('/court-register/address/update', (req, res) => courtRegisterController.updateAddress(req, res))

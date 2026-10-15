@@ -1448,6 +1448,204 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateAccessibleAccess', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          accessibleAccess: 'ACCESSIBLE',
+        }),
+      )
+      req.query.id = 'SHFCC'
+    })
+
+    const checkedOptions = () =>
+      (res.render as jest.Mock).mock.calls[0][1].accessibleAccessOptions
+        .filter((option: { checked: boolean }) => option.checked)
+        .map((option: { value: string }) => option.value)
+
+    it('will get the court using its id and the current username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the page with the current accessible access option checked', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/updateAccessibleAccess',
+        expect.objectContaining({
+          name: 'Sheffield Crown Court',
+          navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+          errors: [],
+        }),
+      )
+      expect(checkedOptions()).toEqual(['ACCESSIBLE'])
+    })
+
+    it('will retain and check the submitted option when there are flashed errors', async () => {
+      const errors = [{ href: '#accessibleAccess', text: 'Select an accessible access option' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateAccessibleAccessForm = { accessibleAccess: 'BY_ARRANGEMENT_ONLY' }
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/court-register/updateAccessibleAccess',
+        expect.objectContaining({ errors }),
+      )
+      expect(checkedOptions()).toEqual(['BY_ARRANGEMENT_ONLY'])
+      expect(req.session.updateAccessibleAccessForm).toEqual({ accessibleAccess: 'BY_ARRANGEMENT_ONLY' })
+    })
+
+    it('will check UNKNOWN when the court accessible access value is null', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ accessibleAccess: null }))
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(checkedOptions()).toEqual(['UNKNOWN'])
+    })
+
+    it('will check UNKNOWN when the court has no accessible access property', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      const court = data.court({})
+      delete court.accessibleAccess
+      prisonRegisterService.getCourt.mockResolvedValue(court)
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(checkedOptions()).toEqual(['UNKNOWN'])
+    })
+
+    it('will clear a previous form and show the current value when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.updateAccessibleAccessForm = { accessibleAccess: 'NONE' }
+
+      await controller.updateAccessibleAccess(req, res)
+
+      expect(req.session.updateAccessibleAccessForm).toBeUndefined()
+      expect(checkedOptions()).toEqual(['ACCESSIBLE'])
+    })
+  })
+
+  describe('submitUpdateAccessibleAccess', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          description: 'Sheffield Main Crown Court',
+          active: true,
+          cjitCode: 'C00SH00',
+          accessibleAccess: 'NONE',
+          courtType: { code: 'CC', description: 'Crown Court' },
+        }),
+      )
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFCC'
+      req.body = { accessibleAccess: 'BY_ARRANGEMENT_ONLY' }
+    })
+
+    it('updates the court preserving its existing fields and forwarding the user context', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: 'Sheffield Crown Court',
+        description: 'Sheffield Main Crown Court',
+        active: true,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        accessibleAccess: 'BY_ARRANGEMENT_ONLY',
+        areaCode: 'YH',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+        courtTypeCode: 'CC',
+      })
+    })
+
+    it('trims the submitted value before updating the court', async () => {
+      req.body.accessibleAccess = '  BY_ARRANGEMENT_ONLY  '
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        {},
+        'SHFCC',
+        expect.objectContaining({ accessibleAccess: 'BY_ARRANGEMENT_ONLY' }),
+      )
+      expect(req.session.updateAccessibleAccessForm).toBeUndefined()
+    })
+
+    it('omits accessibleAccess from the update when UNKNOWN is selected', async () => {
+      req.body.accessibleAccess = 'UNKNOWN'
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      const update = prisonRegisterService.updateCourtDetails.mock.calls[0][2]
+      expect(update).not.toHaveProperty('accessibleAccess')
+      expect(req.session.updateAccessibleAccessForm).toBeUndefined()
+    })
+
+    it('redirects to court details and clears the form after a successful update', async () => {
+      req.session.updateAccessibleAccessForm = { accessibleAccess: 'NONE' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updateAccessibleAccessForm).toBeUndefined()
+    })
+
+    it('retains the form and flashes the API user message when the update is rejected', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Accessible access not allowed',
+      })
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(req.session.updateAccessibleAccessForm).toEqual({ accessibleAccess: 'BY_ARRANGEMENT_ONLY' })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#accessibleAccess', text: 'Accessible access not allowed' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/accessible-access/update?id=SHFCC')
+    })
+
+    it('retains the form and propagates unexpected errors', async () => {
+      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdateAccessibleAccess(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updateAccessibleAccessForm).toEqual({ accessibleAccess: 'BY_ARRANGEMENT_ONLY' })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it.each([{}, { accessibleAccess: 'XX' }])(
+      'validates the selection before fetching or updating the court: %j',
+      async body => {
+        req.body = body
+
+        await controller.submitUpdateAccessibleAccess(req, res)
+
+        expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+        expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array))
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/accessible-access/update?id=SHFCC')
+      },
+    )
+  })
+
   describe('deletePhone', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(
