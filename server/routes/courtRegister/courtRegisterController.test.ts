@@ -1794,6 +1794,246 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateArea', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('loads the court with the username and prefills the current area', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateArea(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.flash).toHaveBeenCalledWith('errors')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyArea', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' },
+      })
+      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+    })
+
+    it('prefills blank fields when the court has no area', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ area: null }))
+
+      await controller.updateArea(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyArea',
+        expect.objectContaining({ form: { areaCode: '', areaDescription: '' } }),
+      )
+    })
+
+    it.each([
+      { areaCode: 'INVALID', areaDescription: 'Invalid area' },
+      { areaCode: '', areaDescription: '' },
+    ])('retains the submitted form after an error: %j', async form => {
+      const errors = [{ href: '#area', text: 'Area cannot be changed' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateAreaForm = form
+
+      await controller.updateArea(req, res)
+
+      expect(req.session.updateAreaForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyArea',
+        expect.objectContaining({ form, errors }),
+      )
+    })
+
+    it.each([{ errors: [] }, { errors: undefined }])(
+      'clears stale form data when there are no errors: %j',
+      async ({ errors }) => {
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updateAreaForm = { areaCode: 'NW', areaDescription: 'North West' }
+
+        await controller.updateArea(req, res)
+
+        expect(req.session.updateAreaForm).toBeUndefined()
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyArea',
+          expect.objectContaining({
+            errors: [],
+            form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' },
+          }),
+        )
+      },
+    )
+
+    it('uses the current area when there are errors but no saved form', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([{ href: '#area', text: 'Area cannot be changed' }])
+
+      await controller.updateArea(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyArea',
+        expect.objectContaining({ form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' } }),
+      )
+    })
+
+    it('propagates court loading errors without rendering or discarding the form', async () => {
+      const form = { areaCode: 'NW', areaDescription: 'North West' }
+      req.session.updateAreaForm = form
+      prisonRegisterService.getCourt.mockRejectedValue(new Error('Court unavailable'))
+
+      await expect(controller.updateArea(req, res)).rejects.toThrow('Court unavailable')
+
+      expect(req.session.updateAreaForm).toEqual(form)
+      expect(res.render).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('submitUpdateArea', () => {
+    const latestCourt = data.court({
+      courtName: 'Updated court name',
+      description: 'Latest court description',
+      active: false,
+      inactiveDate: '2026-10-01',
+      cjitCode: 'LATEST',
+      accessibleAccess: 'ACCESSIBLE',
+      area: { code: 'YH', description: 'Yorkshire and the Humber' },
+      region: { code: 'REGION', description: 'Region' },
+      geographicalArea: { code: 'GEO', description: 'Geographical area' },
+      localAuthority: { code: 'LOCAL', description: 'Local authority' },
+      payrollRegion: { code: 'PAYROLL', description: 'Payroll region' },
+      courtType: { code: 'MC', description: 'Magistrates Court' },
+    })
+    const preservedFields = {
+      courtName: 'Updated court name',
+      description: 'Latest court description',
+      active: false,
+      inactiveDate: '2026-10-01',
+      cjitCode: 'LATEST',
+      accessibleAccess: 'ACCESSIBLE',
+      regionCode: 'REGION',
+      geographicalAreaCode: 'GEO',
+      localAuthorityCode: 'LOCAL',
+      payrollRegionCode: 'PAYROLL',
+      courtTypeCode: 'MC',
+    }
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { areaCode: ' NW ', areaDescription: ' North West ' }
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getAreas.mockResolvedValue([{ code: 'NW', description: 'North West' }])
+      prisonRegisterService.getCourt.mockResolvedValue(latestCourt)
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+    })
+
+    it('trims the form, validates the code, then fetches the latest court and preserves all other fields', async () => {
+      prisonRegisterService.getAreas.mockImplementation(async () => {
+        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+        return [{ code: 'NW', description: 'North West' }]
+      })
+      prisonRegisterService.getCourt.mockImplementation(async () => {
+        expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(1)
+        expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        return latestCourt
+      })
+      prisonRegisterService.updateCourtDetails.mockImplementation(async () => {
+        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        return { success: true }
+      })
+
+      await controller.submitUpdateArea(req, res)
+
+      expect(prisonRegisterService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        ...preservedFields,
+        areaCode: 'NW',
+      })
+      expect(req.session.updateAreaForm).toBeUndefined()
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.flash).not.toHaveBeenCalled()
+    })
+
+    it.each([{}, { areaCode: '   ', areaDescription: '   ' }])(
+      'clears the area by omitting the areaCode property entirely: %j',
+      async body => {
+        req.body = body
+
+        await controller.submitUpdateArea(req, res)
+
+        expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+        expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+          { username: 'tom' },
+          'SHFCC',
+          preservedFields,
+        )
+        expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('areaCode')
+        expect(req.session.updateAreaForm).toBeUndefined()
+        expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      },
+    )
+
+    it('does not use the displayed description as the area code', async () => {
+      req.body = { areaCode: 'North West', areaDescription: 'North West' }
+
+      await controller.submitUpdateArea(req, res)
+
+      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateAreaForm).toEqual(req.body)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#area', text: 'Select a valid area from the suggestions' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
+    })
+
+    it('retains the trimmed invalid form without loading or updating the court', async () => {
+      req.body = { areaCode: ' INVALID ', areaDescription: ' Unknown area ' }
+
+      await controller.submitUpdateArea(req, res)
+
+      expect(req.session.updateAreaForm).toEqual({ areaCode: 'INVALID', areaDescription: 'Unknown area' })
+      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
+    })
+
+    it.each([
+      { areaCode: ' NW ', areaDescription: ' North West ' },
+      { areaCode: '', areaDescription: '' },
+    ])('retains the form and flashes the API user message on rejection: %j', async body => {
+      req.body = body
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: false, userMessage: 'Area not allowed' })
+
+      await controller.submitUpdateArea(req, res)
+
+      expect(req.session.updateAreaForm).toEqual({
+        areaCode: body.areaCode.trim(),
+        areaDescription: body.areaDescription.trim(),
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#area', text: 'Area not allowed' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
+    })
+
+    it.each(['getAreas', 'getCourt', 'updateCourtDetails'] as const)(
+      'retains the trimmed form and propagates unexpected %s failures',
+      async method => {
+        const error = new Error(`${method} unavailable`)
+        prisonRegisterService[method].mockRejectedValue(error)
+
+        await expect(controller.submitUpdateArea(req, res)).rejects.toBe(error)
+
+        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        expect(res.redirect).not.toHaveBeenCalled()
+        expect(req.flash).not.toHaveBeenCalled()
+        if (method === 'getAreas') expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+        if (method !== 'updateCourtDetails') {
+          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        }
+      },
+    )
+  })
+
   describe('updateCourtType', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

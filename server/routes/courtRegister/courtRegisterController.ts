@@ -30,6 +30,8 @@ import UpdateAgencyCjitCodeView from '../agencyRegisters/updateCjitCodeView'
 import updateCjitCodeValidator from './updateCjitCodeValidator'
 import UpdateAgencyActiveView from '../agencyRegisters/updateActiveView'
 import updateActiveValidator from './updateActiveValidator'
+import UpdateAgencyAreaView from '../agencyRegisters/updateAreaView'
+import updateAreaValidator from './updateAreaValidator'
 
 function context(res: Response): Context {
   return {
@@ -494,6 +496,44 @@ export default class PrisonRegisterController {
         }
         return result
       }),
+    )
+  }
+
+  async updateArea(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updateAreaForm
+    const view = new UpdateAgencyAreaView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${id}` },
+      errors,
+      req.session.updateAreaForm ?? {
+        areaCode: court.area?.code ?? '',
+        areaDescription: court.area?.description ?? '',
+      },
+    )
+    res.render('pages/components/edit/updateAgencyArea', view.renderArgs)
+  }
+
+  async submitUpdateArea(req: Request, res: Response): Promise<void> {
+    req.session.updateAreaForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updateAreaValidator(
+        req.session.updateAreaForm,
+        req,
+        () => this.prisonRegisterService.getAreas(context(res)),
+        async areaCode => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const update = updateCourtMapper(court)
+          if (areaCode === undefined) delete update.areaCode
+          else update.areaCode = areaCode
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          if (result.success) delete req.session.updateAreaForm
+          return result
+        },
+      ),
     )
   }
 

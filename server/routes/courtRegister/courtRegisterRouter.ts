@@ -16,6 +16,8 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
+  get('/court-register/area/update', (req, res) => courtRegisterController.updateArea(req, res))
+  post('/court-register/area/update', (req, res) => courtRegisterController.submitUpdateArea(req, res))
   get('/court-register/active/update', (req, res) => courtRegisterController.updateActive(req, res))
   post('/court-register/active/update', (req, res) => courtRegisterController.submitUpdateActive(req, res))
   get('/court-register/cjit-code/update', (req, res) => courtRegisterController.updateCjitCode(req, res))

@@ -10,6 +10,7 @@ const courtDetails = {
   accessibleAccess: () => cy.get('dt:contains("Accessible access")').next(),
   cjitCode: () => cy.get('dt:contains("CJIT Code")').next(),
   area: () => cy.get('dt:contains("Area")').next(),
+  updateAreaLink: () => cy.get('[data-qa=update-area-link]'),
   region: () => cy.get('dt:contains("Region")').next(),
   geographicalArea: () => cy.get('dt:contains("Geographical area")').next(),
   localAuthority: () => cy.get('dt:contains("Local Authority")').next(),

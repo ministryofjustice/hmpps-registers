@@ -33,6 +33,7 @@ const getBuildConfig = () => {
         'js/app': path.join(cwd, 'assets/js/index.js'),
         'js/autoCompleteTown': path.join(cwd, 'assets/js/autoCompleteTown.js'),
         'js/autoCompleteCounty': path.join(cwd, 'assets/js/autoCompleteCounty.js'),
+        'js/autoCompleteArea': path.join(cwd, 'assets/js/autoCompleteArea.js'),
         'css/app': path.join(cwd, 'assets/scss/application.scss'),
       },
       copy: [
