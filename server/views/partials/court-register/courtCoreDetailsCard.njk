@@ -92,7 +92,15 @@
           text: court.courtType.description if court.courtType else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [
+            {
+              href: "/court-register/court-type/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "court type",
+              attributes: {"data-qa": "update-court-type-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       },
       {
