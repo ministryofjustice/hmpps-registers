@@ -3,7 +3,7 @@ import createError from 'http-errors'
 import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
 import AllCourtsView from './allCourtsView'
 import ControllerHelper from '../utils/controllerHelper'
-import { CourtsFilter } from './courtMapper'
+import { CourtsFilter, updateCourtMapper } from './courtMapper'
 import CourtDetailsView, { Action } from './courtDetailsView'
 import AddAgencyEmailView from '../agencyRegisters/addEmailView'
 import trimForm from '../../utils/trim'
@@ -19,6 +19,8 @@ import UpdateAgencyPhoneView from '../agencyRegisters/updatePhoneView'
 import updatePhoneNumberValidator from './updatePhoneNumberValidator'
 import UpdateAgencyAddressView from '../agencyRegisters/updateAddressView'
 import updateAddressValidator from './updateAddressValidator'
+import UpdateAgencyNameDescriptionView from '../agencyRegisters/updateNameDescriptionView'
+import updateNameDescriptionValidator from './updateNameDescriptionValidator'
 
 function context(res: Response): Context {
   return {
@@ -293,6 +295,46 @@ export default class PrisonRegisterController {
             delete req.session.updateEmailAddressForm
           }
           return emailAddress
+        },
+      ),
+    )
+  }
+
+  async updateNameDescription(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateNameDescriptionForm
+    }
+    const view = new UpdateAgencyNameDescriptionView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.updateNameDescriptionForm ?? { name: court.courtName, description: court.description ?? '' },
+    )
+    res.render('pages/components/edit/updateAgencyNameDescription', view.renderArgs)
+  }
+
+  async submitUpdateNameDescription(req: Request, res: Response): Promise<void> {
+    req.session.updateNameDescriptionForm = trimForm(req.body)
+    const courtId = req.query.id as string
+
+    res.redirect(
+      await updateNameDescriptionValidator(
+        req.session.updateNameDescriptionForm,
+        req,
+        async ({ name, description }) => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+            ...updateCourtMapper(court),
+            courtName: name,
+            description,
+          })
+          if (result.success) {
+            delete req.session.updateNameDescriptionForm
+          }
+          return result
         },
       ),
     )

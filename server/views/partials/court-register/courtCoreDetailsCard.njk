@@ -32,7 +32,15 @@
           text: court.courtName
         },
         actions: {
-         items: [ ]
+          items: [
+            {
+              href: "/court-register/name-description/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "name",
+              attributes: {"data-qa": "update-name-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       },
       {
@@ -43,7 +51,15 @@
           text: court.description
         },
         actions: {
-        items: [ ]
+          items: [
+            {
+              href: "/court-register/name-description/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "description",
+              attributes: {"data-qa": "update-description-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       },
       {

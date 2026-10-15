@@ -1,4 +1,4 @@
-import courtsMapper, { CourtDetail, courtsPageMapper } from './courtMapper'
+import courtsMapper, { CourtDetail, courtsPageMapper, updateCourtMapper } from './courtMapper'
 import data from '../testutils/mockCourtData'
 
 describe('courtMapper', () => {
@@ -38,5 +38,53 @@ describe('courtsPageMapper', () => {
 
   it('will contain two courts', () => {
     expect(courts.length).toEqual(2)
+  })
+})
+
+describe('updateCourtMapper', () => {
+  it('will map all court fields to an update court request', () => {
+    expect(
+      updateCourtMapper(
+        data.court({
+          courtName: 'Sheffield Crown Court',
+          description: 'Sheffield Main Crown Court',
+          active: false,
+          inactiveDate: '2024-01-31',
+          cjitCode: 'C00SH00',
+          accessibleAccess: 'ACCESSIBLE',
+          courtType: { code: 'CC', description: 'Crown Court' },
+          area: { code: 'A1', description: 'Area' },
+          region: { code: 'R1', description: 'Region' },
+          geographicalArea: { code: 'G1', description: 'Geographical area' },
+          localAuthority: { code: 'L1', description: 'Local authority' },
+          payrollRegion: { code: 'P1', description: 'Payroll region' },
+        }),
+      ),
+    ).toEqual({
+      courtName: 'Sheffield Crown Court',
+      description: 'Sheffield Main Crown Court',
+      active: false,
+      inactiveDate: '2024-01-31',
+      cjitCode: 'C00SH00',
+      accessibleAccess: 'ACCESSIBLE',
+      courtTypeCode: 'CC',
+      areaCode: 'A1',
+      regionCode: 'R1',
+      geographicalAreaCode: 'G1',
+      localAuthorityCode: 'L1',
+      payrollRegionCode: 'P1',
+    })
+  })
+
+  it('will leave optional reference codes undefined when the court does not have them', () => {
+    const update = updateCourtMapper(
+      data.court({ area: null, region: null, geographicalArea: null, localAuthority: null, payrollRegion: null }),
+    )
+
+    expect(update.areaCode).toBeUndefined()
+    expect(update.regionCode).toBeUndefined()
+    expect(update.geographicalAreaCode).toBeUndefined()
+    expect(update.localAuthorityCode).toBeUndefined()
+    expect(update.payrollRegionCode).toBeUndefined()
   })
 })

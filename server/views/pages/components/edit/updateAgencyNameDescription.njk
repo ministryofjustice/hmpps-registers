@@ -1,0 +1,61 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set mainClasses = "app-container govuk-body" %}
+
+{% set pageTitle = "Update name and description - DPS" %}
+{% set title = "Update name and description for " + (name) %}
+
+
+{% block content %}
+  {% if errors.length > 0 %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: errors,
+      attributes: { "data-qa-errors": true }
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Update name and description</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {{ govukInput({
+          id: "name",
+          name: "name",
+          label: { text: "Name" },
+          value: form.name,
+          errorMessage: errors | findError('name'),
+          attributes: {
+            "data-qa": "name"
+          }
+        }) }}
+        {{ govukInput({
+          id: "description",
+          name: "description",
+          label: { text: "Description" },
+          value: form.description,
+          errorMessage: errors | findError('description'),
+          attributes: {
+            "data-qa": "description"
+          }
+        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

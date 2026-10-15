@@ -22,6 +22,7 @@ import {
   UpdatePrison,
   UpdatePrisonAddress,
   UpdateEmailAddress,
+  UpdateCourt,
 } from '../@types/prisonRegister'
 import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
 
@@ -902,7 +903,69 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('updateCourtDetails', () => {
+    const updateCourt: UpdateCourt = {
+      courtName: 'Sheffield Crown Court Updated',
+      description: 'Sheffield Main Crown Court Updated',
+      active: true,
+      cjitCode: 'C00SH00',
+      accessibleAccess: 'NONE',
+      areaCode: 'YH',
+      regionCode: 'YH',
+      geographicalAreaCode: 'YH',
+      localAuthorityCode: 'YH',
+      payrollRegionCode: 'YH',
+      courtTypeCode: 'CC',
+    }
+    let sentCourt: UpdateCourt
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    describe('on success', () => {
+      beforeEach(() => {
+        fakePrisonRegister
+          .put('/courts/id/SHFCC', body => {
+            sentCourt = body
+            return true
+          })
+          .reply(200, courtData.court({ courtName: 'Sheffield Crown Court Updated' }))
+      })
+
+      it('username will be used by client', async () => {
+        await prisonRegisterService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', updateCourt)
+
+        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      })
+
+      it('will send all the court fields in the request body', async () => {
+        await prisonRegisterService.updateCourtDetails({}, 'SHFCC', updateCourt)
+
+        expect(sentCourt).toEqual(updateCourt)
+      })
+
+      it('will return success when the court is updated', async () => {
+        expect(await prisonRegisterService.updateCourtDetails({}, 'SHFCC', updateCourt)).toEqual({ success: true })
+      })
+    })
+
+    it('will throw error when the court is not found', async () => {
+      fakePrisonRegister.put('/courts/id/UNKNOWN').reply(404, { status: 404 })
+
+      await expect(prisonRegisterService.updateCourtDetails({}, 'UNKNOWN', updateCourt)).rejects.toThrow('Not Found')
+    })
+  })
+
   describe.each([
+    {
+      method: 'updateCourtDetails',
+      httpMethod: 'put' as const,
+      path: '/courts/id/SHFCC',
+      invoke: (service: PrisonRegisterService) =>
+        service.updateCourtDetails({}, 'SHFCC', { courtName: 'Name', active: true, courtTypeCode: 'CC' }),
+    },
     {
       method: 'addCourtEmailAddress',
       httpMethod: 'post' as const,

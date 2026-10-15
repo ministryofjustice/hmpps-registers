@@ -398,7 +398,7 @@ const stubCourtMutationError = ({
   stubFor({
     request: {
       method,
-      urlPattern: `/prison-register/courts/id/${courtId}/${endpoint}`,
+      urlPattern: `/prison-register/courts/id/${courtId}${endpoint ? `/${endpoint}` : ''}`,
     },
     response: {
       status: 400,
@@ -422,6 +422,31 @@ const stubAddCourtEmailAddressError = ({
     method: 'POST',
     userMessage,
   })
+
+const stubUpdateCourt = (courtId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/courts/id/${courtId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: courtData.court({ courtId }),
+    },
+  })
+
+const getUpdatedCourts = (courtId: string): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'PUT' && request.url === `/prison-register/courts/id/${courtId}`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
 
 const stubUpdateCourtEmailAddress = ({ courtId, emailId }: { courtId: string; emailId: number }): SuperAgentRequest =>
   stubFor({
@@ -698,6 +723,8 @@ export default {
   stubAddCourtEmailAddressError,
   stubCourtMutationError,
   stubUpdateCourtEmailAddress,
+  stubUpdateCourt,
+  getUpdatedCourts,
   stubDeleteCourtEmailAddress,
   getAddedCourtEmailAddresses,
   getUpdatedCourtEmailAddresses,
