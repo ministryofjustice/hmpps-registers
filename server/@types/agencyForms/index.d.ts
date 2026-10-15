@@ -23,4 +23,8 @@ declare module 'agencyForms' {
     emailAddress: string
     emailId: number
   }
+  export interface UpdateNameDescriptionForm {
+    name: string
+    description: string
+  }
 }

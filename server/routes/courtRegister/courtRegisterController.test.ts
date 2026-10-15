@@ -1125,6 +1125,168 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('updateNameDescription', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', description: 'Sheffield Main Crown Court' }),
+      )
+      req.query.id = 'SHFCC'
+    })
+
+    it('will get the court using the court Id and username', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateNameDescription(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+    })
+
+    it('will render the update page prefilled with the current name and description', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+
+      await controller.updateNameDescription(req, res)
+
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyNameDescription', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { name: 'Sheffield Crown Court', description: 'Sheffield Main Crown Court' },
+      })
+    })
+
+    it('will use an empty description when the court does not have one', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ courtName: 'Sheffield Crown Court', description: null }),
+      )
+
+      await controller.updateNameDescription(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyNameDescription',
+        expect.objectContaining({ form: { name: 'Sheffield Crown Court', description: '' } }),
+      )
+    })
+
+    it('will redisplay the submitted values when there are validation errors', async () => {
+      const errors = [{ href: '#description', text: 'Enter a description' }]
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+      req.session.updateNameDescriptionForm = { name: 'New name', description: '' }
+
+      await controller.updateNameDescription(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyNameDescription',
+        expect.objectContaining({ errors, form: { name: 'New name', description: '' } }),
+      )
+    })
+
+    it('will clear any previous form when there are no errors', async () => {
+      ;(req.flash as jest.Mock).mockReturnValue([])
+      req.session.updateNameDescriptionForm = { name: 'Old', description: 'Old' }
+
+      await controller.updateNameDescription(req, res)
+
+      expect(req.session.updateNameDescriptionForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyNameDescription',
+        expect.objectContaining({
+          form: { name: 'Sheffield Crown Court', description: 'Sheffield Main Crown Court' },
+        }),
+      )
+    })
+  })
+
+  describe('submitUpdateNameDescription', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({
+          courtId: 'SHFCC',
+          courtName: 'Sheffield Crown Court',
+          description: 'Sheffield Main Crown Court',
+          active: true,
+          cjitCode: 'C00SH00',
+          accessibleAccess: 'NONE',
+          courtType: { code: 'CC', description: 'Crown Court' },
+        }),
+      )
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFCC'
+      req.body = { name: '  Sheffield Crown Court Updated  ', description: '  Updated description  ' }
+    })
+
+    it('will update the court with all existing fields plus the new name and description', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: 'Sheffield Crown Court Updated',
+        description: 'Updated description',
+        active: true,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        accessibleAccess: 'NONE',
+        areaCode: 'YH',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+        courtTypeCode: 'CC',
+      })
+    })
+
+    it('will redirect to the court details page and clear the form', async () => {
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.session.updateNameDescriptionForm).toBeUndefined()
+    })
+
+    it('will retain the form and show the API user message when the update is rejected', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Court name already in use',
+      })
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(req.session.updateNameDescriptionForm).toEqual({
+        name: 'Sheffield Crown Court Updated',
+        description: 'Updated description',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Court name already in use' }])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/name-description/update?id=SHFCC')
+    })
+
+    it('will keep the form in the session when updating fails unexpectedly', async () => {
+      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+
+      await expect(controller.submitUpdateNameDescription(req, res)).rejects.toThrow('Server error')
+
+      expect(req.session.updateNameDescriptionForm).toEqual({
+        name: 'Sheffield Crown Court Updated',
+        description: 'Updated description',
+      })
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('will not update the court when the name and description are missing', async () => {
+      req.body = { name: '  ', description: '' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#name', text: 'Enter a name' },
+        { href: '#description', text: 'Enter a description' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/name-description/update?id=SHFCC')
+      expect(req.session.updateNameDescriptionForm).toEqual({ name: '', description: '' })
+    })
+  })
+
   describe('deletePhone', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(
