@@ -33,4 +33,7 @@ declare module 'agencyForms' {
   export interface UpdateAccessibleAccessForm {
     accessibleAccess: string
   }
+  export interface UpdateCjitCodeForm {
+    cjitCode?: string
+  }
 }

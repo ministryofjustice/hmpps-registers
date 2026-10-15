@@ -1,0 +1,47 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set mainClasses = "app-container govuk-body" %}
+{% set pageTitle = "Update CJIT code - DPS" %}
+{% set title = "Update CJIT code for " + (name) %}
+
+{% block content %}
+  {% if errors.length > 0 %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: errors,
+      attributes: { "data-qa-errors": true }
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Update CJIT code</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {{ govukInput({
+          id: "cjitCode",
+          name: "cjitCode",
+          label: { text: "CJIT code (optional)" },
+          hint: { text: "Enter up to 12 characters." },
+          classes: "govuk-input--width-20",
+          value: cjitCode,
+          errorMessage: errors | findError('cjitCode')
+        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -26,6 +26,8 @@ import updateCourtTypeValidator from './updateCourtTypeValidator'
 import { allCourtTypes } from './courtData'
 import UpdateAccessibleAccessView from './updateAccessibleAccessView'
 import updateAccessibleAccessValidator from './updateAccessibleAccessValidator'
+import UpdateAgencyCjitCodeView from '../agencyRegisters/updateCjitCodeView'
+import updateCjitCodeValidator from './updateCjitCodeValidator'
 
 function context(res: Response): Context {
   return {
@@ -415,6 +417,41 @@ export default class PrisonRegisterController {
         const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, updateCourt)
         if (result.success) {
           delete req.session.updateAccessibleAccessForm
+        }
+        return result
+      }),
+    )
+  }
+
+  async updateCjitCode(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) {
+      delete req.session.updateCjitCodeForm
+    }
+    const view = new UpdateAgencyCjitCodeView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${court.courtId}` },
+      errors,
+      req.session.updateCjitCodeForm ? req.session.updateCjitCodeForm.cjitCode : (court.cjitCode ?? ''),
+    )
+    res.render('pages/components/edit/updateAgencyCjitCode', view.renderArgs)
+  }
+
+  async submitUpdateCjitCode(req: Request, res: Response): Promise<void> {
+    req.session.updateCjitCodeForm = trimForm(req.body)
+    const courtId = req.query.id as string
+
+    res.redirect(
+      await updateCjitCodeValidator(req.session.updateCjitCodeForm, req, async cjitCode => {
+        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+          ...updateCourtMapper(court),
+          cjitCode,
+        })
+        if (result.success) {
+          delete req.session.updateCjitCodeForm
         }
         return result
       }),
