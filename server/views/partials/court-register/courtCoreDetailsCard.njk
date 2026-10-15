@@ -70,7 +70,15 @@
         text: 'Active' if court.active else 'Inactive'
         },
         actions: {
-          items: [ ]
+          items: [
+            {
+              href: "/court-register/active/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "active status",
+              attributes: {"data-qa": "update-active-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       },
       {
@@ -81,7 +89,15 @@
           text: court.inactiveDate | formatDate
         },
         actions: {
-        items: [ ]
+          items: [
+            {
+              href: "/court-register/active/update?id=" + court.courtId,
+              text: "Update",
+              visuallyHiddenText: "date deactivated",
+              attributes: {"data-qa": "update-inactive-date-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
         }
       } if court.inactiveDate,
       {

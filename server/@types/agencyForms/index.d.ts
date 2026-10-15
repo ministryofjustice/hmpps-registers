@@ -36,4 +36,10 @@ declare module 'agencyForms' {
   export interface UpdateCjitCodeForm {
     cjitCode?: string
   }
+  export interface UpdateActiveForm {
+    active?: string
+    inactiveDay?: string
+    inactiveMonth?: string
+    inactiveYear?: string
+  }
 }
