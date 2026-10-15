@@ -1986,7 +1986,7 @@ describe('Court Register controller', () => {
       await controller.updateAccessibleAccess(req, res)
 
       expect(res.render).toHaveBeenCalledWith(
-        'pages/court-register/updateAccessibleAccess',
+        'pages/components/edit/updateAgencyAccessibleAccess',
         expect.objectContaining({
           name: 'Sheffield Crown Court',
           navigation: { cancelButton: '/court-register/details?id=SHFCC' },
@@ -2004,7 +2004,7 @@ describe('Court Register controller', () => {
       await controller.updateAccessibleAccess(req, res)
 
       expect(res.render).toHaveBeenCalledWith(
-        'pages/court-register/updateAccessibleAccess',
+        'pages/components/edit/updateAgencyAccessibleAccess',
         expect.objectContaining({ errors }),
       )
       expect(checkedOptions()).toEqual(['BY_ARRANGEMENT_ONLY'])
