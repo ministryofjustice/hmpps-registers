@@ -1812,7 +1812,7 @@ describe('Court Register controller', () => {
         name: 'Sheffield Crown Court',
         navigation: { cancelButton: '/court-register/details?id=SHFCC' },
         errors: [],
-        form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' },
+        form: { areaName: 'YH - Yorkshire and the Humber' },
       })
       expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
     })
@@ -1824,32 +1824,32 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith(
         'pages/components/edit/updateAgencyArea',
-        expect.objectContaining({ form: { areaCode: '', areaDescription: '' } }),
+        expect.objectContaining({ form: { areaName: '' } }),
       )
     })
 
-    it.each([
-      { areaCode: 'INVALID', areaDescription: 'Invalid area' },
-      { areaCode: '', areaDescription: '' },
-    ])('retains the submitted form after an error: %j', async form => {
-      const errors = [{ href: '#area', text: 'Area cannot be changed' }]
-      ;(req.flash as jest.Mock).mockReturnValue(errors)
-      req.session.updateAreaForm = form
+    it.each([{ areaName: 'INVALID - Invalid area' }, { areaName: '' }])(
+      'retains the submitted form after an error: %j',
+      async form => {
+        const errors = [{ href: '#area', text: 'Area cannot be changed' }]
+        ;(req.flash as jest.Mock).mockReturnValue(errors)
+        req.session.updateAreaForm = form
 
-      await controller.updateArea(req, res)
+        await controller.updateArea(req, res)
 
-      expect(req.session.updateAreaForm).toEqual(form)
-      expect(res.render).toHaveBeenCalledWith(
-        'pages/components/edit/updateAgencyArea',
-        expect.objectContaining({ form, errors }),
-      )
-    })
+        expect(req.session.updateAreaForm).toEqual(form)
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/components/edit/updateAgencyArea',
+          expect.objectContaining({ form, errors }),
+        )
+      },
+    )
 
     it.each([{ errors: [] }, { errors: undefined }])(
       'clears stale form data when there are no errors: %j',
       async ({ errors }) => {
         ;(req.flash as jest.Mock).mockReturnValue(errors)
-        req.session.updateAreaForm = { areaCode: 'NW', areaDescription: 'North West' }
+        req.session.updateAreaForm = { areaName: 'NW - North West' }
 
         await controller.updateArea(req, res)
 
@@ -1858,7 +1858,7 @@ describe('Court Register controller', () => {
           'pages/components/edit/updateAgencyArea',
           expect.objectContaining({
             errors: [],
-            form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' },
+            form: { areaName: 'YH - Yorkshire and the Humber' },
           }),
         )
       },
@@ -1871,12 +1871,12 @@ describe('Court Register controller', () => {
 
       expect(res.render).toHaveBeenCalledWith(
         'pages/components/edit/updateAgencyArea',
-        expect.objectContaining({ form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' } }),
+        expect.objectContaining({ form: { areaName: 'YH - Yorkshire and the Humber' } }),
       )
     })
 
     it('propagates court loading errors without rendering or discarding the form', async () => {
-      const form = { areaCode: 'NW', areaDescription: 'North West' }
+      const form = { areaName: 'NW - North West' }
       req.session.updateAreaForm = form
       prisonRegisterService.getCourt.mockRejectedValue(new Error('Court unavailable'))
 
@@ -1918,7 +1918,7 @@ describe('Court Register controller', () => {
 
     beforeEach(() => {
       req.query.id = 'SHFCC'
-      req.body = { areaCode: ' NW ', areaDescription: ' North West ' }
+      req.body = { areaName: ' NW - North West ' }
       res.locals.user = { username: 'tom' }
       prisonRegisterService.getAreas.mockResolvedValue([{ code: 'NW', description: 'North West' }])
       prisonRegisterService.getCourt.mockResolvedValue(latestCourt)
@@ -1927,7 +1927,7 @@ describe('Court Register controller', () => {
 
     it('trims the form, validates the code, then fetches the latest court and preserves all other fields', async () => {
       prisonRegisterService.getAreas.mockImplementation(async () => {
-        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        expect(req.session.updateAreaForm).toEqual({ areaName: 'NW - North West' })
         expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
         return [{ code: 'NW', description: 'North West' }]
       })
@@ -1937,7 +1937,7 @@ describe('Court Register controller', () => {
         return latestCourt
       })
       prisonRegisterService.updateCourtDetails.mockImplementation(async () => {
-        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        expect(req.session.updateAreaForm).toEqual({ areaName: 'NW - North West' })
         return { success: true }
       })
 
@@ -1974,7 +1974,7 @@ describe('Court Register controller', () => {
     )
 
     it('does not use the displayed description as the area code', async () => {
-      req.body = { areaCode: 'North West', areaDescription: 'North West' }
+      req.body = { areaName: 'North West' }
 
       await controller.submitUpdateArea(req, res)
 
@@ -1982,17 +1982,17 @@ describe('Court Register controller', () => {
       expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateAreaForm).toEqual(req.body)
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#area', text: 'Select a valid area from the suggestions' },
+        { href: '#area-name', text: 'Select a valid area from the suggestions' },
       ])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
     })
 
     it('retains the trimmed invalid form without loading or updating the court', async () => {
-      req.body = { areaCode: ' INVALID ', areaDescription: ' Unknown area ' }
+      req.body = { areaName: ' INVALID - Unknown area ' }
 
       await controller.submitUpdateArea(req, res)
 
-      expect(req.session.updateAreaForm).toEqual({ areaCode: 'INVALID', areaDescription: 'Unknown area' })
+      expect(req.session.updateAreaForm).toEqual({ areaName: 'INVALID - Unknown area' })
       expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
       expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
       expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
@@ -2011,7 +2011,7 @@ describe('Court Register controller', () => {
         areaCode: body.areaCode.trim(),
         areaDescription: body.areaDescription.trim(),
       })
-      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#area', text: 'Area not allowed' }])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#area-name', text: 'Area not allowed' }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
     })
 
@@ -2023,7 +2023,7 @@ describe('Court Register controller', () => {
 
         await expect(controller.submitUpdateArea(req, res)).rejects.toBe(error)
 
-        expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
+        expect(req.session.updateAreaForm).toEqual({ areaName: 'NW - North West' })
         expect(res.redirect).not.toHaveBeenCalled()
         expect(req.flash).not.toHaveBeenCalled()
         if (method === 'getAreas') expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()

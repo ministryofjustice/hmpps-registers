@@ -22,7 +22,33 @@ export default class ApiController {
       this.areas = await this.prisonRegisterService.getAreas(context(res))
     }
     const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
-    res.status(200).send(this.areas.filter(area => area.description.toLowerCase().includes(searchString.toLowerCase())))
+    const areaParts = searchString.split(' - ')
+    let areaCode = ''
+    let areaDescription = ''
+
+    if (areaParts.length === 0) {
+      areaDescription = searchString
+    }
+    if (areaParts.length === 1) {
+      ;[areaDescription] = areaParts
+    } else if (areaParts.length === 2) {
+      ;[areaCode, areaDescription] = areaParts
+    }
+
+    let result: CodeDescription[] = []
+    if (areaCode) {
+      result = this.areas.filter(
+        area =>
+          area.description.toLowerCase().includes(areaDescription.toLowerCase()) ||
+          area.code.toLowerCase().includes(areaCode.toLowerCase()),
+      )
+    } else if (areaDescription) {
+      result = this.areas.filter(area => area.description.toLowerCase().includes(areaDescription.toLowerCase()))
+    } else {
+      result = this.areas
+    }
+
+    res.status(200).send(result)
   }
 
   async searchTown(req: Request, res: Response): Promise<void> {

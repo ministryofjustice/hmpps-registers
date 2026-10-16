@@ -509,8 +509,7 @@ export default class PrisonRegisterController {
       { cancelButton: `/court-register/details?id=${id}` },
       errors,
       req.session.updateAreaForm ?? {
-        areaCode: court.area?.code ?? '',
-        areaDescription: court.area?.description ?? '',
+        areaName: court.area?.code ? `${court.area.code} - ${court.area.description}` : '',
       },
     )
     res.render('pages/components/edit/updateAgencyArea', view.renderArgs)

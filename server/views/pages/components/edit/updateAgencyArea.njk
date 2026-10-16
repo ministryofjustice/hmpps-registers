@@ -1,6 +1,7 @@
 {% extends "partials/layout.njk" %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% set mainClasses = "app-container govuk-body" %}
 {% set pageTitle = "Update area - DPS" %}
@@ -16,14 +17,22 @@
       <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-        <input type="hidden" id="areaCode" name="areaCode" value="{{ form.areaCode }}" />
-        {{ govukInput({
-          id: "area",
-          name: "areaDescription",
-          label: { text: "Area (optional)" },
-          hint: { text: "Start typing an area name and select a suggestion. Clear the field to remove the area." },
-          value: form.areaDescription,
-          errorMessage: errors | findError('area')
+        {{ govukSelect({
+          label: {
+            text: "Look up an area",
+            classes: "govuk-label--l",
+            isPageHeading: false,
+            for: "area-name",
+            attributes: { id: "area-name-label" }
+          },
+          hint: {
+            text: "Start typing the name of the area."
+          },
+          id: "area-name",
+          name: "areaName",
+          classes: "govuk-visually-hidden",
+          errorMessage: errors | findError('area-name'),
+          items: []
         }) }}
         <p id="area-search-status" role="status" class="govuk-body"></p>
         <div class="govuk-button-group">
@@ -40,5 +49,5 @@
 {% endblock %}
 {% block javascripts %}
   <script src="/assets/accessible-autocomplete.min.js"></script>
-  <script src="/assets/js/autoCompleteArea.js"></script>
+  <script id="autocomplete-area-script"  src="/assets/js/autoCompleteArea.js" data-area="{{ form.areaName if form.areaName else ''}}"></script>
 {% endblock %}

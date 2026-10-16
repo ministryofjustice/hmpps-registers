@@ -5,7 +5,7 @@ describe('UpdateAgencyAreaView', () => {
 
   it('renders the court name, navigation, errors and submitted form unchanged', () => {
     const errors = [{ href: '#area', text: 'Select a valid area from the suggestions' }]
-    const form = { areaCode: 'INVALID', areaDescription: 'An unrecognised area' }
+    const form = { areaName: 'INVALID - An unrecognised area' }
 
     const view = new UpdateAgencyAreaView('Sheffield Crown Court', navigation, errors, form)
 
@@ -15,7 +15,7 @@ describe('UpdateAgencyAreaView', () => {
   it.each([{ errors: undefined }, { errors: null }, { errors: [] }])(
     'defaults absent errors to an empty array: %j',
     ({ errors }) => {
-      const form = { areaCode: '', areaDescription: '' }
+      const form = { areaName: '' }
 
       const view = new UpdateAgencyAreaView('Sheffield Crown Court', navigation, errors, form)
 
