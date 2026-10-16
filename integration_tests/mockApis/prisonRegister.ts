@@ -19,6 +19,16 @@ import hospitalData from '../../server/routes/testutils/mockHospitalData'
 
 // Mock API responses
 
+const stubGetAreas = (areas: CodeDescription[]): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'GET', url: '/prison-register/reference-data/areas' },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: areas,
+    },
+  })
+
 const stubGetTownSuggestions = (suggestions: CodeDescription[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -693,6 +703,7 @@ const stubGetApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgent
   })
 
 export default {
+  stubGetAreas,
   stubGetTownSuggestions,
   stubGetCountySuggestions,
   stubPing,

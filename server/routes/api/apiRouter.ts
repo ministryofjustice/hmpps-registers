@@ -14,6 +14,7 @@ export default function routes(router: Router, services: Services): Router {
   const apiController = new ApiController(services.prisonRegisterService)
 
   get('/api/search-town', (req, res) => apiController.searchTown(req, res))
+  get('/api/search-area', (req, res) => apiController.searchArea(req, res))
   get('/api/search-county', (req, res) => apiController.searchCounty(req, res))
 
   return router

@@ -1525,6 +1525,51 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('getAreas', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAuthClient.getApiClientToken.mockResolvedValue('area-token')
+    })
+
+    it('uses the username and bearer token to fetch areas without query filters', async () => {
+      const areas: CodeDescription[] = [
+        { code: 'YH', description: 'Yorkshire and the Humber' },
+        { code: 'NW', description: 'North West' },
+      ]
+      fakePrisonRegister
+        .get('/reference-data/areas')
+        .matchHeader('authorization', 'Bearer area-token')
+        .reply(200, areas)
+
+      expect(await prisonRegisterService.getAreas({ username: 'tommy' })).toEqual(areas)
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(fakePrisonRegister.isDone()).toBe(true)
+    })
+
+    it('returns an empty list when there are no areas and the context has no username', async () => {
+      fakePrisonRegister.get('/reference-data/areas').reply(200, [])
+
+      expect(await prisonRegisterService.getAreas({})).toEqual([])
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith(undefined)
+    })
+
+    it('propagates reference data API errors', async () => {
+      fakePrisonRegister.get('/reference-data/areas').reply(404, { developerMessage: 'Areas not found' })
+
+      await expect(prisonRegisterService.getAreas({})).rejects.toThrow('Not Found')
+    })
+
+    it('propagates authentication errors without calling the areas API', async () => {
+      const error = new Error('Authentication unavailable')
+      hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
+      fakePrisonRegister.get('/reference-data/areas').reply(200, [])
+
+      await expect(prisonRegisterService.getAreas({ username: 'tommy' })).rejects.toBe(error)
+      expect(fakePrisonRegister.isDone()).toBe(false)
+    })
+  })
+
   describe('getTownSuggestions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

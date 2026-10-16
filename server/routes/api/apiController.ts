@@ -13,7 +13,17 @@ export default class ApiController {
 
   private counties: CodeDescription[] = []
 
+  private areas: CodeDescription[] = []
+
   constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+
+  async searchArea(req: Request, res: Response): Promise<void> {
+    if (this.areas.length === 0) {
+      this.areas = await this.prisonRegisterService.getAreas(context(res))
+    }
+    const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
+    res.status(200).send(this.areas.filter(area => area.description.toLowerCase().includes(searchString.toLowerCase())))
+  }
 
   async searchTown(req: Request, res: Response): Promise<void> {
     const { searchString } = req.query
