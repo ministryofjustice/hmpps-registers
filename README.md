@@ -3,14 +3,14 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/hmpps-registers/badge.svg)](https://snyk.io/test/github/ministryofjustice/hmpps-registers)
 
 ## Running the app
-The easiest way to run the app is to use docker compose to create the service and all dependencies. 
+The easiest way to run the app is to use docker compose to create the service and all dependencies.
 
 `docker-compose pull`
 
 `docker-compose up`
 
 ### Dependencies
-The app requires: 
+The app requires:
 * hmpps-auth - for authentication
 * redis - session store and token caching
 
@@ -69,6 +69,12 @@ And then either, run tests in headless mode with:
 Or run tests with the cypress UI:
 
 `npm run int-test-ui`
+
+## Court geographical area
+
+The court details page supports updating or clearing the optional geographical area.
+Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
+Geographical areas use the same `/reference-data/areas` API lookup as court areas.
 
 ## Change log
 

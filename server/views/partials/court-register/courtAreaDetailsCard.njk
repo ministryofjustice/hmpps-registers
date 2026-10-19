@@ -55,7 +55,13 @@
         text: court.geographicalArea.description if court.geographicalArea else 'Not provided'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: "/court-register/geographical-area/update?id=" + court.courtId,
+            text: "Update",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
