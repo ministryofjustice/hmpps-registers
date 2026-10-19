@@ -1263,15 +1263,15 @@ describe('Court Register controller', () => {
       expect(req.flash).not.toHaveBeenCalled()
     })
 
-    it('trims before validating so a padded 12-character code is accepted', async () => {
-      req.body.cjitCode = '  123456789012  '
+    it('trims before validating so a padded 7-character code is accepted', async () => {
+      req.body.cjitCode = '  1234567  '
 
       await controller.submitUpdateCjitCode(req, res)
 
       expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
         {},
         'SHFCC',
-        expect.objectContaining({ cjitCode: '123456789012' }),
+        expect.objectContaining({ cjitCode: '1234567' }),
       )
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
@@ -1293,16 +1293,16 @@ describe('Court Register controller', () => {
       },
     )
 
-    it('rejects a 13-character code before fetching or updating the court and retains the trimmed form', async () => {
-      req.body.cjitCode = '  1234567890123  '
+    it('rejects a 8-character code before fetching or updating the court and retains the trimmed form', async () => {
+      req.body.cjitCode = '  12345678  '
 
       await controller.submitUpdateCjitCode(req, res)
 
       expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
       expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
-      expect(req.session.updateCjitCodeForm).toEqual({ cjitCode: '1234567890123' })
+      expect(req.session.updateCjitCodeForm).toEqual({ cjitCode: '12345678' })
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#cjitCode', text: 'CJIT code must be 12 characters or fewer' },
+        { href: '#cjitCode', text: 'CJIT code must be 7 characters or fewer' },
       ])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/cjit-code/update?id=SHFCC')
     })

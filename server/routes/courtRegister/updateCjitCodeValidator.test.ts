@@ -15,8 +15,8 @@ describe('updateCjitCodeValidator', () => {
     updateCjitCode.mockResolvedValue({ success: true })
   })
 
-  it.each<UpdateCjitCodeForm>([{ cjitCode: 'C00SH00' }, { cjitCode: '123456789012' }, { cjitCode: '' }, {}])(
-    'accepts an optional CJIT code of up to 12 characters: %j',
+  it.each<UpdateCjitCodeForm>([{ cjitCode: 'C00SH00' }, { cjitCode: '1234567' }, { cjitCode: '' }, {}])(
+    'accepts an optional CJIT code of up to 7 characters: %j',
     async form => {
       expect(await validate(form, req, updateCjitCode)).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
       expect(updateCjitCode).toHaveBeenCalledTimes(1)
@@ -25,12 +25,12 @@ describe('updateCjitCodeValidator', () => {
     },
   )
 
-  it('rejects a CJIT code of 13 characters without calling the update callback', async () => {
-    expect(await validate({ cjitCode: '1234567890123' }, req, updateCjitCode)).toEqual(
+  it('rejects a CJIT code of 8 characters without calling the update callback', async () => {
+    expect(await validate({ cjitCode: '12345678' }, req, updateCjitCode)).toEqual(
       '/court-register/cjit-code/update?id=SHFCC',
     )
     expect(req.flash).toHaveBeenCalledWith('errors', [
-      { href: '#cjitCode', text: 'CJIT code must be 12 characters or fewer' },
+      { href: '#cjitCode', text: 'CJIT code must be 7 characters or fewer' },
     ])
     expect(updateCjitCode).not.toHaveBeenCalled()
   })

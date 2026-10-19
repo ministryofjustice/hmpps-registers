@@ -77,24 +77,24 @@ context('Court register - update CJIT code', () => {
     openUpdatePage().cjitCode().should('have.value', '')
   })
 
-  it('will reject more than 12 characters, retain input and allow correction', () => {
+  it('will reject more than 7 characters, retain input and allow correction', () => {
     const updatePage = openUpdatePage()
     updatePage.cjitCode().clear()
     updatePage.cjitCode().type('ABCDEFGHIJKLM')
     updatePage.saveButton().click()
 
     const pageWithErrors = UpdateAgencyCjitCode.verifyOnPage(court.courtName)
-    pageWithErrors.error().should('contain.text', 'CJIT code must be 12 characters or fewer')
-    pageWithErrors.errorSummary().should('contain.text', 'CJIT code must be 12 characters or fewer')
+    pageWithErrors.error().should('contain.text', 'CJIT code must be 7 characters or fewer')
+    pageWithErrors.errorSummary().should('contain.text', 'CJIT code must be 7 characters or fewer')
     pageWithErrors.cjitCode().should('have.value', 'ABCDEFGHIJKLM')
     updatedCourts().should('be.empty')
 
     pageWithErrors.cjitCode().clear()
-    pageWithErrors.cjitCode().type('  ABCDEFGHIJKL  ')
+    pageWithErrors.cjitCode().type('  ABCDEFG  ')
     pageWithErrors.saveButton().click()
     CourtsDetails.verifyOnPage(court.courtName)
     cy.url().should('include', '/court-register/details?id=SHFCC&action=UPDATED')
-    updatedCourts().should('deep.equal', [expectedUpdate('ABCDEFGHIJKL')])
+    updatedCourts().should('deep.equal', [expectedUpdate('ABCDEFG')])
   })
 
   ;['', '   '].forEach(value => {
@@ -123,26 +123,19 @@ context('Court register - update CJIT code', () => {
     pageWithErrors.error().should('contain.text', 'CJIT code could not be updated')
     pageWithErrors.cjitCode().should('have.value', '')
     cy.task('stubUpdateCourt', court.courtId)
-    pageWithErrors.cjitCode().type('NEW-CODE')
+    pageWithErrors.cjitCode().type('NEWCODE')
     pageWithErrors.saveButton().click()
 
     CourtsDetails.verifyOnPage(court.courtName)
-    updatedCourts().should('have.deep.members', [expectedUpdate(''), expectedUpdate('NEW-CODE')])
+    updatedCourts().should('have.deep.members', [expectedUpdate(''), expectedUpdate('NEWCODE')])
   })
 
   it('will reset to the current code on a fresh visit', () => {
     const updatePage = openUpdatePage()
     updatePage.cjitCode().clear()
-    updatePage.cjitCode().type('ABCDEFGHIJKLM')
+    updatePage.cjitCode().type('ABCDEFGH')
     updatePage.saveButton().click()
     UpdateAgencyCjitCode.verifyOnPage(court.courtName).cancelLink().click()
     openUpdatePage().cjitCode().should('have.value', 'C00SH00')
-  })
-
-  it('will capture the CJIT update page and court details for review', () => {
-    cy.viewport(1280, 1100)
-    cy.screenshot('court-details-cjit-code', { capture: 'fullPage' })
-    openUpdatePage()
-    cy.screenshot('update-agency-cjit-code', { capture: 'fullPage' })
   })
 })
