@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor, getRequests } from './wiremock'
+import { stubFor, getRequests, resetScenarios } from './wiremock'
 import {
   Court,
   Hospital,
@@ -291,6 +291,69 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
       jsonBody: court,
     },
   })
+
+const createCourtScenario = (courtId: string) => `create-court-${courtId}`
+
+// GET /courts/id/<courtId> returns 404 (available) until the court is created via POST /courts, then returns the court
+const stubCourtIdAvailable = async (court: Court): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createCourtScenario(court.courtId),
+    requiredScenarioState: 'Started',
+    request: { method: 'GET', url: `/prison-register/courts/id/${court.courtId}` },
+    response: {
+      status: 404,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 404, userMessage: `Court ${court.courtId} not found` },
+    },
+  })
+  return stubFor({
+    scenarioName: createCourtScenario(court.courtId),
+    requiredScenarioState: 'Created',
+    request: { method: 'GET', url: `/prison-register/courts/id/${court.courtId}` },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: court,
+    },
+  })
+}
+
+const stubCreateCourt = (court: Court): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createCourtScenario(court.courtId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/courts',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.courtId == '${court.courtId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: court,
+    },
+  })
+
+const stubCreateCourtError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/courts' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedCourts = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/courts',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
 
 const stubAddCourtAddress = (courtId: string): SuperAgentRequest =>
   stubFor({
@@ -753,6 +816,10 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubCourtIdAvailable,
+  stubCreateCourt,
+  stubCreateCourtError,
+  getCreatedCourts,
   stubAddCourtAddress,
   getAddedCourtAddresses,
   stubUpdateCourtAddress,

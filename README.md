@@ -88,6 +88,20 @@ The court details page supports updating or clearing the optional payroll region
 Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
 Suggestions and code validation use the `/reference-data/payroll-regions` API lookup.
 
+## Add a court
+
+Select **Add a new court** next to the filter button on the court register list.
+Enter the court details, court type, accessible access, CJIT code, area, region,
+geographical area, local authority and payroll region, then check the answers.
+Use the Change links to amend answers before selecting **Confirm and add court**.
+
+New courts are active. Description, CJIT code and geographical reference fields
+are optional; court ID, name, court type and an accessible access answer are required.
+Each journey is stored separately in the session so that drafts in different tabs
+do not overwrite each other. Cancel discards the draft; no court is created until
+the check-answers page is submitted. On success the court details page provides the
+existing links to add addresses, phone numbers and email addresses.
+
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)

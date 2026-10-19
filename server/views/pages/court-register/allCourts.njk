@@ -39,7 +39,14 @@
 
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
-                            <div class="moj-action-bar__filter"></div>
+                            <div class="govuk-button-group">
+                                <div class="moj-action-bar__filter"></div>
+                                {{ govukButton({
+                                    text: "Add a new court",
+                                    href: "/court-register/create/start",
+                                    attributes: { "data-qa": "add-court-link" }
+                                }) }}
+                            </div>
                         </div>
                     </div>
 

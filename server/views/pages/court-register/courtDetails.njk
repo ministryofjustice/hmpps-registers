@@ -29,6 +29,9 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">Court details for {{ court.courtName }}</h1>
 
+    {% if action == 'CREATED' %}
+      {{ confirmationPanel('Court has been added successfully', 'confirm-created') }}
+    {% endif %}
     {% if action == 'UPDATED' %}
       {{ confirmationPanel('Court has been updated successfully', 'confirm-updated') }}
     {% endif %}

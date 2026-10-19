@@ -1,6 +1,6 @@
 import { Court } from '../../@types/prisonRegister'
 
-export type Action = 'NONE' | 'ACTIVATE' | 'DEACTIVATE' | 'UPDATED'
+export type Action = 'NONE' | 'ACTIVATE' | 'DEACTIVATE' | 'UPDATED' | 'CREATED'
 
 export default class CourtDetailsView {
   constructor(
