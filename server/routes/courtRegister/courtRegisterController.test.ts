@@ -2034,6 +2034,139 @@ describe('Court Register controller', () => {
     )
   })
 
+  describe('updateLocalAuthority', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(
+        data.court({ localAuthority: { code: 'SHEF', description: 'Sheffield' } }),
+      )
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('loads the court and prefills the current local authority, discarding stale input', async () => {
+      res.locals.user = { username: 'tom' }
+      req.session.updateLocalAuthorityForm = { localAuthorityCode: 'STALE' }
+
+      await controller.updateLocalAuthority(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.session.updateLocalAuthorityForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyLocalAuthority', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { localAuthorityCode: 'SHEF', localAuthorityDescription: 'Sheffield' },
+      })
+      expect(prisonRegisterService.getLocalAuthorities).not.toHaveBeenCalled()
+    })
+
+    it('prefills blank fields when the court has no local authority', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ localAuthority: null }))
+
+      await controller.updateLocalAuthority(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyLocalAuthority',
+        expect.objectContaining({ form: { localAuthorityCode: '', localAuthorityDescription: '' } }),
+      )
+    })
+
+    it('retains the submitted form when there are errors', async () => {
+      const form = { localAuthorityCode: 'INVALID', localAuthorityDescription: 'Unknown local authority' }
+      const errors = [{ href: '#localAuthority', text: 'Local authority cannot be changed' }]
+      req.session.updateLocalAuthorityForm = form
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updateLocalAuthority(req, res)
+
+      expect(req.session.updateLocalAuthorityForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyLocalAuthority',
+        expect.objectContaining({ form, errors }),
+      )
+    })
+  })
+
+  describe('submitUpdateLocalAuthority', () => {
+    const currentCourt = data.court({
+      active: false,
+      inactiveDate: '2024-01-31',
+      localAuthority: { code: 'SHEF', description: 'Sheffield' },
+    })
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { localAuthorityCode: ' LEED ', localAuthorityDescription: ' Leeds ' }
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getLocalAuthorities.mockResolvedValue([{ code: 'LEED', description: 'Leeds' }])
+      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+    })
+
+    it('trims, validates and updates the local authority while preserving every other court field', async () => {
+      await controller.submitUpdateLocalAuthority(req, res)
+
+      expect(req.session.updateLocalAuthorityForm).toBeUndefined()
+      expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: currentCourt.courtName,
+        description: currentCourt.description,
+        active: currentCourt.active,
+        inactiveDate: currentCourt.inactiveDate,
+        cjitCode: currentCourt.cjitCode,
+        accessibleAccess: currentCourt.accessibleAccess,
+        areaCode: currentCourt.area.code,
+        regionCode: currentCourt.region.code,
+        geographicalAreaCode: currentCourt.geographicalArea.code,
+        localAuthorityCode: 'LEED',
+        payrollRegionCode: currentCourt.payrollRegion.code,
+        courtTypeCode: currentCourt.courtType.code,
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('clears the local authority code when none is selected', async () => {
+      req.body = { localAuthorityCode: '', localAuthorityDescription: '' }
+
+      await controller.submitUpdateLocalAuthority(req, res)
+
+      expect(prisonRegisterService.getLocalAuthorities).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('localAuthorityCode')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('retains an unselected description and does not update the court', async () => {
+      req.body = { localAuthorityCode: 'Unknown local authority', localAuthorityDescription: 'Unknown local authority' }
+
+      await controller.submitUpdateLocalAuthority(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateLocalAuthorityForm).toEqual(req.body)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#localAuthority', text: 'Select a valid local authority from the suggestions' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/local-authority/update?id=SHFCC')
+    })
+
+    it('retains the trimmed selection when the API rejects the update', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Local authority cannot be changed',
+      })
+
+      await controller.submitUpdateLocalAuthority(req, res)
+
+      expect(req.session.updateLocalAuthorityForm).toEqual({
+        localAuthorityCode: 'LEED',
+        localAuthorityDescription: 'Leeds',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#localAuthority', text: 'Local authority cannot be changed' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/local-authority/update?id=SHFCC')
+    })
+  })
+
   describe('updateGeographicalArea', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(data.court({}))

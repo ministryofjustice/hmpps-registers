@@ -474,6 +474,13 @@ export default class PrisonRegisterService {
     })
   }
 
+  async getLocalAuthorities(context: Context): Promise<CodeDescription[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    return PrisonRegisterService.restClient(token).get<CodeDescription[]>({
+      path: '/reference-data/local-authorities',
+    })
+  }
+
   async getRegions(context: Context): Promise<CodeDescription[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     return PrisonRegisterService.restClient(token).get<CodeDescription[]>({
