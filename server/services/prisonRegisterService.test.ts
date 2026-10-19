@@ -1570,6 +1570,31 @@ describe('Prison Register service', () => {
     })
   })
 
+  describe('getRegions', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('uses the username and bearer token to fetch regions', async () => {
+      const regions: CodeDescription[] = [
+        { code: 'YH', description: 'Yorkshire and the Humber' },
+        { code: 'NE', description: 'North East' },
+      ]
+      fakePrisonRegister.get('/reference-data/regions').reply(200, regions)
+
+      expect(await prisonRegisterService.getRegions({ username: 'tommy' })).toEqual(regions)
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(fakePrisonRegister.isDone()).toBe(true)
+    })
+
+    it('propagates reference data API errors', async () => {
+      fakePrisonRegister.get('/reference-data/regions').reply(404, { developerMessage: 'Regions not found' })
+
+      await expect(prisonRegisterService.getRegions({})).rejects.toThrow('Not Found')
+    })
+  })
+
   describe('getTownSuggestions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

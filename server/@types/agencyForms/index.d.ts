@@ -3,6 +3,10 @@ declare module 'agencyForms' {
     areaCode?: string
     areaDescription?: string
   }
+  export interface UpdateRegionForm {
+    regionCode?: string
+    regionDescription?: string
+  }
   export interface AddAddressForm {
     addressline1?: string
     addressline2?: string

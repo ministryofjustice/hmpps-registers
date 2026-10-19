@@ -29,6 +29,16 @@ const stubGetAreas = (areas: CodeDescription[]): SuperAgentRequest =>
     },
   })
 
+const stubGetRegions = (regions: CodeDescription[]): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'GET', url: '/prison-register/reference-data/regions' },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: regions,
+    },
+  })
+
 const stubGetTownSuggestions = (suggestions: CodeDescription[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -704,6 +714,7 @@ const stubGetApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgent
 
 export default {
   stubGetAreas,
+  stubGetRegions,
   stubGetTownSuggestions,
   stubGetCountySuggestions,
   stubPing,
