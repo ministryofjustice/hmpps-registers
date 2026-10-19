@@ -1,4 +1,8 @@
 declare module 'agencyForms' {
+  export interface UpdatePayrollRegionForm {
+    payrollRegionCode?: string
+    payrollRegionDescription?: string
+  }
   export interface UpdateLocalAuthorityForm {
     localAuthorityCode?: string
     localAuthorityDescription?: string

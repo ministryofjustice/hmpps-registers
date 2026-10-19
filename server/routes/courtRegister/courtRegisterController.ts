@@ -38,6 +38,8 @@ import UpdateAgencyGeographicalAreaView from '../agencyRegisters/updateGeographi
 import updateGeographicalAreaValidator from './updateGeographicalAreaValidator'
 import UpdateAgencyLocalAuthorityView from '../agencyRegisters/updateLocalAuthorityView'
 import updateLocalAuthorityValidator from './updateLocalAuthorityValidator'
+import UpdateAgencyPayrollRegionView from '../agencyRegisters/updatePayrollRegionView'
+import updatePayrollRegionValidator from './updatePayrollRegionValidator'
 
 function context(res: Response): Context {
   return {
@@ -651,6 +653,44 @@ export default class PrisonRegisterController {
           else update.localAuthorityCode = localAuthorityCode
           const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateLocalAuthorityForm
+          return result
+        },
+      ),
+    )
+  }
+
+  async updatePayrollRegion(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updatePayrollRegionForm
+    const view = new UpdateAgencyPayrollRegionView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${id}` },
+      errors,
+      req.session.updatePayrollRegionForm ?? {
+        payrollRegionCode: court.payrollRegion?.code ?? '',
+        payrollRegionDescription: court.payrollRegion?.description ?? '',
+      },
+    )
+    res.render('pages/components/edit/updateAgencyPayrollRegion', view.renderArgs)
+  }
+
+  async submitUpdatePayrollRegion(req: Request, res: Response): Promise<void> {
+    req.session.updatePayrollRegionForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updatePayrollRegionValidator(
+        req.session.updatePayrollRegionForm,
+        req,
+        () => this.prisonRegisterService.getPayrollRegions(context(res)),
+        async payrollRegionCode => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const update = updateCourtMapper(court)
+          if (payrollRegionCode === undefined) delete update.payrollRegionCode
+          else update.payrollRegionCode = payrollRegionCode
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          if (result.success) delete req.session.updatePayrollRegionForm
           return result
         },
       ),

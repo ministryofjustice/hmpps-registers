@@ -89,7 +89,13 @@
           text: court.payrollRegion.description if court.payrollRegion else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/court-register/payroll-region/update?id=" + court.courtId,
+            text: "Update",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]
