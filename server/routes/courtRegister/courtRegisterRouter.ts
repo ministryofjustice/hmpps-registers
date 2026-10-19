@@ -20,6 +20,12 @@ export default function routes(router: Router, services: Services): Router {
   post('/court-register/area/update', (req, res) => courtRegisterController.submitUpdateArea(req, res))
   get('/court-register/region/update', (req, res) => courtRegisterController.updateRegion(req, res))
   post('/court-register/region/update', (req, res) => courtRegisterController.submitUpdateRegion(req, res))
+  get('/court-register/geographical-area/update', (req, res) =>
+    courtRegisterController.updateGeographicalArea(req, res),
+  )
+  post('/court-register/geographical-area/update', (req, res) =>
+    courtRegisterController.submitUpdateGeographicalArea(req, res),
+  )
   get('/court-register/active/update', (req, res) => courtRegisterController.updateActive(req, res))
   post('/court-register/active/update', (req, res) => courtRegisterController.submitUpdateActive(req, res))
   get('/court-register/cjit-code/update', (req, res) => courtRegisterController.updateCjitCode(req, res))

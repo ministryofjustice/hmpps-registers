@@ -10,6 +10,7 @@ import type {
   UpdateActiveForm,
   UpdateAreaForm,
   UpdateRegionForm,
+  UpdateGeographicalAreaForm,
 } from 'agencyForms'
 import type {
   AddNewPrisonForm,
@@ -52,6 +53,7 @@ declare module 'express-session' {
     updateActiveForm: UpdateActiveForm
     updateAreaForm: UpdateAreaForm
     updateRegionForm: UpdateRegionForm
+    updateGeographicalAreaForm: UpdateGeographicalAreaForm
   }
 }
 

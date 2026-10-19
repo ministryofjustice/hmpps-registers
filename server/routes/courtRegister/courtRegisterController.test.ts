@@ -2034,6 +2034,140 @@ describe('Court Register controller', () => {
     )
   })
 
+  describe('updateGeographicalArea', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('loads the court and prefills the current geographical area, discarding stale input', async () => {
+      res.locals.user = { username: 'tom' }
+      req.session.updateGeographicalAreaForm = { geographicalAreaCode: 'STALE' }
+
+      await controller.updateGeographicalArea(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.session.updateGeographicalAreaForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyGeographicalArea', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { geographicalAreaCode: 'YH', geographicalAreaDescription: 'Yorkshire and the Humber' },
+      })
+      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+    })
+
+    it('prefills blank fields when the court has no geographical area', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ geographicalArea: null }))
+
+      await controller.updateGeographicalArea(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyGeographicalArea',
+        expect.objectContaining({ form: { geographicalAreaCode: '', geographicalAreaDescription: '' } }),
+      )
+    })
+
+    it('retains the submitted form when there are errors', async () => {
+      const form = { geographicalAreaCode: 'INVALID', geographicalAreaDescription: 'Unknown geographical area' }
+      const errors = [{ href: '#geographicalArea', text: 'Geographical area cannot be changed' }]
+      req.session.updateGeographicalAreaForm = form
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updateGeographicalArea(req, res)
+
+      expect(req.session.updateGeographicalAreaForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyGeographicalArea',
+        expect.objectContaining({ form, errors }),
+      )
+    })
+  })
+
+  describe('submitUpdateGeographicalArea', () => {
+    const currentCourt = data.court({
+      active: false,
+      inactiveDate: '2024-01-31',
+      geographicalArea: { code: 'YH', description: 'Yorkshire and the Humber' },
+    })
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { geographicalAreaCode: ' NE ', geographicalAreaDescription: ' North East ' }
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getAreas.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+    })
+
+    it('trims, validates and updates the geographical area while preserving every other court field', async () => {
+      await controller.submitUpdateGeographicalArea(req, res)
+
+      expect(req.session.updateGeographicalAreaForm).toBeUndefined()
+      expect(prisonRegisterService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: currentCourt.courtName,
+        description: currentCourt.description,
+        active: currentCourt.active,
+        inactiveDate: currentCourt.inactiveDate,
+        cjitCode: currentCourt.cjitCode,
+        accessibleAccess: currentCourt.accessibleAccess,
+        areaCode: currentCourt.area.code,
+        regionCode: currentCourt.region.code,
+        geographicalAreaCode: 'NE',
+        localAuthorityCode: currentCourt.localAuthority.code,
+        payrollRegionCode: currentCourt.payrollRegion.code,
+        courtTypeCode: currentCourt.courtType.code,
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('clears the geographical area code when no geographical area is selected', async () => {
+      req.body = { geographicalAreaCode: '', geographicalAreaDescription: '' }
+
+      await controller.submitUpdateGeographicalArea(req, res)
+
+      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('geographicalAreaCode')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('retains an unselected description and does not update the court', async () => {
+      req.body = {
+        geographicalAreaCode: 'Unknown geographical area',
+        geographicalAreaDescription: 'Unknown geographical area',
+      }
+
+      await controller.submitUpdateGeographicalArea(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateGeographicalAreaForm).toEqual(req.body)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#geographicalArea', text: 'Select a valid geographical area from the suggestions' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/geographical-area/update?id=SHFCC')
+    })
+
+    it('retains the trimmed selection when the API rejects the update', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Geographical area cannot be changed',
+      })
+
+      await controller.submitUpdateGeographicalArea(req, res)
+
+      expect(req.session.updateGeographicalAreaForm).toEqual({
+        geographicalAreaCode: 'NE',
+        geographicalAreaDescription: 'North East',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#geographicalArea', text: 'Geographical area cannot be changed' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/geographical-area/update?id=SHFCC')
+    })
+  })
+
   describe('updateRegion', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(data.court({}))

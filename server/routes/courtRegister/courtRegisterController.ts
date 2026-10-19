@@ -34,6 +34,8 @@ import UpdateAgencyAreaView from '../agencyRegisters/updateAreaView'
 import updateAreaValidator from './updateAreaValidator'
 import UpdateAgencyRegionView from '../agencyRegisters/updateRegionView'
 import updateRegionValidator from './updateRegionValidator'
+import UpdateAgencyGeographicalAreaView from '../agencyRegisters/updateGeographicalAreaView'
+import updateGeographicalAreaValidator from './updateGeographicalAreaValidator'
 
 function context(res: Response): Context {
   return {
@@ -571,6 +573,44 @@ export default class PrisonRegisterController {
           else update.regionCode = regionCode
           const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateRegionForm
+          return result
+        },
+      ),
+    )
+  }
+
+  async updateGeographicalArea(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updateGeographicalAreaForm
+    const view = new UpdateAgencyGeographicalAreaView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${id}` },
+      errors,
+      req.session.updateGeographicalAreaForm ?? {
+        geographicalAreaCode: court.geographicalArea?.code ?? '',
+        geographicalAreaDescription: court.geographicalArea?.description ?? '',
+      },
+    )
+    res.render('pages/components/edit/updateAgencyGeographicalArea', view.renderArgs)
+  }
+
+  async submitUpdateGeographicalArea(req: Request, res: Response): Promise<void> {
+    req.session.updateGeographicalAreaForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updateGeographicalAreaValidator(
+        req.session.updateGeographicalAreaForm,
+        req,
+        () => this.prisonRegisterService.getAreas(context(res)),
+        async geographicalAreaCode => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const update = updateCourtMapper(court)
+          if (geographicalAreaCode === undefined) delete update.geographicalAreaCode
+          else update.geographicalAreaCode = geographicalAreaCode
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          if (result.success) delete req.session.updateGeographicalAreaForm
           return result
         },
       ),
