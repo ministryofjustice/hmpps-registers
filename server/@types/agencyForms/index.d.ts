@@ -1,4 +1,8 @@
 declare module 'agencyForms' {
+  export interface UpdateLocalAuthorityForm {
+    localAuthorityCode?: string
+    localAuthorityDescription?: string
+  }
   export interface UpdateGeographicalAreaForm {
     geographicalAreaCode?: string
     geographicalAreaDescription?: string

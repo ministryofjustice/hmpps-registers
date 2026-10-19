@@ -76,6 +76,12 @@ The court details page supports updating or clearing the optional geographical a
 Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
 Geographical areas use the same `/reference-data/areas` API lookup as court areas.
 
+## Court local authority
+
+The court details page supports updating or clearing the optional local authority.
+Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
+Suggestions and code validation use the `/reference-data/local-authorities` API lookup.
+
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)

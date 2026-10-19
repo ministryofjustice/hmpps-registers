@@ -36,6 +36,8 @@ import UpdateAgencyRegionView from '../agencyRegisters/updateRegionView'
 import updateRegionValidator from './updateRegionValidator'
 import UpdateAgencyGeographicalAreaView from '../agencyRegisters/updateGeographicalAreaView'
 import updateGeographicalAreaValidator from './updateGeographicalAreaValidator'
+import UpdateAgencyLocalAuthorityView from '../agencyRegisters/updateLocalAuthorityView'
+import updateLocalAuthorityValidator from './updateLocalAuthorityValidator'
 
 function context(res: Response): Context {
   return {
@@ -611,6 +613,44 @@ export default class PrisonRegisterController {
           else update.geographicalAreaCode = geographicalAreaCode
           const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateGeographicalAreaForm
+          return result
+        },
+      ),
+    )
+  }
+
+  async updateLocalAuthority(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updateLocalAuthorityForm
+    const view = new UpdateAgencyLocalAuthorityView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${id}` },
+      errors,
+      req.session.updateLocalAuthorityForm ?? {
+        localAuthorityCode: court.localAuthority?.code ?? '',
+        localAuthorityDescription: court.localAuthority?.description ?? '',
+      },
+    )
+    res.render('pages/components/edit/updateAgencyLocalAuthority', view.renderArgs)
+  }
+
+  async submitUpdateLocalAuthority(req: Request, res: Response): Promise<void> {
+    req.session.updateLocalAuthorityForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updateLocalAuthorityValidator(
+        req.session.updateLocalAuthorityForm,
+        req,
+        () => this.prisonRegisterService.getLocalAuthorities(context(res)),
+        async localAuthorityCode => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const update = updateCourtMapper(court)
+          if (localAuthorityCode === undefined) delete update.localAuthorityCode
+          else update.localAuthorityCode = localAuthorityCode
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          if (result.success) delete req.session.updateLocalAuthorityForm
           return result
         },
       ),

@@ -27,6 +27,17 @@ describe('API controller', () => {
 
   describe.each([
     {
+      method: 'searchLocalAuthority' as const,
+      serviceMethod: 'getLocalAuthorities' as const,
+      suggestions: [
+        { code: 'SHEF', description: 'Sheffield' },
+        { code: 'LEED', description: 'Leeds' },
+        { code: 'CHEST', description: 'Chesterfield' },
+      ],
+      query: 'FiElD',
+      matchingIndexes: [0, 2],
+    },
+    {
       method: 'searchArea' as const,
       serviceMethod: 'getAreas' as const,
       suggestions: [
@@ -211,15 +222,58 @@ describe('API controller', () => {
     })
   })
 
-  it('will cache area, region, town and county suggestions independently', async () => {
+  describe('searchLocalAuthority', () => {
+    const localAuthorities = [{ code: 'LA001', description: 'Sheffield' }]
+
+    it.each([undefined, ['Sheffield'], { text: 'Sheffield' }])(
+      'returns all local authorities when the search string is missing or not a string: %j',
+      async searchString => {
+        req.query.searchString = searchString
+        prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
+
+        await controller.searchLocalAuthority(req, res)
+
+        expect(res.send).toHaveBeenCalledWith(localAuthorities)
+      },
+    )
+
+    it('matches descriptions rather than codes', async () => {
+      prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
+      req.query.searchString = 'LA001'
+
+      await controller.searchLocalAuthority(req, res)
+
+      expect(res.send).toHaveBeenCalledWith([])
+    })
+
+    it('retries after empty responses or service errors and caches the first nonempty list', async () => {
+      prisonRegisterService.getLocalAuthorities
+        .mockResolvedValueOnce([])
+        .mockRejectedValueOnce(new Error('Unavailable'))
+        .mockResolvedValue(localAuthorities)
+
+      await controller.searchLocalAuthority(req, res)
+      expect(res.send).toHaveBeenLastCalledWith([])
+      await expect(controller.searchLocalAuthority(req, res)).rejects.toThrow('Unavailable')
+      await controller.searchLocalAuthority(req, res)
+      await controller.searchLocalAuthority(req, res)
+
+      expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledTimes(3)
+      expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
+    })
+  })
+
+  it('will cache area, region, local authority, town and county suggestions independently', async () => {
     const areas: CodeDescription[] = [{ code: 'YH', description: 'Yorkshire and the Humber' }]
     const regions: CodeDescription[] = [{ code: 'NE', description: 'North East' }]
+    const localAuthorities: CodeDescription[] = [{ code: 'BRIS', description: 'Bristol' }]
     const towns: CodeDescription[] = [{ code: 'SHEF', description: 'Sheffield' }]
     const counties: CodeDescription[] = [{ code: 'SY', description: 'South Yorkshire' }]
     prisonRegisterService.getTownSuggestions.mockResolvedValue(towns)
     prisonRegisterService.getCountySuggestions.mockResolvedValue(counties)
     prisonRegisterService.getAreas.mockResolvedValue(areas)
     prisonRegisterService.getRegions.mockResolvedValue(regions)
+    prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
     req.query.searchString = 's'
 
     await controller.searchTown(req, res)
@@ -240,6 +294,11 @@ describe('API controller', () => {
     expect(res.send).toHaveBeenLastCalledWith(regions)
 
     expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(1)
+    await controller.searchLocalAuthority(req, res)
+    expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
+    await controller.searchLocalAuthority(req, res)
+    expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
+    expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledTimes(1)
     expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(1)
     expect(prisonRegisterService.getTownSuggestions).toHaveBeenCalledTimes(1)
     expect(prisonRegisterService.getCountySuggestions).toHaveBeenCalledTimes(1)
