@@ -32,6 +32,8 @@ import UpdateAgencyActiveView from '../agencyRegisters/updateActiveView'
 import updateActiveValidator from './updateActiveValidator'
 import UpdateAgencyAreaView from '../agencyRegisters/updateAreaView'
 import updateAreaValidator from './updateAreaValidator'
+import UpdateAgencyRegionView from '../agencyRegisters/updateRegionView'
+import updateRegionValidator from './updateRegionValidator'
 
 function context(res: Response): Context {
   return {
@@ -531,6 +533,44 @@ export default class PrisonRegisterController {
           else update.areaCode = areaCode
           const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateAreaForm
+          return result
+        },
+      ),
+    )
+  }
+
+  async updateRegion(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updateRegionForm
+    const view = new UpdateAgencyRegionView(
+      court.courtName,
+      { cancelButton: `/court-register/details?id=${id}` },
+      errors,
+      req.session.updateRegionForm ?? {
+        regionCode: court.region?.code ?? '',
+        regionDescription: court.region?.description ?? '',
+      },
+    )
+    res.render('pages/components/edit/updateAgencyRegion', view.renderArgs)
+  }
+
+  async submitUpdateRegion(req: Request, res: Response): Promise<void> {
+    req.session.updateRegionForm = trimForm(req.body)
+    const courtId = req.query.id as string
+    res.redirect(
+      await updateRegionValidator(
+        req.session.updateRegionForm,
+        req,
+        () => this.prisonRegisterService.getRegions(context(res)),
+        async regionCode => {
+          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const update = updateCourtMapper(court)
+          if (regionCode === undefined) delete update.regionCode
+          else update.regionCode = regionCode
+          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          if (result.success) delete req.session.updateRegionForm
           return result
         },
       ),

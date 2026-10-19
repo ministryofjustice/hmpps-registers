@@ -12,6 +12,7 @@ const courtDetails = {
   area: () => cy.get('dt:contains("Area")').next(),
   updateAreaLink: () => cy.get('[data-qa=update-area-link]'),
   region: () => cy.get('dt:contains("Region")').next(),
+  updateRegionLink: () => cy.get('[data-qa=update-region-link]'),
   geographicalArea: () => cy.get('dt:contains("Geographical area")').next(),
   localAuthority: () => cy.get('dt:contains("Local Authority")').next(),
   payrollRegion: () => cy.get('dt:contains("Payroll region")').next(),

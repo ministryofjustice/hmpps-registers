@@ -2034,6 +2034,113 @@ describe('Court Register controller', () => {
     )
   })
 
+  describe('updateRegion', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('loads the court and prefills the current region', async () => {
+      res.locals.user = { username: 'tom' }
+
+      await controller.updateRegion(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyRegion', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { regionCode: 'YH', regionDescription: 'Yorkshire and the Humber' },
+      })
+      expect(prisonRegisterService.getRegions).not.toHaveBeenCalled()
+    })
+
+    it('prefills blank fields when the court has no region', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ region: null }))
+
+      await controller.updateRegion(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyRegion',
+        expect.objectContaining({ form: { regionCode: '', regionDescription: '' } }),
+      )
+    })
+
+    it('retains the submitted form when there are errors', async () => {
+      const form = { regionCode: 'INVALID', regionDescription: 'Unknown region' }
+      const errors = [{ href: '#region', text: 'Region cannot be changed' }]
+      req.session.updateRegionForm = form
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updateRegion(req, res)
+
+      expect(req.session.updateRegionForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyRegion',
+        expect.objectContaining({ form, errors }),
+      )
+    })
+  })
+
+  describe('submitUpdateRegion', () => {
+    const currentCourt = data.court({
+      region: { code: 'YH', description: 'Yorkshire and the Humber' },
+    })
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { regionCode: ' NE ', regionDescription: ' North East ' }
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+    })
+
+    it('trims, validates and updates the region while preserving other court fields', async () => {
+      await controller.submitUpdateRegion(req, res)
+
+      expect(req.session.updateRegionForm).toBeUndefined()
+      expect(prisonRegisterService.getRegions).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        expect.objectContaining({
+          courtName: currentCourt.courtName,
+          regionCode: 'NE',
+          areaCode: currentCourt.area.code,
+        }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('clears the region code when no region is selected', async () => {
+      req.body = { regionCode: '', regionDescription: '' }
+
+      await controller.submitUpdateRegion(req, res)
+
+      expect(prisonRegisterService.getRegions).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('regionCode')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('retains an unselected region description and does not update the court', async () => {
+      req.body = { regionCode: 'Unknown region', regionDescription: 'Unknown region' }
+
+      await controller.submitUpdateRegion(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updateRegionForm).toEqual({
+        regionCode: 'Unknown region',
+        regionDescription: 'Unknown region',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#region', text: 'Select a valid region from the suggestions' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/region/update?id=SHFCC')
+    })
+  })
+
   describe('updateCourtType', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(

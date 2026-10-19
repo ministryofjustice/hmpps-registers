@@ -38,6 +38,17 @@ describe('API controller', () => {
       matchingIndexes: [1, 2],
     },
     {
+      method: 'searchRegion' as const,
+      serviceMethod: 'getRegions' as const,
+      suggestions: [
+        { code: 'YH', description: 'Yorkshire and the Humber' },
+        { code: 'NW', description: 'North West' },
+        { code: 'NE', description: 'North East' },
+      ],
+      query: 'oRtH',
+      matchingIndexes: [1, 2],
+    },
+    {
       method: 'searchTown' as const,
       serviceMethod: 'getTownSuggestions' as const,
       suggestions: [
@@ -172,13 +183,43 @@ describe('API controller', () => {
     })
   })
 
-  it('will cache area, town and county suggestions independently', async () => {
+  describe('searchRegion', () => {
+    const regions = [{ code: 'YH', description: 'Yorkshire and the Humber' }]
+
+    it.each([undefined, ['Yorkshire'], { text: 'Yorkshire' }])(
+      'will return all regions when the search string is missing or not a string: %j',
+      async searchString => {
+        req.query.searchString = searchString
+        prisonRegisterService.getRegions.mockResolvedValue(regions)
+
+        await controller.searchRegion(req, res)
+
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.send).toHaveBeenCalledWith(regions)
+      },
+    )
+
+    it('will fetch again after an empty response and cache the first nonempty list', async () => {
+      prisonRegisterService.getRegions.mockResolvedValueOnce([]).mockResolvedValue(regions)
+
+      await controller.searchRegion(req, res)
+      await controller.searchRegion(req, res)
+      await controller.searchRegion(req, res)
+
+      expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(2)
+      expect(res.send).toHaveBeenLastCalledWith(regions)
+    })
+  })
+
+  it('will cache area, region, town and county suggestions independently', async () => {
     const areas: CodeDescription[] = [{ code: 'YH', description: 'Yorkshire and the Humber' }]
+    const regions: CodeDescription[] = [{ code: 'NE', description: 'North East' }]
     const towns: CodeDescription[] = [{ code: 'SHEF', description: 'Sheffield' }]
     const counties: CodeDescription[] = [{ code: 'SY', description: 'South Yorkshire' }]
     prisonRegisterService.getTownSuggestions.mockResolvedValue(towns)
     prisonRegisterService.getCountySuggestions.mockResolvedValue(counties)
     prisonRegisterService.getAreas.mockResolvedValue(areas)
+    prisonRegisterService.getRegions.mockResolvedValue(regions)
     req.query.searchString = 's'
 
     await controller.searchTown(req, res)
@@ -187,14 +228,19 @@ describe('API controller', () => {
     expect(res.send).toHaveBeenLastCalledWith(counties)
     await controller.searchArea(req, res)
     expect(res.send).toHaveBeenLastCalledWith(areas)
+    await controller.searchRegion(req, res)
+    expect(res.send).toHaveBeenLastCalledWith(regions)
     await controller.searchTown(req, res)
     expect(res.send).toHaveBeenLastCalledWith(towns)
     await controller.searchCounty(req, res)
     expect(res.send).toHaveBeenLastCalledWith(counties)
     await controller.searchArea(req, res)
     expect(res.send).toHaveBeenLastCalledWith(areas)
+    await controller.searchRegion(req, res)
+    expect(res.send).toHaveBeenLastCalledWith(regions)
 
     expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(1)
+    expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(1)
     expect(prisonRegisterService.getTownSuggestions).toHaveBeenCalledTimes(1)
     expect(prisonRegisterService.getCountySuggestions).toHaveBeenCalledTimes(1)
   })

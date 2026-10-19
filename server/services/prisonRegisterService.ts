@@ -474,6 +474,13 @@ export default class PrisonRegisterService {
     })
   }
 
+  async getRegions(context: Context): Promise<CodeDescription[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    return PrisonRegisterService.restClient(token).get<CodeDescription[]>({
+      path: '/reference-data/regions',
+    })
+  }
+
   async getCountySuggestions(context: Context): Promise<CodeDescription[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting county suggestions`)
