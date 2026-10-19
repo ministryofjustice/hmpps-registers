@@ -25,6 +25,7 @@ import type {
 } from '../prisonRegisterForms'
 
 import type { AddEmailAddressForm, UpdateEmailAddressForm } from '../agencyEditForms'
+import type { AddCourtJourney } from '../../routes/courtRegister/create/addCourtFlowControl'
 
 export default {}
 
@@ -34,6 +35,7 @@ declare module 'express-session' {
     returnTo: string
     nowInMinutes: number
     addNewPrisonForm: AddNewPrisonForm
+    addCourtJourneys: Record<string, AddCourtJourney>
     amendPrisonDetailsForm: AmendPrisonDetailsForm
     amendWelshPrisonAddressForm: AmendWelshPrisonAddressForm
     amendPrisonAddressForm: AmendPrisonAddressForm

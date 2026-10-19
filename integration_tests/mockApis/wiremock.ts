@@ -7,7 +7,9 @@ const stubFor = (mapping: Record<string, unknown>): SuperAgentRequest =>
 
 const getRequests = (): SuperAgentRequest => superagent.get(`${url}/requests`)
 
+const resetScenarios = (): SuperAgentRequest => superagent.post(`${url}/scenarios/reset`)
+
 const resetStubs = (): Promise<Array<Response>> =>
   Promise.all([superagent.delete(`${url}/mappings`), superagent.delete(`${url}/requests`)])
 
-export { stubFor, getRequests, resetStubs }
+export { stubFor, getRequests, resetStubs, resetScenarios }

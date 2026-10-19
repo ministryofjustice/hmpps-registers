@@ -19,6 +19,7 @@ import {
   PrisonAddress,
   ProbationOffice,
   UpdateCourt,
+  CreateCourt,
   UpdateEmailAddress,
   UpdatePrison,
   UpdatePrisonAddress,
@@ -242,6 +243,27 @@ export default class PrisonRegisterService {
     return PrisonRegisterService.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
     })
+  }
+
+  async findCourt(context: Context, courtId: string): Promise<Court | undefined> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`finding court with id ${courtId}`)
+    try {
+      return await PrisonRegisterService.restClient(token).get<Court>({
+        path: `/courts/id/${encodeURIComponent(courtId)}`,
+      })
+    } catch (error) {
+      if (error instanceof Error && 'status' in error && error.status === 404) return undefined
+      throw error
+    }
+  }
+
+  async createCourt(context: Context, court: CreateCourt): Promise<CourtMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating court with id ${court.courtId}`)
+    return PrisonRegisterService.courtMutation(() =>
+      PrisonRegisterService.restClient(token).post<Court>({ path: '/courts', data: court }),
+    )
   }
 
   async updateCourtDetails(context: Context, courtId: string, court: UpdateCourt): Promise<CourtMutationResponse> {

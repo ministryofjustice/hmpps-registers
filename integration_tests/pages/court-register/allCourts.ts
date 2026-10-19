@@ -23,6 +23,7 @@ const allCourts = {
   cancelCrownCourtFilter: () => cy.get('.moj-filter-tags').contains('CC'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  addCourtLink: () => cy.get('[data-qa=add-court-link]'),
   viewCourtLink: (courtId: string) => cy.get(`[href="/court-register/details?id=${courtId}"]`).first(),
 }
 

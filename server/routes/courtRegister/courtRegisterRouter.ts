@@ -2,6 +2,7 @@ import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import CourtRegisterController from './courtRegisterController'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import AddCourtController from './create/addCourtController'
 
 // include this here otherwise TS complains about cyclical dependencies
 export interface Services {
@@ -13,6 +14,12 @@ export default function routes(router: Router, services: Services): Router {
   const post = (path: string, handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
   const courtRegisterController = new CourtRegisterController(services.prisonRegisterService)
+  const addCourtController = new AddCourtController(services.prisonRegisterService)
+
+  get('/court-register/create/start', (req, res) => addCourtController.start(req, res))
+  get('/court-register/create/:journeyId/cancel', (req, res) => addCourtController.cancel(req, res))
+  get('/court-register/create/:journeyId/:step', (req, res) => addCourtController.show(req, res))
+  post('/court-register/create/:journeyId/:step', (req, res) => addCourtController.submit(req, res))
 
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))

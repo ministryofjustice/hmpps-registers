@@ -1,0 +1,96 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% set pageTitle = title + " - Add a new court - DPS" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {{ govukBackLink({ text: "Back", href: navigation.backLink, attributes: { "data-qa": "back-link" } }) }}
+  {% if errors.length %}
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errors }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Add a new court</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {% if page == 'details' %}
+          <p class="govuk-body">New courts are active. You can add addresses, phone numbers and email addresses after creating the court.</p>
+          {{ govukInput({
+            id: "courtId", name: "courtId",
+            label: { text: "Court ID" },
+            hint: { text: "Enter between 2 and 6 letters or numbers." },
+            value: form.courtId,
+            classes: "govuk-input--width-10",
+            errorMessage: errors | findError('courtId')
+          }) }}
+          {{ govukInput({
+            id: "courtName", name: "courtName",
+            label: { text: "Court name" },
+            hint: { text: "Enter 40 characters or fewer." },
+            value: form.courtName,
+            errorMessage: errors | findError('courtName')
+          }) }}
+          {{ govukInput({
+            id: "description", name: "description",
+            label: { text: "Description (optional)" },
+            hint: { text: "Enter 3000 characters or fewer." },
+            value: form.description,
+            errorMessage: errors | findError('description')
+          }) }}
+        {% elif page == 'court-type' %}
+          {{ govukRadios({
+            idPrefix: "courtType", name: "courtType",
+            fieldset: { legend: { text: "Court type", classes: "govuk-fieldset__legend--m" } },
+            items: courtTypeOptions,
+            errorMessage: errors | findError('courtType')
+          }) }}
+        {% elif page == 'accessible-access' %}
+          {{ govukRadios({
+            idPrefix: "accessibleAccess", name: "accessibleAccess",
+            fieldset: { legend: { text: "Accessible access", classes: "govuk-fieldset__legend--m" } },
+            items: accessibleAccessOptions,
+            errorMessage: errors | findError('accessibleAccess')
+          }) }}
+        {% elif page == 'cjit-code' %}
+          {{ govukInput({
+            id: "cjitCode", name: "cjitCode",
+            label: { text: "CJIT code (optional)" },
+            hint: { text: "Enter 7 characters or fewer." },
+            value: form.cjitCode,
+            errorMessage: errors | findError('cjitCode')
+          }) }}
+        {% elif reference %}
+          <input type="hidden" id="{{ reference.field }}Code" name="{{ reference.field }}Code" value="{{ reference.code }}" />
+          {{ govukInput({
+            id: reference.field, name: reference.field + "Description",
+            label: { text: reference.inputLabel + " (optional)" },
+            hint: { text: "Start typing a " + reference.label + " name and select a suggestion. Clear the field to remove the " + reference.label + "." },
+            value: reference.description,
+            errorMessage: errors | findError(reference.field)
+          }) }}
+          <p id="{{ reference.field }}-search-status" role="status" class="govuk-body"></p>
+        {% endif %}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: { "data-qa": "continue-button" },
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {% if reference %}
+    <script src="/assets/accessible-autocomplete.min.js"></script>
+    <script src="/assets/js/{{ reference.script }}.js"></script>
+  {% endif %}
+{% endblock %}

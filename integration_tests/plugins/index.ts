@@ -43,6 +43,10 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
 
     stubGetCourts: prisonRegister.stubGetCourts,
     stubGetCourt: prisonRegister.stubGetCourt,
+    stubCourtIdAvailable: prisonRegister.stubCourtIdAvailable,
+    stubCreateCourt: prisonRegister.stubCreateCourt,
+    stubCreateCourtError: prisonRegister.stubCreateCourtError,
+    getCreatedCourts: prisonRegister.getCreatedCourts,
     stubAddCourtAddress: prisonRegister.stubAddCourtAddress,
     getAddedCourtAddresses: prisonRegister.getAddedCourtAddresses,
     stubUpdateCourtAddress: prisonRegister.stubUpdateCourtAddress,
