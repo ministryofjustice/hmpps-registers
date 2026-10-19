@@ -27,6 +27,17 @@ describe('API controller', () => {
 
   describe.each([
     {
+      method: 'searchPayrollRegion' as const,
+      serviceMethod: 'getPayrollRegions' as const,
+      suggestions: [
+        { code: 'YH', description: 'Yorkshire and the Humber' },
+        { code: 'NW', description: 'North West' },
+        { code: 'NE', description: 'North East' },
+      ],
+      query: 'oRtH',
+      matchingIndexes: [1, 2],
+    },
+    {
       method: 'searchLocalAuthority' as const,
       serviceMethod: 'getLocalAuthorities' as const,
       suggestions: [
@@ -219,6 +230,65 @@ describe('API controller', () => {
 
       expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(2)
       expect(res.send).toHaveBeenLastCalledWith(regions)
+    })
+  })
+
+  describe('searchPayrollRegion', () => {
+    const payrollRegions = [{ code: 'PR001', description: 'North East' }]
+
+    it('caches payroll regions separately from regions', async () => {
+      const regions = [{ code: 'REG001', description: 'North West' }]
+      prisonRegisterService.getRegions.mockResolvedValue(regions)
+      prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+      req.query.searchString = 'North'
+
+      await controller.searchRegion(req, res)
+      expect(res.send).toHaveBeenLastCalledWith(regions)
+      await controller.searchPayrollRegion(req, res)
+      expect(res.send).toHaveBeenLastCalledWith(payrollRegions)
+      await controller.searchRegion(req, res)
+      expect(res.send).toHaveBeenLastCalledWith(regions)
+      await controller.searchPayrollRegion(req, res)
+      expect(res.send).toHaveBeenLastCalledWith(payrollRegions)
+      expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(1)
+      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledTimes(1)
+    })
+
+    it.each([undefined, ['North'], { text: 'North' }])(
+      'returns all payroll regions when the search string is missing or not a string: %j',
+      async searchString => {
+        req.query.searchString = searchString
+        prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+
+        await controller.searchPayrollRegion(req, res)
+
+        expect(res.send).toHaveBeenCalledWith(payrollRegions)
+      },
+    )
+
+    it('matches descriptions rather than codes', async () => {
+      prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+      req.query.searchString = 'PR001'
+
+      await controller.searchPayrollRegion(req, res)
+
+      expect(res.send).toHaveBeenCalledWith([])
+    })
+
+    it('retries after empty responses or service errors and caches the first nonempty list', async () => {
+      prisonRegisterService.getPayrollRegions
+        .mockResolvedValueOnce([])
+        .mockRejectedValueOnce(new Error('Unavailable'))
+        .mockResolvedValue(payrollRegions)
+
+      await controller.searchPayrollRegion(req, res)
+      expect(res.send).toHaveBeenLastCalledWith([])
+      await expect(controller.searchPayrollRegion(req, res)).rejects.toThrow('Unavailable')
+      await controller.searchPayrollRegion(req, res)
+      await controller.searchPayrollRegion(req, res)
+
+      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledTimes(3)
+      expect(res.send).toHaveBeenLastCalledWith(payrollRegions)
     })
   })
 

@@ -24,6 +24,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubPrisonRegisterPing: prisonRegister.stubPing,
     stubGetTownSuggestions: prisonRegister.stubGetTownSuggestions,
     stubGetAreas: prisonRegister.stubGetAreas,
+    stubGetPayrollRegions: prisonRegister.stubGetPayrollRegions,
     stubGetLocalAuthorities: prisonRegister.stubGetLocalAuthorities,
     stubGetRegions: prisonRegister.stubGetRegions,
     stubGetCountySuggestions: prisonRegister.stubGetCountySuggestions,

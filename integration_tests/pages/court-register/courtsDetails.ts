@@ -18,6 +18,7 @@ const courtDetails = {
   localAuthority: () => cy.get('dt:contains("Local Authority")').next(),
   updateLocalAuthorityLink: () => cy.get('[data-qa=update-local-authority-link]'),
   payrollRegion: () => cy.get('dt:contains("Payroll region")').next(),
+  updatePayrollRegionLink: () => cy.get('[data-qa=update-payroll-region-link]'),
   address: () => cy.get('dt:contains("Address")').next(),
   emailAddress: () => cy.get('dt:contains("Email")').next(),
   phoneNumber: () => cy.get('dt:contains("Number")').next(),

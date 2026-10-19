@@ -82,6 +82,12 @@ The court details page supports updating or clearing the optional local authorit
 Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
 Suggestions and code validation use the `/reference-data/local-authorities` API lookup.
 
+## Court payroll region
+
+The court details page supports updating or clearing the optional payroll region.
+Start typing a name and select an autocomplete suggestion, or clear the field to remove it.
+Suggestions and code validation use the `/reference-data/payroll-regions` API lookup.
+
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)

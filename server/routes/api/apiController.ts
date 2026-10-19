@@ -19,6 +19,8 @@ export default class ApiController {
 
   private localAuthorities: CodeDescription[] = []
 
+  private payrollRegions: CodeDescription[] = []
+
   constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
 
   async searchArea(req: Request, res: Response): Promise<void> {
@@ -49,6 +51,20 @@ export default class ApiController {
       .send(
         this.localAuthorities.filter(localAuthority =>
           localAuthority.description.toLowerCase().includes(searchString.toLowerCase()),
+        ),
+      )
+  }
+
+  async searchPayrollRegion(req: Request, res: Response): Promise<void> {
+    if (this.payrollRegions.length === 0) {
+      this.payrollRegions = await this.prisonRegisterService.getPayrollRegions(context(res))
+    }
+    const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
+    res
+      .status(200)
+      .send(
+        this.payrollRegions.filter(payrollRegion =>
+          payrollRegion.description.toLowerCase().includes(searchString.toLowerCase()),
         ),
       )
   }

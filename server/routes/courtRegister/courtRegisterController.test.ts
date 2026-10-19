@@ -2034,6 +2034,136 @@ describe('Court Register controller', () => {
     )
   })
 
+  describe('updatePayrollRegion', () => {
+    beforeEach(() => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      req.query.id = 'SHFCC'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('loads the court and prefills the current payroll region, discarding stale input', async () => {
+      res.locals.user = { username: 'tom' }
+      req.session.updatePayrollRegionForm = { payrollRegionCode: 'STALE' }
+
+      await controller.updatePayrollRegion(req, res)
+
+      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(req.session.updatePayrollRegionForm).toBeUndefined()
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyPayrollRegion', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        errors: [],
+        form: { payrollRegionCode: 'YH', payrollRegionDescription: 'Yorkshire and the Humber' },
+      })
+      expect(prisonRegisterService.getPayrollRegions).not.toHaveBeenCalled()
+    })
+
+    it('prefills blank fields when the court has no payroll region', async () => {
+      prisonRegisterService.getCourt.mockResolvedValue(data.court({ payrollRegion: null }))
+
+      await controller.updatePayrollRegion(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyPayrollRegion',
+        expect.objectContaining({ form: { payrollRegionCode: '', payrollRegionDescription: '' } }),
+      )
+    })
+
+    it('retains the submitted form when there are errors', async () => {
+      const form = { payrollRegionCode: 'INVALID', payrollRegionDescription: 'Unknown payroll region' }
+      const errors = [{ href: '#payrollRegion', text: 'Payroll region cannot be changed' }]
+      req.session.updatePayrollRegionForm = form
+      ;(req.flash as jest.Mock).mockReturnValue(errors)
+
+      await controller.updatePayrollRegion(req, res)
+
+      expect(req.session.updatePayrollRegionForm).toEqual(form)
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyPayrollRegion',
+        expect.objectContaining({ form, errors }),
+      )
+    })
+  })
+
+  describe('submitUpdatePayrollRegion', () => {
+    const currentCourt = data.court({
+      active: false,
+      inactiveDate: '2024-01-31',
+    })
+
+    beforeEach(() => {
+      req.query.id = 'SHFCC'
+      req.body = { payrollRegionCode: ' NE ', payrollRegionDescription: ' North East ' }
+      res.locals.user = { username: 'tom' }
+      prisonRegisterService.getPayrollRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+    })
+
+    it('trims, validates and updates the payroll region while preserving every other court field', async () => {
+      await controller.submitUpdatePayrollRegion(req, res)
+
+      expect(req.session.updatePayrollRegionForm).toBeUndefined()
+      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledWith({ username: 'tom' })
+      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        courtName: currentCourt.courtName,
+        description: currentCourt.description,
+        active: currentCourt.active,
+        inactiveDate: currentCourt.inactiveDate,
+        cjitCode: currentCourt.cjitCode,
+        accessibleAccess: currentCourt.accessibleAccess,
+        areaCode: currentCourt.area.code,
+        regionCode: currentCourt.region.code,
+        geographicalAreaCode: currentCourt.geographicalArea.code,
+        localAuthorityCode: currentCourt.localAuthority.code,
+        payrollRegionCode: 'NE',
+        courtTypeCode: currentCourt.courtType.code,
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('clears the payroll region code when none is selected', async () => {
+      req.body = { payrollRegionCode: '', payrollRegionDescription: '' }
+
+      await controller.submitUpdatePayrollRegion(req, res)
+
+      expect(prisonRegisterService.getPayrollRegions).not.toHaveBeenCalled()
+      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('payrollRegionCode')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it('retains an unselected description and does not update the court', async () => {
+      req.body = { payrollRegionCode: 'Unknown payroll region', payrollRegionDescription: 'Unknown payroll region' }
+
+      await controller.submitUpdatePayrollRegion(req, res)
+
+      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(req.session.updatePayrollRegionForm).toEqual(req.body)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#payrollRegion', text: 'Select a valid payroll region from the suggestions' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/payroll-region/update?id=SHFCC')
+    })
+
+    it('retains the trimmed selection when the API rejects the update', async () => {
+      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Payroll region cannot be changed',
+      })
+
+      await controller.submitUpdatePayrollRegion(req, res)
+
+      expect(req.session.updatePayrollRegionForm).toEqual({
+        payrollRegionCode: 'NE',
+        payrollRegionDescription: 'North East',
+      })
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#payrollRegion', text: 'Payroll region cannot be changed' },
+      ])
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/payroll-region/update?id=SHFCC')
+    })
+  })
+
   describe('updateLocalAuthority', () => {
     beforeEach(() => {
       prisonRegisterService.getCourt.mockResolvedValue(
