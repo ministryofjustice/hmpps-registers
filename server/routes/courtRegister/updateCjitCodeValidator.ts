@@ -11,8 +11,8 @@ export default async function validate(
   const { id } = req.query as { id: string }
   const errors = await validateAsync(
     form,
-    { cjitCode: ['max:12'] },
-    { 'max.cjitCode': 'CJIT code must be 12 characters or fewer' },
+    { cjitCode: ['max:7'] },
+    { 'max.cjitCode': 'CJIT code must be 7 characters or fewer' },
   )
 
   if (errors.length > 0) {
