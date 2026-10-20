@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
+import config from '../../config'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllCourtsView from './allCourtsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -64,6 +65,24 @@ export default class CourtRegisterController {
     const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const view = new CourtDetailsView(court, (action || 'NONE') as Action)
     res.render('pages/court-register/courtDetails', view.renderArgs)
+  }
+
+  async deleteCourt(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), req.query.id as string)
+    res.render('pages/components/edit/deleteAgency', {
+      name: court.courtName,
+      agencyId: court.courtId,
+      agencyType: 'court',
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
+      navigation: { cancelButton: `/court-register/details?id=${court.courtId}` },
+    })
+  }
+
+  async submitDeleteCourt(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    await this.hmppsAgencyRegisterApiService.deleteCourt(context(res), req.query.id as string)
+    res.redirect('/court-register')
   }
 
   async addAddress(req: Request, res: Response): Promise<void> {

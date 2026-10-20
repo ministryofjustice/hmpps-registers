@@ -43,6 +43,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
 
     stubGetCourts: hmppsAgencyRegisterApi.stubGetCourts,
     stubGetCourt: hmppsAgencyRegisterApi.stubGetCourt,
+    stubDeleteCourt: hmppsAgencyRegisterApi.stubDeleteCourt,
+    getDeletedCourtRequests: hmppsAgencyRegisterApi.getDeletedCourtRequests,
     stubAgencyIdUsed: hmppsAgencyRegisterApi.stubAgencyIdUsed,
     stubCourtIdAvailable: hmppsAgencyRegisterApi.stubCourtIdAvailable,
     stubCreateCourt: hmppsAgencyRegisterApi.stubCreateCourt,

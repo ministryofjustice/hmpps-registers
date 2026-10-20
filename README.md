@@ -105,6 +105,16 @@ do not overwrite each other. Cancel discards the draft; no court is created unti
 the check-answers page is submitted. On success the court details page provides the
 existing links to add addresses, phone numbers and email addresses.
 
+## Delete a court
+
+Select **Delete court** on the court details page, then **Delete** on the confirmation
+page to permanently remove the court and its addresses, email addresses and phone
+numbers. Cancel returns to the court details without deleting anything.
+
+Both buttons and the confirmation and submission endpoints are gated by
+`agencyRegistersDeleteEnabled` (`AGENCY_REGISTER_DELETE_ENABLED`). This defaults
+to enabled locally and is disabled in production configuration.
+
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)

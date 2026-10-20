@@ -3,6 +3,7 @@ import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import CourtRegisterController from './courtRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockCourtData'
+import config from '../../config'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
 
@@ -38,6 +39,68 @@ describe('Court Register controller', () => {
   })
 
   afterEach(jest.resetAllMocks)
+
+  describe('delete court', () => {
+    const originalDeleteEnabled = config.agencyRegistersDeleteEnabled
+
+    beforeEach(() => {
+      config.agencyRegistersDeleteEnabled = true
+      req.query.id = 'SHFCC'
+      res.locals.user = { username: 'tom' }
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
+        data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
+      )
+    })
+
+    afterEach(() => {
+      config.agencyRegistersDeleteEnabled = originalDeleteEnabled
+    })
+
+    it('renders the confirmation without deleting the court', async () => {
+      await controller.deleteCourt(req, res)
+
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/deleteAgency', {
+        name: 'Sheffield Crown Court',
+        agencyId: 'SHFCC',
+        agencyType: 'court',
+        agencyRegistersDeleteEnabled: true,
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+      })
+      expect(hmppsAgencyRegisterApiService.deleteCourt).not.toHaveBeenCalled()
+    })
+
+    it('deletes the court and redirects to the register', async () => {
+      await controller.submitDeleteCourt(req, res)
+
+      expect(hmppsAgencyRegisterApiService.deleteCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.redirect).toHaveBeenCalledWith('/court-register')
+    })
+
+    it.each(['deleteCourt', 'submitDeleteCourt'] as const)('blocks %s when deletion is disabled', async method => {
+      config.agencyRegistersDeleteEnabled = false
+
+      await expect(controller[method](req, res)).rejects.toMatchObject({ status: 404 })
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.deleteCourt).not.toHaveBeenCalled()
+      expect(res.render).not.toHaveBeenCalled()
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it('propagates lookup failures without rendering a confirmation', async () => {
+      hmppsAgencyRegisterApiService.getCourt.mockRejectedValue(new Error('Lookup failed'))
+
+      await expect(controller.deleteCourt(req, res)).rejects.toThrow('Lookup failed')
+      expect(res.render).not.toHaveBeenCalled()
+    })
+
+    it('propagates delete failures without redirecting as if successful', async () => {
+      hmppsAgencyRegisterApiService.deleteCourt.mockRejectedValue(new Error('Delete failed'))
+
+      await expect(controller.submitDeleteCourt(req, res)).rejects.toThrow('Delete failed')
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+  })
 
   describe('showAllCourts', () => {
     beforeEach(() => {
