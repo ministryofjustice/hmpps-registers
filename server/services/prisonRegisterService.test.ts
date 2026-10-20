@@ -41,6 +41,55 @@ describe('Prison Register service', () => {
     nock.cleanAll()
   })
 
+  describe('isAgencyIdUsed', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient.getApiClientToken.mockResolvedValue('agency-usage-token')
+      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+    })
+
+    it('returns the existing agency using the authenticated user context', async () => {
+      const agency = { agencyId: 'MDI', name: 'Moorland HMP', legacyType: 'PRISON' }
+      const scope = fakePrisonRegister
+        .get('/legacy/agency/MDI/is-used')
+        .matchHeader('authorization', 'Bearer agency-usage-token')
+        .reply(200, agency)
+
+      await expect(prisonRegisterService.isAgencyIdUsed({ username: 'tommy' }, 'MDI')).resolves.toEqual(agency)
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('treats a 204 response with no body as an unused ID', async () => {
+      fakePrisonRegister.get('/legacy/agency/NEWCC/is-used').reply(204)
+
+      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).resolves.toBeUndefined()
+    })
+
+    it('encodes the agency ID in the lookup URL', async () => {
+      const scope = fakePrisonRegister.get('/legacy/agency/a%2Fb/is-used').reply(204)
+
+      await expect(prisonRegisterService.isAgencyIdUsed({}, 'a/b')).resolves.toBeUndefined()
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([401, 403, 404, 500])('propagates lookup failures rather than accepting an ID: %s', async status => {
+      fakePrisonRegister
+        .get('/legacy/agency/NEWCC/is-used')
+        .times(status === 500 ? 3 : 1)
+        .reply(status, { userMessage: 'Lookup failed' })
+
+      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).rejects.toMatchObject({ status })
+    })
+
+    it('propagates authentication failures', async () => {
+      const error = new Error('Authentication unavailable')
+      hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
+
+      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).rejects.toBe(error)
+    })
+  })
+
   describe('getPrisonsWithFilter', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

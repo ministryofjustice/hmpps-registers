@@ -12,6 +12,7 @@ import {
   EmailAddress,
   Hospital,
   InsertPrison,
+  LegacyAgencyUsage,
   OtherAgency,
   PoliceCustodySuite,
   PhoneNumber,
@@ -98,6 +99,19 @@ export default class PrisonRegisterService {
       path: `/prisons/id/${prisonId}`,
       additionalStatusChecker: status => status === 404,
     })
+  }
+
+  async isAgencyIdUsed(context: Context, agencyId: string): Promise<LegacyAgencyUsage | undefined> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`checking whether agency id ${agencyId} is in use`)
+    const response = await PrisonRegisterService.restClient(token).get<{
+      status: number
+      body: LegacyAgencyUsage
+    }>({
+      path: `/legacy/agency/${encodeURIComponent(agencyId)}/is-used`,
+      raw: true,
+    })
+    return response.status === 204 ? undefined : response.body
   }
 
   async getPrisonAddress(context: Context, prisonId: string, addressId: string): Promise<PrisonAddress> {
