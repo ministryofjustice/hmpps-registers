@@ -41,6 +41,45 @@ describe('HMPPS Agency Register API', () => {
     nock.cleanAll()
   })
 
+  describe('deleteCourt', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('uses the authenticated user context and deletes the selected court', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.delete('/courts/id/SHFCC').reply(204)
+
+      await hmppsAgencyRegisterApiService.deleteCourt({ username: 'tommy' }, 'SHFCC')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('encodes the court ID', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.delete('/courts/id/a%2Fb').reply(204)
+
+      await hmppsAgencyRegisterApiService.deleteCourt({}, 'a/b')
+
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([401, 403, 404, 500])('propagates API failures: %s', async status => {
+      fakeHmppsAgencyRegisterApi
+        .delete('/courts/id/SHFCC')
+        .times(status === 500 ? 3 : 1)
+        .reply(status, {})
+
+      await expect(hmppsAgencyRegisterApiService.deleteCourt({}, 'SHFCC')).rejects.toMatchObject({ status })
+    })
+
+    it('propagates authentication failures', async () => {
+      hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(new Error('Authentication unavailable'))
+
+      await expect(hmppsAgencyRegisterApiService.deleteCourt({}, 'SHFCC')).rejects.toThrow('Authentication unavailable')
+    })
+  })
+
   describe('isAgencyIdUsed', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

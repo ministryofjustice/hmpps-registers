@@ -65,6 +65,14 @@
       {{  emailAddressesCard({ emailAddresses: court.emailAddresses, id: court.courtId, baseRegisterUrl: "/court-register" }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete court",
+      href: "/court-register/delete?id=" + court.courtId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-court-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

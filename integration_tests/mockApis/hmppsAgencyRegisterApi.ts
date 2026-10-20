@@ -575,6 +575,21 @@ const stubUpdateCourtEmailAddress = ({ courtId, emailId }: { courtId: string; em
     },
   })
 
+const stubDeleteCourt = ({ courtId, status = 204 }: { courtId: string; status?: number }): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'DELETE', url: `/prison-register/courts/id/${courtId}` },
+    response: { status },
+  })
+
+const getDeletedCourtRequests = (courtId: string): Promise<number> =>
+  getRequests().then(
+    response =>
+      response.body.requests.filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'DELETE' && request.url === `/prison-register/courts/id/${courtId}`,
+      ).length,
+  )
+
 const stubDeleteCourtPhoneNumber = ({ courtId, phoneId }: { courtId: string; phoneId: number }): SuperAgentRequest =>
   stubFor({
     request: {
@@ -825,6 +840,8 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubDeleteCourt,
+  getDeletedCourtRequests,
   stubAgencyIdUsed,
   stubCourtIdAvailable,
   stubCreateCourt,

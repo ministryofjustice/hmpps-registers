@@ -23,6 +23,8 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/court-register', (req, res) => courtRegisterController.showAllCourts(req, res))
   get('/court-register/details', (req, res) => courtRegisterController.viewCourt(req, res))
+  get('/court-register/delete', (req, res) => courtRegisterController.deleteCourt(req, res))
+  post('/court-register/delete', (req, res) => courtRegisterController.submitDeleteCourt(req, res))
   get('/court-register/payroll-region/update', (req, res) => courtRegisterController.updatePayrollRegion(req, res))
   post('/court-register/payroll-region/update', (req, res) =>
     courtRegisterController.submitUpdatePayrollRegion(req, res),

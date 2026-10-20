@@ -13,6 +13,7 @@ generic-service:
     INGRESS_URL: https://registers.hmpps.service.justice.gov.uk
     COMPONENTS_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
     AGENCY_REGISTER_ENABLED: 'false'
+    AGENCY_REGISTER_DELETE_ENABLED: 'false'
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
