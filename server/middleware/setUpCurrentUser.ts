@@ -1,5 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
 import express from 'express'
+import { UUID } from 'crypto'
+import { trace } from '@opentelemetry/api'
 import convertToTitleCase from '../utils/utils'
 import logger from '../../logger'
 
@@ -11,20 +13,25 @@ export default function setUpCurrentUser() {
       const {
         name,
         user_id: userId,
+        uuid,
         authorities: roles = [],
       } = jwtDecode(res.locals.user.token) as {
         name?: string
         user_id?: string
+        uuid: UUID
         authorities?: string[]
       }
 
       res.locals.user = {
         ...res.locals.user,
         userId,
+        uuid,
         name,
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
+
+      trace.getActiveSpan()?.setAttribute('userUuid', uuid)
 
       if (res.locals.user.authSource === 'nomis') {
         res.locals.user.staffId = parseInt(userId, 10) || undefined
