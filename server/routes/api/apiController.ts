@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import { CodeDescription } from '../../@types/prisonRegister'
 
 function context(res: Response): Context {
@@ -21,11 +21,11 @@ export default class ApiController {
 
   private payrollRegions: CodeDescription[] = []
 
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async searchArea(req: Request, res: Response): Promise<void> {
     if (this.areas.length === 0) {
-      this.areas = await this.prisonRegisterService.getAreas(context(res))
+      this.areas = await this.hmppsAgencyRegisterApiService.getAreas(context(res))
     }
     const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
     res.status(200).send(this.areas.filter(area => area.description.toLowerCase().includes(searchString.toLowerCase())))
@@ -33,7 +33,7 @@ export default class ApiController {
 
   async searchRegion(req: Request, res: Response): Promise<void> {
     if (this.regions.length === 0) {
-      this.regions = await this.prisonRegisterService.getRegions(context(res))
+      this.regions = await this.hmppsAgencyRegisterApiService.getRegions(context(res))
     }
     const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
     res
@@ -43,7 +43,7 @@ export default class ApiController {
 
   async searchLocalAuthority(req: Request, res: Response): Promise<void> {
     if (this.localAuthorities.length === 0) {
-      this.localAuthorities = await this.prisonRegisterService.getLocalAuthorities(context(res))
+      this.localAuthorities = await this.hmppsAgencyRegisterApiService.getLocalAuthorities(context(res))
     }
     const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
     res
@@ -57,7 +57,7 @@ export default class ApiController {
 
   async searchPayrollRegion(req: Request, res: Response): Promise<void> {
     if (this.payrollRegions.length === 0) {
-      this.payrollRegions = await this.prisonRegisterService.getPayrollRegions(context(res))
+      this.payrollRegions = await this.hmppsAgencyRegisterApiService.getPayrollRegions(context(res))
     }
     const searchString = typeof req.query.searchString === 'string' ? req.query.searchString : ''
     res
@@ -73,7 +73,7 @@ export default class ApiController {
     const { searchString } = req.query
 
     if (this.towns.length === 0) {
-      this.towns = await this.prisonRegisterService.getTownSuggestions(context(res))
+      this.towns = await this.hmppsAgencyRegisterApiService.getTownSuggestions(context(res))
     }
     const result = this.towns.filter(town =>
       town.description.toLowerCase().includes((searchString as string).toLowerCase()),
@@ -85,7 +85,7 @@ export default class ApiController {
     const { searchString } = req.query
 
     if (this.counties.length === 0) {
-      this.counties = await this.prisonRegisterService.getCountySuggestions(context(res))
+      this.counties = await this.hmppsAgencyRegisterApiService.getCountySuggestions(context(res))
     }
     const result = this.counties.filter(county =>
       county.description.toLowerCase().includes((searchString as string).toLowerCase()),

@@ -4,7 +4,7 @@ import AddPrisonDetailsPage from '../pages/prison-register/addNewPrisonDetails'
 import AddPrisonAddressPage from '../pages/prison-register/addNewPrisonAddress'
 import AddPrisonSummaryPage from '../pages/prison-register/addNewPrisonSummary'
 import AddPrisonFinishedPage from '../pages/prison-register/addNewPrisonFinished'
-import { albanyPrison, belmarshPrison, moorlandPrison } from '../mockApis/prisonRegister'
+import { albanyPrison, belmarshPrison, moorlandPrison } from '../mockApis/hmppsAgencyRegisterApi'
 
 context('Prison register - Add new prison', () => {
   beforeEach(() => {

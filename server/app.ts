@@ -7,7 +7,7 @@ import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
-import PrisonRegisterService from './services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from './services/hmppsAgencyRegisterApi'
 import { MAINTAINER_ROLE } from './authentication/roles'
 import setUpHealthChecks from './middleware/setUpHealthChecks'
 import setUpWebRequestParsing from './middleware/setupRequestParsing'
@@ -20,7 +20,7 @@ import { ApplicationInfo } from './applicationInfo'
 
 export default function createApp(
   userService: UserService,
-  prisonRegisterService: PrisonRegisterService,
+  hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi,
   applicationInfo: ApplicationInfo,
 ): express.Application {
   const app = express()
@@ -39,7 +39,7 @@ export default function createApp(
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
   app.use(setUpCurrentUser())
 
-  app.use('/', indexRoutes(standardRouter(userService), { prisonRegisterService }))
+  app.use('/', indexRoutes(standardRouter(userService), { hmppsAgencyRegisterApiService }))
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))

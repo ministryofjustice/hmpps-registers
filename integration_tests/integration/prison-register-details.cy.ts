@@ -1,4 +1,4 @@
-import { albanyPrison, moorlandPrison, cardiffPrison } from '../mockApis/prisonRegister'
+import { albanyPrison, moorlandPrison, cardiffPrison } from '../mockApis/hmppsAgencyRegisterApi'
 import IndexPage from '../pages'
 import AllPrisons from '../pages/prison-register/allPrisons'
 import PrisonDetails from '../pages/prison-register/prisonDetails'

@@ -1,4 +1,4 @@
-import { rampton } from '../mockApis/prisonRegister'
+import { rampton } from '../mockApis/hmppsAgencyRegisterApi'
 import IndexPage from '../pages'
 import AllHospitals from '../pages/hospital-register/allHospitals'
 import hospitalData from '../../server/routes/testutils/mockHospitalData'

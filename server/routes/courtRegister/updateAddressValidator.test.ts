@@ -2,7 +2,7 @@ import type { UpdateAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateAddressValidator'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateAddressValidator', () => {
   const req = {

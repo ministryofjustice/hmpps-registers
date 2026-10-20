@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import CourtRegisterController from './courtRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockCourtData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Court Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: CourtRegisterController
   let req = {
     query: {},
@@ -21,8 +21,10 @@ describe('Court Register controller', () => {
   } as unknown as Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new CourtRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new CourtRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -39,7 +41,7 @@ describe('Court Register controller', () => {
 
   describe('showAllCourts', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourts.mockResolvedValue([data.court({ courtId: 'SHFCC' })])
+      hmppsAgencyRegisterApiService.getCourts.mockResolvedValue([data.court({ courtId: 'SHFCC' })])
     })
 
     it('will render all courts page with courts', async () => {
@@ -48,7 +50,7 @@ describe('Court Register controller', () => {
       }
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/court-register/allCourts',
         expect.objectContaining({
@@ -60,13 +62,13 @@ describe('Court Register controller', () => {
     it('it will call register service with no filter params', async () => {
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with no filter params', async () => {
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with active filter param', async () => {
@@ -74,7 +76,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { active: true })
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { active: true })
     })
 
     it('it will call register service with textSearch filter param', async () => {
@@ -82,7 +84,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('it will call register service with type filter param', async () => {
@@ -90,7 +92,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(prisonRegisterService.getCourts).toHaveBeenCalledWith({}, { courtTypeCodes: ['CC', 'MC'] })
+      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { courtTypeCodes: ['CC', 'MC'] })
     })
 
     it('will set the list page link in the session', async () => {
@@ -106,7 +108,7 @@ describe('Court Register controller', () => {
 
   describe('viewCourt', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ courtId: 'SHFCC' }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ courtId: 'SHFCC' }))
       req.query.id = 'SHFCC'
     })
 
@@ -116,7 +118,7 @@ describe('Court Register controller', () => {
       }
       await controller.viewCourt(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(res.render).toHaveBeenCalledWith(
         'pages/court-register/courtDetails',
         expect.objectContaining({
@@ -128,13 +130,13 @@ describe('Court Register controller', () => {
     it('it will call register service with court Id parameter', async () => {
       await controller.viewCourt(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({}, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({}, 'SHFCC')
     })
   })
 
   describe('addAddress', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
       )
       req.query.id = 'SHFCC'
@@ -145,7 +147,7 @@ describe('Court Register controller', () => {
 
       await controller.addAddress(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the add address page with an empty form and a cancel link', async () => {
@@ -203,7 +205,7 @@ describe('Court Register controller', () => {
     }
 
     beforeEach(() => {
-      prisonRegisterService.addCourtAddress.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.addCourtAddress.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { ...validBody }
     })
@@ -213,7 +215,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddAddress(req, res)
 
-      expect(prisonRegisterService.addCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.addCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         addressLine1: '1 High Street',
         addressLine2: '',
         town: 'Sheffield',
@@ -235,7 +237,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddAddress(req, res)
 
-      expect(prisonRegisterService.addCourtAddress).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.addCourtAddress).toHaveBeenCalledWith(
         {},
         'SHFCC',
         expect.objectContaining({ addressLine1: '1 High Street', town: 'Sheffield' }),
@@ -243,7 +245,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when adding the address fails', async () => {
-      prisonRegisterService.addCourtAddress.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.addCourtAddress.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitAddAddress(req, res)).rejects.toThrow('Server error')
 
@@ -253,7 +255,7 @@ describe('Court Register controller', () => {
 
     it('will retain the form and show the API user message when the address is rejected', async () => {
       req.body = { ...validBody, addressline1: '  1 High Street  ' }
-      prisonRegisterService.addCourtAddress.mockResolvedValue({
+      hmppsAgencyRegisterApiService.addCourtAddress.mockResolvedValue({
         success: false,
         userMessage: 'This address already exists',
       })
@@ -270,7 +272,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddAddress(req, res)
 
-      expect(prisonRegisterService.addCourtAddress).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.addCourtAddress).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresspostcode', text: 'Enter a real postcode, like AA11AA' },
       ])
@@ -294,7 +296,7 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.query.addressId = '2'
       ;(req.flash as jest.Mock).mockReturnValue([])
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -319,7 +321,7 @@ describe('Court Register controller', () => {
 
       await controller.updateAddress(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyAddress', {
         name: 'Sheffield Crown Court',
         navigation: { cancelButton: '/court-register/details?id=SHFCC' },
@@ -369,7 +371,7 @@ describe('Court Register controller', () => {
     })
 
     it('will display null address fields as empty values', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           addresses: [
             { id: 2, addressLine1: null, addressLine2: null, town: null, county: null, postcode: null, country: null },
@@ -417,7 +419,7 @@ describe('Court Register controller', () => {
     beforeEach(() => {
       req.query.id = 'SHFCC'
       req.body = { ...validForm }
-      prisonRegisterService.updateCourtAddress.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.updateCourtAddress.mockResolvedValue({ success: true })
     })
 
     it('will update the selected address using the username and clear the form on success', async () => {
@@ -425,7 +427,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAddress(req, res)
 
-      expect(prisonRegisterService.updateCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 2, {
+      expect(hmppsAgencyRegisterApiService.updateCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 2, {
         addressLine1: '1 High Street',
         addressLine2: 'City Centre',
         town: 'Sheffield',
@@ -449,7 +451,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAddress(req, res)
 
-      expect(prisonRegisterService.updateCourtAddress).toHaveBeenCalledWith({}, 'SHFCC', 2, {
+      expect(hmppsAgencyRegisterApiService.updateCourtAddress).toHaveBeenCalledWith({}, 'SHFCC', 2, {
         addressLine1: '1 High Street',
         addressLine2: 'City Centre',
         town: 'Sheffield',
@@ -461,7 +463,7 @@ describe('Court Register controller', () => {
 
     it('will retain the form and show the API user message when the address update is rejected', async () => {
       req.body.addressline1 = '  1 High Street  '
-      prisonRegisterService.updateCourtAddress.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtAddress.mockResolvedValue({
         success: false,
         userMessage: 'This address already exists',
       })
@@ -478,7 +480,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAddress(req, res)
 
-      expect(prisonRegisterService.updateCourtAddress).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtAddress).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#addresspostcode', text: 'Enter a real postcode, like AA11AA' },
       ])
@@ -487,7 +489,7 @@ describe('Court Register controller', () => {
     })
 
     it('will propagate API errors and retain the form without redirecting', async () => {
-      prisonRegisterService.updateCourtAddress.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtAddress.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdateAddress(req, res)).rejects.toThrow('Server error')
 
@@ -498,7 +500,7 @@ describe('Court Register controller', () => {
 
   describe('addPhone', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
       )
       req.query.id = 'SHFCC'
@@ -509,7 +511,7 @@ describe('Court Register controller', () => {
 
       await controller.addPhone(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render add phone page with court name and cancel link back to court details', async () => {
@@ -557,7 +559,7 @@ describe('Court Register controller', () => {
 
   describe('submitAddPhone', () => {
     beforeEach(() => {
-      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.addCourtPhoneNumber.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { phoneNumber: '0114 555 9898' }
     })
@@ -567,7 +569,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddPhone(req, res)
 
-      expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.addCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         number: '0114 555 9898',
       })
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
@@ -579,14 +581,14 @@ describe('Court Register controller', () => {
 
       await controller.submitAddPhone(req, res)
 
-      expect(prisonRegisterService.addCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.addCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', {
         number: '+44 114-555-9898',
       })
     })
 
     it('will retain the form and show the API user message when the phone number is rejected', async () => {
       req.body.phoneNumber = '  0114 555 9898  '
-      prisonRegisterService.addCourtPhoneNumber.mockResolvedValue({
+      hmppsAgencyRegisterApiService.addCourtPhoneNumber.mockResolvedValue({
         success: false,
         userMessage: 'This phone number already exists',
       })
@@ -601,7 +603,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when adding the phone number fails', async () => {
-      prisonRegisterService.addCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.addCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitAddPhone(req, res)).rejects.toThrow('Server error')
 
@@ -619,7 +621,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddPhone(req, res)
 
-      expect(prisonRegisterService.addCourtPhoneNumber).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.addCourtPhoneNumber).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#phoneNumber', text }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/create?id=SHFCC')
       expect(req.session.addPhoneNumberForm).toEqual({ phoneNumber: phoneNumber.trim() })
@@ -628,7 +630,7 @@ describe('Court Register controller', () => {
 
   describe('addEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' }),
       )
       req.query.id = 'SHFCC'
@@ -640,7 +642,7 @@ describe('Court Register controller', () => {
       }
       await controller.addEmail(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render add email page with court name and cancel link back to court details', async () => {
@@ -697,7 +699,7 @@ describe('Court Register controller', () => {
 
   describe('submitAddEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.addCourtEmailAddress.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.addCourtEmailAddress.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
     })
 
@@ -712,7 +714,7 @@ describe('Court Register controller', () => {
         }
         await controller.submitAddEmail(req, res)
 
-        expect(prisonRegisterService.addCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+        expect(hmppsAgencyRegisterApiService.addCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
           address: 'sheffield.court@example.com',
         })
       })
@@ -733,7 +735,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when adding the email address fails', async () => {
-      prisonRegisterService.addCourtEmailAddress.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.addCourtEmailAddress.mockRejectedValue(new Error('Server error'))
       req.body = { emailAddress: 'sheffield.court@example.com' }
 
       await expect(controller.submitAddEmail(req, res)).rejects.toThrow('Server error')
@@ -744,7 +746,7 @@ describe('Court Register controller', () => {
 
     it('will retain the form and show the API user message when the email address is rejected', async () => {
       req.body = { emailAddress: '  sheffield.court@example.com  ' }
-      prisonRegisterService.addCourtEmailAddress.mockResolvedValue({
+      hmppsAgencyRegisterApiService.addCourtEmailAddress.mockResolvedValue({
         success: false,
         userMessage: 'This email address already exists',
       })
@@ -763,7 +765,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddEmail(req, res)
 
-      expect(prisonRegisterService.addCourtEmailAddress).toHaveBeenCalledWith({}, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.addCourtEmailAddress).toHaveBeenCalledWith({}, 'SHFCC', {
         address: 'sheffield.court@example.com',
       })
     })
@@ -776,7 +778,7 @@ describe('Court Register controller', () => {
       it('will not add the email address', async () => {
         await controller.submitAddEmail(req, res)
 
-        expect(prisonRegisterService.addCourtEmailAddress).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.addCourtEmailAddress).not.toHaveBeenCalled()
       })
 
       it('will flash the validation errors', async () => {
@@ -812,7 +814,7 @@ describe('Court Register controller', () => {
 
       await controller.submitAddEmail(req, res)
 
-      expect(prisonRegisterService.addCourtEmailAddress).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.addCourtEmailAddress).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Enter an email address' }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/email/create?id=SHFCC')
     })
@@ -820,7 +822,7 @@ describe('Court Register controller', () => {
 
   describe('updatePhone', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -839,7 +841,7 @@ describe('Court Register controller', () => {
 
       await controller.updatePhone(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render update phone page with the selected number, id, court name and cancel link', async () => {
@@ -889,7 +891,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdatePhone', () => {
     beforeEach(() => {
-      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.updateCourtPhoneNumber.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { phoneId: '10000', phoneNumber: '+44 114-555-9898' }
     })
@@ -899,9 +901,14 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdatePhone(req, res)
 
-      expect(prisonRegisterService.updateCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000, {
-        number: '+44 114-555-9898',
-      })
+      expect(hmppsAgencyRegisterApiService.updateCourtPhoneNumber).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        10000,
+        {
+          number: '+44 114-555-9898',
+        },
+      )
     })
 
     it('will redirect to court details with a success confirmation and clear the form', async () => {
@@ -918,14 +925,14 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdatePhone(req, res)
 
-      expect(prisonRegisterService.updateCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
+      expect(hmppsAgencyRegisterApiService.updateCourtPhoneNumber).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
         number: '+44 114-555-9898',
       })
     })
 
     it('will retain the form and show the API user message when the phone update is rejected', async () => {
       req.body.phoneNumber = '  +44 114-555-9898  '
-      prisonRegisterService.updateCourtPhoneNumber.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtPhoneNumber.mockResolvedValue({
         success: false,
         userMessage: 'This phone number already exists',
       })
@@ -940,7 +947,7 @@ describe('Court Register controller', () => {
     })
 
     it('will retain the form and propagate errors when updating fails', async () => {
-      prisonRegisterService.updateCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdatePhone(req, res)).rejects.toThrow('Server error')
 
@@ -959,7 +966,7 @@ describe('Court Register controller', () => {
 
         await controller.submitUpdatePhone(req, res)
 
-        expect(prisonRegisterService.updateCourtPhoneNumber).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.updateCourtPhoneNumber).not.toHaveBeenCalled()
         expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#phoneNumber', text }])
         expect(res.redirect).toHaveBeenCalledWith('/court-register/phone/update?id=SHFCC&phoneId=10000')
         expect(req.session.updatePhoneNumberForm).toEqual({ phoneId: '10000', phoneNumber: phoneNumber.trim() })
@@ -969,7 +976,7 @@ describe('Court Register controller', () => {
 
   describe('updateEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -985,7 +992,7 @@ describe('Court Register controller', () => {
 
       await controller.updateEmail(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render update email page with court name, email address, email id and cancel link', async () => {
@@ -1031,7 +1038,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdateEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.updateCourtEmailAddress.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtEmailAddress.mockResolvedValue({
         success: true,
       })
       req.query.id = 'SHFCC'
@@ -1043,9 +1050,14 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateEmail(req, res)
 
-      expect(prisonRegisterService.updateCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000, {
-        address: 'sheffield.court.updated@example.com',
-      })
+      expect(hmppsAgencyRegisterApiService.updateCourtEmailAddress).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        10000,
+        {
+          address: 'sheffield.court.updated@example.com',
+        },
+      )
     })
 
     it('will redirect to the court details page', async () => {
@@ -1064,7 +1076,7 @@ describe('Court Register controller', () => {
 
     it('will retain the form and show the API user message when the email update is rejected', async () => {
       req.body.emailAddress = '  sheffield.court.updated@example.com  '
-      prisonRegisterService.updateCourtEmailAddress.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtEmailAddress.mockResolvedValue({
         success: false,
         userMessage: 'This email address already exists',
       })
@@ -1082,7 +1094,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when updating the email address fails', async () => {
-      prisonRegisterService.updateCourtEmailAddress.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtEmailAddress.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdateEmail(req, res)).rejects.toThrow('Server error')
 
@@ -1098,7 +1110,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateEmail(req, res)
 
-      expect(prisonRegisterService.updateCourtEmailAddress).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
+      expect(hmppsAgencyRegisterApiService.updateCourtEmailAddress).toHaveBeenCalledWith({}, 'SHFCC', 10000, {
         address: 'sheffield.court.updated@example.com',
       })
     })
@@ -1108,7 +1120,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateEmail(req, res)
 
-      expect(prisonRegisterService.updateCourtEmailAddress).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtEmailAddress).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Enter a valid email address' }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
       expect(req.session.updateEmailAddressForm).toEqual({ emailId: '10000', emailAddress: 'not-an-email' })
@@ -1119,7 +1131,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateEmail(req, res)
 
-      expect(prisonRegisterService.updateCourtEmailAddress).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtEmailAddress).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Enter an email address' }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/email/update?id=SHFCC&emailId=10000')
     })
@@ -1127,7 +1139,7 @@ describe('Court Register controller', () => {
 
   describe('updateCjitCode', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', cjitCode: 'C00SH00' }),
       )
       req.query.id = 'SHFCC'
@@ -1139,7 +1151,7 @@ describe('Court Register controller', () => {
 
       await controller.updateCjitCode(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.flash).toHaveBeenCalledWith('errors')
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyCjitCode', {
         name: 'Sheffield Crown Court',
@@ -1152,7 +1164,7 @@ describe('Court Register controller', () => {
     it.each([null, undefined])('prefills an empty code when the current value is %j', async cjitCode => {
       const court = data.court({})
       court.cjitCode = cjitCode
-      prisonRegisterService.getCourt.mockResolvedValue(court)
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(court)
 
       await controller.updateCjitCode(req, res)
 
@@ -1210,15 +1222,15 @@ describe('Court Register controller', () => {
 
   describe('submitUpdateCjitCode', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ cjitCode: 'C00SH00' }))
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ cjitCode: 'C00SH00' }))
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { cjitCode: 'NEWCODE' }
     })
 
     it('fetches the latest court and preserves every other update field with the user context', async () => {
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtName: 'Latest court name',
           description: 'Latest description',
@@ -1236,8 +1248,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateCjitCode(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: 'Latest court name',
         description: 'Latest description',
         active: false,
@@ -1268,7 +1280,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateCjitCode(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
         {},
         'SHFCC',
         expect.objectContaining({ cjitCode: '1234567' }),
@@ -1283,7 +1295,7 @@ describe('Court Register controller', () => {
 
         await controller.submitUpdateCjitCode(req, res)
 
-        expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
           {},
           'SHFCC',
           expect.objectContaining({ cjitCode: '' }),
@@ -1298,8 +1310,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateCjitCode(req, res)
 
-      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateCjitCodeForm).toEqual({ cjitCode: '12345678' })
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#cjitCode', text: 'CJIT code must be 7 characters or fewer' },
@@ -1311,7 +1323,7 @@ describe('Court Register controller', () => {
       'retains the submitted form and flashes the API user message when rejected: %j',
       async body => {
         req.body = body
-        prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
           success: false,
           userMessage: 'CJIT code could not be updated',
         })
@@ -1333,7 +1345,7 @@ describe('Court Register controller', () => {
       async method => {
         const error = new Error('Server error')
         req.body.cjitCode = '  NEWCODE  '
-        prisonRegisterService[method].mockRejectedValue(error)
+        hmppsAgencyRegisterApiService[method].mockRejectedValue(error)
 
         await expect(controller.submitUpdateCjitCode(req, res)).rejects.toBe(error)
 
@@ -1341,7 +1353,7 @@ describe('Court Register controller', () => {
         expect(res.redirect).not.toHaveBeenCalled()
         expect(req.flash).not.toHaveBeenCalled()
         if (method === 'getCourt') {
-          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+          expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
         }
       },
     )
@@ -1353,7 +1365,7 @@ describe('Court Register controller', () => {
         now: new Date(2026, 9, 15, 9, 0),
         doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'],
       })
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', active: true }),
       )
       req.query.id = 'SHFCC'
@@ -1369,7 +1381,7 @@ describe('Court Register controller', () => {
 
       await controller.updateActive(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.flash).toHaveBeenCalledWith('errors')
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyActive', {
         name: 'Sheffield Crown Court',
@@ -1380,7 +1392,9 @@ describe('Court Register controller', () => {
     })
 
     it('preselects inactive and prefills the existing inactive date', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ active: false, inactiveDate: '2025-03-09' }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
+        data.court({ active: false, inactiveDate: '2025-03-09' }),
+      )
 
       await controller.updateActive(req, res)
 
@@ -1395,7 +1409,7 @@ describe('Court Register controller', () => {
     it.each([null, undefined])('defaults the date to today when the inactive date is %j', async inactiveDate => {
       const court = data.court({ active: false })
       court.inactiveDate = inactiveDate
-      prisonRegisterService.getCourt.mockResolvedValue(court)
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(court)
 
       await controller.updateActive(req, res)
 
@@ -1492,8 +1506,8 @@ describe('Court Register controller', () => {
     }
 
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(latestCourt())
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(latestCourt())
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { active: 'false', inactiveDay: '15', inactiveMonth: '10', inactiveYear: '2026' }
     })
@@ -1503,9 +1517,9 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateActive(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledTimes(1)
-      expect(prisonRegisterService.updateCourtDetails.mock.calls[0]).toStrictEqual([
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledTimes(1)
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0]).toStrictEqual([
         { username: 'tom' },
         'SHFCC',
         { ...preservedFields, active: false, inactiveDate: '2026-10-15' },
@@ -1517,19 +1531,19 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateActive(req, res)
 
-      const update = prisonRegisterService.updateCourtDetails.mock.calls[0][2]
+      const update = hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]
       expect(update).toStrictEqual({ ...preservedFields, active: true })
       expect(Object.prototype.hasOwnProperty.call(update, 'inactiveDate')).toBe(false)
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
     it('assigns the submitted date when the court has no existing inactive date', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ active: true, inactiveDate: undefined }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ active: true, inactiveDate: undefined }))
       req.body = { active: 'false', inactiveDay: '29', inactiveMonth: '2', inactiveYear: '2024' }
 
       await controller.submitUpdateActive(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
         {},
         'SHFCC',
         expect.objectContaining({ active: false, inactiveDate: '2024-02-29' }),
@@ -1538,7 +1552,7 @@ describe('Court Register controller', () => {
 
     it('trims the submitted values before validating and retains the trimmed form until success', async () => {
       req.body = { active: ' false ', inactiveDay: ' 05 ', inactiveMonth: ' 3 ', inactiveYear: ' 2026 ' }
-      prisonRegisterService.updateCourtDetails.mockImplementation(async () => {
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockImplementation(async () => {
         expect(req.session.updateActiveForm).toEqual({
           active: 'false',
           inactiveDay: '05',
@@ -1550,7 +1564,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateActive(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
         {},
         'SHFCC',
         expect.objectContaining({ active: false, inactiveDate: '2026-03-05' }),
@@ -1587,8 +1601,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateActive(req, res)
 
-      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateActiveForm).toEqual(
         Object.fromEntries(Object.entries(body).map(([key, value]) => [key, value.trim()])),
       )
@@ -1600,7 +1614,7 @@ describe('Court Register controller', () => {
       'retains the submitted form and flashes the API user message when rejected: %j',
       async body => {
         req.body = body
-        prisonRegisterService.updateCourtDetails.mockResolvedValue({
+        hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
           success: false,
           userMessage: 'Court could not be updated',
         })
@@ -1618,7 +1632,7 @@ describe('Court Register controller', () => {
       async method => {
         const error = new Error('Server error')
         req.body = { active: ' true ' }
-        prisonRegisterService[method].mockRejectedValue(error)
+        hmppsAgencyRegisterApiService[method].mockRejectedValue(error)
 
         await expect(controller.submitUpdateActive(req, res)).rejects.toBe(error)
 
@@ -1626,7 +1640,7 @@ describe('Court Register controller', () => {
         expect(res.redirect).not.toHaveBeenCalled()
         expect(req.flash).not.toHaveBeenCalled()
         if (method === 'getCourt') {
-          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+          expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
         }
       },
     )
@@ -1634,7 +1648,7 @@ describe('Court Register controller', () => {
 
   describe('updateNameDescription', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', description: 'Sheffield Main Crown Court' }),
       )
       req.query.id = 'SHFCC'
@@ -1645,7 +1659,7 @@ describe('Court Register controller', () => {
 
       await controller.updateNameDescription(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the update page prefilled with the current name and description', async () => {
@@ -1663,7 +1677,7 @@ describe('Court Register controller', () => {
 
     it('will use an empty description when the court does not have one', async () => {
       ;(req.flash as jest.Mock).mockReturnValue([])
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ courtName: 'Sheffield Crown Court', description: null }),
       )
 
@@ -1706,7 +1720,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdateNameDescription', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -1717,7 +1731,7 @@ describe('Court Register controller', () => {
           courtType: { code: 'CC', description: 'Crown Court' },
         }),
       )
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { name: '  Sheffield Crown Court Updated  ', description: '  Updated description  ' }
     })
@@ -1727,8 +1741,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateNameDescription(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: 'Sheffield Crown Court Updated',
         description: 'Updated description',
         active: true,
@@ -1752,7 +1766,7 @@ describe('Court Register controller', () => {
     })
 
     it('will retain the form and show the API user message when the update is rejected', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
         success: false,
         userMessage: 'Court name already in use',
       })
@@ -1768,7 +1782,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when updating fails unexpectedly', async () => {
-      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdateNameDescription(req, res)).rejects.toThrow('Server error')
 
@@ -1784,7 +1798,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateNameDescription(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#name', text: 'Enter a name' },
         { href: '#description', text: 'Enter a description' },
@@ -1796,7 +1810,7 @@ describe('Court Register controller', () => {
 
   describe('updateArea', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({}))
       req.query.id = 'SHFCC'
       ;(req.flash as jest.Mock).mockReturnValue([])
     })
@@ -1806,7 +1820,7 @@ describe('Court Register controller', () => {
 
       await controller.updateArea(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.flash).toHaveBeenCalledWith('errors')
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyArea', {
         name: 'Sheffield Crown Court',
@@ -1814,11 +1828,11 @@ describe('Court Register controller', () => {
         errors: [],
         form: { areaCode: 'YH', areaDescription: 'Yorkshire and the Humber' },
       })
-      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getAreas).not.toHaveBeenCalled()
     })
 
     it('prefills blank fields when the court has no area', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ area: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ area: null }))
 
       await controller.updateArea(req, res)
 
@@ -1878,7 +1892,7 @@ describe('Court Register controller', () => {
     it('propagates court loading errors without rendering or discarding the form', async () => {
       const form = { areaCode: 'NW', areaDescription: 'North West' }
       req.session.updateAreaForm = form
-      prisonRegisterService.getCourt.mockRejectedValue(new Error('Court unavailable'))
+      hmppsAgencyRegisterApiService.getCourt.mockRejectedValue(new Error('Court unavailable'))
 
       await expect(controller.updateArea(req, res)).rejects.toThrow('Court unavailable')
 
@@ -1920,32 +1934,32 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.body = { areaCode: ' NW ', areaDescription: ' North West ' }
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getAreas.mockResolvedValue([{ code: 'NW', description: 'North West' }])
-      prisonRegisterService.getCourt.mockResolvedValue(latestCourt)
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getAreas.mockResolvedValue([{ code: 'NW', description: 'North West' }])
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(latestCourt)
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
     })
 
     it('trims the form, validates the code, then fetches the latest court and preserves all other fields', async () => {
-      prisonRegisterService.getAreas.mockImplementation(async () => {
+      hmppsAgencyRegisterApiService.getAreas.mockImplementation(async () => {
         expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
-        expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
         return [{ code: 'NW', description: 'North West' }]
       })
-      prisonRegisterService.getCourt.mockImplementation(async () => {
-        expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(1)
-        expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      hmppsAgencyRegisterApiService.getCourt.mockImplementation(async () => {
+        expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledTimes(1)
+        expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
         return latestCourt
       })
-      prisonRegisterService.updateCourtDetails.mockImplementation(async () => {
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockImplementation(async () => {
         expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
         return { success: true }
       })
 
       await controller.submitUpdateArea(req, res)
 
-      expect(prisonRegisterService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         ...preservedFields,
         areaCode: 'NW',
       })
@@ -1961,13 +1975,13 @@ describe('Court Register controller', () => {
 
         await controller.submitUpdateArea(req, res)
 
-        expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
-        expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.getAreas).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
           { username: 'tom' },
           'SHFCC',
           preservedFields,
         )
-        expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('areaCode')
+        expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('areaCode')
         expect(req.session.updateAreaForm).toBeUndefined()
         expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
       },
@@ -1978,8 +1992,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateArea(req, res)
 
-      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateAreaForm).toEqual(req.body)
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#area', text: 'Select a valid area from the suggestions' },
@@ -1993,8 +2007,8 @@ describe('Court Register controller', () => {
       await controller.submitUpdateArea(req, res)
 
       expect(req.session.updateAreaForm).toEqual({ areaCode: 'INVALID', areaDescription: 'Unknown area' })
-      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(res.redirect).toHaveBeenCalledWith('/court-register/area/update?id=SHFCC')
     })
 
@@ -2003,7 +2017,10 @@ describe('Court Register controller', () => {
       { areaCode: '', areaDescription: '' },
     ])('retains the form and flashes the API user message on rejection: %j', async body => {
       req.body = body
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: false, userMessage: 'Area not allowed' })
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
+        success: false,
+        userMessage: 'Area not allowed',
+      })
 
       await controller.submitUpdateArea(req, res)
 
@@ -2019,16 +2036,16 @@ describe('Court Register controller', () => {
       'retains the trimmed form and propagates unexpected %s failures',
       async method => {
         const error = new Error(`${method} unavailable`)
-        prisonRegisterService[method].mockRejectedValue(error)
+        hmppsAgencyRegisterApiService[method].mockRejectedValue(error)
 
         await expect(controller.submitUpdateArea(req, res)).rejects.toBe(error)
 
         expect(req.session.updateAreaForm).toEqual({ areaCode: 'NW', areaDescription: 'North West' })
         expect(res.redirect).not.toHaveBeenCalled()
         expect(req.flash).not.toHaveBeenCalled()
-        if (method === 'getAreas') expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
+        if (method === 'getAreas') expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
         if (method !== 'updateCourtDetails') {
-          expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+          expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
         }
       },
     )
@@ -2036,7 +2053,7 @@ describe('Court Register controller', () => {
 
   describe('updatePayrollRegion', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({}))
       req.query.id = 'SHFCC'
       ;(req.flash as jest.Mock).mockReturnValue([])
     })
@@ -2047,7 +2064,7 @@ describe('Court Register controller', () => {
 
       await controller.updatePayrollRegion(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.session.updatePayrollRegionForm).toBeUndefined()
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyPayrollRegion', {
         name: 'Sheffield Crown Court',
@@ -2055,11 +2072,11 @@ describe('Court Register controller', () => {
         errors: [],
         form: { payrollRegionCode: 'YH', payrollRegionDescription: 'Yorkshire and the Humber' },
       })
-      expect(prisonRegisterService.getPayrollRegions).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getPayrollRegions).not.toHaveBeenCalled()
     })
 
     it('prefills blank fields when the court has no payroll region', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ payrollRegion: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ payrollRegion: null }))
 
       await controller.updatePayrollRegion(req, res)
 
@@ -2095,17 +2112,17 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.body = { payrollRegionCode: ' NE ', payrollRegionDescription: ' North East ' }
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getPayrollRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
-      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getPayrollRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(currentCourt)
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
     })
 
     it('trims, validates and updates the payroll region while preserving every other court field', async () => {
       await controller.submitUpdatePayrollRegion(req, res)
 
       expect(req.session.updatePayrollRegionForm).toBeUndefined()
-      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledWith({ username: 'tom' })
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getPayrollRegions).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: currentCourt.courtName,
         description: currentCourt.description,
         active: currentCourt.active,
@@ -2127,8 +2144,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdatePayrollRegion(req, res)
 
-      expect(prisonRegisterService.getPayrollRegions).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('payrollRegionCode')
+      expect(hmppsAgencyRegisterApiService.getPayrollRegions).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('payrollRegionCode')
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
@@ -2137,7 +2154,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdatePayrollRegion(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updatePayrollRegionForm).toEqual(req.body)
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#payrollRegion', text: 'Select a valid payroll region from the suggestions' },
@@ -2146,7 +2163,7 @@ describe('Court Register controller', () => {
     })
 
     it('retains the trimmed selection when the API rejects the update', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
         success: false,
         userMessage: 'Payroll region cannot be changed',
       })
@@ -2166,7 +2183,7 @@ describe('Court Register controller', () => {
 
   describe('updateLocalAuthority', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({ localAuthority: { code: 'SHEF', description: 'Sheffield' } }),
       )
       req.query.id = 'SHFCC'
@@ -2179,7 +2196,7 @@ describe('Court Register controller', () => {
 
       await controller.updateLocalAuthority(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.session.updateLocalAuthorityForm).toBeUndefined()
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyLocalAuthority', {
         name: 'Sheffield Crown Court',
@@ -2187,11 +2204,11 @@ describe('Court Register controller', () => {
         errors: [],
         form: { localAuthorityCode: 'SHEF', localAuthorityDescription: 'Sheffield' },
       })
-      expect(prisonRegisterService.getLocalAuthorities).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getLocalAuthorities).not.toHaveBeenCalled()
     })
 
     it('prefills blank fields when the court has no local authority', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ localAuthority: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ localAuthority: null }))
 
       await controller.updateLocalAuthority(req, res)
 
@@ -2228,17 +2245,17 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.body = { localAuthorityCode: ' LEED ', localAuthorityDescription: ' Leeds ' }
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getLocalAuthorities.mockResolvedValue([{ code: 'LEED', description: 'Leeds' }])
-      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getLocalAuthorities.mockResolvedValue([{ code: 'LEED', description: 'Leeds' }])
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(currentCourt)
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
     })
 
     it('trims, validates and updates the local authority while preserving every other court field', async () => {
       await controller.submitUpdateLocalAuthority(req, res)
 
       expect(req.session.updateLocalAuthorityForm).toBeUndefined()
-      expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledWith({ username: 'tom' })
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getLocalAuthorities).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: currentCourt.courtName,
         description: currentCourt.description,
         active: currentCourt.active,
@@ -2260,8 +2277,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateLocalAuthority(req, res)
 
-      expect(prisonRegisterService.getLocalAuthorities).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('localAuthorityCode')
+      expect(hmppsAgencyRegisterApiService.getLocalAuthorities).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('localAuthorityCode')
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
@@ -2270,7 +2287,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateLocalAuthority(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateLocalAuthorityForm).toEqual(req.body)
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#localAuthority', text: 'Select a valid local authority from the suggestions' },
@@ -2279,7 +2296,7 @@ describe('Court Register controller', () => {
     })
 
     it('retains the trimmed selection when the API rejects the update', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
         success: false,
         userMessage: 'Local authority cannot be changed',
       })
@@ -2299,7 +2316,7 @@ describe('Court Register controller', () => {
 
   describe('updateGeographicalArea', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({}))
       req.query.id = 'SHFCC'
       ;(req.flash as jest.Mock).mockReturnValue([])
     })
@@ -2310,7 +2327,7 @@ describe('Court Register controller', () => {
 
       await controller.updateGeographicalArea(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(req.session.updateGeographicalAreaForm).toBeUndefined()
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyGeographicalArea', {
         name: 'Sheffield Crown Court',
@@ -2318,11 +2335,11 @@ describe('Court Register controller', () => {
         errors: [],
         form: { geographicalAreaCode: 'YH', geographicalAreaDescription: 'Yorkshire and the Humber' },
       })
-      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getAreas).not.toHaveBeenCalled()
     })
 
     it('prefills blank fields when the court has no geographical area', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ geographicalArea: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ geographicalArea: null }))
 
       await controller.updateGeographicalArea(req, res)
 
@@ -2359,17 +2376,17 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.body = { geographicalAreaCode: ' NE ', geographicalAreaDescription: ' North East ' }
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getAreas.mockResolvedValue([{ code: 'NE', description: 'North East' }])
-      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getAreas.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(currentCourt)
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
     })
 
     it('trims, validates and updates the geographical area while preserving every other court field', async () => {
       await controller.submitUpdateGeographicalArea(req, res)
 
       expect(req.session.updateGeographicalAreaForm).toBeUndefined()
-      expect(prisonRegisterService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: currentCourt.courtName,
         description: currentCourt.description,
         active: currentCourt.active,
@@ -2391,8 +2408,10 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateGeographicalArea(req, res)
 
-      expect(prisonRegisterService.getAreas).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('geographicalAreaCode')
+      expect(hmppsAgencyRegisterApiService.getAreas).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty(
+        'geographicalAreaCode',
+      )
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
@@ -2404,7 +2423,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateGeographicalArea(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateGeographicalAreaForm).toEqual(req.body)
       expect(req.flash).toHaveBeenCalledWith('errors', [
         { href: '#geographicalArea', text: 'Select a valid geographical area from the suggestions' },
@@ -2413,7 +2432,7 @@ describe('Court Register controller', () => {
     })
 
     it('retains the trimmed selection when the API rejects the update', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
         success: false,
         userMessage: 'Geographical area cannot be changed',
       })
@@ -2433,7 +2452,7 @@ describe('Court Register controller', () => {
 
   describe('updateRegion', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({}))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({}))
       req.query.id = 'SHFCC'
       ;(req.flash as jest.Mock).mockReturnValue([])
     })
@@ -2443,18 +2462,18 @@ describe('Court Register controller', () => {
 
       await controller.updateRegion(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
       expect(res.render).toHaveBeenCalledWith('pages/components/edit/updateAgencyRegion', {
         name: 'Sheffield Crown Court',
         navigation: { cancelButton: '/court-register/details?id=SHFCC' },
         errors: [],
         form: { regionCode: 'YH', regionDescription: 'Yorkshire and the Humber' },
       })
-      expect(prisonRegisterService.getRegions).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getRegions).not.toHaveBeenCalled()
     })
 
     it('prefills blank fields when the court has no region', async () => {
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ region: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ region: null }))
 
       await controller.updateRegion(req, res)
 
@@ -2489,17 +2508,17 @@ describe('Court Register controller', () => {
       req.query.id = 'SHFCC'
       req.body = { regionCode: ' NE ', regionDescription: ' North East ' }
       res.locals.user = { username: 'tom' }
-      prisonRegisterService.getRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
-      prisonRegisterService.getCourt.mockResolvedValue(currentCourt)
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.getRegions.mockResolvedValue([{ code: 'NE', description: 'North East' }])
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(currentCourt)
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
     })
 
     it('trims, validates and updates the region while preserving other court fields', async () => {
       await controller.submitUpdateRegion(req, res)
 
       expect(req.session.updateRegionForm).toBeUndefined()
-      expect(prisonRegisterService.getRegions).toHaveBeenCalledWith({ username: 'tom' })
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.getRegions).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
         { username: 'tom' },
         'SHFCC',
         expect.objectContaining({
@@ -2516,8 +2535,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateRegion(req, res)
 
-      expect(prisonRegisterService.getRegions).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('regionCode')
+      expect(hmppsAgencyRegisterApiService.getRegions).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]).not.toHaveProperty('regionCode')
       expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
     })
 
@@ -2526,7 +2545,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateRegion(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(req.session.updateRegionForm).toEqual({
         regionCode: 'Unknown region',
         regionDescription: 'Unknown region',
@@ -2540,7 +2559,7 @@ describe('Court Register controller', () => {
 
   describe('updateCourtType', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2560,7 +2579,7 @@ describe('Court Register controller', () => {
 
       await controller.updateCourtType(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the update court type page with all types and the current type checked', async () => {
@@ -2582,7 +2601,7 @@ describe('Court Register controller', () => {
 
     it('will check nothing when the court has no type', async () => {
       ;(req.flash as jest.Mock).mockReturnValue([])
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ courtType: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ courtType: null }))
 
       await controller.updateCourtType(req, res)
 
@@ -2625,7 +2644,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdateCourtType', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2636,7 +2655,7 @@ describe('Court Register controller', () => {
           courtType: { code: 'CC', description: 'Crown Court' },
         }),
       )
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { courtType: 'MC' }
     })
@@ -2646,7 +2665,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateCourtType(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: 'Sheffield Crown Court',
         description: 'Sheffield Main Crown Court',
         active: true,
@@ -2670,7 +2689,7 @@ describe('Court Register controller', () => {
     })
 
     it('will retain the form and show the API user message when the update is rejected', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: false, userMessage: 'Not allowed' })
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: false, userMessage: 'Not allowed' })
 
       await controller.submitUpdateCourtType(req, res)
 
@@ -2680,7 +2699,7 @@ describe('Court Register controller', () => {
     })
 
     it('will keep the form in the session when updating fails unexpectedly', async () => {
-      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdateCourtType(req, res)).rejects.toThrow('Server error')
 
@@ -2693,15 +2712,15 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateCourtType(req, res)
 
-      expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-      expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
       expect(res.redirect).toHaveBeenCalledWith('/court-register/court-type/update?id=SHFCC')
     })
   })
 
   describe('updateAccessibleAccess', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2721,7 +2740,7 @@ describe('Court Register controller', () => {
 
       await controller.updateAccessibleAccess(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the page with the current accessible access option checked', async () => {
@@ -2757,7 +2776,7 @@ describe('Court Register controller', () => {
 
     it('will check UNKNOWN when the court accessible access value is null', async () => {
       ;(req.flash as jest.Mock).mockReturnValue([])
-      prisonRegisterService.getCourt.mockResolvedValue(data.court({ accessibleAccess: null }))
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(data.court({ accessibleAccess: null }))
 
       await controller.updateAccessibleAccess(req, res)
 
@@ -2768,7 +2787,7 @@ describe('Court Register controller', () => {
       ;(req.flash as jest.Mock).mockReturnValue([])
       const court = data.court({})
       delete court.accessibleAccess
-      prisonRegisterService.getCourt.mockResolvedValue(court)
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(court)
 
       await controller.updateAccessibleAccess(req, res)
 
@@ -2788,7 +2807,7 @@ describe('Court Register controller', () => {
 
   describe('submitUpdateAccessibleAccess', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2799,7 +2818,7 @@ describe('Court Register controller', () => {
           courtType: { code: 'CC', description: 'Crown Court' },
         }),
       )
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({ success: true })
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({ success: true })
       req.query.id = 'SHFCC'
       req.body = { accessibleAccess: 'BY_ARRANGEMENT_ONLY' }
     })
@@ -2809,8 +2828,8 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAccessibleAccess(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', {
         courtName: 'Sheffield Crown Court',
         description: 'Sheffield Main Crown Court',
         active: true,
@@ -2831,7 +2850,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAccessibleAccess(req, res)
 
-      expect(prisonRegisterService.updateCourtDetails).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.updateCourtDetails).toHaveBeenCalledWith(
         {},
         'SHFCC',
         expect.objectContaining({ accessibleAccess: 'BY_ARRANGEMENT_ONLY' }),
@@ -2844,7 +2863,7 @@ describe('Court Register controller', () => {
 
       await controller.submitUpdateAccessibleAccess(req, res)
 
-      const update = prisonRegisterService.updateCourtDetails.mock.calls[0][2]
+      const update = hmppsAgencyRegisterApiService.updateCourtDetails.mock.calls[0][2]
       expect(update).not.toHaveProperty('accessibleAccess')
       expect(req.session.updateAccessibleAccessForm).toBeUndefined()
     })
@@ -2859,7 +2878,7 @@ describe('Court Register controller', () => {
     })
 
     it('retains the form and flashes the API user message when the update is rejected', async () => {
-      prisonRegisterService.updateCourtDetails.mockResolvedValue({
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockResolvedValue({
         success: false,
         userMessage: 'Accessible access not allowed',
       })
@@ -2874,7 +2893,7 @@ describe('Court Register controller', () => {
     })
 
     it('retains the form and propagates unexpected errors', async () => {
-      prisonRegisterService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.updateCourtDetails.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitUpdateAccessibleAccess(req, res)).rejects.toThrow('Server error')
 
@@ -2889,8 +2908,8 @@ describe('Court Register controller', () => {
 
         await controller.submitUpdateAccessibleAccess(req, res)
 
-        expect(prisonRegisterService.getCourt).not.toHaveBeenCalled()
-        expect(prisonRegisterService.updateCourtDetails).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
         expect(req.flash).toHaveBeenCalledWith('errors', expect.any(Array))
         expect(res.redirect).toHaveBeenCalledWith('/court-register/accessible-access/update?id=SHFCC')
       },
@@ -2899,7 +2918,7 @@ describe('Court Register controller', () => {
 
   describe('deletePhone', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2918,7 +2937,7 @@ describe('Court Register controller', () => {
 
       await controller.deletePhone(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the delete phone page with the court, selected phone number and cancel link', async () => {
@@ -2935,7 +2954,7 @@ describe('Court Register controller', () => {
     it('will not call the delete API when showing the confirmation page', async () => {
       await controller.deletePhone(req, res)
 
-      expect(prisonRegisterService.deleteCourtPhoneNumber).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.deleteCourtPhoneNumber).not.toHaveBeenCalled()
     })
   })
 
@@ -2950,7 +2969,11 @@ describe('Court Register controller', () => {
 
       await controller.submitDeletePhone(req, res)
 
-      expect(prisonRegisterService.deleteCourtPhoneNumber).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000)
+      expect(hmppsAgencyRegisterApiService.deleteCourtPhoneNumber).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        10000,
+      )
     })
 
     it('will redirect to the court details page after deleting the phone number', async () => {
@@ -2960,7 +2983,7 @@ describe('Court Register controller', () => {
     })
 
     it('will not redirect when the delete fails', async () => {
-      prisonRegisterService.deleteCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.deleteCourtPhoneNumber.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitDeletePhone(req, res)).rejects.toThrow('Server error')
 
@@ -2970,7 +2993,7 @@ describe('Court Register controller', () => {
 
   describe('deleteEmail', () => {
     beforeEach(() => {
-      prisonRegisterService.getCourt.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
         data.court({
           courtId: 'SHFCC',
           courtName: 'Sheffield Crown Court',
@@ -2986,7 +3009,7 @@ describe('Court Register controller', () => {
 
       await controller.deleteEmail(req, res)
 
-      expect(prisonRegisterService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
     })
 
     it('will render the delete email page with the court, selected email address and cancel link', async () => {
@@ -3012,7 +3035,11 @@ describe('Court Register controller', () => {
 
       await controller.submitDeleteEmail(req, res)
 
-      expect(prisonRegisterService.deleteCourtEmailAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 10000)
+      expect(hmppsAgencyRegisterApiService.deleteCourtEmailAddress).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'SHFCC',
+        10000,
+      )
     })
 
     it('will redirect to the court details page after deleting the email address', async () => {
@@ -3022,7 +3049,7 @@ describe('Court Register controller', () => {
     })
 
     it('will not redirect when the delete fails', async () => {
-      prisonRegisterService.deleteCourtEmailAddress.mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService.deleteCourtEmailAddress.mockRejectedValue(new Error('Server error'))
 
       await expect(controller.submitDeleteEmail(req, res)).rejects.toThrow('Server error')
 

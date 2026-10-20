@@ -1,20 +1,22 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import HospitalRegisterController from './hospitalRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockHospitalData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Hospital Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: HospitalRegisterController
   let req: Request
   let res: Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new HospitalRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new HospitalRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -31,7 +33,7 @@ describe('Hospital Register controller', () => {
 
   describe('showAllHospitals', () => {
     beforeEach(() => {
-      prisonRegisterService.getHospitals.mockResolvedValue([data.hospital({ hospitalId: 'SHEFH' })])
+      hmppsAgencyRegisterApiService.getHospitals.mockResolvedValue([data.hospital({ hospitalId: 'SHEFH' })])
     })
 
     it('will render all hospitals page with hospitals', async () => {
@@ -40,7 +42,7 @@ describe('Hospital Register controller', () => {
       }
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/hospital-register/allHospitals',
         expect.objectContaining({
@@ -52,7 +54,7 @@ describe('Hospital Register controller', () => {
     it('it will call register service with no filter params', async () => {
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with active filter param', async () => {
@@ -60,7 +62,7 @@ describe('Hospital Register controller', () => {
 
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({}, { active: true })
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({}, { active: true })
     })
 
     it('it will call register service with textSearch filter param', async () => {
@@ -68,7 +70,7 @@ describe('Hospital Register controller', () => {
 
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('it will call register service with high security true filter param', async () => {
@@ -76,7 +78,7 @@ describe('Hospital Register controller', () => {
 
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({}, { highSecurity: true })
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({}, { highSecurity: true })
     })
 
     it('it will call register service with high security false filter param', async () => {
@@ -84,7 +86,7 @@ describe('Hospital Register controller', () => {
 
       await controller.showAllHospitals(req, res)
 
-      expect(prisonRegisterService.getHospitals).toHaveBeenCalledWith({}, { highSecurity: false })
+      expect(hmppsAgencyRegisterApiService.getHospitals).toHaveBeenCalledWith({}, { highSecurity: false })
     })
 
     it('will set the list page link in the session', async () => {
@@ -96,7 +98,7 @@ describe('Hospital Register controller', () => {
 
   describe('viewHospital', () => {
     beforeEach(() => {
-      prisonRegisterService.getHospital.mockResolvedValue(data.hospital({ hospitalId: 'SHEFH' }))
+      hmppsAgencyRegisterApiService.getHospital.mockResolvedValue(data.hospital({ hospitalId: 'SHEFH' }))
       req.query.id = 'SHEFH'
     })
 
@@ -106,7 +108,7 @@ describe('Hospital Register controller', () => {
       }
       await controller.viewHospital(req, res)
 
-      expect(prisonRegisterService.getHospital).toHaveBeenCalledWith({ username: 'tom' }, 'SHEFH')
+      expect(hmppsAgencyRegisterApiService.getHospital).toHaveBeenCalledWith({ username: 'tom' }, 'SHEFH')
       expect(res.render).toHaveBeenCalledWith(
         'pages/hospital-register/hospitalDetails',
         expect.objectContaining({
@@ -118,7 +120,7 @@ describe('Hospital Register controller', () => {
     it('it will call register service with hospital Id parameter', async () => {
       await controller.viewHospital(req, res)
 
-      expect(prisonRegisterService.getHospital).toHaveBeenCalledWith({}, 'SHEFH')
+      expect(hmppsAgencyRegisterApiService.getHospital).toHaveBeenCalledWith({}, 'SHEFH')
     })
   })
 })

@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express'
 import HmppsAuthClient from '../../../data/hmppsAuthClient'
-import PrisonRegisterService from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import AddCourtController from './addCourtController'
 import { AddCourtJourney, courtSteps } from './addCourtFlowControl'
 
-jest.mock('../../../services/prisonRegisterService')
+jest.mock('../../../services/hmppsAgencyRegisterApi')
 
 describe('AddCourtController', () => {
-  let service: jest.Mocked<PrisonRegisterService>
+  let service: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: AddCourtController
 
   const completeJourney = (): AddCourtJourney => ({
@@ -56,7 +56,7 @@ describe('AddCourtController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    service = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+    service = new HMPPSAgencyRegisterApi({} as HmppsAuthClient) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new AddCourtController(service)
     service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([

@@ -2,7 +2,7 @@ import nock from 'nock'
 
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import config from '../config'
-import PrisonRegisterService from './prisonRegisterService'
+import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import data from '../routes/testutils/mockPrisonData'
 import courtData from '../routes/testutils/mockCourtData'
@@ -24,17 +24,17 @@ import {
   UpdateEmailAddress,
   UpdateCourt,
 } from '../@types/prisonRegister'
-import { moorlandPrison } from '../../integration_tests/mockApis/prisonRegister'
+import { moorlandPrison } from '../../integration_tests/mockApis/hmppsAgencyRegisterApi'
 
 jest.mock('../data/hmppsAuthClient')
 
-describe('Prison Register service', () => {
+describe('HMPPS Agency Register API', () => {
   let hmppsAuthClient: jest.Mocked<HmppsAuthClient>
-  let prisonRegisterService: PrisonRegisterService
-  let fakePrisonRegister: nock.Scope
+  let hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi
+  let fakeHmppsAgencyRegisterApi: nock.Scope
 
   beforeEach(() => {
-    fakePrisonRegister = nock(config.apis.prisonRegister.url)
+    fakeHmppsAgencyRegisterApi = nock(config.apis.prisonRegister.url)
   })
 
   afterEach(() => {
@@ -45,79 +45,79 @@ describe('Prison Register service', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAuthClient.getApiClientToken.mockResolvedValue('agency-usage-token')
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('returns the existing agency using the authenticated user context', async () => {
       const agency = { agencyId: 'MDI', name: 'Moorland HMP', legacyType: 'PRISON' }
-      const scope = fakePrisonRegister
+      const scope = fakeHmppsAgencyRegisterApi
         .get('/legacy/agency/MDI/is-used')
         .matchHeader('authorization', 'Bearer agency-usage-token')
         .reply(200, agency)
 
-      await expect(prisonRegisterService.isAgencyIdUsed({ username: 'tommy' }, 'MDI')).resolves.toEqual(agency)
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({ username: 'tommy' }, 'MDI')).resolves.toEqual(agency)
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
     it('treats a 204 response with no body as an unused ID', async () => {
-      fakePrisonRegister.get('/legacy/agency/NEWCC/is-used').reply(204)
+      fakeHmppsAgencyRegisterApi.get('/legacy/agency/NEWCC/is-used').reply(204)
 
-      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).resolves.toBeUndefined()
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'NEWCC')).resolves.toBeUndefined()
     })
 
     it('encodes the agency ID in the lookup URL', async () => {
-      const scope = fakePrisonRegister.get('/legacy/agency/a%2Fb/is-used').reply(204)
+      const scope = fakeHmppsAgencyRegisterApi.get('/legacy/agency/a%2Fb/is-used').reply(204)
 
-      await expect(prisonRegisterService.isAgencyIdUsed({}, 'a/b')).resolves.toBeUndefined()
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'a/b')).resolves.toBeUndefined()
       expect(scope.isDone()).toBe(true)
     })
 
     it.each([401, 403, 404, 500])('propagates lookup failures rather than accepting an ID: %s', async status => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/legacy/agency/NEWCC/is-used')
         .times(status === 500 ? 3 : 1)
         .reply(status, { userMessage: 'Lookup failed' })
 
-      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'NEWCC')).rejects.toMatchObject({ status })
     })
 
     it('propagates authentication failures', async () => {
       const error = new Error('Authentication unavailable')
       hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
 
-      await expect(prisonRegisterService.isAgencyIdUsed({}, 'NEWCC')).rejects.toBe(error)
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'NEWCC')).rejects.toBe(error)
     })
   })
 
   describe('getPrisonsWithFilter', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/prisons/search').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/prisons/search').reply(200, [])
 
-      await prisonRegisterService.getPrisonsWithFilter({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getPrisonsWithFilter({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('is ok if there are no prisons', async () => {
-      fakePrisonRegister.get('/prisons/search').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/prisons/search').reply(200, [])
 
-      const result = await prisonRegisterService.getPrisonsWithFilter({}, {})
+      const result = await hmppsAgencyRegisterApiService.getPrisonsWithFilter({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all prisons with filter', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/prisons/search?active=true&textSearch=ALI')
         .reply(200, [data.prison({}), data.prison({})])
 
-      const result = await prisonRegisterService.getPrisonsWithFilter({}, { active: true, textSearch: 'ALI' })
+      const result = await hmppsAgencyRegisterApiService.getPrisonsWithFilter({}, { active: true, textSearch: 'ALI' })
 
       expect(result).toHaveLength(2)
     })
@@ -126,34 +126,34 @@ describe('Prison Register service', () => {
   describe('getPrison', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/prisons/id/ALI').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(200, [])
 
-      await prisonRegisterService.getPrison({ username: 'tommy' }, 'ALI')
+      await hmppsAgencyRegisterApiService.getPrison({ username: 'tommy' }, 'ALI')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will return the prison', async () => {
-      fakePrisonRegister.get('/prisons/id/ALI').reply(200, data.prison({}))
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(200, data.prison({}))
 
-      const result = await prisonRegisterService.getPrison({}, 'ALI')
+      const result = await hmppsAgencyRegisterApiService.getPrison({}, 'ALI')
 
       expect(result.prisonId).toEqual('ALI')
     })
 
     it('will throw error when not found', async () => {
-      fakePrisonRegister.get('/prisons/id/ALI').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(404, {
         status: 404,
         developerMessage: 'Prison ALI not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getPrison({}, 'ALI')
+        await hmppsAgencyRegisterApiService.getPrison({}, 'ALI')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
@@ -164,9 +164,9 @@ describe('Prison Register service', () => {
     let updatedPrison: UpdatePrison
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister.get('/prisons/id/MDI').reply(200, data.prison({ active: false }))
-      fakePrisonRegister
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI').reply(200, data.prison({ active: false }))
+      fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/MDI', body => {
           updatedPrison = body
           return body
@@ -174,7 +174,7 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updatePrisonDetails(
+      await hmppsAgencyRegisterApiService.updatePrisonDetails(
         { username: 'tommy' },
         'MDI',
         'HMP Moorland',
@@ -189,7 +189,7 @@ describe('Prison Register service', () => {
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send current active marker with request', async () => {
-      await prisonRegisterService.updatePrisonDetails(
+      await hmppsAgencyRegisterApiService.updatePrisonDetails(
         { username: 'tommy' },
         'MDI',
         'HMP Moorland Updated',
@@ -217,9 +217,9 @@ describe('Prison Register service', () => {
     let updatedPrison: UpdatePrison
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister.get('/prisons/id/MDI').reply(200, moorlandPrison)
-      fakePrisonRegister
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI').reply(200, moorlandPrison)
+      fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/MDI', body => {
           updatedPrison = body
           return body
@@ -227,12 +227,12 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', true)
+      await hmppsAgencyRegisterApiService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', true)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send all data back with active marker now false', async () => {
-      await prisonRegisterService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', false)
+      await hmppsAgencyRegisterApiService.updateActivePrisonMarker({ username: 'tommy' }, 'MDI', false)
 
       expect(updatedPrison).toEqual(
         expect.objectContaining({
@@ -249,44 +249,44 @@ describe('Prison Register service', () => {
   describe('findPrisonAddress', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
 
-      await prisonRegisterService.getPrisonAddress({ username: 'tommy' }, 'MDI', '21')
+      await hmppsAgencyRegisterApiService.getPrisonAddress({ username: 'tommy' }, 'MDI', '21')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will return the prison address when found', async () => {
-      fakePrisonRegister.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI/address/21').reply(200, data.prisonAddress({}))
 
-      const prisonAddress = await prisonRegisterService.getPrisonAddress({}, 'MDI', '21')
+      const prisonAddress = await hmppsAgencyRegisterApiService.getPrisonAddress({}, 'MDI', '21')
 
       expect(prisonAddress?.id).toEqual(21)
     })
     it('will be undefined when prison address not found', async () => {
-      fakePrisonRegister.get('/prisons/id/MDI/address/66').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI/address/66').reply(404, {
         status: 404,
         developerMessage: 'Address 66 not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getPrisonAddress({}, 'MDI', '66')
+        await hmppsAgencyRegisterApiService.getPrisonAddress({}, 'MDI', '66')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
     })
     it('will send error when prison address not associated with prison', async () => {
-      fakePrisonRegister.get('/prisons/id/MDI/address/66').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI/address/66').reply(404, {
         status: 404,
         developerMessage: 'Address 66 not in prison MDI',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getPrisonAddress({}, 'MDI', '66')
+        await hmppsAgencyRegisterApiService.getPrisonAddress({}, 'MDI', '66')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
@@ -298,8 +298,8 @@ describe('Prison Register service', () => {
     const prisonAddress = data.prisonAddress({})
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/MDI/address/21', body => {
           updatedPrisonAddress = body
           return body
@@ -307,18 +307,18 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
+      await hmppsAgencyRegisterApiService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send update prison address', async () => {
-      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
+      await hmppsAgencyRegisterApiService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', prisonAddress)
 
       expect(updatedPrisonAddress).toEqual(prisonAddress)
     })
     it('will send no attribute rather than blanks', async () => {
       const addressWithBlanks: UpdatePrisonAddress = { ...prisonAddress, addressLine1: '', county: '  ' }
-      await prisonRegisterService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', addressWithBlanks)
+      await hmppsAgencyRegisterApiService.updatePrisonAddress({ username: 'tommy' }, 'MDI', '21', addressWithBlanks)
 
       expect(updatedPrisonAddress).toEqual({
         id: 21,
@@ -334,13 +334,13 @@ describe('Prison Register service', () => {
     const welshPrisonAddress = data.welshPrisonAddress({})
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/CFI/welsh-address/21', welshPrisonAddress)
         .reply(200, welshPrisonAddress)
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.updateAddressWithWelshPrisonAddress(
+      await hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress(
         { username: 'tommy' },
         'CFI',
         '21',
@@ -351,7 +351,7 @@ describe('Prison Register service', () => {
     })
 
     it('will send update prison address', async () => {
-      await prisonRegisterService.updateAddressWithWelshPrisonAddress(
+      await hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress(
         { username: 'tommy' },
         'CFI',
         '21',
@@ -367,7 +367,7 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
       addPrisonRequest = {
         active: false,
         female: false,
@@ -392,7 +392,7 @@ describe('Prison Register service', () => {
     })
     describe('on failure', () => {
       it('will send back error if prison failed to be added due to bad request', async () => {
-        fakePrisonRegister.post('/prison-maintenance').reply(400, {
+        fakeHmppsAgencyRegisterApi.post('/prison-maintenance').reply(400, {
           timestamp: '2022-03-30 10:42:59',
           status: 400,
           error: 'Bad Request',
@@ -401,13 +401,13 @@ describe('Prison Register service', () => {
         })
 
         try {
-          await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+          await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
         } catch (e) {
           expect(e.data.message).toEqual("Validation failed for object='insertPrisonDto'. Error count: 1")
         }
       })
       it('will throw error if prison failed to be added due to some of reason', async () => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .post('/prison-maintenance')
           .reply(500, {
             timestamp: '2021-03-30 10:42:59',
@@ -420,7 +420,7 @@ describe('Prison Register service', () => {
 
         expect.assertions(1)
         try {
-          await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+          await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
         } catch (e) {
           expect(e.message).toEqual('Internal Server Error')
         }
@@ -453,7 +453,7 @@ describe('Prison Register service', () => {
         }
         newAddedPrison = null
 
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .post('/prison-maintenance', body => {
             newAddedPrison = body
             return body
@@ -461,17 +461,17 @@ describe('Prison Register service', () => {
           .reply(200, data.prison({ prisonId: 'SHEF' }))
       })
       it('username will be used by client', async () => {
-        await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
       it('will send back success', async () => {
-        const result = await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        const result = await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
 
         expect(result.success).toEqual(true)
       })
       it('prison and address will be sent together when adding', async () => {
-        await prisonRegisterService.addPrison({ username: 'tommy' }, addPrisonRequest)
+        await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
 
         expect(newAddedPrison).toEqual({
           prisonId: 'SHEF',
@@ -503,8 +503,8 @@ describe('Prison Register service', () => {
     const prisonAddress = data.prisonAddress({})
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi
         .post('/prison-maintenance/id/MDI/address', body => {
           newPrisonAddress = body
           return body
@@ -512,18 +512,18 @@ describe('Prison Register service', () => {
         .reply(200, data.prison({}))
     })
     it('username will be used by client', async () => {
-      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
+      await hmppsAgencyRegisterApiService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
     it('will send add prison address', async () => {
-      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
+      await hmppsAgencyRegisterApiService.addPrisonAddress({ username: 'tommy' }, 'MDI', prisonAddress)
 
       expect(newPrisonAddress).toEqual(prisonAddress)
     })
     it('will not send blank address fields', async () => {
       const addressWithBlanks: UpdatePrisonAddress = { ...prisonAddress, addressLine1: '', county: '  ' }
-      await prisonRegisterService.addPrisonAddress({ username: 'tommy' }, 'MDI', addressWithBlanks)
+      await hmppsAgencyRegisterApiService.addPrisonAddress({ username: 'tommy' }, 'MDI', addressWithBlanks)
 
       expect(newPrisonAddress).toEqual({
         id: 21,
@@ -538,11 +538,11 @@ describe('Prison Register service', () => {
   describe('deletePrisonAddress', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister.delete('/prison-maintenance/id/MDI/address/21').reply(200)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi.delete('/prison-maintenance/id/MDI/address/21').reply(200)
     })
     it('will delete prison address', async () => {
-      await prisonRegisterService.deletePrisonAddress({ username: 'tommy' }, 'MDI', '21')
+      await hmppsAgencyRegisterApiService.deletePrisonAddress({ username: 'tommy' }, 'MDI', '21')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -551,37 +551,39 @@ describe('Prison Register service', () => {
   describe('getCourts', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/courts').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/courts').reply(200, [])
 
-      await prisonRegisterService.getCourts({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getCourts({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister.get('/courts?active=true&textSearch=Sheffield').reply(200, [data.prison({}), data.prison({})])
+      fakeHmppsAgencyRegisterApi
+        .get('/courts?active=true&textSearch=Sheffield')
+        .reply(200, [data.prison({}), data.prison({})])
 
-      const result = await prisonRegisterService.getCourts({}, { active: true, textSearch: 'Sheffield' })
+      const result = await hmppsAgencyRegisterApiService.getCourts({}, { active: true, textSearch: 'Sheffield' })
 
       expect(result).toHaveLength(2)
     })
 
     it('is ok if there are no courts', async () => {
-      fakePrisonRegister.get('/courts').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/courts').reply(200, [])
 
-      const result = await prisonRegisterService.getCourts({}, {})
+      const result = await hmppsAgencyRegisterApiService.getCourts({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all courts', async () => {
-      fakePrisonRegister.get('/courts').reply(200, [courtData.court({}), courtData.court({})])
+      fakeHmppsAgencyRegisterApi.get('/courts').reply(200, [courtData.court({}), courtData.court({})])
 
-      const result = await prisonRegisterService.getCourts({}, {})
+      const result = await hmppsAgencyRegisterApiService.getCourts({}, {})
 
       expect(result).toHaveLength(2)
     })
@@ -590,21 +592,21 @@ describe('Prison Register service', () => {
   describe('getCourt', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/courts/id/SHFCC').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/courts/id/SHFCC').reply(200, [])
 
-      await prisonRegisterService.getCourt({ username: 'tommy' }, 'SHFCC')
+      await hmppsAgencyRegisterApiService.getCourt({ username: 'tommy' }, 'SHFCC')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will return a court', async () => {
-      fakePrisonRegister.get('/courts/id/SHFCC').reply(200, courtData.court({ courtId: 'SHFCC' }))
+      fakeHmppsAgencyRegisterApi.get('/courts/id/SHFCC').reply(200, courtData.court({ courtId: 'SHFCC' }))
 
-      const result = await prisonRegisterService.getCourt({}, 'SHFCC')
+      const result = await hmppsAgencyRegisterApiService.getCourt({}, 'SHFCC')
 
       expect(result).toBeDefined()
       expect(result).toHaveProperty('courtId', 'SHFCC')
@@ -625,12 +627,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .post('/courts/id/SHFCC/address', body => {
             sentAddress = body
             return true
@@ -639,13 +641,13 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.addCourtAddress({ username: 'tommy' }, 'SHFCC', address)
+        await hmppsAgencyRegisterApiService.addCourtAddress({ username: 'tommy' }, 'SHFCC', address)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the address and omit blank optional fields', async () => {
-        await prisonRegisterService.addCourtAddress({}, 'SHFCC', address)
+        await hmppsAgencyRegisterApiService.addCourtAddress({}, 'SHFCC', address)
 
         expect(sentAddress).toEqual({
           addressLine1: '1 High Street',
@@ -656,19 +658,19 @@ describe('Prison Register service', () => {
       })
 
       it('will return success when the address is created', async () => {
-        const result = await prisonRegisterService.addCourtAddress({}, 'SHFCC', address)
+        const result = await hmppsAgencyRegisterApiService.addCourtAddress({}, 'SHFCC', address)
 
         expect(result).toEqual({ success: true })
       })
     })
 
     it('will throw error when the court is not found', async () => {
-      fakePrisonRegister.post('/courts/id/UNKNOWN/address').reply(404, {
+      fakeHmppsAgencyRegisterApi.post('/courts/id/UNKNOWN/address').reply(404, {
         status: 404,
         developerMessage: 'Court UNKNOWN not found',
       })
 
-      await expect(prisonRegisterService.addCourtAddress({}, 'UNKNOWN', address)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.addCourtAddress({}, 'UNKNOWN', address)).rejects.toThrow('Not Found')
     })
   })
 
@@ -685,13 +687,13 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('will use the username and send the updated address to the selected address endpoint', async () => {
-      const scope = fakePrisonRegister.put('/courts/id/SHFCC/address/2', address).reply(200, updatedAddress)
+      const scope = fakeHmppsAgencyRegisterApi.put('/courts/id/SHFCC/address/2', address).reply(200, updatedAddress)
 
-      const result = await prisonRegisterService.updateCourtAddress({ username: 'tommy' }, 'SHFCC', 2, address)
+      const result = await hmppsAgencyRegisterApiService.updateCourtAddress({ username: 'tommy' }, 'SHFCC', 2, address)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
@@ -699,11 +701,11 @@ describe('Prison Register service', () => {
     })
 
     it('will omit blank optional fields when clearing them', async () => {
-      const scope = fakePrisonRegister
+      const scope = fakeHmppsAgencyRegisterApi
         .put('/courts/id/SHFCC/address/2', { town: 'Sheffield', postcode: 'S1 2BJ', country: 'England' })
         .reply(200, updatedAddress)
 
-      await prisonRegisterService.updateCourtAddress({}, 'SHFCC', 2, {
+      await hmppsAgencyRegisterApiService.updateCourtAddress({}, 'SHFCC', 2, {
         ...address,
         addressLine1: '',
         addressLine2: '  ',
@@ -714,9 +716,9 @@ describe('Prison Register service', () => {
     })
 
     it.each([400, 404, 500])('will propagate API errors with status %s', async status => {
-      fakePrisonRegister.put('/courts/id/SHFCC/address/2').reply(status, { status })
+      fakeHmppsAgencyRegisterApi.put('/courts/id/SHFCC/address/2').reply(status, { status })
 
-      await expect(prisonRegisterService.updateCourtAddress({}, 'SHFCC', 2, address)).rejects.toMatchObject({
+      await expect(hmppsAgencyRegisterApiService.updateCourtAddress({}, 'SHFCC', 2, address)).rejects.toMatchObject({
         status,
       })
     })
@@ -729,12 +731,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .post('/courts/id/SHFCC/phone-number', body => {
             sentPhoneNumber = body
             return true
@@ -743,31 +745,33 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.addCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', phoneNumber)
+        await hmppsAgencyRegisterApiService.addCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', phoneNumber)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the phone number in the request body', async () => {
-        await prisonRegisterService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
+        await hmppsAgencyRegisterApiService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
 
         expect(sentPhoneNumber).toEqual(phoneNumber)
       })
 
       it('will return success when the phone number is created', async () => {
-        const result = await prisonRegisterService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
+        const result = await hmppsAgencyRegisterApiService.addCourtPhoneNumber({}, 'SHFCC', phoneNumber)
 
         expect(result).toEqual({ success: true })
       })
     })
 
     it('will throw error when the court is not found', async () => {
-      fakePrisonRegister.post('/courts/id/UNKNOWN/phone-number').reply(404, {
+      fakeHmppsAgencyRegisterApi.post('/courts/id/UNKNOWN/phone-number').reply(404, {
         status: 404,
         developerMessage: 'Court UNKNOWN not found',
       })
 
-      await expect(prisonRegisterService.addCourtPhoneNumber({}, 'UNKNOWN', phoneNumber)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.addCourtPhoneNumber({}, 'UNKNOWN', phoneNumber)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 
@@ -778,12 +782,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .post('/courts/id/SHFCC/email-address', body => {
             sentEmailAddress = body
             return true
@@ -792,31 +796,31 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.addCourtEmailAddress({ username: 'tommy' }, 'SHFCC', emailAddress)
+        await hmppsAgencyRegisterApiService.addCourtEmailAddress({ username: 'tommy' }, 'SHFCC', emailAddress)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the email address in the request body', async () => {
-        await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
+        await hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
 
         expect(sentEmailAddress).toEqual(emailAddress)
       })
 
       it('will return success when the email address is created', async () => {
-        const result = await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
+        const result = await hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress)
 
         expect(result).toEqual({ success: true })
       })
     })
 
     it('will return the user message from a 400 response without requiring an error property', async () => {
-      fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(400, {
+      fakeHmppsAgencyRegisterApi.post('/courts/id/SHFCC/email-address').reply(400, {
         userMessage: 'This email address already exists',
         developerMessage: 'Duplicate email',
       })
 
-      expect(await prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).toEqual({
+      expect(await hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).toEqual({
         success: false,
         userMessage: 'This email address already exists',
       })
@@ -825,29 +829,37 @@ describe('Prison Register service', () => {
     it.each([{}, { userMessage: null }, { userMessage: '' }, { userMessage: '   ' }])(
       'will propagate a 400 response without a usable user message: %j',
       async body => {
-        fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(400, body)
+        fakeHmppsAgencyRegisterApi.post('/courts/id/SHFCC/email-address').reply(400, body)
 
-        await expect(prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject({
+        await expect(
+          hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress),
+        ).rejects.toMatchObject({
           status: 400,
         })
       },
     )
 
     it('will propagate a server error even when it contains a user message', async () => {
-      fakePrisonRegister.post('/courts/id/SHFCC/email-address').reply(500, { userMessage: 'Service unavailable' })
+      fakeHmppsAgencyRegisterApi
+        .post('/courts/id/SHFCC/email-address')
+        .reply(500, { userMessage: 'Service unavailable' })
 
-      await expect(prisonRegisterService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject({
-        status: 500,
-      })
+      await expect(hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject(
+        {
+          status: 500,
+        },
+      )
     })
 
     it('will throw error when the court is not found', async () => {
-      fakePrisonRegister.post('/courts/id/UNKNOWN/email-address').reply(404, {
+      fakeHmppsAgencyRegisterApi.post('/courts/id/UNKNOWN/email-address').reply(404, {
         status: 404,
         developerMessage: 'Court UNKNOWN not found',
       })
 
-      await expect(prisonRegisterService.addCourtEmailAddress({}, 'UNKNOWN', emailAddress)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'UNKNOWN', emailAddress)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 
@@ -858,12 +870,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .put('/courts/id/SHFCC/phone-number/10000', body => {
             sentPhoneNumber = body
             return true
@@ -872,32 +884,32 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.updateCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000, phoneNumber)
+        await hmppsAgencyRegisterApiService.updateCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000, phoneNumber)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the phone number in the request body', async () => {
-        await prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
+        await hmppsAgencyRegisterApiService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
 
         expect(sentPhoneNumber).toEqual(phoneNumber)
       })
 
       it('will return success when the phone number is updated', async () => {
-        const result = await prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
+        const result = await hmppsAgencyRegisterApiService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)
 
         expect(result).toEqual({ success: true })
       })
     })
 
     it.each([400, 404, 500])('will propagate an API error with status %s', async status => {
-      fakePrisonRegister.put('/courts/id/SHFCC/phone-number/10000').reply(status, { status })
+      fakeHmppsAgencyRegisterApi.put('/courts/id/SHFCC/phone-number/10000').reply(status, { status })
 
-      await expect(prisonRegisterService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber)).rejects.toMatchObject(
-        {
-          status,
-        },
-      )
+      await expect(
+        hmppsAgencyRegisterApiService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber),
+      ).rejects.toMatchObject({
+        status,
+      })
     })
   })
 
@@ -908,12 +920,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .put('/courts/id/SHFCC/email-address/10000', body => {
             sentEmailAddress = body
             return true
@@ -922,33 +934,33 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.updateCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000, emailAddress)
+        await hmppsAgencyRegisterApiService.updateCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000, emailAddress)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the email address in the request body', async () => {
-        await prisonRegisterService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
+        await hmppsAgencyRegisterApiService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
 
         expect(sentEmailAddress).toEqual(emailAddress)
       })
 
       it('will return success when the email address is updated', async () => {
-        const result = await prisonRegisterService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
+        const result = await hmppsAgencyRegisterApiService.updateCourtEmailAddress({}, 'SHFCC', 10000, emailAddress)
 
         expect(result).toEqual({ success: true })
       })
     })
 
     it('will throw error when the court is not found', async () => {
-      fakePrisonRegister.put('/courts/id/UNKNOWN/email-address/10000').reply(404, {
+      fakeHmppsAgencyRegisterApi.put('/courts/id/UNKNOWN/email-address/10000').reply(404, {
         status: 404,
         developerMessage: 'Court UNKNOWN not found',
       })
 
-      await expect(prisonRegisterService.updateCourtEmailAddress({}, 'UNKNOWN', 10000, emailAddress)).rejects.toThrow(
-        'Not Found',
-      )
+      await expect(
+        hmppsAgencyRegisterApiService.updateCourtEmailAddress({}, 'UNKNOWN', 10000, emailAddress),
+      ).rejects.toThrow('Not Found')
     })
   })
 
@@ -970,12 +982,12 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     describe('on success', () => {
       beforeEach(() => {
-        fakePrisonRegister
+        fakeHmppsAgencyRegisterApi
           .put('/courts/id/SHFCC', body => {
             sentCourt = body
             return true
@@ -984,26 +996,30 @@ describe('Prison Register service', () => {
       })
 
       it('username will be used by client', async () => {
-        await prisonRegisterService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', updateCourt)
+        await hmppsAgencyRegisterApiService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', updateCourt)
 
         expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send all the court fields in the request body', async () => {
-        await prisonRegisterService.updateCourtDetails({}, 'SHFCC', updateCourt)
+        await hmppsAgencyRegisterApiService.updateCourtDetails({}, 'SHFCC', updateCourt)
 
         expect(sentCourt).toEqual(updateCourt)
       })
 
       it('will return success when the court is updated', async () => {
-        expect(await prisonRegisterService.updateCourtDetails({}, 'SHFCC', updateCourt)).toEqual({ success: true })
+        expect(await hmppsAgencyRegisterApiService.updateCourtDetails({}, 'SHFCC', updateCourt)).toEqual({
+          success: true,
+        })
       })
     })
 
     it('will throw error when the court is not found', async () => {
-      fakePrisonRegister.put('/courts/id/UNKNOWN').reply(404, { status: 404 })
+      fakeHmppsAgencyRegisterApi.put('/courts/id/UNKNOWN').reply(404, { status: 404 })
 
-      await expect(prisonRegisterService.updateCourtDetails({}, 'UNKNOWN', updateCourt)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.updateCourtDetails({}, 'UNKNOWN', updateCourt)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 
@@ -1012,48 +1028,49 @@ describe('Prison Register service', () => {
       method: 'updateCourtDetails',
       httpMethod: 'put' as const,
       path: '/courts/id/SHFCC',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.updateCourtDetails({}, 'SHFCC', { courtName: 'Name', active: true, courtTypeCode: 'CC' }),
     },
     {
       method: 'addCourtEmailAddress',
       httpMethod: 'post' as const,
       path: '/courts/id/SHFCC/email-address',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.addCourtEmailAddress({}, 'SHFCC', { address: 'sheffield.court@example.com' }),
     },
     {
       method: 'updateCourtEmailAddress',
       httpMethod: 'put' as const,
       path: '/courts/id/SHFCC/email-address/10000',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.updateCourtEmailAddress({}, 'SHFCC', 10000, { address: 'sheffield.court@example.com' }),
     },
     {
       method: 'addCourtPhoneNumber',
       httpMethod: 'post' as const,
       path: '/courts/id/SHFCC/phone-number',
-      invoke: (service: PrisonRegisterService) => service.addCourtPhoneNumber({}, 'SHFCC', { number: '0114 555 9898' }),
+      invoke: (service: HMPPSAgencyRegisterApi) =>
+        service.addCourtPhoneNumber({}, 'SHFCC', { number: '0114 555 9898' }),
     },
     {
       method: 'updateCourtPhoneNumber',
       httpMethod: 'put' as const,
       path: '/courts/id/SHFCC/phone-number/10000',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.updateCourtPhoneNumber({}, 'SHFCC', 10000, { number: '0114 555 9898' }),
     },
     {
       method: 'addCourtAddress',
       httpMethod: 'post' as const,
       path: '/courts/id/SHFCC/address',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.addCourtAddress({}, 'SHFCC', { town: 'Sheffield', postcode: 'S1 2BJ', country: 'England' }),
     },
     {
       method: 'updateCourtAddress',
       httpMethod: 'put' as const,
       path: '/courts/id/SHFCC/address/2',
-      invoke: (service: PrisonRegisterService) =>
+      invoke: (service: HMPPSAgencyRegisterApi) =>
         service.updateCourtAddress({}, 'SHFCC', 2, {
           town: 'Sheffield',
           postcode: 'S1 2BJ',
@@ -1063,16 +1080,16 @@ describe('Prison Register service', () => {
   ])('$method API errors', ({ httpMethod, path, invoke }) => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('returns a 400 user message without requiring an error property', async () => {
-      const scope = fakePrisonRegister[httpMethod](path).reply(400, {
+      const scope = fakeHmppsAgencyRegisterApi[httpMethod](path).reply(400, {
         userMessage: 'This value already exists',
         developerMessage: 'Duplicate value',
       })
 
-      await expect(invoke(prisonRegisterService)).resolves.toEqual({
+      await expect(invoke(hmppsAgencyRegisterApiService)).resolves.toEqual({
         success: false,
         userMessage: 'This value already exists',
       })
@@ -1090,63 +1107,67 @@ describe('Prison Register service', () => {
       { userMessage: [] },
       { userMessage: {} },
     ])('propagates a 400 response without a usable user message: %j', async body => {
-      fakePrisonRegister[httpMethod](path).reply(400, body)
+      fakeHmppsAgencyRegisterApi[httpMethod](path).reply(400, body)
 
-      await expect(invoke(prisonRegisterService)).rejects.toMatchObject({ status: 400 })
+      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ status: 400 })
     })
 
     it('propagates a server error even when it contains a user message', async () => {
-      fakePrisonRegister[httpMethod](path).reply(500, { userMessage: 'Service unavailable' })
+      fakeHmppsAgencyRegisterApi[httpMethod](path).reply(500, { userMessage: 'Service unavailable' })
 
-      await expect(invoke(prisonRegisterService)).rejects.toMatchObject({ status: 500 })
+      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ status: 500 })
     })
   })
 
   describe('deleteCourtPhoneNumber', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('will use the username to get an API token and delete the court phone number', async () => {
-      const scope = fakePrisonRegister.delete('/courts/id/SHFCC/phone-number/10000').reply(204)
+      const scope = fakeHmppsAgencyRegisterApi.delete('/courts/id/SHFCC/phone-number/10000').reply(204)
 
-      await prisonRegisterService.deleteCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000)
+      await hmppsAgencyRegisterApiService.deleteCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
     it('will throw an error when the court phone number is not found', async () => {
-      fakePrisonRegister.delete('/courts/id/UNKNOWN/phone-number/10000').reply(404, {
+      fakeHmppsAgencyRegisterApi.delete('/courts/id/UNKNOWN/phone-number/10000').reply(404, {
         status: 404,
         developerMessage: 'Court phone number not found',
       })
 
-      await expect(prisonRegisterService.deleteCourtPhoneNumber({}, 'UNKNOWN', 10000)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.deleteCourtPhoneNumber({}, 'UNKNOWN', 10000)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 
   describe('deleteCourtEmailAddress', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
-      fakePrisonRegister.delete('/courts/id/SHFCC/email-address/10000').reply(204)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi.delete('/courts/id/SHFCC/email-address/10000').reply(204)
     })
 
     it('will use the username to get an API token and delete the court email address', async () => {
-      await prisonRegisterService.deleteCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000)
+      await hmppsAgencyRegisterApiService.deleteCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will throw an error when the court email address is not found', async () => {
-      fakePrisonRegister.delete('/courts/id/UNKNOWN/email-address/10000').reply(404, {
+      fakeHmppsAgencyRegisterApi.delete('/courts/id/UNKNOWN/email-address/10000').reply(404, {
         status: 404,
         developerMessage: 'Court email address not found',
       })
 
-      await expect(prisonRegisterService.deleteCourtEmailAddress({}, 'UNKNOWN', 10000)).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.deleteCourtEmailAddress({}, 'UNKNOWN', 10000)).rejects.toThrow(
+        'Not Found',
+      )
     })
   })
 
@@ -1163,23 +1184,23 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/other-agencies').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/other-agencies').reply(200, [])
 
-      await prisonRegisterService.getOtherAgencies({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getOtherAgencies({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/other-agencies?active=true&textSearch=Sheffield&otherAgencyTypeCodes=PECS')
         .reply(200, [agency])
 
-      const result = await prisonRegisterService.getOtherAgencies(
+      const result = await hmppsAgencyRegisterApiService.getOtherAgencies(
         {},
         { active: true, textSearch: 'Sheffield', otherAgencyTypeCodes: ['PECS'] },
       )
@@ -1188,17 +1209,17 @@ describe('Prison Register service', () => {
     })
 
     it('is ok if there are no other agencies', async () => {
-      fakePrisonRegister.get('/other-agencies').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/other-agencies').reply(200, [])
 
-      const result = await prisonRegisterService.getOtherAgencies({}, {})
+      const result = await hmppsAgencyRegisterApiService.getOtherAgencies({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all other agencies', async () => {
-      fakePrisonRegister.get('/other-agencies').reply(200, [agency, { ...agency, agencyId: 'LEED' }])
+      fakeHmppsAgencyRegisterApi.get('/other-agencies').reply(200, [agency, { ...agency, agencyId: 'LEED' }])
 
-      const result = await prisonRegisterService.getOtherAgencies({}, {})
+      const result = await hmppsAgencyRegisterApiService.getOtherAgencies({}, {})
 
       expect(result).toEqual([agency, { ...agency, agencyId: 'LEED' }])
     })
@@ -1207,13 +1228,13 @@ describe('Prison Register service', () => {
   describe('getOtherAgency', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/other-agencies/id/SHEF').reply(200, {})
+      fakeHmppsAgencyRegisterApi.get('/other-agencies/id/SHEF').reply(200, {})
 
-      await prisonRegisterService.getOtherAgency({ username: 'tommy' }, 'SHEF')
+      await hmppsAgencyRegisterApiService.getOtherAgency({ username: 'tommy' }, 'SHEF')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1228,9 +1249,9 @@ describe('Prison Register service', () => {
         emailAddresses: [],
         phoneNumbers: [],
       }
-      fakePrisonRegister.get('/other-agencies/id/SHEF').reply(200, agency)
+      fakeHmppsAgencyRegisterApi.get('/other-agencies/id/SHEF').reply(200, agency)
 
-      const result = await prisonRegisterService.getOtherAgency({}, 'SHEF')
+      const result = await hmppsAgencyRegisterApiService.getOtherAgency({}, 'SHEF')
 
       expect(result).toEqual(agency)
     })
@@ -1248,23 +1269,23 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/hospitals').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/hospitals').reply(200, [])
 
-      await prisonRegisterService.getHospitals({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getHospitals({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/hospitals?active=true&textSearch=Sheffield&highSecurity=true')
         .reply(200, [{ ...hospital, highSecurity: true }])
 
-      const result = await prisonRegisterService.getHospitals(
+      const result = await hmppsAgencyRegisterApiService.getHospitals(
         {},
         { active: true, textSearch: 'Sheffield', highSecurity: true },
       )
@@ -1273,17 +1294,17 @@ describe('Prison Register service', () => {
     })
 
     it('is ok if there are no hospitals', async () => {
-      fakePrisonRegister.get('/hospitals').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/hospitals').reply(200, [])
 
-      const result = await prisonRegisterService.getHospitals({}, {})
+      const result = await hmppsAgencyRegisterApiService.getHospitals({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all hospitals', async () => {
-      fakePrisonRegister.get('/hospitals').reply(200, [hospital, { ...hospital, hospitalId: 'LEEDH' }])
+      fakeHmppsAgencyRegisterApi.get('/hospitals').reply(200, [hospital, { ...hospital, hospitalId: 'LEEDH' }])
 
-      const result = await prisonRegisterService.getHospitals({}, {})
+      const result = await hmppsAgencyRegisterApiService.getHospitals({}, {})
 
       expect(result).toEqual([hospital, { ...hospital, hospitalId: 'LEEDH' }])
     })
@@ -1292,13 +1313,13 @@ describe('Prison Register service', () => {
   describe('getHospital', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(200, {})
+      fakeHmppsAgencyRegisterApi.get('/hospitals/id/SHEFH').reply(200, {})
 
-      await prisonRegisterService.getHospital({ username: 'tommy' }, 'SHEFH')
+      await hmppsAgencyRegisterApiService.getHospital({ username: 'tommy' }, 'SHEFH')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1312,22 +1333,22 @@ describe('Prison Register service', () => {
         addresses: [],
         phoneNumbers: [],
       }
-      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(200, hospital)
+      fakeHmppsAgencyRegisterApi.get('/hospitals/id/SHEFH').reply(200, hospital)
 
-      const result = await prisonRegisterService.getHospital({}, 'SHEFH')
+      const result = await hmppsAgencyRegisterApiService.getHospital({}, 'SHEFH')
 
       expect(result).toEqual(hospital)
     })
 
     it('will throw error when not found', async () => {
-      fakePrisonRegister.get('/hospitals/id/SHEFH').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/hospitals/id/SHEFH').reply(404, {
         status: 404,
         developerMessage: 'Hospital SHEFH not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getHospital({}, 'SHEFH')
+        await hmppsAgencyRegisterApiService.getHospital({}, 'SHEFH')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
@@ -1346,39 +1367,44 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/probation-offices').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/probation-offices').reply(200, [])
 
-      await prisonRegisterService.getProbationOffices({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getProbationOffices({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister.get('/probation-offices?active=true&textSearch=Sheffield').reply(200, [probationOffice])
+      fakeHmppsAgencyRegisterApi
+        .get('/probation-offices?active=true&textSearch=Sheffield')
+        .reply(200, [probationOffice])
 
-      const result = await prisonRegisterService.getProbationOffices({}, { active: true, textSearch: 'Sheffield' })
+      const result = await hmppsAgencyRegisterApiService.getProbationOffices(
+        {},
+        { active: true, textSearch: 'Sheffield' },
+      )
 
       expect(result).toEqual([probationOffice])
     })
 
     it('is ok if there are no probation offices', async () => {
-      fakePrisonRegister.get('/probation-offices').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/probation-offices').reply(200, [])
 
-      const result = await prisonRegisterService.getProbationOffices({}, {})
+      const result = await hmppsAgencyRegisterApiService.getProbationOffices({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all probation offices', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/probation-offices')
         .reply(200, [probationOffice, { ...probationOffice, probationOfficeId: 'LEEDPB' }])
 
-      const result = await prisonRegisterService.getProbationOffices({}, {})
+      const result = await hmppsAgencyRegisterApiService.getProbationOffices({}, {})
 
       expect(result).toEqual([probationOffice, { ...probationOffice, probationOfficeId: 'LEEDPB' }])
     })
@@ -1387,13 +1413,13 @@ describe('Prison Register service', () => {
   describe('getProbationOffice', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(200, {})
+      fakeHmppsAgencyRegisterApi.get('/probation-offices/id/SHEFPB').reply(200, {})
 
-      await prisonRegisterService.getProbationOffice({ username: 'tommy' }, 'SHEFPB')
+      await hmppsAgencyRegisterApiService.getProbationOffice({ username: 'tommy' }, 'SHEFPB')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1407,22 +1433,22 @@ describe('Prison Register service', () => {
         emailAddresses: [],
         phoneNumbers: [],
       }
-      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(200, probationOffice)
+      fakeHmppsAgencyRegisterApi.get('/probation-offices/id/SHEFPB').reply(200, probationOffice)
 
-      const result = await prisonRegisterService.getProbationOffice({}, 'SHEFPB')
+      const result = await hmppsAgencyRegisterApiService.getProbationOffice({}, 'SHEFPB')
 
       expect(result).toEqual(probationOffice)
     })
 
     it('will throw error when not found', async () => {
-      fakePrisonRegister.get('/probation-offices/id/SHEFPB').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/probation-offices/id/SHEFPB').reply(404, {
         status: 404,
         developerMessage: 'Probation office SHEFPB not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getProbationOffice({}, 'SHEFPB')
+        await hmppsAgencyRegisterApiService.getProbationOffice({}, 'SHEFPB')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
@@ -1441,39 +1467,44 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/police-custody-suites').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/police-custody-suites').reply(200, [])
 
-      await prisonRegisterService.getPoliceCustodySuites({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getPoliceCustodySuites({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister.get('/police-custody-suites?active=true&textSearch=Sheffield').reply(200, [policeCustodySuite])
+      fakeHmppsAgencyRegisterApi
+        .get('/police-custody-suites?active=true&textSearch=Sheffield')
+        .reply(200, [policeCustodySuite])
 
-      const result = await prisonRegisterService.getPoliceCustodySuites({}, { active: true, textSearch: 'Sheffield' })
+      const result = await hmppsAgencyRegisterApiService.getPoliceCustodySuites(
+        {},
+        { active: true, textSearch: 'Sheffield' },
+      )
 
       expect(result).toEqual([policeCustodySuite])
     })
 
     it('is ok if there are no police custody suites', async () => {
-      fakePrisonRegister.get('/police-custody-suites').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/police-custody-suites').reply(200, [])
 
-      const result = await prisonRegisterService.getPoliceCustodySuites({}, {})
+      const result = await hmppsAgencyRegisterApiService.getPoliceCustodySuites({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all police custody suites', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/police-custody-suites')
         .reply(200, [policeCustodySuite, { ...policeCustodySuite, policeCustodySuiteId: 'LEEDPCS' }])
 
-      const result = await prisonRegisterService.getPoliceCustodySuites({}, {})
+      const result = await hmppsAgencyRegisterApiService.getPoliceCustodySuites({}, {})
 
       expect(result).toEqual([policeCustodySuite, { ...policeCustodySuite, policeCustodySuiteId: 'LEEDPCS' }])
     })
@@ -1482,13 +1513,13 @@ describe('Prison Register service', () => {
   describe('getPoliceCustodySuite', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(200, {})
+      fakeHmppsAgencyRegisterApi.get('/police-custody-suites/id/SHFPCS').reply(200, {})
 
-      await prisonRegisterService.getPoliceCustodySuite({ username: 'tommy' }, 'SHFPCS')
+      await hmppsAgencyRegisterApiService.getPoliceCustodySuite({ username: 'tommy' }, 'SHFPCS')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1502,22 +1533,22 @@ describe('Prison Register service', () => {
         emailAddresses: [],
         phoneNumbers: [],
       }
-      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(200, policeCustodySuite)
+      fakeHmppsAgencyRegisterApi.get('/police-custody-suites/id/SHFPCS').reply(200, policeCustodySuite)
 
-      const result = await prisonRegisterService.getPoliceCustodySuite({}, 'SHFPCS')
+      const result = await hmppsAgencyRegisterApiService.getPoliceCustodySuite({}, 'SHFPCS')
 
       expect(result).toEqual(policeCustodySuite)
     })
 
     it('will throw error when not found', async () => {
-      fakePrisonRegister.get('/police-custody-suites/id/SHFPCS').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/police-custody-suites/id/SHFPCS').reply(404, {
         status: 404,
         developerMessage: 'Police custody suite SHFPCS not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getPoliceCustodySuite({}, 'SHFPCS')
+        await hmppsAgencyRegisterApiService.getPoliceCustodySuite({}, 'SHFPCS')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
@@ -1536,39 +1567,44 @@ describe('Prison Register service', () => {
 
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/approved-premises').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/approved-premises').reply(200, [])
 
-      await prisonRegisterService.getAllApprovedPremises({ username: 'tommy' }, {})
+      await hmppsAgencyRegisterApiService.getAllApprovedPremises({ username: 'tommy' }, {})
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
-      fakePrisonRegister.get('/approved-premises?active=true&textSearch=Sheffield').reply(200, [approvedPremises])
+      fakeHmppsAgencyRegisterApi
+        .get('/approved-premises?active=true&textSearch=Sheffield')
+        .reply(200, [approvedPremises])
 
-      const result = await prisonRegisterService.getAllApprovedPremises({}, { active: true, textSearch: 'Sheffield' })
+      const result = await hmppsAgencyRegisterApiService.getAllApprovedPremises(
+        {},
+        { active: true, textSearch: 'Sheffield' },
+      )
 
       expect(result).toEqual([approvedPremises])
     })
 
     it('is ok if there are no approved premises', async () => {
-      fakePrisonRegister.get('/approved-premises').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/approved-premises').reply(200, [])
 
-      const result = await prisonRegisterService.getAllApprovedPremises({}, {})
+      const result = await hmppsAgencyRegisterApiService.getAllApprovedPremises({}, {})
 
       expect(result).toEqual([])
     })
 
     it('will return all approved premises', async () => {
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/approved-premises')
         .reply(200, [approvedPremises, { ...approvedPremises, approvedPremisesId: 'LEEDAP' }])
 
-      const result = await prisonRegisterService.getAllApprovedPremises({}, {})
+      const result = await hmppsAgencyRegisterApiService.getAllApprovedPremises({}, {})
 
       expect(result).toEqual([approvedPremises, { ...approvedPremises, approvedPremisesId: 'LEEDAP' }])
     })
@@ -1577,7 +1613,7 @@ describe('Prison Register service', () => {
   describe('getAreas', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
       hmppsAuthClient.getApiClientToken.mockResolvedValue('area-token')
     })
 
@@ -1586,43 +1622,43 @@ describe('Prison Register service', () => {
         { code: 'YH', description: 'Yorkshire and the Humber' },
         { code: 'NW', description: 'North West' },
       ]
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/reference-data/areas')
         .matchHeader('authorization', 'Bearer area-token')
         .reply(200, areas)
 
-      expect(await prisonRegisterService.getAreas({ username: 'tommy' })).toEqual(areas)
+      expect(await hmppsAgencyRegisterApiService.getAreas({ username: 'tommy' })).toEqual(areas)
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
-      expect(fakePrisonRegister.isDone()).toBe(true)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(true)
     })
 
     it('returns an empty list when there are no areas and the context has no username', async () => {
-      fakePrisonRegister.get('/reference-data/areas').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/areas').reply(200, [])
 
-      expect(await prisonRegisterService.getAreas({})).toEqual([])
+      expect(await hmppsAgencyRegisterApiService.getAreas({})).toEqual([])
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith(undefined)
     })
 
     it('propagates reference data API errors', async () => {
-      fakePrisonRegister.get('/reference-data/areas').reply(404, { developerMessage: 'Areas not found' })
+      fakeHmppsAgencyRegisterApi.get('/reference-data/areas').reply(404, { developerMessage: 'Areas not found' })
 
-      await expect(prisonRegisterService.getAreas({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getAreas({})).rejects.toThrow('Not Found')
     })
 
     it('propagates authentication errors without calling the areas API', async () => {
       const error = new Error('Authentication unavailable')
       hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
-      fakePrisonRegister.get('/reference-data/areas').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/areas').reply(200, [])
 
-      await expect(prisonRegisterService.getAreas({ username: 'tommy' })).rejects.toBe(error)
-      expect(fakePrisonRegister.isDone()).toBe(false)
+      await expect(hmppsAgencyRegisterApiService.getAreas({ username: 'tommy' })).rejects.toBe(error)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(false)
     })
   })
 
   describe('getPayrollRegions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('uses the username and bearer token to fetch payroll regions', async () => {
@@ -1631,42 +1667,42 @@ describe('Prison Register service', () => {
         { code: 'YH', description: 'Yorkshire and the Humber' },
         { code: 'NE', description: 'North East' },
       ]
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/reference-data/payroll-regions')
         .matchHeader('authorization', 'Bearer payroll-region-test-token')
         .reply(200, payrollRegions)
 
-      expect(await prisonRegisterService.getPayrollRegions({ username: 'tommy' })).toEqual(payrollRegions)
+      expect(await hmppsAgencyRegisterApiService.getPayrollRegions({ username: 'tommy' })).toEqual(payrollRegions)
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
-      expect(fakePrisonRegister.isDone()).toBe(true)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(true)
     })
 
     it('returns an empty list when no payroll regions are available', async () => {
-      fakePrisonRegister.get('/reference-data/payroll-regions').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/payroll-regions').reply(200, [])
 
-      expect(await prisonRegisterService.getPayrollRegions({})).toEqual([])
+      expect(await hmppsAgencyRegisterApiService.getPayrollRegions({})).toEqual([])
     })
 
     it('propagates reference data API errors', async () => {
-      fakePrisonRegister.get('/reference-data/payroll-regions').reply(404, { developerMessage: 'Not found' })
+      fakeHmppsAgencyRegisterApi.get('/reference-data/payroll-regions').reply(404, { developerMessage: 'Not found' })
 
-      await expect(prisonRegisterService.getPayrollRegions({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getPayrollRegions({})).rejects.toThrow('Not Found')
     })
 
     it('propagates authentication errors without calling the API', async () => {
       const error = new Error('Authentication unavailable')
       hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
-      fakePrisonRegister.get('/reference-data/payroll-regions').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/payroll-regions').reply(200, [])
 
-      await expect(prisonRegisterService.getPayrollRegions({ username: 'tommy' })).rejects.toBe(error)
-      expect(fakePrisonRegister.isDone()).toBe(false)
+      await expect(hmppsAgencyRegisterApiService.getPayrollRegions({ username: 'tommy' })).rejects.toBe(error)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(false)
     })
   })
 
   describe('getLocalAuthorities', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('uses the username and bearer token to fetch local authorities', async () => {
@@ -1675,42 +1711,42 @@ describe('Prison Register service', () => {
         { code: 'SHEF', description: 'Sheffield' },
         { code: 'LEED', description: 'Leeds' },
       ]
-      fakePrisonRegister
+      fakeHmppsAgencyRegisterApi
         .get('/reference-data/local-authorities')
         .matchHeader('authorization', 'Bearer local-authority-test-token')
         .reply(200, localAuthorities)
 
-      expect(await prisonRegisterService.getLocalAuthorities({ username: 'tommy' })).toEqual(localAuthorities)
+      expect(await hmppsAgencyRegisterApiService.getLocalAuthorities({ username: 'tommy' })).toEqual(localAuthorities)
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
-      expect(fakePrisonRegister.isDone()).toBe(true)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(true)
     })
 
     it('returns an empty list when no local authorities are available', async () => {
-      fakePrisonRegister.get('/reference-data/local-authorities').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/local-authorities').reply(200, [])
 
-      expect(await prisonRegisterService.getLocalAuthorities({})).toEqual([])
+      expect(await hmppsAgencyRegisterApiService.getLocalAuthorities({})).toEqual([])
     })
 
     it('propagates reference data API errors', async () => {
-      fakePrisonRegister.get('/reference-data/local-authorities').reply(404, { developerMessage: 'Not found' })
+      fakeHmppsAgencyRegisterApi.get('/reference-data/local-authorities').reply(404, { developerMessage: 'Not found' })
 
-      await expect(prisonRegisterService.getLocalAuthorities({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getLocalAuthorities({})).rejects.toThrow('Not Found')
     })
 
     it('propagates authentication errors without calling the API', async () => {
       const error = new Error('Authentication unavailable')
       hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(error)
-      fakePrisonRegister.get('/reference-data/local-authorities').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/local-authorities').reply(200, [])
 
-      await expect(prisonRegisterService.getLocalAuthorities({ username: 'tommy' })).rejects.toBe(error)
-      expect(fakePrisonRegister.isDone()).toBe(false)
+      await expect(hmppsAgencyRegisterApiService.getLocalAuthorities({ username: 'tommy' })).rejects.toBe(error)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(false)
     })
   })
 
   describe('getRegions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('uses the username and bearer token to fetch regions', async () => {
@@ -1718,30 +1754,30 @@ describe('Prison Register service', () => {
         { code: 'YH', description: 'Yorkshire and the Humber' },
         { code: 'NE', description: 'North East' },
       ]
-      fakePrisonRegister.get('/reference-data/regions').reply(200, regions)
+      fakeHmppsAgencyRegisterApi.get('/reference-data/regions').reply(200, regions)
 
-      expect(await prisonRegisterService.getRegions({ username: 'tommy' })).toEqual(regions)
+      expect(await hmppsAgencyRegisterApiService.getRegions({ username: 'tommy' })).toEqual(regions)
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
-      expect(fakePrisonRegister.isDone()).toBe(true)
+      expect(fakeHmppsAgencyRegisterApi.isDone()).toBe(true)
     })
 
     it('propagates reference data API errors', async () => {
-      fakePrisonRegister.get('/reference-data/regions').reply(404, { developerMessage: 'Regions not found' })
+      fakeHmppsAgencyRegisterApi.get('/reference-data/regions').reply(404, { developerMessage: 'Regions not found' })
 
-      await expect(prisonRegisterService.getRegions({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getRegions({})).rejects.toThrow('Not Found')
     })
   })
 
   describe('getTownSuggestions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/towns').reply(200, [])
 
-      await prisonRegisterService.getTownSuggestions({ username: 'tommy' })
+      await hmppsAgencyRegisterApiService.getTownSuggestions({ username: 'tommy' })
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1751,41 +1787,41 @@ describe('Prison Register service', () => {
         { code: 'SHEF', description: 'Sheffield' },
         { code: 'LEED', description: 'Leeds' },
       ]
-      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, suggestions)
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/towns').reply(200, suggestions)
 
-      const result = await prisonRegisterService.getTownSuggestions({})
+      const result = await hmppsAgencyRegisterApiService.getTownSuggestions({})
 
       expect(result).toEqual(suggestions)
     })
 
     it('is ok if there are no town suggestions', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/towns').reply(200, [])
 
-      const result = await prisonRegisterService.getTownSuggestions({})
+      const result = await hmppsAgencyRegisterApiService.getTownSuggestions({})
 
       expect(result).toEqual([])
     })
 
     it('will throw an error when town suggestions cannot be retrieved', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/towns').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/towns').reply(404, {
         status: 404,
         developerMessage: 'Town suggestions not found',
       })
 
-      await expect(prisonRegisterService.getTownSuggestions({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getTownSuggestions({})).rejects.toThrow('Not Found')
     })
   })
 
   describe('getCountySuggestions', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/counties').reply(200, [])
 
-      await prisonRegisterService.getCountySuggestions({ username: 'tommy' })
+      await hmppsAgencyRegisterApiService.getCountySuggestions({ username: 'tommy' })
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1795,41 +1831,41 @@ describe('Prison Register service', () => {
         { code: 'SY', description: 'South Yorkshire' },
         { code: 'WY', description: 'West Yorkshire' },
       ]
-      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, suggestions)
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/counties').reply(200, suggestions)
 
-      const result = await prisonRegisterService.getCountySuggestions({})
+      const result = await hmppsAgencyRegisterApiService.getCountySuggestions({})
 
       expect(result).toEqual(suggestions)
     })
 
     it('is ok if there are no county suggestions', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/counties').reply(200, [])
 
-      const result = await prisonRegisterService.getCountySuggestions({})
+      const result = await hmppsAgencyRegisterApiService.getCountySuggestions({})
 
       expect(result).toEqual([])
     })
 
     it('will throw an error when county suggestions cannot be retrieved', async () => {
-      fakePrisonRegister.get('/reference-data/suggestions/counties').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/reference-data/suggestions/counties').reply(404, {
         status: 404,
         developerMessage: 'County suggestions not found',
       })
 
-      await expect(prisonRegisterService.getCountySuggestions({})).rejects.toThrow('Not Found')
+      await expect(hmppsAgencyRegisterApiService.getCountySuggestions({})).rejects.toThrow('Not Found')
     })
   })
 
   describe('getApprovedPremises', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-      prisonRegisterService = new PrisonRegisterService(hmppsAuthClient)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
     it('username will be used by client', async () => {
-      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(200, {})
+      fakeHmppsAgencyRegisterApi.get('/approved-premises/id/SHEFAP').reply(200, {})
 
-      await prisonRegisterService.getApprovedPremises({ username: 'tommy' }, 'SHEFAP')
+      await hmppsAgencyRegisterApiService.getApprovedPremises({ username: 'tommy' }, 'SHEFAP')
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
     })
@@ -1843,22 +1879,22 @@ describe('Prison Register service', () => {
         emailAddresses: [],
         phoneNumbers: [],
       }
-      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(200, approvedPremises)
+      fakeHmppsAgencyRegisterApi.get('/approved-premises/id/SHEFAP').reply(200, approvedPremises)
 
-      const result = await prisonRegisterService.getApprovedPremises({}, 'SHEFAP')
+      const result = await hmppsAgencyRegisterApiService.getApprovedPremises({}, 'SHEFAP')
 
       expect(result).toEqual(approvedPremises)
     })
 
     it('will throw error when not found', async () => {
-      fakePrisonRegister.get('/approved-premises/id/SHEFAP').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/approved-premises/id/SHEFAP').reply(404, {
         status: 404,
         developerMessage: 'Approved premises SHEFAP not found',
       })
 
       expect.assertions(1)
       try {
-        await prisonRegisterService.getApprovedPremises({}, 'SHEFAP')
+        await hmppsAgencyRegisterApiService.getApprovedPremises({}, 'SHEFAP')
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }

@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import validate from './updateLocalAuthorityValidator'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updateLocalAuthorityValidator', () => {

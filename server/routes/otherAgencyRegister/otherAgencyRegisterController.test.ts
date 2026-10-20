@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import OtherAgencyRegisterController from './otherAgencyRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockOtherAgencyData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Other Agency Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: OtherAgencyRegisterController
   let req = {
     query: {},
@@ -21,8 +21,10 @@ describe('Other Agency Register controller', () => {
   } as unknown as Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new OtherAgencyRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new OtherAgencyRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -39,7 +41,7 @@ describe('Other Agency Register controller', () => {
 
   describe('showAllOtherAgencies', () => {
     beforeEach(() => {
-      prisonRegisterService.getOtherAgencies.mockResolvedValue([data.otherAgency({ agencyId: 'SHFPECS' })])
+      hmppsAgencyRegisterApiService.getOtherAgencies.mockResolvedValue([data.otherAgency({ agencyId: 'SHFPECS' })])
     })
 
     it('will render all other agencies page with other agencies', async () => {
@@ -48,7 +50,7 @@ describe('Other Agency Register controller', () => {
       }
       await controller.showAllOtherAgencies(req, res)
 
-      expect(prisonRegisterService.getOtherAgencies).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getOtherAgencies).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/other-agency-register/allOtherAgencies',
         expect.objectContaining({
@@ -60,7 +62,7 @@ describe('Other Agency Register controller', () => {
     it('it will call register service with no filter params', async () => {
       await controller.showAllOtherAgencies(req, res)
 
-      expect(prisonRegisterService.getOtherAgencies).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getOtherAgencies).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with active filter param', async () => {
@@ -68,7 +70,7 @@ describe('Other Agency Register controller', () => {
 
       await controller.showAllOtherAgencies(req, res)
 
-      expect(prisonRegisterService.getOtherAgencies).toHaveBeenCalledWith({}, { active: true })
+      expect(hmppsAgencyRegisterApiService.getOtherAgencies).toHaveBeenCalledWith({}, { active: true })
     })
 
     it('it will call register service with textSearch filter param', async () => {
@@ -76,7 +78,7 @@ describe('Other Agency Register controller', () => {
 
       await controller.showAllOtherAgencies(req, res)
 
-      expect(prisonRegisterService.getOtherAgencies).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getOtherAgencies).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('it will call register service with type filter param', async () => {
@@ -84,7 +86,7 @@ describe('Other Agency Register controller', () => {
 
       await controller.showAllOtherAgencies(req, res)
 
-      expect(prisonRegisterService.getOtherAgencies).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.getOtherAgencies).toHaveBeenCalledWith(
         {},
         { otherAgencyTypeCodes: ['PECS', 'AIRPORT'] },
       )
@@ -103,7 +105,7 @@ describe('Other Agency Register controller', () => {
 
   describe('viewOtherAgency', () => {
     beforeEach(() => {
-      prisonRegisterService.getOtherAgency.mockResolvedValue(data.otherAgency({ agencyId: 'SHFPECS' }))
+      hmppsAgencyRegisterApiService.getOtherAgency.mockResolvedValue(data.otherAgency({ agencyId: 'SHFPECS' }))
       req.query.id = 'SHFPECS'
     })
 
@@ -113,7 +115,7 @@ describe('Other Agency Register controller', () => {
       }
       await controller.viewOtherAgency(req, res)
 
-      expect(prisonRegisterService.getOtherAgency).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPECS')
+      expect(hmppsAgencyRegisterApiService.getOtherAgency).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPECS')
       expect(res.render).toHaveBeenCalledWith(
         'pages/other-agency-register/otherAgencyDetails',
         expect.objectContaining({
@@ -125,7 +127,7 @@ describe('Other Agency Register controller', () => {
     it('it will call register service with agency Id parameter', async () => {
       await controller.viewOtherAgency(req, res)
 
-      expect(prisonRegisterService.getOtherAgency).toHaveBeenCalledWith({}, 'SHFPECS')
+      expect(hmppsAgencyRegisterApiService.getOtherAgency).toHaveBeenCalledWith({}, 'SHFPECS')
     })
   })
 })

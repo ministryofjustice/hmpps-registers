@@ -1,20 +1,22 @@
 import type { Request, Response } from 'express'
 import ApiController from './apiController'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import { CodeDescription } from '../../@types/prisonRegister'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('API controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: ApiController
   let req: Request
   let res: Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new ApiController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new ApiController(hmppsAgencyRegisterApiService)
     req = { query: {} } as Request
     res = {
       locals: { user: { username: 'tom' } },
@@ -94,14 +96,14 @@ describe('API controller', () => {
     },
   ])('$method', ({ method, serviceMethod, suggestions, query, matchingIndexes }) => {
     beforeEach(() => {
-      prisonRegisterService[serviceMethod].mockResolvedValue(suggestions)
+      hmppsAgencyRegisterApiService[serviceMethod].mockResolvedValue(suggestions)
       req.query.searchString = query
     })
 
     it('will get suggestions using the username', async () => {
       await controller[method](req, res)
 
-      expect(prisonRegisterService[serviceMethod]).toHaveBeenCalledWith({ username: 'tom' })
+      expect(hmppsAgencyRegisterApiService[serviceMethod]).toHaveBeenCalledWith({ username: 'tom' })
     })
 
     it('will return case-insensitive substring matches with status 200', async () => {
@@ -129,7 +131,7 @@ describe('API controller', () => {
     })
 
     it('will return an empty array when the service has no suggestions', async () => {
-      prisonRegisterService[serviceMethod].mockResolvedValue([])
+      hmppsAgencyRegisterApiService[serviceMethod].mockResolvedValue([])
 
       await controller[method](req, res)
 
@@ -143,12 +145,12 @@ describe('API controller', () => {
 
       await controller[method](req, res)
 
-      expect(prisonRegisterService[serviceMethod]).toHaveBeenCalledTimes(1)
+      expect(hmppsAgencyRegisterApiService[serviceMethod]).toHaveBeenCalledTimes(1)
       expect(res.send).toHaveBeenLastCalledWith([suggestions[1]])
     })
 
     it('will propagate service errors without sending a successful response', async () => {
-      prisonRegisterService[serviceMethod].mockRejectedValue(new Error('Server error'))
+      hmppsAgencyRegisterApiService[serviceMethod].mockRejectedValue(new Error('Server error'))
 
       await expect(controller[method](req, res)).rejects.toThrow('Server error')
 
@@ -164,7 +166,7 @@ describe('API controller', () => {
       'will return all areas when the search string is missing or not a string: %j',
       async searchString => {
         req.query.searchString = searchString
-        prisonRegisterService.getAreas.mockResolvedValue(areas)
+        hmppsAgencyRegisterApiService.getAreas.mockResolvedValue(areas)
 
         await controller.searchArea(req, res)
 
@@ -174,7 +176,7 @@ describe('API controller', () => {
     )
 
     it('will match descriptions rather than area codes', async () => {
-      prisonRegisterService.getAreas.mockResolvedValue(areas)
+      hmppsAgencyRegisterApiService.getAreas.mockResolvedValue(areas)
       req.query.searchString = 'YH'
 
       await controller.searchArea(req, res)
@@ -183,24 +185,24 @@ describe('API controller', () => {
     })
 
     it('will fetch again after an empty response and cache the first nonempty list', async () => {
-      prisonRegisterService.getAreas.mockResolvedValueOnce([]).mockResolvedValue(areas)
+      hmppsAgencyRegisterApiService.getAreas.mockResolvedValueOnce([]).mockResolvedValue(areas)
 
       await controller.searchArea(req, res)
       expect(res.send).toHaveBeenLastCalledWith([])
       await controller.searchArea(req, res)
       await controller.searchArea(req, res)
 
-      expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(2)
+      expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledTimes(2)
       expect(res.send).toHaveBeenLastCalledWith(areas)
     })
 
     it('will retry loading areas after a service error', async () => {
-      prisonRegisterService.getAreas.mockRejectedValueOnce(new Error('Unavailable')).mockResolvedValue(areas)
+      hmppsAgencyRegisterApiService.getAreas.mockRejectedValueOnce(new Error('Unavailable')).mockResolvedValue(areas)
 
       await expect(controller.searchArea(req, res)).rejects.toThrow('Unavailable')
       await controller.searchArea(req, res)
 
-      expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(2)
+      expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledTimes(2)
       expect(res.send).toHaveBeenCalledWith(areas)
     })
   })
@@ -212,7 +214,7 @@ describe('API controller', () => {
       'will return all regions when the search string is missing or not a string: %j',
       async searchString => {
         req.query.searchString = searchString
-        prisonRegisterService.getRegions.mockResolvedValue(regions)
+        hmppsAgencyRegisterApiService.getRegions.mockResolvedValue(regions)
 
         await controller.searchRegion(req, res)
 
@@ -222,13 +224,13 @@ describe('API controller', () => {
     )
 
     it('will fetch again after an empty response and cache the first nonempty list', async () => {
-      prisonRegisterService.getRegions.mockResolvedValueOnce([]).mockResolvedValue(regions)
+      hmppsAgencyRegisterApiService.getRegions.mockResolvedValueOnce([]).mockResolvedValue(regions)
 
       await controller.searchRegion(req, res)
       await controller.searchRegion(req, res)
       await controller.searchRegion(req, res)
 
-      expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(2)
+      expect(hmppsAgencyRegisterApiService.getRegions).toHaveBeenCalledTimes(2)
       expect(res.send).toHaveBeenLastCalledWith(regions)
     })
   })
@@ -238,8 +240,8 @@ describe('API controller', () => {
 
     it('caches payroll regions separately from regions', async () => {
       const regions = [{ code: 'REG001', description: 'North West' }]
-      prisonRegisterService.getRegions.mockResolvedValue(regions)
-      prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+      hmppsAgencyRegisterApiService.getRegions.mockResolvedValue(regions)
+      hmppsAgencyRegisterApiService.getPayrollRegions.mockResolvedValue(payrollRegions)
       req.query.searchString = 'North'
 
       await controller.searchRegion(req, res)
@@ -250,15 +252,15 @@ describe('API controller', () => {
       expect(res.send).toHaveBeenLastCalledWith(regions)
       await controller.searchPayrollRegion(req, res)
       expect(res.send).toHaveBeenLastCalledWith(payrollRegions)
-      expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(1)
-      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledTimes(1)
+      expect(hmppsAgencyRegisterApiService.getRegions).toHaveBeenCalledTimes(1)
+      expect(hmppsAgencyRegisterApiService.getPayrollRegions).toHaveBeenCalledTimes(1)
     })
 
     it.each([undefined, ['North'], { text: 'North' }])(
       'returns all payroll regions when the search string is missing or not a string: %j',
       async searchString => {
         req.query.searchString = searchString
-        prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+        hmppsAgencyRegisterApiService.getPayrollRegions.mockResolvedValue(payrollRegions)
 
         await controller.searchPayrollRegion(req, res)
 
@@ -267,7 +269,7 @@ describe('API controller', () => {
     )
 
     it('matches descriptions rather than codes', async () => {
-      prisonRegisterService.getPayrollRegions.mockResolvedValue(payrollRegions)
+      hmppsAgencyRegisterApiService.getPayrollRegions.mockResolvedValue(payrollRegions)
       req.query.searchString = 'PR001'
 
       await controller.searchPayrollRegion(req, res)
@@ -276,7 +278,7 @@ describe('API controller', () => {
     })
 
     it('retries after empty responses or service errors and caches the first nonempty list', async () => {
-      prisonRegisterService.getPayrollRegions
+      hmppsAgencyRegisterApiService.getPayrollRegions
         .mockResolvedValueOnce([])
         .mockRejectedValueOnce(new Error('Unavailable'))
         .mockResolvedValue(payrollRegions)
@@ -287,7 +289,7 @@ describe('API controller', () => {
       await controller.searchPayrollRegion(req, res)
       await controller.searchPayrollRegion(req, res)
 
-      expect(prisonRegisterService.getPayrollRegions).toHaveBeenCalledTimes(3)
+      expect(hmppsAgencyRegisterApiService.getPayrollRegions).toHaveBeenCalledTimes(3)
       expect(res.send).toHaveBeenLastCalledWith(payrollRegions)
     })
   })
@@ -299,7 +301,7 @@ describe('API controller', () => {
       'returns all local authorities when the search string is missing or not a string: %j',
       async searchString => {
         req.query.searchString = searchString
-        prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
+        hmppsAgencyRegisterApiService.getLocalAuthorities.mockResolvedValue(localAuthorities)
 
         await controller.searchLocalAuthority(req, res)
 
@@ -308,7 +310,7 @@ describe('API controller', () => {
     )
 
     it('matches descriptions rather than codes', async () => {
-      prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
+      hmppsAgencyRegisterApiService.getLocalAuthorities.mockResolvedValue(localAuthorities)
       req.query.searchString = 'LA001'
 
       await controller.searchLocalAuthority(req, res)
@@ -317,7 +319,7 @@ describe('API controller', () => {
     })
 
     it('retries after empty responses or service errors and caches the first nonempty list', async () => {
-      prisonRegisterService.getLocalAuthorities
+      hmppsAgencyRegisterApiService.getLocalAuthorities
         .mockResolvedValueOnce([])
         .mockRejectedValueOnce(new Error('Unavailable'))
         .mockResolvedValue(localAuthorities)
@@ -328,7 +330,7 @@ describe('API controller', () => {
       await controller.searchLocalAuthority(req, res)
       await controller.searchLocalAuthority(req, res)
 
-      expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledTimes(3)
+      expect(hmppsAgencyRegisterApiService.getLocalAuthorities).toHaveBeenCalledTimes(3)
       expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
     })
   })
@@ -339,11 +341,11 @@ describe('API controller', () => {
     const localAuthorities: CodeDescription[] = [{ code: 'BRIS', description: 'Bristol' }]
     const towns: CodeDescription[] = [{ code: 'SHEF', description: 'Sheffield' }]
     const counties: CodeDescription[] = [{ code: 'SY', description: 'South Yorkshire' }]
-    prisonRegisterService.getTownSuggestions.mockResolvedValue(towns)
-    prisonRegisterService.getCountySuggestions.mockResolvedValue(counties)
-    prisonRegisterService.getAreas.mockResolvedValue(areas)
-    prisonRegisterService.getRegions.mockResolvedValue(regions)
-    prisonRegisterService.getLocalAuthorities.mockResolvedValue(localAuthorities)
+    hmppsAgencyRegisterApiService.getTownSuggestions.mockResolvedValue(towns)
+    hmppsAgencyRegisterApiService.getCountySuggestions.mockResolvedValue(counties)
+    hmppsAgencyRegisterApiService.getAreas.mockResolvedValue(areas)
+    hmppsAgencyRegisterApiService.getRegions.mockResolvedValue(regions)
+    hmppsAgencyRegisterApiService.getLocalAuthorities.mockResolvedValue(localAuthorities)
     req.query.searchString = 's'
 
     await controller.searchTown(req, res)
@@ -363,14 +365,14 @@ describe('API controller', () => {
     await controller.searchRegion(req, res)
     expect(res.send).toHaveBeenLastCalledWith(regions)
 
-    expect(prisonRegisterService.getAreas).toHaveBeenCalledTimes(1)
+    expect(hmppsAgencyRegisterApiService.getAreas).toHaveBeenCalledTimes(1)
     await controller.searchLocalAuthority(req, res)
     expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
     await controller.searchLocalAuthority(req, res)
     expect(res.send).toHaveBeenLastCalledWith(localAuthorities)
-    expect(prisonRegisterService.getLocalAuthorities).toHaveBeenCalledTimes(1)
-    expect(prisonRegisterService.getRegions).toHaveBeenCalledTimes(1)
-    expect(prisonRegisterService.getTownSuggestions).toHaveBeenCalledTimes(1)
-    expect(prisonRegisterService.getCountySuggestions).toHaveBeenCalledTimes(1)
+    expect(hmppsAgencyRegisterApiService.getLocalAuthorities).toHaveBeenCalledTimes(1)
+    expect(hmppsAgencyRegisterApiService.getRegions).toHaveBeenCalledTimes(1)
+    expect(hmppsAgencyRegisterApiService.getTownSuggestions).toHaveBeenCalledTimes(1)
+    expect(hmppsAgencyRegisterApiService.getCountySuggestions).toHaveBeenCalledTimes(1)
   })
 })

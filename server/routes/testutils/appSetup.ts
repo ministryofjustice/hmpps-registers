@@ -7,7 +7,7 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
 import * as auth from '../../authentication/auth'
-import prisonRegisterService from './mockPrisonRegisterService'
+import hmppsAgencyRegisterApiService from './mockHmppsAgencyRegisterApi'
 import MockUserService from './mockUserService'
 import setUpWebRequestParsing from '../../middleware/setupRequestParsing'
 
@@ -34,6 +34,6 @@ function appSetup(route: Router, production: boolean): Express {
 
 export default function appWithAllRoutes({ production = false }: { production?: boolean }): Express {
   auth.default.authenticationMiddleware = () => (req, res, next) => next()
-  prisonRegisterService.getPrisonAddress = jest.fn().mockResolvedValue({})
-  return appSetup(allRoutes(standardRouter(new MockUserService()), { prisonRegisterService }), production)
+  hmppsAgencyRegisterApiService.getPrisonAddress = jest.fn().mockResolvedValue({})
+  return appSetup(allRoutes(standardRouter(new MockUserService()), { hmppsAgencyRegisterApiService }), production)
 }
