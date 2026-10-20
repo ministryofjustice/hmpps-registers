@@ -24,7 +24,7 @@ describe('validateCourtStep', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     service = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    service.findCourt.mockResolvedValue(undefined)
+    service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([{ code: 'AREA1', description: 'Canonical area' }])
     service.getRegions.mockResolvedValue([{ code: 'REGION1', description: 'Canonical region' }])
     service.getLocalAuthorities.mockResolvedValue([{ code: 'AUTH1', description: 'Canonical authority' }])
@@ -88,13 +88,38 @@ describe('validateCourtStep', () => {
     })
   })
 
-  it('checks whether a syntactically valid court ID already exists', async () => {
-    service.findCourt.mockResolvedValue({} as Awaited<ReturnType<PrisonRegisterService['findCourt']>>)
+  it.each([
+    'COURT',
+    'PRISON',
+    'PROBATION_OFFICE',
+    'HOSPITAL',
+    'APPROVED_PREMISES',
+    'POLICE_CUSTODY_SUITE',
+    'AIRPORT',
+  ] as const)('rejects a court ID used by a %s and includes the agency name', async legacyType => {
+    service.isAgencyIdUsed.mockResolvedValue({ agencyId: 'AB12', name: 'Existing agency', legacyType })
 
     await expect(validateCourtStep('details', validJourney(), service, context)).resolves.toEqual([
-      { href: '#courtId', text: 'A court with this ID already exists' },
+      { href: '#courtId', text: 'This court ID is already used by Existing agency' },
     ])
-    expect(service.findCourt).toHaveBeenCalledWith(context, 'AB12')
+    expect(service.isAgencyIdUsed).toHaveBeenCalledWith(context, 'AB12')
+    expect(service.findCourt).not.toHaveBeenCalled()
+  })
+
+  it('accepts an unused agency ID', async () => {
+    await expect(validateCourtStep('details', validJourney(), service, context)).resolves.toEqual([])
+    expect(service.isAgencyIdUsed).toHaveBeenCalledWith(context, 'AB12')
+  })
+
+  it('does not check agency usage when the details are invalid', async () => {
+    const journey = validJourney()
+    journey.form.courtId = 'AB-1'
+
+    await expect(validateCourtStep('details', journey, service, context)).resolves.toContainEqual({
+      href: '#courtId',
+      text: 'Court ID must contain only letters and numbers',
+    })
+    expect(service.isAgencyIdUsed).not.toHaveBeenCalled()
   })
 
   it('requires a valid court-type radio selection', async () => {

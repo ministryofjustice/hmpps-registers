@@ -1484,6 +1484,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/legacy/{agencyId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns details of an agency of any type
+     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    get: operations['getAgency']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/legacy/reconciliation/{agencyId}': {
     parameters: {
       query?: never
@@ -1524,6 +1544,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/legacy/agency/{agencyId}/is-used': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Checks whether an agency id is already in use by any agency type
+     * @description Checks prisons, courts, hospitals, probation offices, approved premises, police custody suites and generic agencies for the given id. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    get: operations['isAgencyIdUsed']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/agencies': {
     parameters: {
       query?: never
@@ -1555,7 +1595,7 @@ export interface paths {
      * Get details of an agency
      * @description Details of a single agency of any type (court, hospital, police custody suite, probation office, approved premises, prison or other agency)
      */
-    get: operations['getAgency']
+    get: operations['getPublicAgency']
     put?: never
     post?: never
     delete?: never
@@ -2923,6 +2963,12 @@ export interface components {
     }
     LegacyAgencyAddressDto: {
       /**
+       * Format: int64
+       * @description Database Id
+       * @example 123
+       */
+      id?: number | null
+      /**
        * @description Address line 1
        * @example Bawtry Road
        */
@@ -3038,12 +3084,24 @@ export interface components {
     }
     LegacyAgencyEmailDto: {
       /**
+       * Format: int64
+       * @description Database Id
+       * @example 123
+       */
+      id?: number | null
+      /**
        * @description Email address
        * @example example@example.com
        */
       address: string
     }
     LegacyAgencyPhoneDto: {
+      /**
+       * Format: int64
+       * @description Database Id
+       * @example 123
+       */
+      id?: number | null
       /**
        * @description Phone number
        * @example 0114 555 9898
@@ -3304,6 +3362,24 @@ export interface components {
     }
     AgencyIdsResponse: {
       agencyIds: components['schemas']['AgencyId'][]
+    }
+    /** @description Agency that is using a given agency id */
+    LegacyAgencyUsageDto: {
+      /**
+       * @description NOMIS Agency Id
+       * @example SHEFCC
+       */
+      agencyId: string
+      /**
+       * @description Name
+       * @example Sheffield Crown Court
+       */
+      name: string
+      /**
+       * @description Agency Type
+       * @example COURT
+       */
+      legacyType: components['schemas']['LegacyAgencyType']
     }
     /** @description Summary information about an agency */
     AgencySummaryDto: {
@@ -9011,6 +9087,11 @@ export interface operations {
     parameters: {
       query: {
         area: string
+        /**
+         * @description When true (the default) only active subareas are returned
+         * @example true
+         */
+        'active-only'?: boolean
       }
       header?: never
       path?: never
@@ -9049,7 +9130,13 @@ export interface operations {
   }
   getRegions: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description When true (the default) only active regions are returned
+         * @example true
+         */
+        'active-only'?: boolean
+      }
       header?: never
       path?: never
       cookie?: never
@@ -9087,7 +9174,13 @@ export interface operations {
   }
   getPayrollRegions: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description When true (the default) only active payroll regions are returned
+         * @example true
+         */
+        'active-only'?: boolean
+      }
       header?: never
       path?: never
       cookie?: never
@@ -9125,7 +9218,13 @@ export interface operations {
   }
   getLocalAuthorities: {
     parameters: {
-      query?: never
+      query?: {
+        /**
+         * @description When true (the default) only active local authorities are returned
+         * @example true
+         */
+        'active-only'?: boolean
+      }
       header?: never
       path?: never
       cookie?: never
@@ -9165,6 +9264,11 @@ export interface operations {
     parameters: {
       query?: {
         region?: string
+        /**
+         * @description When true (the default) only active areas are returned
+         * @example true
+         */
+        'active-only'?: boolean
       }
       header?: never
       path?: never
@@ -9355,6 +9459,59 @@ export interface operations {
       }
     }
   }
+  getAgency: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example SHEFCC
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Agency details returned */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyDto']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to retrieve agency details */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Agency not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getAgencyDetails: {
     parameters: {
       query?: never
@@ -9446,6 +9603,57 @@ export interface operations {
       }
     }
   }
+  isAgencyIdUsed: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example SHEFCC
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Agency id is in use; the matching agency name and type are returned */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyUsageDto']
+        }
+      }
+      /** @description Agency id is not in use */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to check agency usage */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getAgencies: {
     parameters: {
       query?: {
@@ -9472,7 +9680,7 @@ export interface operations {
       }
     }
   }
-  getAgency: {
+  getPublicAgency: {
     parameters: {
       query?: never
       header?: never
