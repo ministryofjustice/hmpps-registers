@@ -2,14 +2,14 @@ import type { UpdateAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateAddressValidator'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateAddressValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const updateAddress = jest.fn<Promise<CourtMutationResponse>, [UpdatePrisonAddress]>()
+  const updateAddress = jest.fn<Promise<AgencyMutationResponse>, [UpdatePrisonAddress]>()
   const validForm: UpdateAddressForm = {
     addressId: 2,
     addressline1: '1 High Street',

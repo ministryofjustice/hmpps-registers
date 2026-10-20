@@ -1,7 +1,7 @@
 import type { UpdateAccessibleAccessForm } from 'agencyForms'
 import { Request } from 'express'
 import type { UpdateCourt } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import validate from './updateAccessibleAccessValidator'
 
 describe('updateAccessibleAccessValidator', () => {
@@ -9,7 +9,7 @@ describe('updateAccessibleAccessValidator', () => {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const updateAccessibleAccess = jest.fn<Promise<CourtMutationResponse>, [UpdateCourt['accessibleAccess']]>()
+  const updateAccessibleAccess = jest.fn<Promise<AgencyMutationResponse>, [UpdateCourt['accessibleAccess']]>()
 
   beforeEach(() => {
     jest.resetAllMocks()

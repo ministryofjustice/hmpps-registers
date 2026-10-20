@@ -24,6 +24,7 @@ import {
   UpdateEmailAddress,
   UpdatePrison,
   UpdatePrisonAddress,
+  UpdateAgencyAddress,
   UpdateWelshPrisonAddress,
   CodeDescription,
 } from '../@types/prisonRegister'
@@ -44,7 +45,7 @@ export interface AddUpdateResponse {
   errorMessage?: string
 }
 
-export type CourtMutationResponse = { success: true } | { success: false; userMessage: string }
+export type AgencyMutationResponse = { success: true } | { success: false; userMessage: string }
 
 type ServerError = { status: number; error: string; message: string }
 
@@ -55,7 +56,7 @@ export default class HMPPSAgencyRegisterApi {
     return new RestClient('HMPPS Agency Register API Client', config.apis.prisonRegister, token)
   }
 
-  private static async courtMutation(request: () => Promise<unknown>): Promise<CourtMutationResponse> {
+  private static async agencyMutation(request: () => Promise<unknown>): Promise<AgencyMutationResponse> {
     try {
       await request()
       return { success: true }
@@ -272,18 +273,18 @@ export default class HMPPSAgencyRegisterApi {
     }
   }
 
-  async createCourt(context: Context, court: CreateCourt): Promise<CourtMutationResponse> {
+  async createCourt(context: Context, court: CreateCourt): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`creating court with id ${court.courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<Court>({ path: '/courts', data: court }),
     )
   }
 
-  async updateCourtDetails(context: Context, courtId: string, court: UpdateCourt): Promise<CourtMutationResponse> {
+  async updateCourtDetails(context: Context, courtId: string, court: UpdateCourt): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating details for court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<Court>({
         path: `/courts/id/${courtId}`,
         data: court,
@@ -294,11 +295,11 @@ export default class HMPPSAgencyRegisterApi {
   async addCourtAddress(
     context: Context,
     courtId: string,
-    address: UpdatePrisonAddress,
-  ): Promise<CourtMutationResponse> {
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding address to court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
         path: `/courts/id/${courtId}/address`,
         data: {
@@ -315,11 +316,11 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     courtId: string,
     addressId: number,
-    address: UpdatePrisonAddress,
-  ): Promise<CourtMutationResponse> {
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating address for court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
         path: `/courts/id/${courtId}/address/${addressId}`,
         data: {
@@ -336,10 +337,10 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     courtId: string,
     phoneNumber: PhoneNumber,
-  ): Promise<CourtMutationResponse> {
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding phone number to court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
         path: `/courts/id/${courtId}/phone-number`,
         data: phoneNumber,
@@ -351,10 +352,10 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     courtId: string,
     emailAddress: EmailAddress,
-  ): Promise<CourtMutationResponse> {
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`adding email address to court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
         path: `/courts/id/${courtId}/email-address`,
         data: emailAddress,
@@ -367,10 +368,10 @@ export default class HMPPSAgencyRegisterApi {
     courtId: string,
     phoneId: number,
     phoneNumber: PhoneNumber,
-  ): Promise<CourtMutationResponse> {
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating phone number for court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
         path: `/courts/id/${courtId}/phone-number/${phoneId}`,
         data: phoneNumber,
@@ -383,10 +384,10 @@ export default class HMPPSAgencyRegisterApi {
     courtId: string,
     emailId: number,
     emailAddress: UpdateEmailAddress,
-  ): Promise<CourtMutationResponse> {
+  ): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`updating email address for court with id ${courtId}`)
-    return HMPPSAgencyRegisterApi.courtMutation(() =>
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
         path: `/courts/id/${courtId}/email-address/${emailId}`,
         data: emailAddress,

@@ -1,7 +1,7 @@
 import type { UpdateNameDescriptionForm } from 'agencyForms'
 import { Request } from 'express'
 import validate, { NameDescription } from './updateNameDescriptionValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateNameDescriptionValidator', () => {
   const req = {
@@ -9,7 +9,7 @@ describe('updateNameDescriptionValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const updateNameDescription = jest.fn<Promise<CourtMutationResponse>, [NameDescription]>()
+  const updateNameDescription = jest.fn<Promise<AgencyMutationResponse>, [NameDescription]>()
 
   const validForm: UpdateNameDescriptionForm = {
     name: 'Sheffield Crown Court',
@@ -19,6 +19,7 @@ describe('updateNameDescriptionValidator', () => {
   describe('validate', () => {
     beforeEach(() => {
       jest.resetAllMocks()
+      req.session = {} as Request['session']
       updateNameDescription.mockResolvedValue({ success: true })
     })
 
@@ -36,6 +37,21 @@ describe('updateNameDescriptionValidator', () => {
         name: 'Sheffield Crown Court',
         description: 'Sheffield Main Crown Court',
       })
+    })
+
+    it('accepts fields at the court limits', async () => {
+      const form = { name: 'N'.repeat(40), description: 'D'.repeat(3000) }
+      await validate(form, req, updateNameDescription)
+      expect(updateNameDescription).toHaveBeenCalledWith(form)
+    })
+
+    it('rejects fields exceeding the court limits without updating', async () => {
+      await validate({ name: 'N'.repeat(41), description: 'D'.repeat(3001) }, req, updateNameDescription)
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#name', text: 'Name must be 40 characters or fewer' },
+        { href: '#description', text: 'Description must be 3000 characters or fewer' },
+      ])
+      expect(updateNameDescription).not.toHaveBeenCalled()
     })
 
     it('flashes the API user message and returns to the form when updating fails', async () => {
@@ -64,24 +80,21 @@ describe('updateNameDescriptionValidator', () => {
       expect(updateNameDescription).not.toHaveBeenCalled()
     })
 
-    it.each([undefined, ''])('description must be present: %p', async description => {
+    it.each([undefined, ''])('allows an empty description: %p', async description => {
       const form = { ...validForm, description } as unknown as UpdateNameDescriptionForm
 
       const nextPage = await validate(form, req, updateNameDescription)
 
-      expect(nextPage).toEqual('/court-register/name-description/update?id=SHFCC')
-      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#description', text: 'Enter a description' }])
-      expect(updateNameDescription).not.toHaveBeenCalled()
+      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
+      expect(req.flash).not.toHaveBeenCalled()
+      expect(updateNameDescription).toHaveBeenCalledWith({ name: validForm.name, description: '' })
     })
 
-    it('reports both errors when name and description are missing', async () => {
+    it('requires only the name when both fields are missing', async () => {
       const nextPage = await validate({ name: '', description: '' }, req, updateNameDescription)
 
       expect(nextPage).toEqual('/court-register/name-description/update?id=SHFCC')
-      expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#name', text: 'Enter a name' },
-        { href: '#description', text: 'Enter a description' },
-      ])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Enter a name' }])
       expect(updateNameDescription).not.toHaveBeenCalled()
     })
   })

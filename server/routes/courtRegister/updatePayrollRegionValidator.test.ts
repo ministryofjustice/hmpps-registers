@@ -1,20 +1,35 @@
 import { Request } from 'express'
 import validate from './updatePayrollRegionValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updatePayrollRegionValidator', () => {
   const req = { query: { id: 'SHFCC' }, flash: jest.fn() } as unknown as Request
   const getPayrollRegions = jest.fn<Promise<CodeDescription[]>, []>()
-  const updatePayrollRegion = jest.fn<Promise<CourtMutationResponse>, [string?]>()
+  const updatePayrollRegion = jest.fn<Promise<AgencyMutationResponse>, [string?]>()
 
   beforeEach(() => {
     jest.resetAllMocks()
+    req.session = {} as Request['session']
     getPayrollRegions.mockResolvedValue([
       { code: 'YH', description: 'Yorkshire and the Humber' },
       { code: 'NE', description: 'North East' },
     ])
     updatePayrollRegion.mockResolvedValue({ success: true })
+  })
+
+  it('rejects description-only input instead of silently clearing the reference', async () => {
+    await validate(
+      { payrollRegionCode: '', payrollRegionDescription: 'Unselected text' },
+      req,
+      getPayrollRegions,
+      updatePayrollRegion,
+    )
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#payrollRegion', text: 'Select a valid payroll region from the suggestions' },
+    ])
+    expect(updatePayrollRegion).not.toHaveBeenCalled()
+    expect(getPayrollRegions).not.toHaveBeenCalled()
   })
 
   it.each(['YH', 'NE'])('accepts the known payroll region code %s', async payrollRegionCode => {
@@ -30,7 +45,7 @@ describe('updatePayrollRegionValidator', () => {
     expect(req.flash).not.toHaveBeenCalled()
   })
 
-  it.each([{}, { payrollRegionCode: '' }, { payrollRegionDescription: 'North East' }])(
+  it.each([{}, { payrollRegionCode: '' }])(
     'clears the payroll region without loading reference data for %j',
     async form => {
       expect(await validate(form, req, getPayrollRegions, updatePayrollRegion)).toBe(

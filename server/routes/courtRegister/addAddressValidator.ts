@@ -1,13 +1,13 @@
 import { Request } from 'express'
 import type { AddAddressForm } from 'agencyForms'
 import validateAddress from '../../validation/addressValidation'
-import { UpdatePrisonAddress } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import { UpdateAgencyAddress } from '../../@types/prisonRegister'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export default async function validate(
   form: AddAddressForm,
   req: Request,
-  addAddress: (address: UpdatePrisonAddress) => Promise<CourtMutationResponse>,
+  addAddress: (address: UpdateAgencyAddress) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = validateAddress(form)

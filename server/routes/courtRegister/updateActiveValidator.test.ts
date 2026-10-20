@@ -1,14 +1,14 @@
 import type { UpdateActiveForm } from 'agencyForms'
 import type { Request } from 'express'
 import validate, { ActiveUpdate } from './updateActiveValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateActiveValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn(),
   } as unknown as Request
-  const updateActive = jest.fn<Promise<CourtMutationResponse>, [ActiveUpdate]>()
+  const updateActive = jest.fn<Promise<AgencyMutationResponse>, [ActiveUpdate]>()
   const formUrl = '/court-register/active/update?id=SHFCC'
   const successUrl = '/court-register/details?id=SHFCC&action=UPDATED'
   const missingDate = [{ href: '#inactiveDate', text: 'Enter the date deactivated, including a day, month and year' }]

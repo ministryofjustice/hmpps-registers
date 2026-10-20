@@ -1,12 +1,12 @@
 import { Request } from 'express'
 import type { UpdateCjitCodeForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export default async function validate(
   form: UpdateCjitCodeForm,
   req: Request,
-  updateCjitCode: (cjitCode: string) => Promise<CourtMutationResponse>,
+  updateCjitCode: (cjitCode: string) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validateAsync(

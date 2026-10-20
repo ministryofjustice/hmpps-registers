@@ -1,14 +1,10 @@
+import { regions } from '../mockApis/referenceData'
 import IndexPage from '../pages'
 import AllCourts from '../pages/court-register/allCourts'
 import CourtsDetails from '../pages/court-register/courtsDetails'
 import UpdateAgencyRegion from '../pages/components/edit/updateAgencyRegion'
 import courtData from '../../server/routes/testutils/mockCourtData'
 
-const regions = [
-  { code: 'YH', description: 'Yorkshire and the Humber' },
-  { code: 'NE', description: 'North East' },
-  { code: 'SW', description: 'South West' },
-]
 const court = courtData.court({
   courtId: 'SHFCC',
   courtName: 'Sheffield Crown Court',

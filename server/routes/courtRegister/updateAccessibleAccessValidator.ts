@@ -1,14 +1,14 @@
 import { Request } from 'express'
 import type { UpdateAccessibleAccessForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { UpdateCourt } from '../../@types/prisonRegister'
 import { isAccessibleAccessOption } from './accessibleAccessData'
 
 export default async function validate(
   form: UpdateAccessibleAccessForm,
   req: Request,
-  updateAccessibleAccess: (accessibleAccess: UpdateCourt['accessibleAccess']) => Promise<CourtMutationResponse>,
+  updateAccessibleAccess: (accessibleAccess: UpdateCourt['accessibleAccess']) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validateAsync(

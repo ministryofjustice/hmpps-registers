@@ -1,7 +1,7 @@
 import type { UpdateCourtTypeForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateCourtTypeValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateCourtTypeValidator', () => {
   const req = {
@@ -9,7 +9,7 @@ describe('updateCourtTypeValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const updateCourtType = jest.fn<Promise<CourtMutationResponse>, [string]>()
+  const updateCourtType = jest.fn<Promise<AgencyMutationResponse>, [string]>()
 
   beforeEach(() => {
     jest.resetAllMocks()

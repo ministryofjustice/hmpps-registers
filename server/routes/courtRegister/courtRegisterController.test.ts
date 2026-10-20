@@ -1862,10 +1862,7 @@ describe('Court Register controller', () => {
       await controller.submitUpdateNameDescription(req, res)
 
       expect(hmppsAgencyRegisterApiService.updateCourtDetails).not.toHaveBeenCalled()
-      expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#name', text: 'Enter a name' },
-        { href: '#description', text: 'Enter a description' },
-      ])
+      expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Enter a name' }])
       expect(res.redirect).toHaveBeenCalledWith('/court-register/name-description/update?id=SHFCC')
       expect(req.session.updateNameDescriptionForm).toEqual({ name: '', description: '' })
     })

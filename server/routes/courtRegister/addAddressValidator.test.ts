@@ -2,7 +2,7 @@ import type { AddAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addAddressValidator'
 import { UpdatePrisonAddress } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('addAddressValidator', () => {
   const req = {
@@ -10,7 +10,7 @@ describe('addAddressValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const addAddress = jest.fn<Promise<CourtMutationResponse>, [UpdatePrisonAddress]>()
+  const addAddress = jest.fn<Promise<AgencyMutationResponse>, [UpdatePrisonAddress]>()
 
   const validForm: AddAddressForm = {
     addressline1: '1 High Street',

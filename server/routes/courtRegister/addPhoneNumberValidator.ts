@@ -2,12 +2,12 @@ import { Request } from 'express'
 import type { AddPhoneNumberForm } from 'agencyForms'
 import validatePhoneNumber from '../../validation/phoneNumberValidation'
 import { PhoneNumber } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export default async function validate(
   form: AddPhoneNumberForm,
   req: Request,
-  addPhoneNumber: (phoneNumber: PhoneNumber) => Promise<CourtMutationResponse>,
+  addPhoneNumber: (phoneNumber: PhoneNumber) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validatePhoneNumber(form)

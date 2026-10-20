@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import type { UpdateRegionForm } from 'agencyForms'
 import validate from './updateRegionValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updateRegionValidator', () => {
@@ -10,15 +10,25 @@ describe('updateRegionValidator', () => {
     flash: jest.fn(),
   } as unknown as Request
   const getRegions = jest.fn<Promise<CodeDescription[]>, []>()
-  const updateRegion = jest.fn<Promise<CourtMutationResponse>, [string?]>()
+  const updateRegion = jest.fn<Promise<AgencyMutationResponse>, [string?]>()
 
   beforeEach(() => {
     jest.resetAllMocks()
+    req.session = {} as Request['session']
     getRegions.mockResolvedValue([
       { code: 'YH', description: 'Yorkshire and the Humber' },
       { code: 'NE', description: 'North East' },
     ])
     updateRegion.mockResolvedValue({ success: true })
+  })
+
+  it('rejects description-only input instead of silently clearing the reference', async () => {
+    await validate({ regionCode: '', regionDescription: 'Unselected text' }, req, getRegions, updateRegion)
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#region', text: 'Select a valid region from the suggestions' },
+    ])
+    expect(updateRegion).not.toHaveBeenCalled()
+    expect(getRegions).not.toHaveBeenCalled()
   })
 
   it.each(['YH', 'NE'])('accepts the known region code %s', async regionCode => {
@@ -35,17 +45,14 @@ describe('updateRegionValidator', () => {
     expect(req.flash).not.toHaveBeenCalled()
   })
 
-  it.each([{}, { regionCode: '' }, { regionDescription: 'Yorkshire and the Humber' }])(
-    'clears the region without loading reference data for %j',
-    async form => {
-      const nextPage = await validate(form as UpdateRegionForm, req, getRegions, updateRegion)
+  it.each([{}, { regionCode: '' }])('clears the region without loading reference data for %j', async form => {
+    const nextPage = await validate(form as UpdateRegionForm, req, getRegions, updateRegion)
 
-      expect(nextPage).toBe('/court-register/details?id=SHFCC&action=UPDATED')
-      expect(getRegions).not.toHaveBeenCalled()
-      expect(updateRegion).toHaveBeenCalledWith(undefined)
-      expect(req.flash).not.toHaveBeenCalled()
-    },
-  )
+    expect(nextPage).toBe('/court-register/details?id=SHFCC&action=UPDATED')
+    expect(getRegions).not.toHaveBeenCalled()
+    expect(updateRegion).toHaveBeenCalledWith(undefined)
+    expect(req.flash).not.toHaveBeenCalled()
+  })
 
   it('rejects an unknown region code', async () => {
     const nextPage = await validate(

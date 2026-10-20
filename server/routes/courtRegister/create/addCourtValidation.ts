@@ -3,6 +3,8 @@ import HMPPSAgencyRegisterApi, { Context } from '../../../services/hmppsAgencyRe
 import { allCourtTypes } from '../courtData'
 import { isAccessibleAccessOption } from '../accessibleAccessData'
 import { AddCourtJourney, CourtStep, isReferenceStep, referenceSteps } from './addCourtFlowControl'
+import { validateNameDescription, validateReference } from '../../../validation/agencyFields'
+import courtNameDescriptionRules from '../courtValidationRules'
 
 export type CourtFormError = { href: string; text: string }
 
@@ -16,11 +18,11 @@ export default async function validateCourtStep(
   if (isReferenceStep(step)) {
     const { field, label, service: serviceMethod } = referenceSteps[step]
     const code = form[`${field}Code`]
-    if (!code && !form[`${field}Description`]) return []
-    const selected = code ? (await service[serviceMethod](context)).find(item => item.code === code) : undefined
-    if (!selected) return [{ href: `#${field}`, text: `Select a valid ${label} from the suggestions` }]
-    form[`${field}Description`] = selected.description
-    return []
+    const { errors, selected } = await validateReference(code, form[`${field}Description`], field, label, () =>
+      service[serviceMethod](context),
+    )
+    if (selected) form[`${field}Description`] = selected.description
+    return errors
   }
   switch (step) {
     case 'details': {
@@ -28,17 +30,19 @@ export default async function validateCourtStep(
         form,
         {
           courtId: ['required', 'between:2,6', 'alpha_num'],
-          courtName: ['required', 'max:40'],
-          description: ['max:3000'],
         },
         {
           'required.courtId': 'Enter a court ID',
           'between.courtId': 'Court ID must be between 2 and 6 characters',
           'alpha_num.courtId': 'Court ID must contain only letters and numbers',
-          'required.courtName': 'Enter a court name',
-          'max.courtName': 'Court name must be 40 characters or fewer',
-          'max.description': 'Description must be 3000 characters or fewer',
         },
+      )
+      errors.push(
+        ...validateNameDescription(form.courtName, form.description, {
+          ...courtNameDescriptionRules,
+          nameField: 'courtName',
+          nameLabel: 'Court name',
+        }),
       )
       if (errors.length === 0) {
         const agency = await service.isAgencyIdUsed(context, form.courtId)

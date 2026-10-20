@@ -2,7 +2,7 @@ import type { UpdateEmailAddressForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateEmailAddressValidator'
 import { UpdateEmailAddress } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateEmailAddressValidator', () => {
   const req = {
@@ -10,7 +10,7 @@ describe('updateEmailAddressValidator', () => {
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
 
-  const updateEmailAddress = jest.fn<Promise<CourtMutationResponse>, [UpdateEmailAddress]>()
+  const updateEmailAddress = jest.fn<Promise<AgencyMutationResponse>, [UpdateEmailAddress]>()
 
   const validForm: UpdateEmailAddressForm = {
     emailAddress: 'sheffield.court@example.com',

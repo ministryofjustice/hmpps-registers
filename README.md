@@ -115,6 +115,21 @@ Both buttons and the confirmation and submission endpoints are gated by
 `agencyRegistersDeleteEnabled` (`AGENCY_REGISTER_DELETE_ENABLED`). This defaults
 to enabled locally and is disabled in production configuration.
 
+## Reusing agency maintenance patterns
+
+Keep agency-specific controllers, creation steps, routes and DTO mappers explicit.
+Reuse `AgencyMutationResponse`, `UpdateAgencyAddress`, the pure validators in
+`server/validation/agencyFields.ts` and shared agency views where the behaviour matches.
+Court create and update require a name of at most 40 characters and allow an optional
+description of at most 3000 characters; other agencies should specify their own limits.
+
+Reference fields share `referenceAutocomplete.js` with small field-specific initializers.
+Typing invalidates the hidden selected code; only selecting a suggestion sets it.
+Both code and description blank clears an optional reference. Unselected text is an
+error, not a request to clear it. Validation uses the API's canonical description.
+Reuse `integration_tests/mockApis/referenceData.ts` in browser specs because reference
+suggestions are cached for the server process; keep expected mutation payloads explicit.
+
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)

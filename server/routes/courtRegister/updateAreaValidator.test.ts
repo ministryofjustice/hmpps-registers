@@ -1,7 +1,7 @@
 import type { UpdateAreaForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateAreaValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updateAreaValidator', () => {
@@ -10,15 +10,25 @@ describe('updateAreaValidator', () => {
     flash: jest.fn(),
   } as unknown as Request
   const getAreas = jest.fn<Promise<CodeDescription[]>, []>()
-  const updateArea = jest.fn<Promise<CourtMutationResponse>, [string?]>()
+  const updateArea = jest.fn<Promise<AgencyMutationResponse>, [string?]>()
 
   beforeEach(() => {
     jest.resetAllMocks()
+    req.session = {} as Request['session']
     getAreas.mockResolvedValue([
       { code: 'YH', description: 'Yorkshire and the Humber' },
       { code: 'NW', description: 'North West' },
     ])
     updateArea.mockResolvedValue({ success: true })
+  })
+
+  it('rejects description-only input instead of silently clearing the reference', async () => {
+    await validate({ areaCode: '', areaDescription: 'Unselected text' }, req, getAreas, updateArea)
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#area', text: 'Select a valid area from the suggestions' },
+    ])
+    expect(updateArea).not.toHaveBeenCalled()
+    expect(getAreas).not.toHaveBeenCalled()
   })
 
   it.each(['YH', 'NW'])('accepts the known area code %s', async areaCode => {
@@ -36,18 +46,15 @@ describe('updateAreaValidator', () => {
     expect(req.flash).not.toHaveBeenCalled()
   })
 
-  it.each([{}, { areaCode: '' }, { areaDescription: 'Yorkshire and the Humber' }])(
-    'clears the area without loading reference data for %j',
-    async form => {
-      const nextPage = await validate(form as UpdateAreaForm, req, getAreas, updateArea)
+  it.each([{}, { areaCode: '' }])('clears the area without loading reference data for %j', async form => {
+    const nextPage = await validate(form as UpdateAreaForm, req, getAreas, updateArea)
 
-      expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
-      expect(getAreas).not.toHaveBeenCalled()
-      expect(updateArea).toHaveBeenCalledTimes(1)
-      expect(updateArea).toHaveBeenCalledWith(undefined)
-      expect(req.flash).not.toHaveBeenCalled()
-    },
-  )
+    expect(nextPage).toEqual('/court-register/details?id=SHFCC&action=UPDATED')
+    expect(getAreas).not.toHaveBeenCalled()
+    expect(updateArea).toHaveBeenCalledTimes(1)
+    expect(updateArea).toHaveBeenCalledWith(undefined)
+    expect(req.flash).not.toHaveBeenCalled()
+  })
 
   it.each(['XX', 'yh', 'YH ', 'Yorkshire and the Humber'])('rejects an unknown code %p', async areaCode => {
     const nextPage = await validate(
