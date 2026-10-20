@@ -1,14 +1,10 @@
+import { localAuthorities } from '../mockApis/referenceData'
 import IndexPage from '../pages'
 import AllCourts from '../pages/court-register/allCourts'
 import CourtsDetails from '../pages/court-register/courtsDetails'
 import UpdateAgencyLocalAuthority from '../pages/components/edit/updateAgencyLocalAuthority'
 import courtData from '../../server/routes/testutils/mockCourtData'
 
-const localAuthorities = [
-  { code: 'SHEF', description: 'Sheffield' },
-  { code: 'LEED', description: 'Leeds' },
-  { code: 'CHEST', description: 'Chesterfield' },
-]
 const court = courtData.court({
   courtId: 'SHFCC',
   courtName: 'Sheffield Crown Court',

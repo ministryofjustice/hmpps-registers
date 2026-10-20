@@ -1,3 +1,4 @@
+import { areas, regions, localAuthorities, payrollRegions } from '../mockApis/referenceData'
 import AllCourts from '../pages/court-register/allCourts'
 import CourtsDetails from '../pages/court-register/courtsDetails'
 import {
@@ -12,28 +13,6 @@ import {
 } from '../pages/court-register/addCourt'
 import courtData from '../../server/routes/testutils/mockCourtData'
 import { Court, LegacyAgencyUsage } from '../../server/@types/prisonRegister'
-
-// Reference data is cached by the app, so these must match the arrays used by the other court specs
-const areas = [
-  { code: 'YH', description: 'Yorkshire and the Humber' },
-  { code: 'SY', description: 'South Yorkshire' },
-  { code: 'SW', description: 'South West' },
-]
-const regions = [
-  { code: 'YH', description: 'Yorkshire and the Humber' },
-  { code: 'NE', description: 'North East' },
-  { code: 'SW', description: 'South West' },
-]
-const localAuthorities = [
-  { code: 'SHEF', description: 'Sheffield' },
-  { code: 'LEED', description: 'Leeds' },
-  { code: 'CHEST', description: 'Chesterfield' },
-]
-const payrollRegions = [
-  { code: 'YH', description: 'Yorkshire and the Humber' },
-  { code: 'NE', description: 'North East' },
-  { code: 'SW', description: 'South West' },
-]
 
 const existingCourt = courtData.court({ courtId: 'SHFCC', courtName: 'Sheffield Crown Court' })
 

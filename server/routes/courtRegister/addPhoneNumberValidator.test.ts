@@ -2,14 +2,14 @@ import type { AddPhoneNumberForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addPhoneNumberValidator'
 import { PhoneNumber } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('addPhoneNumberValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn() as (type: string, message: Array<Record<string, string>>) => number,
   } as unknown as Request
-  const addPhoneNumber = jest.fn<Promise<CourtMutationResponse>, [PhoneNumber]>()
+  const addPhoneNumber = jest.fn<Promise<AgencyMutationResponse>, [PhoneNumber]>()
   const validForm: AddPhoneNumberForm = { phoneNumber: '0114 555 9898' }
 
   beforeEach(() => {

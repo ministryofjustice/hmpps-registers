@@ -1,14 +1,14 @@
 import { Request } from 'express'
 import { format, isValid, parse } from 'date-fns'
 import type { UpdateActiveForm } from 'agencyForms'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export type ActiveUpdate = { active: boolean; inactiveDate?: string }
 
 export default async function validate(
   form: UpdateActiveForm,
   req: Request,
-  updateActive: (update: ActiveUpdate) => Promise<CourtMutationResponse>,
+  updateActive: (update: ActiveUpdate) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors: Array<{ href: string; text: string }> = []

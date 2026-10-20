@@ -1,14 +1,14 @@
 import type { UpdateCjitCodeForm } from 'agencyForms'
 import type { Request } from 'express'
 import validate from './updateCjitCodeValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateCjitCodeValidator', () => {
   const req = {
     query: { id: 'SHFCC' },
     flash: jest.fn(),
   } as unknown as Request
-  const updateCjitCode = jest.fn<Promise<CourtMutationResponse>, [string]>()
+  const updateCjitCode = jest.fn<Promise<AgencyMutationResponse>, [string]>()
 
   beforeEach(() => {
     jest.resetAllMocks()

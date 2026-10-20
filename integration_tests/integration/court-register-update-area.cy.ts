@@ -1,14 +1,10 @@
+import { areas } from '../mockApis/referenceData'
 import IndexPage from '../pages'
 import AllCourts from '../pages/court-register/allCourts'
 import CourtsDetails from '../pages/court-register/courtsDetails'
 import UpdateAgencyArea from '../pages/components/edit/updateAgencyArea'
 import courtData from '../../server/routes/testutils/mockCourtData'
 
-const areas = [
-  { code: 'YH', description: 'Yorkshire and the Humber' },
-  { code: 'SY', description: 'South Yorkshire' },
-  { code: 'SW', description: 'South West' },
-]
 const court = courtData.court({
   courtId: 'SHFCC',
   courtName: 'Sheffield Crown Court',
@@ -123,6 +119,9 @@ context('Court register - update area', () => {
     const pageWithErrors = UpdateAgencyArea.verifyOnPage(court.courtName)
     pageWithErrors.error().should('contain.text', 'Select a valid area from the suggestions')
     pageWithErrors.area().should('have.value', 'Not a real area')
+    pageWithErrors.area().should('have.class', 'govuk-input--error')
+    pageWithErrors.area().should('have.attr', 'aria-describedby').and('contain', 'area-error')
+    pageWithErrors.code().should('have.value', '')
     updatedCourts().should('be.empty')
     pageWithErrors.area().clear()
     pageWithErrors.area().type('South')
@@ -138,6 +137,7 @@ context('Court register - update area', () => {
     updatePage.area().type('South')
     updatePage.suggestions().contains('South Yorkshire').click()
     updatePage.area().type(' invalid')
+    updatePage.code().should('have.value', '')
     updatePage.saveButton().click()
     UpdateAgencyArea.verifyOnPage(court.courtName).error().should('contain.text', 'Select a valid area')
     updatedCourts().should('be.empty')
@@ -176,6 +176,25 @@ context('Court register - update area', () => {
     updatePage.area().clear()
     updatePage.area().type('South')
     updatePage.suggestions().should('have.length', 2)
+  })
+
+  it('will ignore an older search response and escape suggestion markup', () => {
+    let slowSearchStarted = false
+    cy.intercept('GET', '/api/search-area?searchString=South', request => {
+      slowSearchStarted = true
+      request.reply({ delay: 750, body: areas.slice(1) })
+    }).as('slowSearch')
+    cy.intercept('GET', '/api/search-area?searchString=North', {
+      body: [{ code: 'N', description: 'North <strong>escaped</strong>' }],
+    }).as('latestSearch')
+    const updatePage = openUpdatePage()
+    updatePage.area().clear().type('South')
+    cy.wrap(null).should(() => expect(slowSearchStarted).to.equal(true))
+    updatePage.area().clear().type('North')
+    cy.wait('@latestSearch')
+    cy.wait('@slowSearch')
+    updatePage.suggestions().should('have.length', 1).and('contain.text', 'North <strong>escaped</strong>')
+    updatePage.suggestions().find('strong').should('not.exist')
   })
 
   it('will capture court details and the shared area autocomplete for review', () => {

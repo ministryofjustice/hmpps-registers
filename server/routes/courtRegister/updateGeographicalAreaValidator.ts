@@ -1,25 +1,35 @@
 import { Request } from 'express'
 import type { UpdateGeographicalAreaForm } from 'agencyForms'
+import { validateReference } from '../../validation/agencyFields'
 import type { CodeDescription } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export default async function validate(
   form: UpdateGeographicalAreaForm,
   req: Request,
   getGeographicalAreas: () => Promise<CodeDescription[]>,
-  updateGeographicalArea: (geographicalAreaCode?: string) => Promise<CourtMutationResponse>,
+  updateGeographicalArea: (geographicalAreaCode?: string) => Promise<AgencyMutationResponse>,
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const geographicalAreaCode = form.geographicalAreaCode || undefined
-  if (
-    geographicalAreaCode &&
-    !(await getGeographicalAreas()).some(geographicalArea => geographicalArea.code === geographicalAreaCode)
-  ) {
-    req.flash('errors', [{ href: '#geographicalArea', text: 'Select a valid geographical area from the suggestions' }])
+  const { errors, selected } = await validateReference(
+    geographicalAreaCode,
+    form.geographicalAreaDescription,
+    'geographicalArea',
+    'geographical area',
+    getGeographicalAreas,
+  )
+  if (errors.length > 0) {
+    req.flash('errors', errors)
     return `/court-register/geographical-area/update?id=${id}`
   }
   const result = await updateGeographicalArea(geographicalAreaCode)
   if (result.success === false) {
+    if (selected)
+      req.session.updateGeographicalAreaForm = {
+        ...form,
+        geographicalAreaDescription: selected.description,
+      }
     req.flash('errors', [{ href: '#geographicalArea', text: result.userMessage }])
     return `/court-register/geographical-area/update?id=${id}`
   }

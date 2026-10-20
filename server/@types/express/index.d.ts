@@ -13,6 +13,8 @@ import type {
   UpdateGeographicalAreaForm,
   UpdateLocalAuthorityForm,
   UpdatePayrollRegionForm,
+  AddEmailAddressForm,
+  UpdateEmailAddressForm,
 } from 'agencyForms'
 import type {
   AddNewPrisonForm,
@@ -24,7 +26,6 @@ import type {
   DeleteWelshPrisonAddressForm,
 } from '../prisonRegisterForms'
 
-import type { AddEmailAddressForm, UpdateEmailAddressForm } from '../agencyEditForms'
 import type { AddCourtJourney } from '../../routes/courtRegister/create/addCourtFlowControl'
 
 export default {}

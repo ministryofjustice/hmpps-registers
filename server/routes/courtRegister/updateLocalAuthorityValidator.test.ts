@@ -1,20 +1,35 @@
 import { Request } from 'express'
 import validate from './updateLocalAuthorityValidator'
-import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updateLocalAuthorityValidator', () => {
   const req = { query: { id: 'SHFCC' }, flash: jest.fn() } as unknown as Request
   const getLocalAuthorities = jest.fn<Promise<CodeDescription[]>, []>()
-  const updateLocalAuthority = jest.fn<Promise<CourtMutationResponse>, [string?]>()
+  const updateLocalAuthority = jest.fn<Promise<AgencyMutationResponse>, [string?]>()
 
   beforeEach(() => {
     jest.resetAllMocks()
+    req.session = {} as Request['session']
     getLocalAuthorities.mockResolvedValue([
       { code: 'SHEF', description: 'Sheffield' },
       { code: 'LEED', description: 'Leeds' },
     ])
     updateLocalAuthority.mockResolvedValue({ success: true })
+  })
+
+  it('rejects description-only input instead of silently clearing the reference', async () => {
+    await validate(
+      { localAuthorityCode: '', localAuthorityDescription: 'Unselected text' },
+      req,
+      getLocalAuthorities,
+      updateLocalAuthority,
+    )
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#localAuthority', text: 'Select a valid local authority from the suggestions' },
+    ])
+    expect(updateLocalAuthority).not.toHaveBeenCalled()
+    expect(getLocalAuthorities).not.toHaveBeenCalled()
   })
 
   it.each(['SHEF', 'LEED'])('accepts the known local authority code %s', async localAuthorityCode => {
@@ -30,7 +45,7 @@ describe('updateLocalAuthorityValidator', () => {
     expect(req.flash).not.toHaveBeenCalled()
   })
 
-  it.each([{}, { localAuthorityCode: '' }, { localAuthorityDescription: 'Sheffield' }])(
+  it.each([{}, { localAuthorityCode: '' }])(
     'clears the local authority without loading reference data for %j',
     async form => {
       expect(await validate(form, req, getLocalAuthorities, updateLocalAuthority)).toBe(

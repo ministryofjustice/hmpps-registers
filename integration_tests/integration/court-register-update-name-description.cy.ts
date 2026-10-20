@@ -84,34 +84,34 @@ context('Court register - update court name and description', () => {
     updatedCourts().should('be.empty')
   })
 
-  it('will require a name and a description', () => {
+  it('will require a name but not a description', () => {
     const updatePage = openUpdatePage()
     updatePage.name().clear()
     updatePage.description().clear()
     updatePage.saveButton().click()
 
     const pageWithErrors = UpdateAgencyNameDescription.verifyOnPage(sheffieldCrownCourt.courtName)
-    pageWithErrors.errorSummary().should('contain.text', 'Enter a name').should('contain.text', 'Enter a description')
+    pageWithErrors
+      .errorSummary()
+      .should('contain.text', 'Enter a name')
+      .should('not.contain.text', 'Enter a description')
     pageWithErrors.nameError().should('contain.text', 'Enter a name')
-    pageWithErrors.descriptionError().should('contain.text', 'Enter a description')
+    pageWithErrors.descriptionError().should('not.exist')
     pageWithErrors.name().should('have.value', '')
     pageWithErrors.description().should('have.value', '')
     cy.url().should('include', '/court-register/name-description/update?id=SHFCC')
     updatedCourts().should('be.empty')
   })
 
-  it('will redisplay the submitted name when only the description is missing', () => {
+  it('will allow clearing the optional description', () => {
     const updatePage = openUpdatePage()
     updatePage.name().clear()
     updatePage.name().type('Sheffield Combined Court')
     updatePage.description().clear()
     updatePage.saveButton().click()
 
-    const pageWithErrors = UpdateAgencyNameDescription.verifyOnPage(sheffieldCrownCourt.courtName)
-    pageWithErrors.descriptionError().should('contain.text', 'Enter a description')
-    pageWithErrors.nameError().should('not.exist')
-    pageWithErrors.name().should('have.value', 'Sheffield Combined Court')
-    updatedCourts().should('be.empty')
+    CourtsDetails.verifyOnPage(sheffieldCrownCourt.courtName)
+    updatedCourts().should('deep.equal', [expectedUpdate('Sheffield Combined Court', '')])
   })
 
   it('will reset to the current values on a fresh visit', () => {

@@ -36,7 +36,7 @@
         {{ govukInput({
           id: "description",
           name: "description",
-          label: { text: "Description" },
+          label: { text: "Description (optional)" },
           value: form.description,
           errorMessage: errors | findError('description'),
           attributes: {
