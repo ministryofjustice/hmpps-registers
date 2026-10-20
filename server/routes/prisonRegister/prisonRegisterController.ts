@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import { AllPrisonsFilter } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
@@ -34,19 +34,19 @@ function context(res: Response): Context {
 }
 
 export default class PrisonRegisterController {
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async showAllPrisons(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
     req.session.prisonListPageLink = '/prison-register'
-    const prisons = await this.prisonRegisterService.getPrisonsWithFilter(context(res), filter)
+    const prisons = await this.hmppsAgencyRegisterApiService.getPrisonsWithFilter(context(res), filter)
     const view = new AllPrisonsView(prisons, filter)
     res.render('pages/prison-register/allPrisons', view.renderArgs)
   }
 
   async viewPrison(req: Request, res: Response): Promise<void> {
     const { id, action } = req.query as { id: string; action: Action }
-    const prison = await this.prisonRegisterService.getPrison(context(res), id)
+    const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), id)
     const view = new PrisonDetailsView(prison, (action || 'NONE') as Action)
     res.render('pages/prison-register/prisonDetails', view.renderArgs)
   }
@@ -90,7 +90,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await addNewPrisonDetailsValidator(req.session.addNewPrisonForm, req, (id: string) =>
-        this.prisonRegisterService.findPrison(context(res), id),
+        this.hmppsAgencyRegisterApiService.findPrison(context(res), id),
       ),
     )
   }
@@ -122,7 +122,7 @@ export default class PrisonRegisterController {
   async submitNewPrisonSummary(req: Request, res: Response): Promise<void> {
     res.redirect(
       await addNewPrisonSummaryValidator(req.session.addNewPrisonForm, req, (prison: InsertPrison) =>
-        this.prisonRegisterService.addPrison(context(res), prison),
+        this.hmppsAgencyRegisterApiService.addPrison(context(res), prison),
       ),
     )
   }
@@ -135,7 +135,7 @@ export default class PrisonRegisterController {
   async amendPrisonDetailsStart(req: Request, res: Response): Promise<void> {
     const { prisonId } = req.query as { prisonId: string }
 
-    const [prison] = await Promise.all([this.prisonRegisterService.getPrison(context(res), prisonId)])
+    const [prison] = await Promise.all([this.hmppsAgencyRegisterApiService.getPrison(context(res), prisonId)])
 
     const gender = []
     if (prison.male) gender.push('male')
@@ -185,7 +185,7 @@ export default class PrisonRegisterController {
             'HMP' | 'YOI' | 'STC' | 'IRC'
           )[]
 
-          return this.prisonRegisterService.updatePrisonDetails(
+          return this.hmppsAgencyRegisterApiService.updatePrisonDetails(
             context(res),
             prisonId,
             name,
@@ -222,7 +222,7 @@ export default class PrisonRegisterController {
   async amendPrisonAddressStart(req: Request, res: Response): Promise<void> {
     const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
 
-    const prisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+    const prisonAddress = await this.hmppsAgencyRegisterApiService.getPrisonAddress(context(res), prisonId, addressId)
 
     req.session.amendPrisonAddressForm = {
       id: addressId,
@@ -261,7 +261,7 @@ export default class PrisonRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
           }
-          return this.prisonRegisterService.addPrisonAddress(context(res), form.prisonId, newAddress)
+          return this.hmppsAgencyRegisterApiService.addPrisonAddress(context(res), form.prisonId, newAddress)
         },
       ),
     )
@@ -283,7 +283,7 @@ export default class PrisonRegisterController {
             postcode: form.addresspostcode,
             country: form.addresscountry,
           }
-          return this.prisonRegisterService.updatePrisonAddress(
+          return this.hmppsAgencyRegisterApiService.updatePrisonAddress(
             context(res),
             form.prisonId,
             form.id as string,
@@ -297,7 +297,7 @@ export default class PrisonRegisterController {
   async deletePrisonAddressStart(req: Request, res: Response): Promise<void> {
     const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
 
-    const prisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+    const prisonAddress = await this.hmppsAgencyRegisterApiService.getPrisonAddress(context(res), prisonId, addressId)
 
     req.session.amendPrisonAddressForm = {
       id: addressId,
@@ -319,7 +319,7 @@ export default class PrisonRegisterController {
   }
 
   async submitDeletePrisonAddress(req: Request, res: Response): Promise<void> {
-    await this.prisonRegisterService.deletePrisonAddress(context(res), req.body.prisonId, req.body.id)
+    await this.hmppsAgencyRegisterApiService.deletePrisonAddress(context(res), req.body.prisonId, req.body.id)
     res.redirect(`/prison-register/details?id=${req.body.prisonId}&action=UPDATED`)
   }
 
@@ -327,7 +327,7 @@ export default class PrisonRegisterController {
     const { id, active } = req.body
     const activate = active === 'true'
     const action: Action = activate ? 'ACTIVATE-PRISON' : 'DEACTIVATE-PRISON'
-    await this.prisonRegisterService.updateActivePrisonMarker(context(res), id, activate)
+    await this.hmppsAgencyRegisterApiService.updateActivePrisonMarker(context(res), id, activate)
     res.redirect(`/prison-register/details?id=${id}&action=${action}`)
   }
 
@@ -367,7 +367,7 @@ export default class PrisonRegisterController {
             countyInWelsh: form.addresscountyinwelsh,
             countryInWelsh: 'Cymru',
           }
-          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
+          return this.hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress(
             context(res),
             prisonId,
             addressId as string,
@@ -381,7 +381,11 @@ export default class PrisonRegisterController {
   async amendWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
     const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
 
-    const welshPrisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+    const welshPrisonAddress = await this.hmppsAgencyRegisterApiService.getPrisonAddress(
+      context(res),
+      prisonId,
+      addressId,
+    )
 
     req.session.amendWelshPrisonAddressForm = {
       addressId,
@@ -417,7 +421,7 @@ export default class PrisonRegisterController {
             countyInWelsh: form.addresscountyinwelsh,
             countryInWelsh: 'Cymru',
           }
-          return this.prisonRegisterService.updateAddressWithWelshPrisonAddress(
+          return this.hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress(
             context(res),
             form.prisonId,
             form.addressId as string,
@@ -431,7 +435,11 @@ export default class PrisonRegisterController {
   async deleteWelshPrisonAddressStart(req: Request, res: Response): Promise<void> {
     const { prisonId, addressId } = req.query as { prisonId: string; addressId: string }
 
-    const welshPrisonAddress = await this.prisonRegisterService.getPrisonAddress(context(res), prisonId, addressId)
+    const welshPrisonAddress = await this.hmppsAgencyRegisterApiService.getPrisonAddress(
+      context(res),
+      prisonId,
+      addressId,
+    )
 
     req.session.deleteWelshPrisonAddressForm = {
       addressId,
@@ -454,13 +462,18 @@ export default class PrisonRegisterController {
       addressId: string
     } = trimForm(req.body)
 
-    this.prisonRegisterService.updateAddressWithWelshPrisonAddress(context(res), form.prisonId, form.addressId, {
-      addressLine1InWelsh: null,
-      addressLine2InWelsh: null,
-      townInWelsh: null,
-      countyInWelsh: null,
-      countryInWelsh: null,
-    })
+    this.hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress(
+      context(res),
+      form.prisonId,
+      form.addressId,
+      {
+        addressLine1InWelsh: null,
+        addressLine2InWelsh: null,
+        townInWelsh: null,
+        countyInWelsh: null,
+        countryInWelsh: null,
+      },
+    )
     return res.redirect(`/prison-register/details?id=${form.prisonId}&action=UPDATED`)
   }
 }

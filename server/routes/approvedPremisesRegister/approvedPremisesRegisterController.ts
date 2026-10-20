@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllApprovedPremisesView from './allApprovedPremisesView'
 import ApprovedPremisesDetailsView from './approvedPremisesDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -12,20 +12,20 @@ function context(res: Response): Context {
 }
 
 export default class ApprovedPremisesRegisterController {
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async showAllApprovedPremises(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/approved-premises-register'
-    const approvedPremisesList = await this.prisonRegisterService.getAllApprovedPremises(context(res), filter)
+    const approvedPremisesList = await this.hmppsAgencyRegisterApiService.getAllApprovedPremises(context(res), filter)
     const view = new AllApprovedPremisesView(approvedPremisesList, filter)
     res.render('pages/approved-premises-register/allApprovedPremises', view.renderArgs)
   }
 
   async viewApprovedPremises(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const approvedPremises = await this.prisonRegisterService.getApprovedPremises(context(res), id)
+    const approvedPremises = await this.hmppsAgencyRegisterApiService.getApprovedPremises(context(res), id)
     const view = new ApprovedPremisesDetailsView(approvedPremises)
     res.render('pages/approved-premises-register/approvedPremisesDetails', view.renderArgs)
   }

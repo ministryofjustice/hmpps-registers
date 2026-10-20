@@ -1,5 +1,5 @@
 import { validate } from '../../../validation/agencyValidation'
-import PrisonRegisterService, { Context } from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../../services/hmppsAgencyRegisterApi'
 import { allCourtTypes } from '../courtData'
 import { isAccessibleAccessOption } from '../accessibleAccessData'
 import { AddCourtJourney, CourtStep, isReferenceStep, referenceSteps } from './addCourtFlowControl'
@@ -9,7 +9,7 @@ export type CourtFormError = { href: string; text: string }
 export default async function validateCourtStep(
   step: CourtStep,
   journey: AddCourtJourney,
-  service: PrisonRegisterService,
+  service: HMPPSAgencyRegisterApi,
   context: Context,
 ): Promise<CourtFormError[]> {
   const { form } = journey

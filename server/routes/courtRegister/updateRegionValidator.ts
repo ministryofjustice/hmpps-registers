@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import type { UpdateRegionForm } from 'agencyForms'
 import type { CodeDescription } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export default async function validate(
   form: UpdateRegionForm,

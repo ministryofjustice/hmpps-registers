@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import type { AddNewPrisonForm } from 'prisonForms'
-import { AddUpdateResponse } from '../../services/prisonRegisterService'
+import { AddUpdateResponse } from '../../services/hmppsAgencyRegisterApi'
 import ControllerHelper from '../utils/controllerHelper'
 import { InsertPrison } from '../../@types/prisonRegister'
 

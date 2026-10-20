@@ -1,20 +1,22 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import ApprovedPremisesRegisterController from './approvedPremisesRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockApprovedPremisesData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Approved Premises Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: ApprovedPremisesRegisterController
   let req: Request
   let res: Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new ApprovedPremisesRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new ApprovedPremisesRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -31,7 +33,7 @@ describe('Approved Premises Register controller', () => {
 
   describe('showAllApprovedPremises', () => {
     beforeEach(() => {
-      prisonRegisterService.getAllApprovedPremises.mockResolvedValue([
+      hmppsAgencyRegisterApiService.getAllApprovedPremises.mockResolvedValue([
         data.approvedPremises({ approvedPremisesId: 'SHFAP' }),
       ])
     })
@@ -42,7 +44,7 @@ describe('Approved Premises Register controller', () => {
       }
       await controller.showAllApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getAllApprovedPremises).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getAllApprovedPremises).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/approved-premises-register/allApprovedPremises',
         expect.objectContaining({
@@ -54,7 +56,7 @@ describe('Approved Premises Register controller', () => {
     it('will call register service with no filter params', async () => {
       await controller.showAllApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getAllApprovedPremises).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getAllApprovedPremises).toHaveBeenCalledWith({}, {})
     })
 
     it('will call register service with active filter param', async () => {
@@ -62,7 +64,7 @@ describe('Approved Premises Register controller', () => {
 
       await controller.showAllApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getAllApprovedPremises).toHaveBeenCalledWith({}, { active: false })
+      expect(hmppsAgencyRegisterApiService.getAllApprovedPremises).toHaveBeenCalledWith({}, { active: false })
     })
 
     it('will call register service with textSearch filter param', async () => {
@@ -70,7 +72,7 @@ describe('Approved Premises Register controller', () => {
 
       await controller.showAllApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getAllApprovedPremises).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getAllApprovedPremises).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('will ignore unsupported filter params', async () => {
@@ -78,7 +80,7 @@ describe('Approved Premises Register controller', () => {
 
       await controller.showAllApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getAllApprovedPremises).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getAllApprovedPremises).toHaveBeenCalledWith({}, {})
     })
 
     it('will set the list page link in the session', async () => {
@@ -90,7 +92,7 @@ describe('Approved Premises Register controller', () => {
 
   describe('viewApprovedPremises', () => {
     beforeEach(() => {
-      prisonRegisterService.getApprovedPremises.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getApprovedPremises.mockResolvedValue(
         data.approvedPremises({ approvedPremisesId: 'SHFAP' }),
       )
       req.query.id = 'SHFAP'
@@ -102,7 +104,7 @@ describe('Approved Premises Register controller', () => {
       }
       await controller.viewApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getApprovedPremises).toHaveBeenCalledWith({ username: 'tom' }, 'SHFAP')
+      expect(hmppsAgencyRegisterApiService.getApprovedPremises).toHaveBeenCalledWith({ username: 'tom' }, 'SHFAP')
       expect(res.render).toHaveBeenCalledWith(
         'pages/approved-premises-register/approvedPremisesDetails',
         expect.objectContaining({
@@ -114,7 +116,7 @@ describe('Approved Premises Register controller', () => {
     it('will call register service with approved premises Id parameter', async () => {
       await controller.viewApprovedPremises(req, res)
 
-      expect(prisonRegisterService.getApprovedPremises).toHaveBeenCalledWith({}, 'SHFAP')
+      expect(hmppsAgencyRegisterApiService.getApprovedPremises).toHaveBeenCalledWith({}, 'SHFAP')
     })
   })
 })

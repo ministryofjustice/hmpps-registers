@@ -1,5 +1,5 @@
 import IndexPage from '../pages'
-import { albanyPrison, belmarshPrison, moorlandPrison } from '../mockApis/prisonRegister'
+import { albanyPrison, belmarshPrison, moorlandPrison } from '../mockApis/hmppsAgencyRegisterApi'
 import AllPrisonsPage from '../pages/prison-register/allPrisons'
 import PrisonDetailsPage from '../pages/prison-register/prisonDetails'
 import AmendPrisonDetailsPage from '../pages/prison-register/amendPrisonDetails'

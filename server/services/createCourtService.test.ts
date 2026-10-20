@@ -1,5 +1,5 @@
 import nock from 'nock'
-import PrisonRegisterService from './prisonRegisterService'
+import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import config from '../config'
@@ -10,7 +10,7 @@ jest.mock('../data/hmppsAuthClient')
 
 describe('Court creation API', () => {
   let auth: jest.Mocked<HmppsAuthClient>
-  let service: PrisonRegisterService
+  let service: HMPPSAgencyRegisterApi
   const court: CreateCourt = {
     courtId: 'NEWCC',
     courtName: 'New Crown Court',
@@ -24,7 +24,7 @@ describe('Court creation API', () => {
   beforeEach(() => {
     auth = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
     auth.getApiClientToken.mockResolvedValue('court-creation-test-token')
-    service = new PrisonRegisterService(auth)
+    service = new HMPPSAgencyRegisterApi(auth)
   })
 
   afterEach(() => {

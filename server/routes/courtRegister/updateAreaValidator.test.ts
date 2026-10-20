@@ -1,7 +1,7 @@
 import type { UpdateAreaForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './updateAreaValidator'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updateAreaValidator', () => {

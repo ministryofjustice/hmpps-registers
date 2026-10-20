@@ -9,12 +9,12 @@ import policeCustodySuiteRoutes from './policeCustodySuiteRegister/policeCustody
 import probationOfficeRoutes from './probationOfficeRegister/probationOfficeRegisterRouter'
 import approvedPremisesRoutes from './approvedPremisesRegister/approvedPremisesRegisterRouter'
 import apiRoutes from './api/apiRouter'
-import PrisonRegisterService from '../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../services/hmppsAgencyRegisterApi'
 import { extractRoles, MAINTAINER_ROLE } from '../authentication/roles'
 import config from '../config'
 
 export interface Services {
-  prisonRegisterService: PrisonRegisterService
+  hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi
 }
 
 export default function routes(router: Router, services: Services): Router {

@@ -1,7 +1,7 @@
 import type { UpdateAccessibleAccessForm } from 'agencyForms'
 import { Request } from 'express'
 import type { UpdateCourt } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import validate from './updateAccessibleAccessValidator'
 
 describe('updateAccessibleAccessValidator', () => {

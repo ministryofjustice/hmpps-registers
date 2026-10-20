@@ -6,7 +6,7 @@ Node/TypeScript Express app (GOV.UK Frontend + Nunjucks) that renders the HMPPS 
 ## Project layout
 
 - `server/routes/<register>/` — router, controller, view class, mapper and data per register
-- `server/services/prisonRegisterService.ts` — all Prison Register API calls
+- `server/services/hmppsAgencyRegisterApi.ts` — all Prison Register API calls
 - `server/views/pages/<register>/` — Nunjucks templates
 - `server/utils/nunjucksSetup.ts` — Nunjucks filters, including the list filter/checkbox helpers
 - `server/@types/prisonRegisterImport/index.d.ts` — generated from the API's OpenAPI spec, do not edit by hand
@@ -15,7 +15,7 @@ Node/TypeScript Express app (GOV.UK Frontend + Nunjucks) that renders the HMPPS 
 ## Conventions
 
 - Mirror the existing register when adding a new one: router → controller → view class → mapper → `.njk` page.
-- Add API calls to `prisonRegisterService` only; controllers must not call `RestClient` directly.
+- Add API calls to `HMPPSAgencyRegisterApi` only; controllers must not call `RestClient` directly.
 - Expose API types via `server/@types/prisonRegister/index.d.ts` rather than importing the generated file.
 - Add unit tests alongside the code (`*.test.ts`) and mock data under `server/routes/testutils/`.
 

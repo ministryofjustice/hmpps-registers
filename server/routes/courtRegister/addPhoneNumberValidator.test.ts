@@ -2,7 +2,7 @@ import type { AddPhoneNumberForm } from 'agencyForms'
 import { Request } from 'express'
 import validate from './addPhoneNumberValidator'
 import { PhoneNumber } from '../../@types/prisonRegister'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('addPhoneNumberValidator', () => {
   const req = {

@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import validate from './updatePayrollRegionValidator'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { CodeDescription } from '../../@types/prisonRegister'
 
 describe('updatePayrollRegionValidator', () => {

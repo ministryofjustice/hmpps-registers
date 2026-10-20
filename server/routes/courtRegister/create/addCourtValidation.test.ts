@@ -1,13 +1,13 @@
 import type { CodeDescription } from '../../../@types/prisonRegister'
 import HmppsAuthClient from '../../../data/hmppsAuthClient'
-import PrisonRegisterService from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import { AddCourtJourney, CourtStep, referenceSteps } from './addCourtFlowControl'
 import validateCourtStep from './addCourtValidation'
 
-jest.mock('../../../services/prisonRegisterService')
+jest.mock('../../../services/hmppsAgencyRegisterApi')
 
 describe('validateCourtStep', () => {
-  let service: jest.Mocked<PrisonRegisterService>
+  let service: jest.Mocked<HMPPSAgencyRegisterApi>
   const context = { username: 'test-user' }
   const validJourney = (): AddCourtJourney => ({
     form: {
@@ -23,7 +23,7 @@ describe('validateCourtStep', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    service = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+    service = new HMPPSAgencyRegisterApi({} as HmppsAuthClient) as jest.Mocked<HMPPSAgencyRegisterApi>
     service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([{ code: 'AREA1', description: 'Canonical area' }])
     service.getRegions.mockResolvedValue([{ code: 'REGION1', description: 'Canonical region' }])

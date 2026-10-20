@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllCourtsView from './allCourtsView'
 import ControllerHelper from '../utils/controllerHelper'
 import { CourtsFilter, updateCourtMapper } from './courtMapper'
@@ -47,28 +47,28 @@ function context(res: Response): Context {
   }
 }
 
-export default class PrisonRegisterController {
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+export default class CourtRegisterController {
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async showAllCourts(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/court-register'
-    const courts = await this.prisonRegisterService.getCourts(context(res), filter)
+    const courts = await this.hmppsAgencyRegisterApiService.getCourts(context(res), filter)
     const view = new AllCourtsView(courts, filter)
     res.render('pages/court-register/allCourts', view.renderArgs)
   }
 
   async viewCourt(req: Request, res: Response): Promise<void> {
     const { id, action } = req.query as { id: string; action: Action }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const view = new CourtDetailsView(court, (action || 'NONE') as Action)
     res.render('pages/court-register/courtDetails', view.renderArgs)
   }
 
   async addAddress(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.addAddressForm
@@ -87,7 +87,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await addAddressValidator(req.session.addAddressForm, req, async address => {
-        const addedAddress = await this.prisonRegisterService.addCourtAddress(
+        const addedAddress = await this.hmppsAgencyRegisterApiService.addCourtAddress(
           context(res),
           req.query.id as string,
           address,
@@ -103,7 +103,7 @@ export default class PrisonRegisterController {
   async updateAddress(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const addressId = Number(req.query.addressId)
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const address = court.addresses.find(item => item.id === addressId)
     if (!address) {
       throw createError(404, 'Court address not found')
@@ -136,7 +136,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await updateAddressValidator(req.session.updateAddressForm, req, async address => {
-        const updatedAddress = await this.prisonRegisterService.updateCourtAddress(
+        const updatedAddress = await this.hmppsAgencyRegisterApiService.updateCourtAddress(
           context(res),
           req.query.id as string,
           req.session.updateAddressForm.addressId,
@@ -152,7 +152,7 @@ export default class PrisonRegisterController {
 
   async addPhone(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.addPhoneNumberForm
@@ -171,7 +171,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await addPhoneNumberValidator(req.session.addPhoneNumberForm, req, async phoneNumber => {
-        const addedPhoneNumber = await this.prisonRegisterService.addCourtPhoneNumber(
+        const addedPhoneNumber = await this.hmppsAgencyRegisterApiService.addCourtPhoneNumber(
           context(res),
           req.query.id as string,
           phoneNumber,
@@ -186,7 +186,7 @@ export default class PrisonRegisterController {
 
   async addEmail(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.addEmailAddressForm
@@ -205,7 +205,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await addEmailAddressValidator(req.session.addEmailAddressForm, req, async (addEmailAddress: EmailAddress) => {
-        const result = await this.prisonRegisterService.addCourtEmailAddress(
+        const result = await this.hmppsAgencyRegisterApiService.addCourtEmailAddress(
           context(res),
           req.query.id as string,
           addEmailAddress,
@@ -221,7 +221,7 @@ export default class PrisonRegisterController {
   async updatePhone(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const phoneId = Number(req.query.phoneId)
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updatePhoneNumberForm
@@ -241,7 +241,7 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await updatePhoneNumberValidator(req.session.updatePhoneNumberForm, req, async phoneNumber => {
-        const updatedPhoneNumber = await this.prisonRegisterService.updateCourtPhoneNumber(
+        const updatedPhoneNumber = await this.hmppsAgencyRegisterApiService.updateCourtPhoneNumber(
           context(res),
           req.query.id as string,
           Number(req.session.updatePhoneNumberForm.phoneId),
@@ -258,7 +258,7 @@ export default class PrisonRegisterController {
   async deletePhone(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const phoneId = Number(req.query.phoneId)
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const phoneNumber = court.phoneNumbers.find(phone => phone.id === phoneId)?.number
     res.render('pages/components/edit/deleteAgencyPhone', {
       name: court.courtName,
@@ -269,7 +269,7 @@ export default class PrisonRegisterController {
   }
 
   async submitDeletePhone(req: Request, res: Response): Promise<void> {
-    await this.prisonRegisterService.deleteCourtPhoneNumber(
+    await this.hmppsAgencyRegisterApiService.deleteCourtPhoneNumber(
       context(res),
       req.query.id as string,
       Number(req.body.phoneId),
@@ -280,7 +280,7 @@ export default class PrisonRegisterController {
   async updateEmail(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const emailId = Number(req.query.emailId)
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateEmailAddressForm
@@ -304,7 +304,7 @@ export default class PrisonRegisterController {
         req.session.updateEmailAddressForm,
         req,
         async (updateEmailAddress: UpdateEmailAddress) => {
-          const emailAddress = await this.prisonRegisterService.updateCourtEmailAddress(
+          const emailAddress = await this.hmppsAgencyRegisterApiService.updateCourtEmailAddress(
             context(res),
             req.query.id as string,
             Number(req.session.updateEmailAddressForm.emailId),
@@ -321,7 +321,7 @@ export default class PrisonRegisterController {
 
   async updateNameDescription(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateNameDescriptionForm
@@ -344,8 +344,8 @@ export default class PrisonRegisterController {
         req.session.updateNameDescriptionForm,
         req,
         async ({ name, description }) => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, {
             ...updateCourtMapper(court),
             courtName: name,
             description,
@@ -361,7 +361,7 @@ export default class PrisonRegisterController {
 
   async updateCourtType(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateCourtTypeForm
@@ -382,8 +382,8 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await updateCourtTypeValidator(req.session.updateCourtTypeForm, req, async courtTypeCode => {
-        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
-        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+        const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
+        const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, {
           ...updateCourtMapper(court),
           courtTypeCode,
         })
@@ -397,7 +397,7 @@ export default class PrisonRegisterController {
 
   async updateAccessibleAccess(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateAccessibleAccessForm
@@ -419,14 +419,14 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await updateAccessibleAccessValidator(req.session.updateAccessibleAccessForm, req, async accessibleAccess => {
-        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
         const updateCourt = updateCourtMapper(court)
         if (accessibleAccess === undefined) {
           delete updateCourt.accessibleAccess
         } else {
           updateCourt.accessibleAccess = accessibleAccess
         }
-        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, updateCourt)
+        const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, updateCourt)
         if (result.success) {
           delete req.session.updateAccessibleAccessForm
         }
@@ -437,7 +437,7 @@ export default class PrisonRegisterController {
 
   async updateCjitCode(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateCjitCodeForm
@@ -457,8 +457,8 @@ export default class PrisonRegisterController {
 
     res.redirect(
       await updateCjitCodeValidator(req.session.updateCjitCodeForm, req, async cjitCode => {
-        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
-        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, {
+        const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
+        const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, {
           ...updateCourtMapper(court),
           cjitCode,
         })
@@ -472,7 +472,7 @@ export default class PrisonRegisterController {
 
   async updateActive(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) {
       delete req.session.updateActiveForm
@@ -493,12 +493,12 @@ export default class PrisonRegisterController {
     const courtId = req.query.id as string
     res.redirect(
       await updateActiveValidator(req.session.updateActiveForm, req, async update => {
-        const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+        const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
         const updatedCourt = { ...updateCourtMapper(court), ...update }
         if (update.active) {
           delete updatedCourt.inactiveDate
         }
-        const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, updatedCourt)
+        const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, updatedCourt)
         if (result.success) {
           delete req.session.updateActiveForm
         }
@@ -509,7 +509,7 @@ export default class PrisonRegisterController {
 
   async updateArea(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updateAreaForm
     const view = new UpdateAgencyAreaView(
@@ -531,13 +531,13 @@ export default class PrisonRegisterController {
       await updateAreaValidator(
         req.session.updateAreaForm,
         req,
-        () => this.prisonRegisterService.getAreas(context(res)),
+        () => this.hmppsAgencyRegisterApiService.getAreas(context(res)),
         async areaCode => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
           const update = updateCourtMapper(court)
           if (areaCode === undefined) delete update.areaCode
           else update.areaCode = areaCode
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateAreaForm
           return result
         },
@@ -547,7 +547,7 @@ export default class PrisonRegisterController {
 
   async updateRegion(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updateRegionForm
     const view = new UpdateAgencyRegionView(
@@ -569,13 +569,13 @@ export default class PrisonRegisterController {
       await updateRegionValidator(
         req.session.updateRegionForm,
         req,
-        () => this.prisonRegisterService.getRegions(context(res)),
+        () => this.hmppsAgencyRegisterApiService.getRegions(context(res)),
         async regionCode => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
           const update = updateCourtMapper(court)
           if (regionCode === undefined) delete update.regionCode
           else update.regionCode = regionCode
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateRegionForm
           return result
         },
@@ -585,7 +585,7 @@ export default class PrisonRegisterController {
 
   async updateGeographicalArea(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updateGeographicalAreaForm
     const view = new UpdateAgencyGeographicalAreaView(
@@ -607,13 +607,13 @@ export default class PrisonRegisterController {
       await updateGeographicalAreaValidator(
         req.session.updateGeographicalAreaForm,
         req,
-        () => this.prisonRegisterService.getAreas(context(res)),
+        () => this.hmppsAgencyRegisterApiService.getAreas(context(res)),
         async geographicalAreaCode => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
           const update = updateCourtMapper(court)
           if (geographicalAreaCode === undefined) delete update.geographicalAreaCode
           else update.geographicalAreaCode = geographicalAreaCode
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateGeographicalAreaForm
           return result
         },
@@ -623,7 +623,7 @@ export default class PrisonRegisterController {
 
   async updateLocalAuthority(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updateLocalAuthorityForm
     const view = new UpdateAgencyLocalAuthorityView(
@@ -645,13 +645,13 @@ export default class PrisonRegisterController {
       await updateLocalAuthorityValidator(
         req.session.updateLocalAuthorityForm,
         req,
-        () => this.prisonRegisterService.getLocalAuthorities(context(res)),
+        () => this.hmppsAgencyRegisterApiService.getLocalAuthorities(context(res)),
         async localAuthorityCode => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
           const update = updateCourtMapper(court)
           if (localAuthorityCode === undefined) delete update.localAuthorityCode
           else update.localAuthorityCode = localAuthorityCode
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updateLocalAuthorityForm
           return result
         },
@@ -661,7 +661,7 @@ export default class PrisonRegisterController {
 
   async updatePayrollRegion(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updatePayrollRegionForm
     const view = new UpdateAgencyPayrollRegionView(
@@ -683,13 +683,13 @@ export default class PrisonRegisterController {
       await updatePayrollRegionValidator(
         req.session.updatePayrollRegionForm,
         req,
-        () => this.prisonRegisterService.getPayrollRegions(context(res)),
+        () => this.hmppsAgencyRegisterApiService.getPayrollRegions(context(res)),
         async payrollRegionCode => {
-          const court = await this.prisonRegisterService.getCourt(context(res), courtId)
+          const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), courtId)
           const update = updateCourtMapper(court)
           if (payrollRegionCode === undefined) delete update.payrollRegionCode
           else update.payrollRegionCode = payrollRegionCode
-          const result = await this.prisonRegisterService.updateCourtDetails(context(res), courtId, update)
+          const result = await this.hmppsAgencyRegisterApiService.updateCourtDetails(context(res), courtId, update)
           if (result.success) delete req.session.updatePayrollRegionForm
           return result
         },
@@ -700,7 +700,7 @@ export default class PrisonRegisterController {
   async deleteEmail(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
     const emailId = Number(req.query.emailId)
-    const court = await this.prisonRegisterService.getCourt(context(res), id)
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), id)
     const emailAddress = court.emailAddresses.find(email => email.id === emailId)?.address
     res.render('pages/components/edit/deleteAgencyEmail', {
       name: court.courtName,
@@ -711,7 +711,7 @@ export default class PrisonRegisterController {
   }
 
   async submitDeleteEmail(req: Request, res: Response): Promise<void> {
-    await this.prisonRegisterService.deleteCourtEmailAddress(
+    await this.hmppsAgencyRegisterApiService.deleteCourtEmailAddress(
       context(res),
       req.query.id as string,
       Number(req.body.emailId),
