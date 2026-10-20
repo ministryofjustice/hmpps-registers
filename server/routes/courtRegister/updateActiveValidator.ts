@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { format, isValid, parse } from 'date-fns'
 import type { UpdateActiveForm } from 'agencyForms'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export type ActiveUpdate = { active: boolean; inactiveDate?: string }
 

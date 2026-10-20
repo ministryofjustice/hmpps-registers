@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import type { UpdateAccessibleAccessForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import type { UpdateCourt } from '../../@types/prisonRegister'
 import { isAccessibleAccessOption } from './accessibleAccessData'
 

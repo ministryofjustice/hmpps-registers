@@ -1,5 +1,5 @@
 import IndexPage from '../pages'
-import { cardiffPrisonWithWelshAddress } from '../mockApis/prisonRegister'
+import { cardiffPrisonWithWelshAddress } from '../mockApis/hmppsAgencyRegisterApi'
 import AllPrisons from '../pages/prison-register/allPrisons'
 import PrisonDetailsPage from '../pages/prison-register/prisonDetails'
 import DeleteWelshPrisonAddressPage from '../pages/prison-register/deleteWelshPrisonAddress'

@@ -1,7 +1,7 @@
 import type { UpdateActiveForm } from 'agencyForms'
 import type { Request } from 'express'
 import validate, { ActiveUpdate } from './updateActiveValidator'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateActiveValidator', () => {
   const req = {

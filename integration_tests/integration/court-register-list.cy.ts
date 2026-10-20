@@ -1,4 +1,4 @@
-import { sheffieldCrownCourt } from '../mockApis/prisonRegister'
+import { sheffieldCrownCourt } from '../mockApis/hmppsAgencyRegisterApi'
 import IndexPage from '../pages'
 import AllCourts from '../pages/court-register/allCourts'
 

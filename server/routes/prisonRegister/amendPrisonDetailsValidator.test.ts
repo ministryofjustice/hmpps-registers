@@ -2,7 +2,7 @@ import type { AmendPrisonDetailsForm } from 'prisonForms'
 import { Request } from 'express'
 import validate from './amendPrisonDetailsValidator'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('amendPrisonDetailsValidator', () => {
   const req = {

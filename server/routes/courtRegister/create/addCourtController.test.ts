@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express'
 import HmppsAuthClient from '../../../data/hmppsAuthClient'
-import PrisonRegisterService from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import AddCourtController from './addCourtController'
 import { AddCourtJourney, courtSteps } from './addCourtFlowControl'
 
-jest.mock('../../../services/prisonRegisterService')
+jest.mock('../../../services/hmppsAgencyRegisterApi')
 
 describe('AddCourtController', () => {
-  let service: jest.Mocked<PrisonRegisterService>
+  let service: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: AddCourtController
 
   const completeJourney = (): AddCourtJourney => ({
@@ -56,9 +56,9 @@ describe('AddCourtController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    service = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
+    service = new HMPPSAgencyRegisterApi({} as HmppsAuthClient) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new AddCourtController(service)
-    service.findCourt.mockResolvedValue(undefined)
+    service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([
       { code: 'AREA1', description: 'Northern area' },
       { code: 'GEO1', description: 'Geographical north' },
@@ -116,7 +116,7 @@ describe('AddCourtController', () => {
     const { res: submitResponse, redirect: submitRedirect } = makeResponse()
     await controller.submit(makeRequest('missing', 'details', {}), submitResponse)
     expect(submitRedirect).toHaveBeenCalledWith('/court-register')
-    expect(service.findCourt).not.toHaveBeenCalled()
+    expect(service.isAgencyIdUsed).not.toHaveBeenCalled()
   })
 
   it('does not treat inherited properties as existing drafts for arbitrary journey IDs', () => {
@@ -193,7 +193,7 @@ describe('AddCourtController', () => {
     expect(journey.form).toEqual({})
     expect(journey.completedSteps).toEqual([])
     expect(redirect).toHaveBeenCalledWith('/court-register/create/draft/details')
-    expect(service.findCourt).not.toHaveBeenCalled()
+    expect(service.isAgencyIdUsed).not.toHaveBeenCalled()
   })
 
   it('keeps validation errors in flash and leaves the corrected step incomplete', async () => {
@@ -268,7 +268,7 @@ describe('AddCourtController', () => {
 
     await controller.submit(req, res)
 
-    expect(service.findCourt).toHaveBeenCalledWith({ username: 'test-user' }, 'AB12')
+    expect(service.isAgencyIdUsed).toHaveBeenCalledWith({ username: 'test-user' }, 'AB12')
     expect(redirect).toHaveBeenCalledWith('/court-register/create/draft/court-type?change=true')
     expect(journey.completedSteps).toEqual(courtSteps.filter(step => step !== 'court-type'))
     expect(service.createCourt).not.toHaveBeenCalled()
@@ -289,8 +289,28 @@ describe('AddCourtController', () => {
     expect(service.createCourt).not.toHaveBeenCalled()
   })
 
+  it('prevents creation if another agency has taken the ID since details were entered', async () => {
+    const journey = completeJourney()
+    const req = makeRequest('draft', 'check-answers', { draft: journey })
+    const { res, redirect } = makeResponse()
+    service.isAgencyIdUsed.mockResolvedValue({
+      agencyId: 'AB12',
+      name: 'Existing probation office',
+      legacyType: 'PROBATION_OFFICE',
+    })
+
+    await controller.submit(req, res)
+
+    expect(req.flash).toHaveBeenCalledWith('errors', [
+      { href: '#courtId', text: 'This court ID is already used by Existing probation office' },
+    ])
+    expect(redirect).toHaveBeenCalledWith('/court-register/create/draft/details?change=true')
+    expect(journey.completedSteps).toEqual(courtSteps.filter(step => step !== 'details'))
+    expect(service.createCourt).not.toHaveBeenCalled()
+  })
+
   it('propagates service failures while validating and while creating a court', async () => {
-    service.findCourt.mockRejectedValueOnce(new Error('Lookup failed'))
+    service.isAgencyIdUsed.mockRejectedValueOnce(new Error('Lookup failed'))
     const detailsJourney: AddCourtJourney = { form: {}, completedSteps: [] }
     await expect(
       controller.submit(

@@ -1,5 +1,5 @@
 import { validate } from '../../../validation/agencyValidation'
-import PrisonRegisterService, { Context } from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../../services/hmppsAgencyRegisterApi'
 import { allCourtTypes } from '../courtData'
 import { isAccessibleAccessOption } from '../accessibleAccessData'
 import { AddCourtJourney, CourtStep, isReferenceStep, referenceSteps } from './addCourtFlowControl'
@@ -9,7 +9,7 @@ export type CourtFormError = { href: string; text: string }
 export default async function validateCourtStep(
   step: CourtStep,
   journey: AddCourtJourney,
-  service: PrisonRegisterService,
+  service: HMPPSAgencyRegisterApi,
   context: Context,
 ): Promise<CourtFormError[]> {
   const { form } = journey
@@ -40,8 +40,11 @@ export default async function validateCourtStep(
           'max.description': 'Description must be 3000 characters or fewer',
         },
       )
-      if (errors.length === 0 && (await service.findCourt(context, form.courtId))) {
-        errors.push({ href: '#courtId', text: 'A court with this ID already exists' })
+      if (errors.length === 0) {
+        const agency = await service.isAgencyIdUsed(context, form.courtId)
+        if (agency) {
+          errors.push({ href: '#courtId', text: `This court ID is already used by ${agency.name}` })
+        }
       }
       return errors
     }

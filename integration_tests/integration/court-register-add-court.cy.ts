@@ -11,7 +11,7 @@ import {
   ReferenceField,
 } from '../pages/court-register/addCourt'
 import courtData from '../../server/routes/testutils/mockCourtData'
-import { Court } from '../../server/@types/prisonRegister'
+import { Court, LegacyAgencyUsage } from '../../server/@types/prisonRegister'
 
 // Reference data is cached by the app, so these must match the arrays used by the other court specs
 const areas = [
@@ -162,6 +162,11 @@ context('Court register - add court', () => {
     cy.task('stubManageUser')
     cy.task('stubGetCourts', [existingCourt])
     cy.task('stubGetCourt', existingCourt)
+    cy.task('stubAgencyIdUsed', {
+      agencyId: existingCourt.courtId,
+      name: existingCourt.courtName,
+      legacyType: 'COURT',
+    })
     cy.task('stubGetAreas', areas)
     cy.task('stubGetRegions', regions)
     cy.task('stubGetLocalAuthorities', localAuthorities)
@@ -381,7 +386,7 @@ context('Court register - add court', () => {
     enterDetails({ courtId: existingCourt.courtId, courtName: 'Duplicate Court', description: 'Duplicate' })
 
     const details = AddCourtDetails.verifyOnPage()
-    details.courtIdError().should('be.visible')
+    details.courtIdError().should('contain.text', `This court ID is already used by ${existingCourt.courtName}`)
     details.courtId().should('have.value', existingCourt.courtId)
     details.courtName().should('have.value', 'Duplicate Court')
     details.description().should('have.value', 'Duplicate')
@@ -390,6 +395,25 @@ context('Court register - add court', () => {
     enterDetails({ courtId: 'NEWCC', courtName: 'Duplicate Court', description: 'Duplicate' })
     AddCourtType.verifyOnPage()
     createdCourts().should('be.empty')
+  })
+
+  const conflictingAgencies: LegacyAgencyUsage[] = [
+    { agencyId: 'MDI', name: 'Moorland HMP', legacyType: 'PRISON' },
+    { agencyId: 'PROB1', name: 'Sheffield probation office', legacyType: 'PROBATION_OFFICE' },
+  ]
+  conflictingAgencies.forEach(agency => {
+    it(`will reject an ID used by a ${agency.legacyType} and show its name`, () => {
+      cy.task('stubAgencyIdUsed', agency)
+      startJourney()
+      enterDetails({ courtId: agency.agencyId, courtName: 'New Court' })
+
+      const details = AddCourtDetails.verifyOnPage()
+      const message = `This court ID is already used by ${agency.name}`
+      details.courtIdError().should('contain.text', message)
+      details.errorSummary().should('contain.text', message)
+      details.courtId().should('have.value', agency.agencyId)
+      createdCourts().should('be.empty')
+    })
   })
 
   it('will validate court type, accessible access, CJIT code and reference data selections', () => {

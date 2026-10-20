@@ -1,20 +1,22 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import ProbationOfficeRegisterController from './probationOfficeRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockProbationOfficeData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Probation Office Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: ProbationOfficeRegisterController
   let req: Request
   let res: Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new ProbationOfficeRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new ProbationOfficeRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -31,7 +33,7 @@ describe('Probation Office Register controller', () => {
 
   describe('showAllProbationOffices', () => {
     beforeEach(() => {
-      prisonRegisterService.getProbationOffices.mockResolvedValue([
+      hmppsAgencyRegisterApiService.getProbationOffices.mockResolvedValue([
         data.probationOffice({ probationOfficeId: 'SHFPO' }),
       ])
     })
@@ -42,7 +44,7 @@ describe('Probation Office Register controller', () => {
       }
       await controller.showAllProbationOffices(req, res)
 
-      expect(prisonRegisterService.getProbationOffices).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getProbationOffices).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/probation-office-register/allProbationOffices',
         expect.objectContaining({
@@ -54,7 +56,7 @@ describe('Probation Office Register controller', () => {
     it('will call register service with no filter params', async () => {
       await controller.showAllProbationOffices(req, res)
 
-      expect(prisonRegisterService.getProbationOffices).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getProbationOffices).toHaveBeenCalledWith({}, {})
     })
 
     it('will call register service with active filter param', async () => {
@@ -62,7 +64,7 @@ describe('Probation Office Register controller', () => {
 
       await controller.showAllProbationOffices(req, res)
 
-      expect(prisonRegisterService.getProbationOffices).toHaveBeenCalledWith({}, { active: false })
+      expect(hmppsAgencyRegisterApiService.getProbationOffices).toHaveBeenCalledWith({}, { active: false })
     })
 
     it('will call register service with textSearch filter param', async () => {
@@ -70,7 +72,7 @@ describe('Probation Office Register controller', () => {
 
       await controller.showAllProbationOffices(req, res)
 
-      expect(prisonRegisterService.getProbationOffices).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getProbationOffices).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('will ignore unsupported filter params', async () => {
@@ -78,7 +80,7 @@ describe('Probation Office Register controller', () => {
 
       await controller.showAllProbationOffices(req, res)
 
-      expect(prisonRegisterService.getProbationOffices).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getProbationOffices).toHaveBeenCalledWith({}, {})
     })
 
     it('will set the list page link in the session', async () => {
@@ -90,7 +92,9 @@ describe('Probation Office Register controller', () => {
 
   describe('viewProbationOffice', () => {
     beforeEach(() => {
-      prisonRegisterService.getProbationOffice.mockResolvedValue(data.probationOffice({ probationOfficeId: 'SHFPO' }))
+      hmppsAgencyRegisterApiService.getProbationOffice.mockResolvedValue(
+        data.probationOffice({ probationOfficeId: 'SHFPO' }),
+      )
       req.query.id = 'SHFPO'
     })
 
@@ -100,7 +104,7 @@ describe('Probation Office Register controller', () => {
       }
       await controller.viewProbationOffice(req, res)
 
-      expect(prisonRegisterService.getProbationOffice).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPO')
+      expect(hmppsAgencyRegisterApiService.getProbationOffice).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPO')
       expect(res.render).toHaveBeenCalledWith(
         'pages/probation-office-register/probationOfficeDetails',
         expect.objectContaining({
@@ -112,7 +116,7 @@ describe('Probation Office Register controller', () => {
     it('will call register service with probation office Id parameter', async () => {
       await controller.viewProbationOffice(req, res)
 
-      expect(prisonRegisterService.getProbationOffice).toHaveBeenCalledWith({}, 'SHFPO')
+      expect(hmppsAgencyRegisterApiService.getProbationOffice).toHaveBeenCalledWith({}, 'SHFPO')
     })
   })
 })

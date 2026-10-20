@@ -1,7 +1,7 @@
 import type { AddNewPrisonForm } from 'prisonForms'
 import { Request } from 'express'
 import validate from './addNewPrisonSummaryValidator'
-import { AddUpdateResponse } from '../../services/prisonRegisterService'
+import { AddUpdateResponse } from '../../services/hmppsAgencyRegisterApi'
 import { InsertPrison } from '../../@types/prisonRegister'
 
 describe('addNewPrisonSummaryValidator', () => {

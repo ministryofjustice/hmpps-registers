@@ -97,6 +97,9 @@ Use the Change links to amend answers before selecting **Confirm and add court**
 
 New courts are active. Description, CJIT code and geographical reference fields
 are optional; court ID, name, court type and an accessible access answer are required.
+Court IDs must be unique across all agency types. The `/legacy/agency/{agencyId}/is-used`
+API checks availability when entering details and before creation: 204 means available,
+while 200 returns the existing agency whose name is shown in the validation error.
 Each journey is stored separately in the session so that drafts in different tabs
 do not overwrite each other. Cancel discards the draft; no court is created until
 the check-answers page is submitted. On success the court details page provides the

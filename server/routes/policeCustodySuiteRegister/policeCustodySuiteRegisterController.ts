@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllPoliceCustodySuitesView from './allPoliceCustodySuitesView'
 import PoliceCustodySuiteDetailsView from './policeCustodySuiteDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -12,20 +12,20 @@ function context(res: Response): Context {
 }
 
 export default class PoliceCustodySuiteRegisterController {
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async showAllPoliceCustodySuites(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/police-custody-suite-register'
-    const policeCustodySuites = await this.prisonRegisterService.getPoliceCustodySuites(context(res), filter)
+    const policeCustodySuites = await this.hmppsAgencyRegisterApiService.getPoliceCustodySuites(context(res), filter)
     const view = new AllPoliceCustodySuitesView(policeCustodySuites, filter)
     res.render('pages/police-custody-suite-register/allPoliceCustodySuites', view.renderArgs)
   }
 
   async viewPoliceCustodySuite(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const policeCustodySuite = await this.prisonRegisterService.getPoliceCustodySuite(context(res), id)
+    const policeCustodySuite = await this.hmppsAgencyRegisterApiService.getPoliceCustodySuite(context(res), id)
     const view = new PoliceCustodySuiteDetailsView(policeCustodySuite)
     res.render('pages/police-custody-suite-register/policeCustodySuiteDetails', view.renderArgs)
   }

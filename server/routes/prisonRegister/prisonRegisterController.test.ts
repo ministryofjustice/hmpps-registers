@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import PrisonRegisterController from './prisonRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Prison Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: PrisonRegisterController
   let req = {
     query: {},
@@ -21,8 +21,10 @@ describe('Prison Register controller', () => {
   } as unknown as Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new PrisonRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -39,7 +41,7 @@ describe('Prison Register controller', () => {
 
   describe('showAllPrisons', () => {
     beforeEach(() => {
-      prisonRegisterService.getPrisonsWithFilter.mockResolvedValue([data.prison({})])
+      hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([data.prison({})])
     })
 
     it('will render all prisons page with prisons', async () => {
@@ -48,7 +50,7 @@ describe('Prison Register controller', () => {
       }
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/prison-register/allPrisons',
         expect.objectContaining({
@@ -60,7 +62,7 @@ describe('Prison Register controller', () => {
     it('it will call prison register service with no filter params', async () => {
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call prison register service with active filter param', async () => {
@@ -68,7 +70,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { active: true })
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { active: true })
     })
 
     it('it will call prison register service with textSearch filter param', async () => {
@@ -76,7 +78,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { textSearch: 'ALI' })
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { textSearch: 'ALI' })
     })
 
     it('it will call prison register service with female filter param', async () => {
@@ -84,7 +86,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { genders: ['FEMALE'] })
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { genders: ['FEMALE'] })
     })
 
     it('it will not populate gender filter if both are provided', async () => {
@@ -92,7 +94,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call prison register service with type filter param', async () => {
@@ -100,7 +102,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { prisonTypeCodes: ['HMP'] })
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { prisonTypeCodes: ['HMP'] })
     })
 
     it('it will call prison register service with lthse filter param', async () => {
@@ -108,7 +110,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { lthse: true })
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith({}, { lthse: true })
     })
 
     it('it will call prison register service with all filter params', async () => {
@@ -120,7 +122,7 @@ describe('Prison Register controller', () => {
 
       await controller.showAllPrisons(req, res)
 
-      expect(prisonRegisterService.getPrisonsWithFilter).toHaveBeenCalledWith(
+      expect(hmppsAgencyRegisterApiService.getPrisonsWithFilter).toHaveBeenCalledWith(
         {},
         { active: true, textSearch: 'ALI', genders: ['MALE'], prisonTypeCodes: ['HMP'], lthse: true },
       )
@@ -138,7 +140,7 @@ describe('Prison Register controller', () => {
 
   describe('viewPrison', () => {
     beforeEach(() => {
-      prisonRegisterService.getPrison.mockResolvedValue(data.prison({ addresses: [data.prisonAddress({})] }))
+      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(data.prison({ addresses: [data.prisonAddress({})] }))
     })
 
     it('will request prison for id', async () => {
@@ -149,7 +151,7 @@ describe('Prison Register controller', () => {
 
       await controller.viewPrison(req, res)
 
-      expect(prisonRegisterService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
+      expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
     })
 
     it('will render prison details page', async () => {
@@ -195,7 +197,7 @@ describe('Prison Register controller', () => {
     })
 
     it('will render prison details page with both English and Welsh address', async () => {
-      prisonRegisterService.getPrison.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
         data.prison({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
       )
 
@@ -230,8 +232,10 @@ describe('Prison Register controller', () => {
 
   describe('togglePrisonActive', () => {
     beforeEach(() => {
-      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-      controller = new PrisonRegisterController(prisonRegisterService)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+        {} as HmppsAuthClient,
+      ) as jest.Mocked<HMPPSAgencyRegisterApi>
+      controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
       req.body = {
         id: 'MDI',
         active: 'true',
@@ -243,7 +247,11 @@ describe('Prison Register controller', () => {
     it('will update prison by id', async () => {
       await controller.togglePrisonActive(req, res)
 
-      expect(prisonRegisterService.updateActivePrisonMarker).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', true)
+      expect(hmppsAgencyRegisterApiService.updateActivePrisonMarker).toHaveBeenCalledWith(
+        { username: 'tom' },
+        'MDI',
+        true,
+      )
     })
     it('will redirect back to prison details view with action', async () => {
       await controller.togglePrisonActive(req, res)
@@ -264,8 +272,10 @@ describe('Prison Register controller', () => {
 
   describe('Add new prison flow', () => {
     beforeEach(() => {
-      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-      controller = new PrisonRegisterController(prisonRegisterService)
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+        {} as HmppsAuthClient,
+      ) as jest.Mocked<HMPPSAgencyRegisterApi>
+      controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     })
     describe('addNewPrisonStart', () => {
       it('will clear any existing form', async () => {
@@ -409,9 +419,11 @@ describe('Prison Register controller', () => {
 
   describe('Amend prison flow', () => {
     beforeEach(() => {
-      prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-      controller = new PrisonRegisterController(prisonRegisterService)
-      prisonRegisterService.getPrison.mockResolvedValue(
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+        {} as HmppsAuthClient,
+      ) as jest.Mocked<HMPPSAgencyRegisterApi>
+      controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
+      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
         data.prison({
           prisonId: 'MDI',
           prisonName: 'HMP Moorland',
@@ -421,10 +433,10 @@ describe('Prison Register controller', () => {
           female: false,
         }),
       )
-      prisonRegisterService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
+      hmppsAgencyRegisterApiService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
 
-      prisonRegisterService.updatePrisonDetails.mockResolvedValue(undefined)
-      prisonRegisterService.updatePrisonAddress.mockResolvedValue(undefined)
+      hmppsAgencyRegisterApiService.updatePrisonDetails.mockResolvedValue(undefined)
+      hmppsAgencyRegisterApiService.updatePrisonAddress.mockResolvedValue(undefined)
     })
 
     describe('amendPrisonDetailsStart', () => {
@@ -437,7 +449,7 @@ describe('Prison Register controller', () => {
       it('will request prison details', async () => {
         await controller.amendPrisonDetailsStart(req, res)
 
-        expect(prisonRegisterService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
+        expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
       })
       it('will render prison details page', async () => {
         await controller.amendPrisonDetailsStart(req, res)
@@ -481,7 +493,7 @@ describe('Prison Register controller', () => {
       })
 
       it('will create form for Welsh prison and pass through to page', async () => {
-        prisonRegisterService.getPrison.mockResolvedValue(
+        hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
           data.prison({
             prisonId: 'CFI',
             prisonName: 'HMP Cardiff',
@@ -566,7 +578,7 @@ describe('Prison Register controller', () => {
       it('will not request prison details', async () => {
         await controller.amendPrisonDetails(req, res)
 
-        expect(prisonRegisterService.getPrison).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.getPrison).not.toHaveBeenCalled()
       })
       it('will render prison details page', async () => {
         await controller.amendPrisonDetails(req, res)
@@ -600,7 +612,7 @@ describe('Prison Register controller', () => {
       })
       it('will call service with a valid form data', async () => {
         await controller.submitAmendPrisonDetails(req, res)
-        expect(prisonRegisterService.updatePrisonDetails).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith(
           { username: 'tom' },
           'MDI',
           'HMP Moorland',
@@ -621,7 +633,7 @@ describe('Prison Register controller', () => {
           prisonNameInWelsh: 'Carchar Caerdydd',
         }
         await controller.submitAmendPrisonDetails(req, res)
-        expect(prisonRegisterService.updatePrisonDetails).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith(
           { username: 'tom' },
           'CFI',
           'HMP Cardiff',
@@ -670,7 +682,7 @@ describe('Prison Register controller', () => {
         res.locals.user = {
           username: 'tom',
         }
-        prisonRegisterService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
+        hmppsAgencyRegisterApiService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
       })
 
       it('will render delete prison address page', async () => {
@@ -707,7 +719,7 @@ describe('Prison Register controller', () => {
       it('will delete prison address', async () => {
         await controller.submitDeletePrisonAddress(req, res)
 
-        expect(prisonRegisterService.deletePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', '21')
+        expect(hmppsAgencyRegisterApiService.deletePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', '21')
       })
 
       it('will redirect to prison register details', async () => {
@@ -781,7 +793,7 @@ describe('Prison Register controller', () => {
       it('will add prison address', async () => {
         await controller.submitAddPrisonAddress(req, res)
 
-        expect(prisonRegisterService.addPrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+        expect(hmppsAgencyRegisterApiService.addPrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
           addressLine1: 'Bawtry Road',
           addressLine2: 'Hatfield Woodhouse',
           town: 'Doncaster',
@@ -818,7 +830,7 @@ describe('Prison Register controller', () => {
       it('will add welsh prison address', async () => {
         await controller.submitAddWelshPrisonAddress(req, res)
 
-        expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
           { username: 'tom' },
           'CFI',
           '123',
@@ -850,7 +862,7 @@ describe('Prison Register controller', () => {
       it('will request prison address', async () => {
         await controller.amendPrisonAddressStart(req, res)
 
-        expect(prisonRegisterService.getPrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', '21')
+        expect(hmppsAgencyRegisterApiService.getPrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', '21')
       })
       it('will render prison address page', async () => {
         await controller.amendPrisonAddressStart(req, res)
@@ -901,7 +913,7 @@ describe('Prison Register controller', () => {
       it('will not request prison address', async () => {
         await controller.amendPrisonAddress(req, res)
 
-        expect(prisonRegisterService.getPrisonAddress).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.getPrisonAddress).not.toHaveBeenCalled()
       })
       it('will render prison address page', async () => {
         await controller.amendPrisonAddress(req, res)
@@ -952,7 +964,7 @@ describe('Prison Register controller', () => {
       })
       it('will call service with valid form data', async () => {
         await controller.submitAmendPrisonAddress(req, res)
-        expect(prisonRegisterService.updatePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', 21, {
+        expect(hmppsAgencyRegisterApiService.updatePrisonAddress).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', 21, {
           addressLine1: 'Bawtry Road',
           addressLine2: 'Hatfield Woodhouse',
           town: 'Doncaster',
@@ -973,7 +985,7 @@ describe('Prison Register controller', () => {
     }
 
     beforeEach(() => {
-      prisonRegisterService.getPrisonAddress = jest.fn().mockResolvedValue(welshAddressDto)
+      hmppsAgencyRegisterApiService.getPrisonAddress = jest.fn().mockResolvedValue(welshAddressDto)
       req.query = { prisonId: 'CFI', addressId: '123' }
       res.locals.user = {
         username: 'tom',
@@ -1008,7 +1020,7 @@ describe('Prison Register controller', () => {
       })
 
       it('will submit new Welsh address details', async () => {
-        prisonRegisterService.updateAddressWithWelshPrisonAddress = jest.fn()
+        hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress = jest.fn()
         req.body = {
           prisonId: 'CFI',
           addressId: '123',
@@ -1018,7 +1030,7 @@ describe('Prison Register controller', () => {
           addresscountyinwelsh: welshAddressDto.countyInWelsh,
         }
         await controller.submitAddWelshPrisonAddress(req, res)
-        expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
           {
             username: 'tom',
           },
@@ -1031,7 +1043,7 @@ describe('Prison Register controller', () => {
     describe('amend Welsh prison address', () => {
       it('Should get prison address from prison register', async () => {
         await controller.amendWelshPrisonAddressStart(req, res)
-        expect(prisonRegisterService.getPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.getPrisonAddress).toHaveBeenCalledWith(
           {
             username: 'tom',
           },
@@ -1075,7 +1087,7 @@ describe('Prison Register controller', () => {
           addresscountryinwelsh: 'Cymru',
         }
         await controller.submitAmendWelshPrisonAddress(req, res)
-        expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
           {
             username: 'tom',
           },
@@ -1088,7 +1100,7 @@ describe('Prison Register controller', () => {
     describe('delete Welsh prison address', () => {
       it('Should get prison address from prison register', async () => {
         await controller.deleteWelshPrisonAddressStart(req, res)
-        expect(prisonRegisterService.getPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.getPrisonAddress).toHaveBeenCalledWith(
           {
             username: 'tom',
           },
@@ -1117,7 +1129,7 @@ describe('Prison Register controller', () => {
           addressId: '123',
         }
         await controller.submitDeleteWelshPrisonAddress(req, res)
-        expect(prisonRegisterService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
+        expect(hmppsAgencyRegisterApiService.updateAddressWithWelshPrisonAddress).toHaveBeenCalledWith(
           {
             username: 'tom',
           },

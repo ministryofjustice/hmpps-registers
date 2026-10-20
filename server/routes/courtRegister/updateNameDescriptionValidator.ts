@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import type { UpdateNameDescriptionForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 export type NameDescription = {
   name: string

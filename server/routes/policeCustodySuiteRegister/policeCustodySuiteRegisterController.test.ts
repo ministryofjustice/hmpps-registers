@@ -1,20 +1,22 @@
 import type { Request, Response } from 'express'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import PoliceCustodySuiteRegisterController from './policeCustodySuiteRegisterController'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPoliceCustodySuiteData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('Police Custody Suite Register controller', () => {
-  let prisonRegisterService: jest.Mocked<PrisonRegisterService>
+  let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: PoliceCustodySuiteRegisterController
   let req: Request
   let res: Response
 
   beforeEach(() => {
-    prisonRegisterService = new PrisonRegisterService({} as HmppsAuthClient) as jest.Mocked<PrisonRegisterService>
-    controller = new PoliceCustodySuiteRegisterController(prisonRegisterService)
+    hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
+      {} as HmppsAuthClient,
+    ) as jest.Mocked<HMPPSAgencyRegisterApi>
+    controller = new PoliceCustodySuiteRegisterController(hmppsAgencyRegisterApiService)
     req = {
       query: {},
       session: {},
@@ -31,7 +33,7 @@ describe('Police Custody Suite Register controller', () => {
 
   describe('showAllPoliceCustodySuites', () => {
     beforeEach(() => {
-      prisonRegisterService.getPoliceCustodySuites.mockResolvedValue([
+      hmppsAgencyRegisterApiService.getPoliceCustodySuites.mockResolvedValue([
         data.policeCustodySuite({ policeCustodySuiteId: 'SHFPCS' }),
       ])
     })
@@ -42,7 +44,7 @@ describe('Police Custody Suite Register controller', () => {
       }
       await controller.showAllPoliceCustodySuites(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/police-custody-suite-register/allPoliceCustodySuites',
         expect.objectContaining({
@@ -54,7 +56,7 @@ describe('Police Custody Suite Register controller', () => {
     it('will call register service with no filter params', async () => {
       await controller.showAllPoliceCustodySuites(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites).toHaveBeenCalledWith({}, {})
     })
 
     it('will call register service with active filter param', async () => {
@@ -62,7 +64,7 @@ describe('Police Custody Suite Register controller', () => {
 
       await controller.showAllPoliceCustodySuites(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, { active: false })
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites).toHaveBeenCalledWith({}, { active: false })
     })
 
     it('will call register service with textSearch filter param', async () => {
@@ -70,7 +72,7 @@ describe('Police Custody Suite Register controller', () => {
 
       await controller.showAllPoliceCustodySuites(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('will ignore unsupported filter params', async () => {
@@ -78,7 +80,7 @@ describe('Police Custody Suite Register controller', () => {
 
       await controller.showAllPoliceCustodySuites(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuites).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites).toHaveBeenCalledWith({}, {})
     })
 
     it('will set the list page link in the session', async () => {
@@ -90,7 +92,7 @@ describe('Police Custody Suite Register controller', () => {
 
   describe('viewPoliceCustodySuite', () => {
     beforeEach(() => {
-      prisonRegisterService.getPoliceCustodySuite.mockResolvedValue(
+      hmppsAgencyRegisterApiService.getPoliceCustodySuite.mockResolvedValue(
         data.policeCustodySuite({ policeCustodySuiteId: 'SHFPCS' }),
       )
       req.query.id = 'SHFPCS'
@@ -102,7 +104,7 @@ describe('Police Custody Suite Register controller', () => {
       }
       await controller.viewPoliceCustodySuite(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuite).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPCS')
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuite).toHaveBeenCalledWith({ username: 'tom' }, 'SHFPCS')
       expect(res.render).toHaveBeenCalledWith(
         'pages/police-custody-suite-register/policeCustodySuiteDetails',
         expect.objectContaining({
@@ -114,7 +116,7 @@ describe('Police Custody Suite Register controller', () => {
     it('will call register service with police custody suite Id parameter', async () => {
       await controller.viewPoliceCustodySuite(req, res)
 
-      expect(prisonRegisterService.getPoliceCustodySuite).toHaveBeenCalledWith({}, 'SHFPCS')
+      expect(hmppsAgencyRegisterApiService.getPoliceCustodySuite).toHaveBeenCalledWith({}, 'SHFPCS')
     })
   })
 })

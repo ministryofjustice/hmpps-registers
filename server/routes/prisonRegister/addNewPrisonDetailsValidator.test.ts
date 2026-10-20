@@ -4,7 +4,7 @@ import { Prison } from '../../@types/prisonRegister'
 import validate from './addNewPrisonDetailsValidator'
 import data from '../testutils/mockPrisonData'
 
-jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/hmppsAgencyRegisterApi')
 
 describe('addNewPrisonDetailsValidator', () => {
   const req = {

@@ -1,4 +1,4 @@
-import { sheffieldPecsAgency } from '../mockApis/prisonRegister'
+import { sheffieldPecsAgency } from '../mockApis/hmppsAgencyRegisterApi'
 import IndexPage from '../pages'
 import AllOtherAgencies from '../pages/other-agency-register/allOtherAgencies'
 

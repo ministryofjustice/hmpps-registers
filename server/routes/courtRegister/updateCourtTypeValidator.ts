@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import type { UpdateCourtTypeForm } from 'agencyForms'
 import { validateAsync } from '../../validation/agencyValidation'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 import { allCourtTypes } from './courtData'
 
 export default async function validate(

@@ -1,7 +1,7 @@
 import type { UpdateCjitCodeForm } from 'agencyForms'
 import type { Request } from 'express'
 import validate from './updateCjitCodeValidator'
-import type { CourtMutationResponse } from '../../services/prisonRegisterService'
+import type { CourtMutationResponse } from '../../services/hmppsAgencyRegisterApi'
 
 describe('updateCjitCodeValidator', () => {
   const req = {

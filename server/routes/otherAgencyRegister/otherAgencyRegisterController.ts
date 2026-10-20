@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import PrisonRegisterService, { Context } from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllOtherAgenciesView from './allOtherAgenciesView'
 import OtherAgencyDetailsView from './otherAgencyDetailsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -12,20 +12,20 @@ function context(res: Response): Context {
 }
 
 export default class OtherAgencyRegisterController {
-  constructor(private readonly prisonRegisterService: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   async showAllOtherAgencies(req: Request, res: Response): Promise<void> {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/other-agency-register'
-    const otherAgencies = await this.prisonRegisterService.getOtherAgencies(context(res), filter)
+    const otherAgencies = await this.hmppsAgencyRegisterApiService.getOtherAgencies(context(res), filter)
     const view = new AllOtherAgenciesView(otherAgencies, filter)
     res.render('pages/other-agency-register/allOtherAgencies', view.renderArgs)
   }
 
   async viewOtherAgency(req: Request, res: Response): Promise<void> {
     const { id } = req.query as { id: string }
-    const otherAgency = await this.prisonRegisterService.getOtherAgency(context(res), id)
+    const otherAgency = await this.hmppsAgencyRegisterApiService.getOtherAgency(context(res), id)
     const view = new OtherAgencyDetailsView(otherAgency)
     res.render('pages/other-agency-register/otherAgencyDetails', view.renderArgs)
   }

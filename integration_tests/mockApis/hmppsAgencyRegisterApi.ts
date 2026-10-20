@@ -11,6 +11,7 @@ import {
   ApprovedPremises,
   PhoneNumber,
   CodeDescription,
+  LegacyAgencyUsage,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -294,17 +295,25 @@ const stubGetCourt = (court: Court): SuperAgentRequest =>
 
 const createCourtScenario = (courtId: string) => `create-court-${courtId}`
 
-// GET /courts/id/<courtId> returns 404 (available) until the court is created via POST /courts, then returns the court
+const stubAgencyIdUsed = (agency: LegacyAgencyUsage): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'GET', url: `/prison-register/legacy/agency/${agency.agencyId}/is-used` },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: agency,
+    },
+  })
+
+// The agency ID is available until POST /courts creates the court, which can then be retrieved.
 const stubCourtIdAvailable = async (court: Court): Promise<unknown> => {
   await resetScenarios()
   await stubFor({
     scenarioName: createCourtScenario(court.courtId),
     requiredScenarioState: 'Started',
-    request: { method: 'GET', url: `/prison-register/courts/id/${court.courtId}` },
+    request: { method: 'GET', url: `/prison-register/legacy/agency/${court.courtId}/is-used` },
     response: {
-      status: 404,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: { status: 404, userMessage: `Court ${court.courtId} not found` },
+      status: 204,
     },
   })
   return stubFor({
@@ -816,6 +825,7 @@ export default {
   stubPutWelshPrisonAddress,
   stubGetCourts,
   stubGetCourt,
+  stubAgencyIdUsed,
   stubCourtIdAvailable,
   stubCreateCourt,
   stubCreateCourtError,

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { Request, Response } from 'express'
 import createError from 'http-errors'
-import PrisonRegisterService from '../../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import {
   AddCourtJourney,
   canVisitCourtPage,
@@ -18,7 +18,7 @@ import AddCourtView from './addCourtView'
 import addCourtMapper from './addCourtMapper'
 
 export default class AddCourtController {
-  constructor(private readonly service: PrisonRegisterService) {}
+  constructor(private readonly hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi) {}
 
   start(req: Request, res: Response): void {
     const journeyId = randomUUID()
@@ -50,7 +50,7 @@ export default class AddCourtController {
       for (const step of courtSteps) {
         // Validate in journey order and stop at the first step needing correction.
         // eslint-disable-next-line no-await-in-loop
-        const errors = await validateCourtStep(step, journey, this.service, context)
+        const errors = await validateCourtStep(step, journey, this.hmppsAgencyRegisterApiService, context)
         if (errors.length > 0) {
           req.flash('errors', errors)
           journey.completedSteps = journey.completedSteps.filter(completed => completed !== step)
@@ -59,7 +59,7 @@ export default class AddCourtController {
         }
       }
       const court = addCourtMapper(journey)
-      const result = await this.service.createCourt(context, court)
+      const result = await this.hmppsAgencyRegisterApiService.createCourt(context, court)
       if (result.success === false) {
         req.flash('errors', [{ href: '#create-court', text: result.userMessage }])
         res.redirect(courtPageUrl(journeyId, 'check-answers'))
@@ -83,7 +83,7 @@ export default class AddCourtController {
       const value: unknown = req.body[field]
       journey.form[field] = typeof value === 'string' ? value.trim() : ''
     }
-    const errors = await validateCourtStep(page, journey, this.service, context)
+    const errors = await validateCourtStep(page, journey, this.hmppsAgencyRegisterApiService, context)
     if (errors.length > 0) {
       req.flash('errors', errors)
       // Keep later answers, but require this step to be corrected before confirmation.

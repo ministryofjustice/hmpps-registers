@@ -1,17 +1,19 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import PoliceCustodySuiteRegisterController from './policeCustodySuiteRegisterController'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 // include this here otherwise TS complains about cyclical dependencies
 export interface Services {
-  prisonRegisterService: PrisonRegisterService
+  hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi
 }
 
 export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
-  const policeCustodySuiteRegisterController = new PoliceCustodySuiteRegisterController(services.prisonRegisterService)
+  const policeCustodySuiteRegisterController = new PoliceCustodySuiteRegisterController(
+    services.hmppsAgencyRegisterApiService,
+  )
 
   get('/police-custody-suite-register', (req, res) =>
     policeCustodySuiteRegisterController.showAllPoliceCustodySuites(req, res),
