@@ -41,17 +41,22 @@ export default function initialiseReferenceAutocomplete(field, endpoint, failure
         }, 100)
       },
       templates: {
-        inputValue: function (area) {
-          return area ? area.description : ''
+        inputValue: function (data) {
+          if (typeof data === 'string') return data
+          return data ? data.description : ''
         },
-        suggestion: function (area) {
+        suggestion: function (data) {
           const element = document.createElement('span')
-          element.textContent = area.description
+          if (typeof data === 'string') {
+            element.textContent = data
+          } else {
+            element.textContent = data.description
+          }
           return element.innerHTML
         },
       },
-      onConfirm: function (area) {
-        if (area) code.value = area.code
+      onConfirm: function (data) {
+        if (data) code.value = data.code
       },
     })
     const input = document.getElementById(field)
