@@ -10,6 +10,22 @@
 
   {% if addresses and addresses.length > 0 %}
     {% for item in addresses %}
+      {% set actions = [{
+        href: baseRegisterUrl + "/address/update?id=" + id + "&addressId=" + item.id,
+        text: "Update",
+        visuallyHiddenText: "address " + (item | addressToLines),
+        attributes: {"data-qa": "update-address-link"},
+        classes: "govuk-link--no-visited-state"
+      }] %}
+      {% if opts.deleteEnabled %}
+        {% set actions = actions.concat([{
+          href: baseRegisterUrl + "/address/delete?id=" + id + "&addressId=" + item.id,
+          text: "Delete",
+          visuallyHiddenText: "address " + (item | addressToLines),
+          attributes: {"data-qa": "delete-address-link"},
+          classes: "govuk-link--no-visited-state"
+        }]) %}
+      {% endif %}
       {% set data = data.concat([{
 
         key: {
@@ -19,15 +35,7 @@
           html: item | addressToLines | escape | nl2br
         },
         actions: {
-          items: [
-            {
-              href: baseRegisterUrl + "/address/update?id=" + id + "&addressId=" + item.id,
-              text: "Update",
-              visuallyHiddenText: "address " + (item | addressToLines),
-              attributes: {"data-qa": "update-address-link"},
-              classes: "govuk-link--no-visited-state"
-            }
-          ] if baseRegisterUrl else []
+          items: actions if baseRegisterUrl else []
         }
       }]) %}
     {% endfor %}
