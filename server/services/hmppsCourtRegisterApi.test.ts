@@ -642,6 +642,41 @@ describe('HMPPS Court Register API', () => {
     })
   })
 
+  describe('deleteCourtAddress', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('uses the authenticated user and deletes only the selected address', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.delete('/courts/id/SHFCC/address/2').reply(204)
+
+      await hmppsAgencyRegisterApiService.deleteCourtAddress({ username: 'tommy' }, 'SHFCC', 2)
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('encodes the court ID', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.delete('/courts/id/a%2Fb/address/2').reply(204)
+
+      await hmppsAgencyRegisterApiService.deleteCourtAddress({}, 'a/b', 2)
+
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([400, 401, 403, 404, 500])('propagates API errors: %s', async status => {
+      fakeHmppsAgencyRegisterApi
+        .delete('/courts/id/SHFCC/address/2')
+        .times(status === 500 ? 3 : 1)
+        .reply(status, { status })
+
+      await expect(hmppsAgencyRegisterApiService.deleteCourtAddress({}, 'SHFCC', 2)).rejects.toMatchObject({
+        status,
+      })
+    })
+  })
+
   describe('deleteCourtPhoneNumber', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

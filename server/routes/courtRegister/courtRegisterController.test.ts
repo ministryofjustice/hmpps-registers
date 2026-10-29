@@ -102,6 +102,85 @@ describe('Court Register controller', () => {
     })
   })
 
+  describe('delete address', () => {
+    const originalDeleteEnabled = config.agencyRegistersDeleteEnabled
+    const address = data.address({ id: 2 })
+
+    beforeEach(() => {
+      config.agencyRegistersDeleteEnabled = true
+      req.query = { id: 'SHFCC', addressId: '2' }
+      req.body = { addressId: '2' }
+      res.locals.user = { username: 'tom' }
+      hmppsAgencyRegisterApiService.getCourt.mockResolvedValue(
+        data.court({ addresses: [data.address({ id: 1 }), address] }),
+      )
+    })
+
+    afterEach(() => {
+      config.agencyRegistersDeleteEnabled = originalDeleteEnabled
+    })
+
+    it('renders only the selected address without deleting it', async () => {
+      await controller.deleteAddress(req, res)
+
+      expect(hmppsAgencyRegisterApiService.getCourt).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC')
+      expect(res.render).toHaveBeenCalledWith('pages/components/edit/deleteAgencyAddress', {
+        name: 'Sheffield Crown Court',
+        navigation: { cancelButton: '/court-register/details?id=SHFCC' },
+        address,
+      })
+      expect(hmppsAgencyRegisterApiService.deleteCourtAddress).not.toHaveBeenCalled()
+    })
+
+    it('deletes the selected address and redirects with confirmation', async () => {
+      await controller.submitDeleteAddress(req, res)
+
+      expect(hmppsAgencyRegisterApiService.deleteCourtAddress).toHaveBeenCalledWith({ username: 'tom' }, 'SHFCC', 2)
+      expect(res.redirect).toHaveBeenCalledWith('/court-register/details?id=SHFCC&action=UPDATED')
+    })
+
+    it.each(['deleteAddress', 'submitDeleteAddress'] as const)('blocks %s when disabled', async method => {
+      config.agencyRegistersDeleteEnabled = false
+
+      await expect(controller[method](req, res)).rejects.toMatchObject({ status: 404 })
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.deleteCourtAddress).not.toHaveBeenCalled()
+      expect(res.render).not.toHaveBeenCalled()
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+
+    it.each([undefined, '', 'abc', '1.5', '-1', '0'])('rejects invalid address ID %s', async addressId => {
+      req.query.addressId = addressId
+      req.body.addressId = addressId
+
+      await expect(controller.deleteAddress(req, res)).rejects.toMatchObject({ status: 400 })
+      await expect(controller.submitDeleteAddress(req, res)).rejects.toMatchObject({ status: 400 })
+      expect(hmppsAgencyRegisterApiService.getCourt).not.toHaveBeenCalled()
+      expect(hmppsAgencyRegisterApiService.deleteCourtAddress).not.toHaveBeenCalled()
+    })
+
+    it('returns 404 for an address not belonging to the court', async () => {
+      req.query.addressId = '3'
+
+      await expect(controller.deleteAddress(req, res)).rejects.toMatchObject({ status: 404 })
+      expect(res.render).not.toHaveBeenCalled()
+    })
+
+    it('propagates lookup errors without rendering', async () => {
+      hmppsAgencyRegisterApiService.getCourt.mockRejectedValue(new Error('Lookup failed'))
+
+      await expect(controller.deleteAddress(req, res)).rejects.toThrow('Lookup failed')
+      expect(res.render).not.toHaveBeenCalled()
+    })
+
+    it('propagates deletion errors without a success redirect', async () => {
+      hmppsAgencyRegisterApiService.deleteCourtAddress.mockRejectedValue(new Error('Delete failed'))
+
+      await expect(controller.submitDeleteAddress(req, res)).rejects.toThrow('Delete failed')
+      expect(res.redirect).not.toHaveBeenCalled()
+    })
+  })
+
   describe('showAllCourts', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService.getCourts.mockResolvedValue([data.court({ courtId: 'SHFCC' })])

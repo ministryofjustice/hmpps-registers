@@ -56,7 +56,7 @@
     <div class="govuk-grid-column-two-thirds">
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: court.addresses, id: court.courtId, baseRegisterUrl: "/court-register" }) }}
+      {{  addressesCard({ addresses: court.addresses, id: court.courtId, baseRegisterUrl: "/court-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
       {{  phoneNumbersCard({ phoneNumbers: court.phoneNumbers, id: court.courtId, baseRegisterUrl: "/court-register" }) }}

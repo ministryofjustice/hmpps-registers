@@ -403,6 +403,14 @@ export default class HMPPSAgencyRegisterApi {
     })
   }
 
+  async deleteCourtAddress(context: Context, courtId: string, addressId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for court with id ${courtId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/courts/id/${encodeURIComponent(courtId)}/address/${addressId}`,
+    })
+  }
+
   async deleteCourtPhoneNumber(context: Context, courtId: string, phoneId: number): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`deleting phone number for court with id ${courtId}`)
