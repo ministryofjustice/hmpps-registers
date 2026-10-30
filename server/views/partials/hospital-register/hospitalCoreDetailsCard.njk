@@ -4,7 +4,6 @@
 
   {% set hospital = opts.hospital %}
 
-
   {{ govukSummaryList({
     card: {
       classes: 'summary-card-wider-key-column',
@@ -21,7 +20,7 @@
           text: hospital.hospitalId
         },
         actions: {
-         items: [ ]
+          items: [ ]
         }
       },
       {
@@ -32,7 +31,13 @@
           text: hospital.hospitalName
         },
         actions: {
-         items: [ ]
+          items: [{
+            href: "/hospital-register/name-description/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "name",
+            attributes: {"data-qa": "update-name-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -43,7 +48,13 @@
           text: hospital.description if hospital.description else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/name-description/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "description",
+            attributes: {"data-qa": "update-description-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -51,10 +62,16 @@
           text: 'Active'
         },
         value: {
-        text: 'Active' if hospital.active else 'Inactive'
+          text: 'Active' if hospital.active else 'Inactive'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: "/hospital-register/active/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "active status",
+            attributes: {"data-qa": "update-active-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +82,13 @@
           text: hospital.inactiveDate | formatDate
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/active/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "date deactivated",
+            attributes: {"data-qa": "update-inactive-date-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       } if hospital.inactiveDate,
       {
@@ -76,7 +99,13 @@
           text: 'Yes' if hospital.highSecurity else 'No'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/high-security/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "high security",
+            attributes: {"data-qa": "update-high-security-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -87,7 +116,13 @@
           text: hospital.cjitCode if hospital.cjitCode else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/cjit-code/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "CJIT code",
+            attributes: {"data-qa": "update-cjit-code-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]

@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/hospital-register/hospitalCoreDetailsCard.njk" import hospitalCoreDetailsCard %}
 {% from "partials/hospital-register/hospitalAreaDetailsCard.njk" import hospitalAreaDetailsCard %}
 {% from "partials/addressesCard.njk" import addressesCard %}
@@ -17,6 +18,14 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ hospital.hospitalName }}</h1>
 
+    {% if action == 'UPDATED' %}
+      <div data-qa="confirm-updated" class="govuk-panel govuk-panel--confirmation">
+        <div class="govuk-panel__body">
+          Hospital has been updated successfully
+        </div>
+      </div>
+    {% endif %}
+
   <div>
     <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Hospital details</h2>
   </div>
@@ -28,12 +37,20 @@
       {{  hospitalAreaDetailsCard({ hospital: hospital }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: hospital.addresses }) }}
+      {{  addressesCard({ addresses: hospital.addresses, id: hospital.hospitalId, baseRegisterUrl: "/hospital-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: hospital.phoneNumbers }) }}
+      {{  phoneNumbersCard({ phoneNumbers: hospital.phoneNumbers, id: hospital.hospitalId, baseRegisterUrl: "/hospital-register" }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete hospital",
+      href: "/hospital-register/delete?id=" + hospital.hospitalId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-hospital-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

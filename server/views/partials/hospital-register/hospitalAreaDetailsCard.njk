@@ -4,7 +4,6 @@
 
   {% set hospital = opts.hospital %}
 
-
   {{ govukSummaryList({
     card: {
       classes: 'summary-card-wider-key-column',
@@ -21,7 +20,13 @@
           text: hospital.area.description if hospital.area else 'Not provided'
         },
         actions: {
-         items: [ ]
+          items: [{
+            href: "/hospital-register/area/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "area",
+            attributes: {"data-qa": "update-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -32,7 +37,13 @@
           text: hospital.region.description if hospital.region else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/region/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "region",
+            attributes: {"data-qa": "update-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -40,10 +51,16 @@
           text: 'Geographical area'
         },
         value: {
-        text: hospital.geographicalArea.description if hospital.geographicalArea else 'Not provided'
+          text: hospital.geographicalArea.description if hospital.geographicalArea else 'Not provided'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: "/hospital-register/geographical-area/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -54,7 +71,13 @@
           text: hospital.localAuthority.description if hospital.localAuthority else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/local-authority/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "local authority",
+            attributes: {"data-qa": "update-local-authority-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +88,13 @@
           text: hospital.payrollRegion.description if hospital.payrollRegion else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: "/hospital-register/payroll-region/update?id=" + hospital.hospitalId,
+            text: "Update",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]
