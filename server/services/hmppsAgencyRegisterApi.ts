@@ -20,6 +20,7 @@ import {
   PrisonAddress,
   ProbationOffice,
   UpdateCourt,
+  CreateHospital,
   UpdateHospital,
   CreateCourt,
   UpdateEmailAddress,
@@ -460,6 +461,14 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<Hospital>({
       path: `/hospitals/id/${hospitalId}`,
     })
+  }
+
+  async createHospital(context: Context, hospital: CreateHospital): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating hospital with id ${hospital.hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<Hospital>({ path: '/hospitals', data: hospital }),
+    )
   }
 
   async updateHospitalDetails(

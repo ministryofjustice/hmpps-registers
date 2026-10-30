@@ -78,6 +78,10 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
 
     stubGetHospitals: hmppsAgencyRegisterApi.stubGetHospitals,
     stubGetHospital: hmppsAgencyRegisterApi.stubGetHospital,
+    stubHospitalIdAvailable: hmppsAgencyRegisterApi.stubHospitalIdAvailable,
+    stubCreateHospital: hmppsAgencyRegisterApi.stubCreateHospital,
+    stubCreateHospitalError: hmppsAgencyRegisterApi.stubCreateHospitalError,
+    getCreatedHospitals: hmppsAgencyRegisterApi.getCreatedHospitals,
     stubHospitalApi: hmppsAgencyRegisterApi.stubHospitalApi,
     stubHospitalApiError: hmppsAgencyRegisterApi.stubHospitalApiError,
     getHospitalApiRequests: hmppsAgencyRegisterApi.getHospitalApiRequests,

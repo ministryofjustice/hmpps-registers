@@ -738,6 +738,65 @@ const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
     },
   })
 
+const createHospitalScenario = (hospitalId: string) => `create-hospital-${hospitalId}`
+
+// The agency ID is available until POST /hospitals creates the hospital, which can then be retrieved.
+const stubHospitalIdAvailable = async (hospital: Hospital): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    requiredScenarioState: 'Started',
+    request: { method: 'GET', url: `/prison-register/legacy/agency/${hospital.hospitalId}/is-used` },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    requiredScenarioState: 'Created',
+    request: { method: 'GET', url: `/prison-register/hospitals/id/${hospital.hospitalId}` },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: hospital,
+    },
+  })
+}
+
+const stubCreateHospital = (hospital: Hospital): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/hospitals',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.hospitalId == '${hospital.hospitalId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: hospital,
+    },
+  })
+
+const stubCreateHospitalError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/hospitals' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedHospitals = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/hospitals',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubGetHospital = (hospital: Hospital): SuperAgentRequest =>
   stubFor({
     request: {
@@ -929,6 +988,10 @@ export default {
   stubGetOtherAgency,
   stubGetHospitals,
   stubGetHospital,
+  stubHospitalIdAvailable,
+  stubCreateHospital,
+  stubCreateHospitalError,
+  getCreatedHospitals,
   stubHospitalApi,
   stubHospitalApiError,
   getHospitalApiRequests,
