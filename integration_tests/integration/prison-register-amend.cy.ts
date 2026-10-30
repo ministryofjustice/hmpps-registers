@@ -45,6 +45,25 @@ context('Prison register - amend existing prison', () => {
       const prisonDetailsWithErrors = AmendPrisonDetailsPage.verifyOnPage('MDI')
       prisonDetailsWithErrors.errorSummary().contains('Enter a prison name between 3 and 80 characters')
     })
+    it('will keep the selected prison types after a validation error', () => {
+      const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
+      prisonDetailsPage.amendPrisonDetailsLink().click()
+      const amendPrisonDetailsPage = AmendPrisonDetailsPage.verifyOnPage('MDI')
+
+      amendPrisonDetailsPage.hmpCheckbox().should('be.checked')
+      amendPrisonDetailsPage.yoiCheckbox().should('be.checked')
+      amendPrisonDetailsPage.ycsCheckbox().check()
+      amendPrisonDetailsPage.name().clear().type('A')
+      amendPrisonDetailsPage.saveButton().click()
+
+      const prisonDetailsWithErrors = AmendPrisonDetailsPage.verifyOnPage('MDI')
+      prisonDetailsWithErrors.errorSummary().should('exist')
+      prisonDetailsWithErrors.hmpCheckbox().should('be.checked')
+      prisonDetailsWithErrors.yoiCheckbox().should('be.checked')
+      prisonDetailsWithErrors.ycsCheckbox().should('be.checked')
+      prisonDetailsWithErrors.stcCheckbox().should('not.be.checked')
+      prisonDetailsWithErrors.ircCheckbox().should('not.be.checked')
+    })
     it('will return to prison details page with success message after saving name', () => {
       const prisonDetailsPage = PrisonDetailsPage.verifyOnPage(moorlandPrison.prisonName)
       prisonDetailsPage.amendPrisonDetailsLink().click()

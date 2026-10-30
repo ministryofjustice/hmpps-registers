@@ -149,7 +149,7 @@ export default class PrisonRegisterController {
       name: prison.prisonName,
       prisonNameInWelsh: prison.prisonNameInWelsh,
       gender,
-      prisonType: prison.types.map(type => type.code),
+      prisonTypes: prison.types.map(type => type.code),
       contracted,
       lthse,
     }

@@ -1,4 +1,6 @@
+import express from 'express'
 import type { AmendPrisonDetailsForm } from 'prisonForms'
+import nunjucksSetup from '../../utils/nunjucksSetup'
 import AmendPrisonDetailsView from './amendPrisonDetailsView'
 
 describe('AmendPrisonDetailsView', () => {
@@ -54,5 +56,18 @@ describe('AmendPrisonDetailsView', () => {
       { text: 'Secure Training Centre (STC)', value: 'STC' },
       { text: 'Youth Custody Service (YCS)', value: 'YCS' },
     ])
+  })
+  it('will tick the prison types held in the form', () => {
+    const environment = nunjucksSetup(express())
+    const html = environment.render(
+      'pages/prison-register/amendPrisonDetails.njk',
+      new AmendPrisonDetailsView({ ...form, prisonTypes: ['HMP', 'YCS'] }, []).renderArgs,
+    )
+
+    const checkedPrisonTypes = [...html.matchAll(/<input[^>]*name="prisonTypes"[^>]*>/g)]
+      .map(([input]) => input)
+      .filter(input => input.includes('checked'))
+      .map(input => input.match(/value="(\w+)"/)[1])
+    expect(checkedPrisonTypes).toEqual(['HMP', 'YCS'])
   })
 })
