@@ -40,7 +40,7 @@ export default class AddHospitalView {
       {
         field: 'highSecurity',
         label: 'High security',
-        value: form.highSecurity === 'true' ? 'Yes' : form.highSecurity === 'false' ? 'No' : undefined,
+        value: this.getHighSecurityValue(form),
         page: 'high-security',
       },
       { field: 'cjitCode', label: 'CJIT code', value: form.cjitCode, page: 'cjit-code' },
@@ -87,5 +87,15 @@ export default class AddHospitalView {
       mainDetailsRows: rows.filter((row, index) => !isReferenceStep(answers[index].page)),
       areaAndRegionRows: rows.filter((row, index) => isReferenceStep(answers[index].page)),
     }
+  }
+
+  private getHighSecurityValue(form: Partial<Record<'highSecurity', string>>) {
+    if (form.highSecurity === 'true') {
+      return 'Yes'
+    }
+    if (form.highSecurity === 'false') {
+      return 'No'
+    }
+    return undefined
   }
 }
