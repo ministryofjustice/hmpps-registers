@@ -93,8 +93,8 @@
                             hint: {
                                 text: "Select all that apply."
                             },
-                            items: prisonTypesValues | setChecked(form.prisonType),
-                            errorMessage: errors | findError('prisonType')
+                            items: prisonTypesValues | setChecked(form.prisonTypes),
+                            errorMessage: errors | findError('prisonTypes')
                         }) }}
 
                         {{ govukRadios({

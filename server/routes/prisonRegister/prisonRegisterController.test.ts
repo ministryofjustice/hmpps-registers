@@ -472,7 +472,7 @@ describe('Prison Register controller', () => {
             contracted: 'no',
             lthse: 'no',
             gender: ['male'],
-            prisonType: ['HMP'],
+            prisonTypes: ['HMP'],
           },
           genderValues: [
             { text: 'Male', value: 'male' },
@@ -514,7 +514,7 @@ describe('Prison Register controller', () => {
             contracted: 'no',
             lthse: 'no',
             gender: ['male'],
-            prisonType: ['HMP'],
+            prisonTypes: ['HMP'],
           },
           genderValues: [
             { text: 'Male', value: 'male' },
