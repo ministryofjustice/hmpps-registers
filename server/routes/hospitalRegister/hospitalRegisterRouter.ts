@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
+import AddHospitalController from './create/addHospitalController'
 import HospitalRegisterController from './hospitalRegisterController'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
@@ -14,7 +15,13 @@ export default function routes(router: Router, services: Services): Router {
 
   const controller = new HospitalRegisterController(services.hmppsAgencyRegisterApiService)
 
+  const addHospitalController = new AddHospitalController(services.hmppsAgencyRegisterApiService)
+
   get('/hospital-register', (req, res) => controller.showAllHospitals(req, res))
+  get('/hospital-register/create/start', (req, res) => addHospitalController.start(req, res))
+  get('/hospital-register/create/:journeyId/cancel', (req, res) => addHospitalController.cancel(req, res))
+  get('/hospital-register/create/:journeyId/:step', (req, res) => addHospitalController.show(req, res))
+  post('/hospital-register/create/:journeyId/:step', (req, res) => addHospitalController.submit(req, res))
   get('/hospital-register/details', (req, res) => controller.viewHospital(req, res))
   get('/hospital-register/delete', (req, res) => controller.deleteHospital(req, res))
   post('/hospital-register/delete', (req, res) => controller.submitDeleteHospital(req, res))

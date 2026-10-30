@@ -1,0 +1,32 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% set pageTitle = title + " - DPS" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {{ govukBackLink({ text: "Back", href: navigation.backLink, attributes: { "data-qa": "back-link" } }) }}
+  {% if errors.length %}
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errors }) }}
+  {% endif %}
+  <span class="govuk-caption-l">Add a new hospital</span>
+  <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+  <h2 class="govuk-heading-m">Main details</h2>
+  {{ govukSummaryList({ rows: mainDetailsRows }) }}
+  <h2 class="govuk-heading-m">Area and region details</h2>
+  {{ govukSummaryList({ rows: areaAndRegionRows }) }}
+  <p class="govuk-body">The new hospital will be active. You can add addresses and phone numbers on the hospital details page.</p>
+  <form method="post" novalidate>
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Confirm and add hospital",
+        attributes: { "id": "create-hospital", "data-qa": "create-hospital-button" },
+        preventDoubleClick: true
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

@@ -19,6 +19,7 @@ const hospitalDetails = {
   phoneNumber: () => summaryValue('Number'),
   summaryKeys: () => cy.get('dt'),
   link: (qa: string) => cy.get(`[data-qa=${qa}]`),
+  confirmCreated: () => cy.get('[data-qa=confirm-created]'),
   confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),
   deleteHospitalButton: () => cy.get('[data-qa=delete-hospital-button]'),
 }
