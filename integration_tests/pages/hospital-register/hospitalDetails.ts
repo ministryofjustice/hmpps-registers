@@ -18,6 +18,9 @@ const hospitalDetails = {
   address: () => summaryValue('Address'),
   phoneNumber: () => summaryValue('Number'),
   summaryKeys: () => cy.get('dt'),
+  link: (qa: string) => cy.get(`[data-qa=${qa}]`),
+  confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),
+  deleteHospitalButton: () => cy.get('[data-qa=delete-hospital-button]'),
 }
 
 const verifyOnPage = (hospitalName: string): typeof hospitalDetails & Page => page(hospitalName, hospitalDetails)

@@ -78,6 +78,9 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
 
     stubGetHospitals: hmppsAgencyRegisterApi.stubGetHospitals,
     stubGetHospital: hmppsAgencyRegisterApi.stubGetHospital,
+    stubHospitalApi: hmppsAgencyRegisterApi.stubHospitalApi,
+    stubHospitalApiError: hmppsAgencyRegisterApi.stubHospitalApiError,
+    getHospitalApiRequests: hmppsAgencyRegisterApi.getHospitalApiRequests,
     stubGetPoliceCustodySuites: hmppsAgencyRegisterApi.stubGetPoliceCustodySuites,
     stubGetPoliceCustodySuite: hmppsAgencyRegisterApi.stubGetPoliceCustodySuite,
     stubGetProbationOffices: hmppsAgencyRegisterApi.stubGetProbationOffices,

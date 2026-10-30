@@ -20,6 +20,7 @@ import {
   PrisonAddress,
   ProbationOffice,
   UpdateCourt,
+  UpdateHospital,
   CreateCourt,
   UpdateEmailAddress,
   UpdatePrison,
@@ -459,6 +460,116 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<Hospital>({
       path: `/hospitals/id/${hospitalId}`,
     })
+  }
+
+  async updateHospitalDetails(
+    context: Context,
+    hospitalId: string,
+    hospital: UpdateHospital,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating details for hospital with id ${hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<Hospital>({
+        path: `/hospitals/id/${encodeURIComponent(hospitalId)}`,
+        data: hospital,
+      }),
+    )
+  }
+
+  async addHospitalAddress(
+    context: Context,
+    hospitalId: string,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to hospital with id ${hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
+        path: `/hospitals/id/${encodeURIComponent(hospitalId)}/address`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async updateHospitalAddress(
+    context: Context,
+    hospitalId: string,
+    addressId: number,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating address for hospital with id ${hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
+        path: `/hospitals/id/${encodeURIComponent(hospitalId)}/address/${addressId}`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async addHospitalPhoneNumber(
+    context: Context,
+    hospitalId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to hospital with id ${hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
+        path: `/hospitals/id/${encodeURIComponent(hospitalId)}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async updateHospitalPhoneNumber(
+    context: Context,
+    hospitalId: string,
+    phoneId: number,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating phone number for hospital with id ${hospitalId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
+        path: `/hospitals/id/${encodeURIComponent(hospitalId)}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async deleteHospital(context: Context, hospitalId: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting hospital with id ${hospitalId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/hospitals/id/${encodeURIComponent(hospitalId)}`,
+    })
+  }
+
+  async deleteHospitalAddress(context: Context, hospitalId: string, addressId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for hospital with id ${hospitalId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/hospitals/id/${encodeURIComponent(hospitalId)}/address/${addressId}`,
+    })
+  }
+
+  async deleteHospitalPhoneNumber(context: Context, hospitalId: string, phoneId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting phone number for hospital with id ${hospitalId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/hospitals/id/${encodeURIComponent(hospitalId)}/phone-number/${phoneId}`,
+    })
+  }
+
+  private static agencyAddressData(address: UpdateAgencyAddress): UpdateAgencyAddress {
+    return {
+      ...address,
+      addressLine1: undefinedWhenAbsent(address.addressLine1),
+      addressLine2: undefinedWhenAbsent(address.addressLine2),
+      county: undefinedWhenAbsent(address.county),
+    }
   }
 
   async getProbationOffices(context: Context, filter: ProbationOfficeFilter): Promise<ProbationOffice[]> {
