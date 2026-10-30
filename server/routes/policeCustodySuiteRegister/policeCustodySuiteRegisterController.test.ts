@@ -119,4 +119,72 @@ describe('Police Custody Suite Register controller', () => {
       expect(hmppsAgencyRegisterApiService.getPoliceCustodySuite).toHaveBeenCalledWith({}, 'SHFPCS')
     })
   })
+
+  describe('updates', () => {
+    beforeEach(() => {
+      hmppsAgencyRegisterApiService.getPoliceCustodySuite.mockResolvedValue(
+        data.policeCustodySuite({
+          policeCustodySuiteId: 'SHFPCS',
+          cjitCode: 'C00SH00',
+          area: { code: 'SY', description: 'South Yorkshire' },
+          emailAddresses: [{ id: 3, address: 'a@b.com' }],
+        }),
+      )
+      hmppsAgencyRegisterApiService.updatePoliceCustodySuiteDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFPCS'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('saves a name change while keeping the other fields', async () => {
+      req.body = { name: 'New name', description: 'New description' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updatePoliceCustodySuiteDetails).toHaveBeenCalledWith({}, 'SHFPCS', {
+        policeCustodySuiteName: 'New name',
+        description: 'New description',
+        active: true,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        areaCode: 'SY',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/police-custody-suite-register/details?id=SHFPCS&action=UPDATED')
+    })
+
+    it('prefills the email update page from the existing email address', async () => {
+      req.query.emailId = '3'
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ emailAddress: 'a@b.com', emailId: 3 }),
+      )
+    })
+
+    it('adds an email address and returns to the details page', async () => {
+      hmppsAgencyRegisterApiService.addPoliceCustodySuiteEmailAddress.mockResolvedValue({ success: true })
+      req.body = { emailAddress: 'new@b.com' }
+
+      await controller.submitAddEmail(req, res)
+
+      expect(hmppsAgencyRegisterApiService.addPoliceCustodySuiteEmailAddress).toHaveBeenCalledWith({}, 'SHFPCS', {
+        address: 'new@b.com',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/police-custody-suite-register/details?id=SHFPCS&action=UPDATED')
+    })
+
+    it('deletes only the selected email address', async () => {
+      req.body = { emailId: '3' }
+
+      await controller.submitDeleteEmail(req, res)
+
+      expect(hmppsAgencyRegisterApiService.deletePoliceCustodySuiteEmailAddress).toHaveBeenCalledWith({}, 'SHFPCS', 3)
+      expect(res.redirect).toHaveBeenCalledWith('/police-custody-suite-register/details?id=SHFPCS&action=UPDATED')
+    })
+  })
 })

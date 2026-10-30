@@ -874,6 +874,44 @@ const stubGetPoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): Supe
     },
   })
 
+type PoliceCustodySuiteApiCall = {
+  policeCustodySuiteId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const policeCustodySuiteApiPath = ({ policeCustodySuiteId, endpoint }: PoliceCustodySuiteApiCall) =>
+  `/prison-register/police-custody-suites/id/${policeCustodySuiteId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubPoliceCustodySuiteApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: PoliceCustodySuiteApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: policeCustodySuiteApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubPoliceCustodySuiteApiError = (call: PoliceCustodySuiteApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubPoliceCustodySuiteApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getPoliceCustodySuiteApiRequests = (
+  call: PoliceCustodySuiteApiCall,
+): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === policeCustodySuiteApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
 const stubGetProbationOffices = (probationOffices: ProbationOffice[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -997,6 +1035,9 @@ export default {
   getHospitalApiRequests,
   stubGetPoliceCustodySuites,
   stubGetPoliceCustodySuite,
+  stubPoliceCustodySuiteApi,
+  stubPoliceCustodySuiteApiError,
+  getPoliceCustodySuiteApiRequests,
   stubGetProbationOffices,
   stubGetProbationOffice,
   stubGetAllApprovedPremises,

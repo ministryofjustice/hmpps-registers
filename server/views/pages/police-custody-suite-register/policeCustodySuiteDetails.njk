@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/police-custody-suite-register/policeCustodySuiteCoreDetailsCard.njk" import policeCustodySuiteCoreDetailsCard %}
 {% from "partials/police-custody-suite-register/policeCustodySuiteAreaDetailsCard.njk" import policeCustodySuiteAreaDetailsCard %}
 {% from "partials/addressesCard.njk" import addressesCard %}
@@ -18,6 +19,14 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ policeCustodySuite.policeCustodySuiteName }}</h1>
 
+    {% if action == 'UPDATED' %}
+      <div data-qa="confirm-updated" class="govuk-panel govuk-panel--confirmation">
+        <div class="govuk-panel__body">
+          Police custody suite has been updated successfully
+        </div>
+      </div>
+    {% endif %}
+
   <div>
     <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Police custody suite details</h2>
   </div>
@@ -29,15 +38,23 @@
       {{  policeCustodySuiteAreaDetailsCard({ policeCustodySuite: policeCustodySuite }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: policeCustodySuite.addresses }) }}
+      {{  addressesCard({ addresses: policeCustodySuite.addresses, id: policeCustodySuite.policeCustodySuiteId, baseRegisterUrl: "/police-custody-suite-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: policeCustodySuite.phoneNumbers }) }}
+      {{  phoneNumbersCard({ phoneNumbers: policeCustodySuite.phoneNumbers, id: policeCustodySuite.policeCustodySuiteId, baseRegisterUrl: "/police-custody-suite-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: policeCustodySuite.emailAddresses }) }}
+      {{  emailAddressesCard({ emailAddresses: policeCustodySuite.emailAddresses, id: policeCustodySuite.policeCustodySuiteId, baseRegisterUrl: "/police-custody-suite-register" }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete police custody suite",
+      href: "/police-custody-suite-register/delete?id=" + policeCustodySuite.policeCustodySuiteId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-police-custody-suite-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

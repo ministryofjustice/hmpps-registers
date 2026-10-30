@@ -22,6 +22,7 @@ import {
   UpdateCourt,
   CreateHospital,
   UpdateHospital,
+  UpdatePoliceCustodySuite,
   CreateCourt,
   UpdateEmailAddress,
   UpdatePrison,
@@ -612,6 +613,158 @@ export default class HMPPSAgencyRegisterApi {
     logger.info(`getting police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<PoliceCustodySuite>({
       path: `/police-custody-suites/id/${policeCustodySuiteId}`,
+    })
+  }
+
+  async updatePoliceCustodySuiteDetails(
+    context: Context,
+    policeCustodySuiteId: string,
+    policeCustodySuite: UpdatePoliceCustodySuite,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating details for police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<PoliceCustodySuite>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}`,
+        data: policeCustodySuite,
+      }),
+    )
+  }
+
+  async addPoliceCustodySuiteAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/address`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async updatePoliceCustodySuiteAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    addressId: number,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating address for police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/address/${addressId}`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async addPoliceCustodySuitePhoneNumber(
+    context: Context,
+    policeCustodySuiteId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async updatePoliceCustodySuitePhoneNumber(
+    context: Context,
+    policeCustodySuiteId: string,
+    phoneId: number,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating phone number for police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async addPoliceCustodySuiteEmailAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    emailAddress: EmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding email address to police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/email-address`,
+        data: emailAddress,
+      }),
+    )
+  }
+
+  async updatePoliceCustodySuiteEmailAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    emailId: number,
+    emailAddress: UpdateEmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating email address for police custody suite with id ${policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
+        path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/email-address/${emailId}`,
+        data: emailAddress,
+      }),
+    )
+  }
+
+  async deletePoliceCustodySuite(context: Context, policeCustodySuiteId: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting police custody suite with id ${policeCustodySuiteId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}`,
+    })
+  }
+
+  async deletePoliceCustodySuiteAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    addressId: number,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for police custody suite with id ${policeCustodySuiteId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/address/${addressId}`,
+    })
+  }
+
+  async deletePoliceCustodySuitePhoneNumber(
+    context: Context,
+    policeCustodySuiteId: string,
+    phoneId: number,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting phone number for police custody suite with id ${policeCustodySuiteId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/phone-number/${phoneId}`,
+    })
+  }
+
+  async deletePoliceCustodySuiteEmailAddress(
+    context: Context,
+    policeCustodySuiteId: string,
+    emailId: number,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting email address for police custody suite with id ${policeCustodySuiteId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/email-address/${emailId}`,
     })
   }
 

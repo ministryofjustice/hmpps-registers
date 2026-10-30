@@ -3,7 +3,8 @@
 {% macro policeCustodySuiteAreaDetailsCard(opts) %}
 
   {% set policeCustodySuite = opts.policeCustodySuite %}
-
+  {% set base = "/police-custody-suite-register" %}
+  {% set id = policeCustodySuite.policeCustodySuiteId %}
 
   {{ govukSummaryList({
     card: {
@@ -21,7 +22,13 @@
           text: policeCustodySuite.area.description if policeCustodySuite.area else 'Not provided'
         },
         actions: {
-         items: [ ]
+          items: [{
+            href: base + "/area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "area",
+            attributes: {"data-qa": "update-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -32,7 +39,13 @@
           text: policeCustodySuite.region.description if policeCustodySuite.region else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "region",
+            attributes: {"data-qa": "update-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -40,10 +53,16 @@
           text: 'Geographical area'
         },
         value: {
-        text: policeCustodySuite.geographicalArea.description if policeCustodySuite.geographicalArea else 'Not provided'
+          text: policeCustodySuite.geographicalArea.description if policeCustodySuite.geographicalArea else 'Not provided'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: base + "/geographical-area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -54,7 +73,13 @@
           text: policeCustodySuite.localAuthority.description if policeCustodySuite.localAuthority else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/local-authority/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "local authority",
+            attributes: {"data-qa": "update-local-authority-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +90,13 @@
           text: policeCustodySuite.payrollRegion.description if policeCustodySuite.payrollRegion else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/payroll-region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]
