@@ -40,7 +40,7 @@ export default class AddHospitalView {
       {
         field: 'highSecurity',
         label: 'High security',
-        value: { true: 'Yes', false: 'No' }[form.highSecurity],
+        value: form.highSecurity === 'true' ? 'Yes' : form.highSecurity === 'false' ? 'No' : undefined,
         page: 'high-security',
       },
       { field: 'cjitCode', label: 'CJIT code', value: form.cjitCode, page: 'cjit-code' },
