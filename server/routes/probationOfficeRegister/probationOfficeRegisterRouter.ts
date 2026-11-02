@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
+import AddProbationOfficeController from './create/addProbationOfficeController'
 import ProbationOfficeRegisterController from './probationOfficeRegisterController'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
@@ -18,7 +19,13 @@ export default function routes(router: Router, services: Services): Router {
     services.hmppsAgencyRegisterApiService,
   )
 
+  const addController = new AddProbationOfficeController(services.hmppsAgencyRegisterApiService)
+
   get('/probation-office-register', (req, res) => probationOfficeRegisterController.showAllProbationOffices(req, res))
+  get(`${base}/create/start`, (req, res) => addController.start(req, res))
+  get(`${base}/create/:journeyId/cancel`, (req, res) => addController.cancel(req, res))
+  get(`${base}/create/:journeyId/:step`, (req, res) => addController.show(req, res))
+  post(`${base}/create/:journeyId/:step`, (req, res) => addController.submit(req, res))
   get('/probation-office-register/details', (req, res) =>
     probationOfficeRegisterController.viewProbationOffice(req, res),
   )

@@ -1010,6 +1010,71 @@ const stubGetProbationOffice = (probationOffice: ProbationOffice): SuperAgentReq
     },
   })
 
+const createProbationOfficeScenario = (probationOfficeId: string) => `create-probation-office-${probationOfficeId}`
+
+// The agency ID is available until POST /probation-offices creates the office, which can then be retrieved.
+const stubProbationOfficeIdAvailable = async (probationOffice: ProbationOffice): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${probationOffice.probationOfficeId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/probation-offices/id/${probationOffice.probationOfficeId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: probationOffice,
+    },
+  })
+}
+
+const stubCreateProbationOffice = (probationOffice: ProbationOffice): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/probation-offices',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.probationOfficeId == '${probationOffice.probationOfficeId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: probationOffice,
+    },
+  })
+
+const stubCreateProbationOfficeError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/probation-offices' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedProbationOffices = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/probation-offices',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 type ProbationOfficeApiCall = {
   probationOfficeId: string
   endpoint?: string
@@ -1148,6 +1213,10 @@ export default {
   getPoliceCustodySuiteApiRequests,
   stubGetProbationOffices,
   stubGetProbationOffice,
+  stubProbationOfficeIdAvailable,
+  stubCreateProbationOffice,
+  stubCreateProbationOfficeError,
+  getCreatedProbationOffices,
   stubProbationOfficeApi,
   stubProbationOfficeApiError,
   getProbationOfficeApiRequests,

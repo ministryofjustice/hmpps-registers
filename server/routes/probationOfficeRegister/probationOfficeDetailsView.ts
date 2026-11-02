@@ -1,6 +1,6 @@
 import { ProbationOffice } from '../../@types/prisonRegister'
 
-export type Action = 'NONE' | 'UPDATED'
+export type Action = 'NONE' | 'UPDATED' | 'CREATED'
 
 export default class ProbationOfficeDetailsView {
   constructor(
