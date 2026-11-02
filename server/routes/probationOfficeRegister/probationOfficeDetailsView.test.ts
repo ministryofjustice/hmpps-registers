@@ -6,6 +6,15 @@ describe('ProbationOfficeDetailsView', () => {
     const probationOffice = data.probationOffice({ probationOfficeId: 'SHFPO' })
     const view = new ProbationOfficeDetailsView(probationOffice)
 
-    expect(view.renderArgs).toEqual({ probationOffice })
+    expect(view.renderArgs).toEqual({ probationOffice, action: 'NONE' })
+  })
+
+  it('will pass the action to the page', () => {
+    const probationOffice = data.probationOffice({ probationOfficeId: 'SHFPO' })
+
+    expect(new ProbationOfficeDetailsView(probationOffice, 'UPDATED').renderArgs).toEqual({
+      probationOffice,
+      action: 'UPDATED',
+    })
   })
 })

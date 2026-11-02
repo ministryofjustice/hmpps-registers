@@ -9,6 +9,7 @@ export default async function validate(
   form: UpdateAccessibleAccessForm,
   req: Request,
   updateAccessibleAccess: (accessibleAccess: UpdateCourt['accessibleAccess']) => Promise<AgencyMutationResponse>,
+  registerPath = '/court-register',
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const errors = await validateAsync(
@@ -22,14 +23,14 @@ export default async function validate(
       errors.push({ href: '#accessibleAccess', text: 'Select a valid accessible access option' })
     }
     req.flash('errors', errors)
-    return `/court-register/accessible-access/update?id=${id}`
+    return `${registerPath}/accessible-access/update?id=${id}`
   }
 
   const result = await updateAccessibleAccess(form.accessibleAccess === 'UNKNOWN' ? undefined : form.accessibleAccess)
   if (result.success === false) {
     req.flash('errors', [{ href: '#accessibleAccess', text: result.userMessage }])
-    return `/court-register/accessible-access/update?id=${id}`
+    return `${registerPath}/accessible-access/update?id=${id}`
   }
 
-  return `/court-register/details?id=${id}&action=UPDATED`
+  return `${registerPath}/details?id=${id}&action=UPDATED`
 }
