@@ -723,6 +723,42 @@ const stubGetOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
     },
   })
 
+type OtherAgencyApiCall = {
+  agencyId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const otherAgencyApiPath = ({ agencyId, endpoint }: OtherAgencyApiCall) =>
+  `/prison-register/other-agencies/id/${agencyId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubOtherAgencyApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: OtherAgencyApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: otherAgencyApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubOtherAgencyApiError = (call: OtherAgencyApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubOtherAgencyApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getOtherAgencyApiRequests = (call: OtherAgencyApiCall): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === otherAgencyApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
 const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1296,6 +1332,9 @@ export default {
   getDeletedCourtEmailAddressRequests,
   stubGetOtherAgencies,
   stubGetOtherAgency,
+  stubOtherAgencyApi,
+  stubOtherAgencyApiError,
+  getOtherAgencyApiRequests,
   stubGetHospitals,
   stubGetHospital,
   stubHospitalIdAvailable,
