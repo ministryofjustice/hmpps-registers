@@ -5,6 +5,7 @@ import config from '../config'
 import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
 import TokenStore from '../data/tokenStore/redisTokenStore'
 import {
+  CreateProbationOffice,
   EmailAddress,
   PhoneNumber,
   ProbationOffice,
@@ -138,6 +139,14 @@ describe('HMPPS Probation Office Register API', () => {
   })
 
   describe('probation office mutations', () => {
+    const create: CreateProbationOffice = {
+      probationOfficeId: 'SHEFPB',
+      probationOfficeName: 'Sheffield Probation Office',
+      active: true,
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+    }
     const update: UpdateProbationOffice = {
       probationOfficeName: 'Updated Sheffield Probation Office',
       active: false,
@@ -157,6 +166,17 @@ describe('HMPPS Probation Office Register API', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('creates an office using the authenticated user context', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.post('/probation-offices', create).reply(201, {})
+
+      await expect(hmppsAgencyRegisterApiService.createProbationOffice({ username: 'tommy' }, create)).resolves.toEqual(
+        { success: true },
+      )
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
     })
 
     it('updates office details and encodes the office ID', async () => {
