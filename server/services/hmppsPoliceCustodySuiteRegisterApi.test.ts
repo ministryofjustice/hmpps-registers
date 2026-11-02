@@ -8,6 +8,7 @@ import {
   EmailAddress,
   PhoneNumber,
   PoliceCustodySuite,
+  CreatePoliceCustodySuite,
   UpdateAgencyAddress,
   UpdateEmailAddress,
   UpdatePoliceCustodySuite,
@@ -138,6 +139,14 @@ describe('HMPPS Police Custody Suite Register API', () => {
   })
 
   describe('police custody suite mutations', () => {
+    const create: CreatePoliceCustodySuite = {
+      addresses: [],
+      emailAddresses: [],
+      phoneNumbers: [],
+      policeCustodySuiteId: 'SHFPCS',
+      policeCustodySuiteName: 'Sheffield Police Custody Suite',
+      active: true,
+    }
     const update: UpdatePoliceCustodySuite = {
       policeCustodySuiteName: 'Updated Sheffield Police Custody Suite',
       active: false,
@@ -157,6 +166,17 @@ describe('HMPPS Police Custody Suite Register API', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('creates a custody suite using the authenticated user context', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.post('/police-custody-suites', create).reply(201, {})
+
+      await expect(
+        hmppsAgencyRegisterApiService.createPoliceCustodySuite({ username: 'tommy' }, create),
+      ).resolves.toEqual({ success: true })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
     })
 
     it('updates suite details and encodes the suite ID', async () => {
