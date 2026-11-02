@@ -20,6 +20,8 @@ const approvedPremisesDetails = {
   phoneNumber: () => summaryValue('Number'),
   emailAddress: () => summaryValue('Email'),
   summaryKeys: () => cy.get('dt'),
+  link: (qa: string) => cy.get(`[data-qa=${qa}]`),
+  confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),
 }
 
 const verifyOnPage = (approvedPremisesName: string): typeof approvedPremisesDetails & Page =>

@@ -4,7 +4,14 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 import config from '../config'
 import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
 import TokenStore from '../data/tokenStore/redisTokenStore'
-import { ApprovedPremises } from '../@types/prisonRegister'
+import {
+  EmailAddress,
+  PhoneNumber,
+  ApprovedPremises,
+  UpdateAgencyAddress,
+  UpdateEmailAddress,
+  UpdateApprovedPremises,
+} from '../@types/prisonRegister'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -127,6 +134,102 @@ describe('HMPPS Approved Premises Register API', () => {
       } catch (e) {
         expect(e.message).toBe('Not Found')
       }
+    })
+  })
+
+  describe('approved premises mutations', () => {
+    const update: UpdateApprovedPremises = {
+      approvedPremisesName: 'Updated Sheffield Approved Premises',
+      active: false,
+    }
+    const address: UpdateAgencyAddress = {
+      addressLine1: '1 High Street',
+      addressLine2: '',
+      town: 'Sheffield',
+      county: '  ',
+      postcode: 'S1 2BJ',
+      country: 'England',
+    }
+    const phoneNumber: PhoneNumber = { number: '0114 555 9898' }
+    const emailAddress: EmailAddress = { address: 'premises@example.com' }
+    const updatedEmailAddress: UpdateEmailAddress = { address: 'updated@example.com' }
+
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('updates office details and encodes the office ID', async () => {
+      const scope = fakeHmppsAgencyRegisterApi.put('/approved-premises/id/a%2Fb', update).reply(200, {})
+
+      await expect(
+        hmppsAgencyRegisterApiService.updateApprovedPremisesDetails({ username: 'tommy' }, 'a/b', update),
+      ).resolves.toEqual({ success: true })
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([
+      ['adds', 'post', '/approved-premises/id/SHEFPB/address'],
+      ['updates', 'put', '/approved-premises/id/SHEFPB/address/12'],
+    ] as const)('%s an office address and omits blank optional fields', async (_operation, method, url) => {
+      const expectedAddress = {
+        addressLine1: '1 High Street',
+        town: 'Sheffield',
+        postcode: 'S1 2BJ',
+        country: 'England',
+      }
+      const scope =
+        method === 'post'
+          ? fakeHmppsAgencyRegisterApi.post(url, expectedAddress).reply(200, {})
+          : fakeHmppsAgencyRegisterApi.put(url, expectedAddress).reply(200, {})
+
+      const result =
+        method === 'post'
+          ? await hmppsAgencyRegisterApiService.addApprovedPremisesAddress({}, 'SHEFPB', address)
+          : await hmppsAgencyRegisterApiService.updateApprovedPremisesAddress({}, 'SHEFPB', 12, address)
+
+      expect(result).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it.each([
+      ['adds', 'post', '/approved-premises/id/SHEFPB/phone-number'],
+      ['updates', 'put', '/approved-premises/id/SHEFPB/phone-number/8'],
+    ] as const)('%s an office phone number', async (_operation, method, url) => {
+      const scope =
+        method === 'post'
+          ? fakeHmppsAgencyRegisterApi.post(url, phoneNumber).reply(200, {})
+          : fakeHmppsAgencyRegisterApi.put(url, phoneNumber).reply(200, {})
+
+      const result =
+        method === 'post'
+          ? await hmppsAgencyRegisterApiService.addApprovedPremisesPhoneNumber({}, 'SHEFPB', phoneNumber)
+          : await hmppsAgencyRegisterApiService.updateApprovedPremisesPhoneNumber({}, 'SHEFPB', 8, phoneNumber)
+
+      expect(result).toEqual({ success: true })
+      expect(scope.isDone()).toBe(true)
+    })
+
+    it('adds and updates office email addresses', async () => {
+      const addScope = fakeHmppsAgencyRegisterApi
+        .post('/approved-premises/id/SHEFPB/email-address', emailAddress)
+        .reply(200, {})
+
+      await expect(
+        hmppsAgencyRegisterApiService.addApprovedPremisesEmailAddress({}, 'SHEFPB', emailAddress),
+      ).resolves.toEqual({ success: true })
+      expect(addScope.isDone()).toBe(true)
+
+      const updateScope = fakeHmppsAgencyRegisterApi
+        .put('/approved-premises/id/SHEFPB/email-address/6', updatedEmailAddress)
+        .reply(200, {})
+
+      await expect(
+        hmppsAgencyRegisterApiService.updateApprovedPremisesEmailAddress({}, 'SHEFPB', 6, updatedEmailAddress),
+      ).resolves.toEqual({ success: true })
+      expect(updateScope.isDone()).toBe(true)
     })
   })
 })

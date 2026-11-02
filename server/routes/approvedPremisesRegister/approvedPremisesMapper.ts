@@ -1,4 +1,4 @@
-import { ApprovedPremises } from '../../@types/prisonRegister'
+import { ApprovedPremises, UpdateApprovedPremises } from '../../@types/prisonRegister'
 import { AgencyFilter } from '../utils/filter'
 
 export type ApprovedPremisesFilter = AgencyFilter
@@ -19,6 +19,23 @@ export default function approvedPremisesMapper(approvedPremises: ApprovedPremise
     id: approvedPremises.approvedPremisesId,
     name: approvedPremises.approvedPremisesName,
     active: approvedPremises.active,
+  }
+}
+
+export function updateApprovedPremisesMapper(approvedPremises: ApprovedPremises): UpdateApprovedPremises {
+  return {
+    approvedPremisesName: approvedPremises.approvedPremisesName,
+    description: approvedPremises.description,
+    contact: approvedPremises.contact,
+    active: approvedPremises.active,
+    accessibleAccess: approvedPremises.accessibleAccess as UpdateApprovedPremises['accessibleAccess'],
+    inactiveDate: approvedPremises.inactiveDate,
+    cjitCode: approvedPremises.cjitCode,
+    areaCode: approvedPremises.area?.code,
+    regionCode: approvedPremises.region?.code,
+    geographicalAreaCode: approvedPremises.geographicalArea?.code,
+    localAuthorityCode: approvedPremises.localAuthority?.code,
+    payrollRegionCode: approvedPremises.payrollRegion?.code,
   }
 }
 

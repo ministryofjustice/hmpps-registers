@@ -105,5 +105,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     getProbationOfficeApiRequests: hmppsAgencyRegisterApi.getProbationOfficeApiRequests,
     stubGetAllApprovedPremises: hmppsAgencyRegisterApi.stubGetAllApprovedPremises,
     stubGetApprovedPremises: hmppsAgencyRegisterApi.stubGetApprovedPremises,
+    stubApprovedPremisesApi: hmppsAgencyRegisterApi.stubApprovedPremisesApi,
+    stubApprovedPremisesApiError: hmppsAgencyRegisterApi.stubApprovedPremisesApiError,
+    getApprovedPremisesApiRequests: hmppsAgencyRegisterApi.getApprovedPremisesApiRequests,
   })
 }

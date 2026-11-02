@@ -1111,6 +1111,44 @@ const getProbationOfficeApiRequests = (call: ProbationOfficeApiCall): Promise<Ar
       .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
   )
 
+type ApprovedPremisesApiCall = {
+  approvedPremisesId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const approvedPremisesApiPath = ({ approvedPremisesId, endpoint }: ApprovedPremisesApiCall) =>
+  `/prison-register/approved-premises/id/${approvedPremisesId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubApprovedPremisesApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: ApprovedPremisesApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: approvedPremisesApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubApprovedPremisesApiError = (call: ApprovedPremisesApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubApprovedPremisesApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getApprovedPremisesApiRequests = (
+  call: ApprovedPremisesApiCall,
+): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === approvedPremisesApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
 const stubGetAllApprovedPremises = (approvedPremisesList: ApprovedPremises[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1222,6 +1260,9 @@ export default {
   getProbationOfficeApiRequests,
   stubGetAllApprovedPremises,
   stubGetApprovedPremises,
+  stubApprovedPremisesApi,
+  stubApprovedPremisesApiError,
+  getApprovedPremisesApiRequests,
 }
 
 // Mock data

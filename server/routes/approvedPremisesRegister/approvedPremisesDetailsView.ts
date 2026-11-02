@@ -1,11 +1,17 @@
 import { ApprovedPremises } from '../../@types/prisonRegister'
 
-export default class ApprovedPremisesDetailsView {
-  constructor(private readonly approvedPremises: ApprovedPremises) {}
+export type Action = 'NONE' | 'UPDATED'
 
-  get renderArgs(): { approvedPremises: ApprovedPremises } {
+export default class ApprovedPremisesDetailsView {
+  constructor(
+    private readonly approvedPremises: ApprovedPremises,
+    private readonly action: Action = 'NONE',
+  ) {}
+
+  get renderArgs(): { approvedPremises: ApprovedPremises; action: Action } {
     return {
       approvedPremises: this.approvedPremises,
+      action: this.action,
     }
   }
 }

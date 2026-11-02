@@ -22,6 +22,7 @@ import {
   UpdateCourt,
   CreateHospital,
   UpdateHospital,
+  UpdateApprovedPremises,
   CreatePoliceCustodySuite,
   UpdatePoliceCustodySuite,
   CreateProbationOffice,
@@ -922,6 +923,114 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<ApprovedPremises>({
       path: `/approved-premises/id/${approvedPremisesId}`,
     })
+  }
+
+  async updateApprovedPremisesDetails(
+    context: Context,
+    approvedPremisesId: string,
+    approvedPremises: UpdateApprovedPremises,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating details for approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<ApprovedPremises>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}`,
+        data: approvedPremises,
+      }),
+    )
+  }
+
+  async addApprovedPremisesAddress(
+    context: Context,
+    approvedPremisesId: string,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/address`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async updateApprovedPremisesAddress(
+    context: Context,
+    approvedPremisesId: string,
+    addressId: number,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating address for approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/address/${addressId}`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async addApprovedPremisesPhoneNumber(
+    context: Context,
+    approvedPremisesId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async updateApprovedPremisesPhoneNumber(
+    context: Context,
+    approvedPremisesId: string,
+    phoneId: number,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating phone number for approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async addApprovedPremisesEmailAddress(
+    context: Context,
+    approvedPremisesId: string,
+    emailAddress: EmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding email address to approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/email-address`,
+        data: emailAddress,
+      }),
+    )
+  }
+
+  async updateApprovedPremisesEmailAddress(
+    context: Context,
+    approvedPremisesId: string,
+    emailId: number,
+    emailAddress: UpdateEmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating email address for approved premises with id ${approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
+        path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/email-address/${emailId}`,
+        data: emailAddress,
+      }),
+    )
   }
 
   async getTownSuggestions(context: Context): Promise<CodeDescription[]> {
