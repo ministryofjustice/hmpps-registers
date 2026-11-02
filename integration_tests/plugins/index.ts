@@ -96,6 +96,9 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     getPoliceCustodySuiteApiRequests: hmppsAgencyRegisterApi.getPoliceCustodySuiteApiRequests,
     stubGetProbationOffices: hmppsAgencyRegisterApi.stubGetProbationOffices,
     stubGetProbationOffice: hmppsAgencyRegisterApi.stubGetProbationOffice,
+    stubProbationOfficeApi: hmppsAgencyRegisterApi.stubProbationOfficeApi,
+    stubProbationOfficeApiError: hmppsAgencyRegisterApi.stubProbationOfficeApiError,
+    getProbationOfficeApiRequests: hmppsAgencyRegisterApi.getProbationOfficeApiRequests,
     stubGetAllApprovedPremises: hmppsAgencyRegisterApi.stubGetAllApprovedPremises,
     stubGetApprovedPremises: hmppsAgencyRegisterApi.stubGetApprovedPremises,
   })

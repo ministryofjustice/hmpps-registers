@@ -1,11 +1,17 @@
 import { ProbationOffice } from '../../@types/prisonRegister'
 
-export default class ProbationOfficeDetailsView {
-  constructor(private readonly probationOffice: ProbationOffice) {}
+export type Action = 'NONE' | 'UPDATED'
 
-  get renderArgs(): { probationOffice: ProbationOffice } {
+export default class ProbationOfficeDetailsView {
+  constructor(
+    private readonly probationOffice: ProbationOffice,
+    private readonly action: Action = 'NONE',
+  ) {}
+
+  get renderArgs(): { probationOffice: ProbationOffice; action: Action } {
     return {
       probationOffice: this.probationOffice,
+      action: this.action,
     }
   }
 }

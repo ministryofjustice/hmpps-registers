@@ -9,6 +9,13 @@
 
   {% if phoneNumbers and phoneNumbers.length > 0 %}
     {% for item in phoneNumbers %}
+      {% set deleteItems = [] if opts.deleteHidden else [{
+              href: baseRegisterUrl + "/phone/delete?id=" + id + "&phoneId=" + item.id,
+              text: "Delete",
+              visuallyHiddenText: "phone number " + item.number,
+              attributes: {"data-qa": "delete-phone-number-link"},
+              classes: "govuk-link--no-visited-state"
+            }] %}
       {% set data = data.concat([{
         key: {
           text: "Number"
@@ -24,15 +31,8 @@
               visuallyHiddenText: "phone number " + item.number,
               attributes: {"data-qa": "update-phone-number-link"},
               classes: "govuk-link--no-visited-state"
-            },
-            {
-              href: baseRegisterUrl + "/phone/delete?id=" + id + "&phoneId=" + item.id,
-              text: "Delete",
-              visuallyHiddenText: "phone number " + item.number,
-              attributes: {"data-qa": "delete-phone-number-link"},
-              classes: "govuk-link--no-visited-state"
             }
-          ] if baseRegisterUrl else []
+          ].concat(deleteItems) if baseRegisterUrl else []
         }
       }]) %}
     {% endfor %}

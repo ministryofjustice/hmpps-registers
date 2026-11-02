@@ -24,6 +24,7 @@ import {
   UpdateHospital,
   CreatePoliceCustodySuite,
   UpdatePoliceCustodySuite,
+  UpdateProbationOffice,
   CreateCourt,
   UpdateEmailAddress,
   UpdatePrison,
@@ -598,6 +599,114 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<ProbationOffice>({
       path: `/probation-offices/id/${probationOfficeId}`,
     })
+  }
+
+  async updateProbationOfficeDetails(
+    context: Context,
+    probationOfficeId: string,
+    probationOffice: UpdateProbationOffice,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating details for probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<ProbationOffice>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}`,
+        data: probationOffice,
+      }),
+    )
+  }
+
+  async addProbationOfficeAddress(
+    context: Context,
+    probationOfficeId: string,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/address`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async updateProbationOfficeAddress(
+    context: Context,
+    probationOfficeId: string,
+    addressId: number,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating address for probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/address/${addressId}`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async addProbationOfficePhoneNumber(
+    context: Context,
+    probationOfficeId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async updateProbationOfficePhoneNumber(
+    context: Context,
+    probationOfficeId: string,
+    phoneId: number,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating phone number for probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async addProbationOfficeEmailAddress(
+    context: Context,
+    probationOfficeId: string,
+    emailAddress: EmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding email address to probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/email-address`,
+        data: emailAddress,
+      }),
+    )
+  }
+
+  async updateProbationOfficeEmailAddress(
+    context: Context,
+    probationOfficeId: string,
+    emailId: number,
+    emailAddress: UpdateEmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating email address for probation office with id ${probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
+        path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/email-address/${emailId}`,
+        data: emailAddress,
+      }),
+    )
   }
 
   async getPoliceCustodySuites(context: Context, filter: PoliceCustodySuiteFilter): Promise<PoliceCustodySuite[]> {

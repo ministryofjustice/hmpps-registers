@@ -6,7 +6,7 @@ import data from '../testutils/mockProbationOfficeData'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
 
-describe('Probation Office Register controller', () => {
+describe('Police Custody Office Register controller', () => {
   let hmppsAgencyRegisterApiService: jest.Mocked<HMPPSAgencyRegisterApi>
   let controller: ProbationOfficeRegisterController
   let req: Request
@@ -117,6 +117,115 @@ describe('Probation Office Register controller', () => {
       await controller.viewProbationOffice(req, res)
 
       expect(hmppsAgencyRegisterApiService.getProbationOffice).toHaveBeenCalledWith({}, 'SHFPO')
+    })
+  })
+
+  describe('updates', () => {
+    beforeEach(() => {
+      hmppsAgencyRegisterApiService.getProbationOffice.mockResolvedValue(
+        data.probationOffice({
+          probationOfficeId: 'SHFPO',
+          cjitCode: 'C00SH00',
+          area: { code: 'SY', description: 'South Yorkshire' },
+          emailAddresses: [{ id: 3, address: 'a@b.com' }],
+        }),
+      )
+      hmppsAgencyRegisterApiService.updateProbationOfficeDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFPO'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('saves a name change while keeping the other fields', async () => {
+      req.body = { name: 'New name', description: 'New description' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateProbationOfficeDetails).toHaveBeenCalledWith({}, 'SHFPO', {
+        probationOfficeName: 'New name',
+        description: 'New description',
+        contact: 'Duty Officer',
+        active: true,
+        accessibleAccess: undefined,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        areaCode: 'SY',
+        subareaCode: 'SY',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/probation-office-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('prefills the email update page from the existing email address', async () => {
+      req.query.emailId = '3'
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ emailAddress: 'a@b.com', emailId: 3 }),
+      )
+    })
+
+    it('adds an email address and returns to the details page', async () => {
+      hmppsAgencyRegisterApiService.addProbationOfficeEmailAddress.mockResolvedValue({ success: true })
+      req.body = { emailAddress: 'new@b.com' }
+
+      await controller.submitAddEmail(req, res)
+
+      expect(hmppsAgencyRegisterApiService.addProbationOfficeEmailAddress).toHaveBeenCalledWith({}, 'SHFPO', {
+        address: 'new@b.com',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/probation-office-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('saves a contact change while keeping the other fields', async () => {
+      req.body = { contact: 'Front desk' }
+
+      await controller.submitUpdateContact(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateProbationOfficeDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.objectContaining({ contact: 'Front desk', probationOfficeName: 'Sheffield Probation Office' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/probation-office-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('saves an accessible access change', async () => {
+      req.body = { accessibleAccess: 'WHEELCHAIR_ACCESS' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateProbationOfficeDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.objectContaining({ accessibleAccess: 'WHEELCHAIR_ACCESS' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/probation-office-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('clears accessible access when unknown is selected', async () => {
+      req.body = { accessibleAccess: 'UNKNOWN' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateProbationOfficeDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.not.objectContaining({ accessibleAccess: expect.anything() }),
+      )
+    })
+
+    it('renders the contact page with the current contact', async () => {
+      await controller.updateContact(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyContact',
+        expect.objectContaining({ contact: 'Duty Officer' }),
+      )
     })
   })
 })
