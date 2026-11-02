@@ -20,6 +20,7 @@ const approvedPremisesDetails = {
   phoneNumber: () => summaryValue('Number'),
   emailAddress: () => summaryValue('Email'),
   summaryKeys: () => cy.get('dt'),
+  deleteApprovedPremisesButton: () => cy.get('[data-qa=delete-approved-premises-button]'),
   link: (qa: string) => cy.get(`[data-qa=${qa}]`),
   confirmCreated: () => cy.get('[data-qa=confirm-created]'),
   confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),

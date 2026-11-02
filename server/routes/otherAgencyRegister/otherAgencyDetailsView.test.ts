@@ -6,7 +6,7 @@ describe('OtherAgencyDetailsView', () => {
     const otherAgency = data.otherAgency({ agencyId: 'SHFPECS' })
     const view = new OtherAgencyDetailsView(otherAgency)
 
-    expect(view.renderArgs).toEqual({ otherAgency, action: 'NONE' })
+    expect(view.renderArgs).toEqual({ otherAgency, action: 'NONE', agencyRegistersDeleteEnabled: expect.any(Boolean) })
   })
 
   it('will pass the action to the page', () => {
@@ -15,6 +15,7 @@ describe('OtherAgencyDetailsView', () => {
     expect(new OtherAgencyDetailsView(otherAgency, 'UPDATED').renderArgs).toEqual({
       otherAgency,
       action: 'UPDATED',
+      agencyRegistersDeleteEnabled: expect.any(Boolean),
     })
   })
 })

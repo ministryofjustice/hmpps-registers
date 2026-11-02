@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Request, Response } from 'express'
 import createError from 'http-errors'
+import config from '../../config'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllProbationOfficesView from './allProbationOfficesView'
 import ProbationOfficeDetailsView, { Action } from './probationOfficeDetailsView'
@@ -581,6 +582,24 @@ export default class ProbationOfficeRegisterController {
         },
       ),
     )
+  }
+
+  async deleteProbationOffice(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const probationOffice = await this.getOffice(req, res)
+    res.render('pages/components/edit/deleteAgency', {
+      name: probationOffice.probationOfficeName,
+      agencyId: probationOffice.probationOfficeId,
+      agencyType: 'probation office',
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
+      navigation: { cancelButton: detailsLink(probationOffice.probationOfficeId) },
+    })
+  }
+
+  async submitDeleteProbationOffice(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    await this.hmppsAgencyRegisterApiService.deleteProbationOffice(context(res), req.query.id as string)
+    res.redirect('/probation-office-register')
   }
 
   private getOffice(req: Request, res: Response) {

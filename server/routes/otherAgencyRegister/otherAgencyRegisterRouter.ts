@@ -26,6 +26,8 @@ export default function routes(router: Router, services: Services): Router {
   get(`${base}/create/:journeyId/cancel`, (req, res) => addController.cancel(req, res))
   get(`${base}/create/:journeyId/:step`, (req, res) => addController.show(req, res))
   post(`${base}/create/:journeyId/:step`, (req, res) => addController.submit(req, res))
+  get(`${base}/delete`, (req, res) => otherAgencyRegisterController.deleteOtherAgency(req, res))
+  post(`${base}/delete`, (req, res) => otherAgencyRegisterController.submitDeleteOtherAgency(req, res))
   get(`${base}/name-description/update`, (req, res) => otherAgencyRegisterController.updateNameDescription(req, res))
   post(`${base}/name-description/update`, (req, res) =>
     otherAgencyRegisterController.submitUpdateNameDescription(req, res),

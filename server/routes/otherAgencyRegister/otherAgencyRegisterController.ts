@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Request, Response } from 'express'
 import createError from 'http-errors'
+import config from '../../config'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllOtherAgenciesView from './allOtherAgenciesView'
 import OtherAgencyDetailsView, { Action } from './otherAgencyDetailsView'
@@ -581,6 +582,24 @@ export default class OtherAgencyRegisterController {
         },
       ),
     )
+  }
+
+  async deleteOtherAgency(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const otherAgency = await this.getOffice(req, res)
+    res.render('pages/components/edit/deleteAgency', {
+      name: otherAgency.agencyName,
+      agencyId: otherAgency.agencyId,
+      agencyType: 'other agency',
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
+      navigation: { cancelButton: detailsLink(otherAgency.agencyId) },
+    })
+  }
+
+  async submitDeleteOtherAgency(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    await this.hmppsAgencyRegisterApiService.deleteOtherAgency(context(res), req.query.id as string)
+    res.redirect('/other-agency-register')
   }
 
   private getOffice(req: Request, res: Response) {

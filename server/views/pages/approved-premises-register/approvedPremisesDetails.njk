@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/approved-premises-register/approvedPremisesCoreDetailsCard.njk" import approvedPremisesCoreDetailsCard %}
 {% from "partials/approved-premises-register/approvedPremisesAreaDetailsCard.njk" import approvedPremisesAreaDetailsCard %}
 {% from "partials/addressesCard.njk" import addressesCard %}
@@ -53,6 +54,14 @@
       {{  emailAddressesCard({ emailAddresses: approvedPremises.emailAddresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register", deleteHidden: true }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete approved premises",
+      href: "/approved-premises-register/delete?id=" + approvedPremises.approvedPremisesId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-approved-premises-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

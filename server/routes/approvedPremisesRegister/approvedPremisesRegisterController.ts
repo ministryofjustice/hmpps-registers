@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Request, Response } from 'express'
 import createError from 'http-errors'
+import config from '../../config'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import AllApprovedPremisesView from './allApprovedPremisesView'
 import ApprovedPremisesDetailsView, { Action } from './approvedPremisesDetailsView'
@@ -581,6 +582,24 @@ export default class ApprovedPremisesRegisterController {
         },
       ),
     )
+  }
+
+  async deleteApprovedPremises(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const approvedPremises = await this.getOffice(req, res)
+    res.render('pages/components/edit/deleteAgency', {
+      name: approvedPremises.approvedPremisesName,
+      agencyId: approvedPremises.approvedPremisesId,
+      agencyType: 'approved premises',
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
+      navigation: { cancelButton: detailsLink(approvedPremises.approvedPremisesId) },
+    })
+  }
+
+  async submitDeleteApprovedPremises(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    await this.hmppsAgencyRegisterApiService.deleteApprovedPremises(context(res), req.query.id as string)
+    res.redirect('/approved-premises-register')
   }
 
   private getOffice(req: Request, res: Response) {

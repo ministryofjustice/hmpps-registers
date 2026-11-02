@@ -30,6 +30,8 @@ export default function routes(router: Router, services: Services): Router {
     approvedPremisesRegisterController.viewApprovedPremises(req, res),
   )
 
+  get(`${base}/delete`, (req, res) => approvedPremisesRegisterController.deleteApprovedPremises(req, res))
+  post(`${base}/delete`, (req, res) => approvedPremisesRegisterController.submitDeleteApprovedPremises(req, res))
   get(`${base}/name-description/update`, (req, res) =>
     approvedPremisesRegisterController.updateNameDescription(req, res),
   )
