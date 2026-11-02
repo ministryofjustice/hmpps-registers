@@ -119,4 +119,112 @@ describe('Approved Premises Register controller', () => {
       expect(hmppsAgencyRegisterApiService.getApprovedPremises).toHaveBeenCalledWith({}, 'SHFAP')
     })
   })
+
+  describe('updates', () => {
+    beforeEach(() => {
+      hmppsAgencyRegisterApiService.getApprovedPremises.mockResolvedValue(
+        data.approvedPremises({
+          approvedPremisesId: 'SHFPO',
+          cjitCode: 'C00SH00',
+          area: { code: 'SY', description: 'South Yorkshire' },
+          emailAddresses: [{ id: 3, address: 'a@b.com' }],
+        }),
+      )
+      hmppsAgencyRegisterApiService.updateApprovedPremisesDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFPO'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('saves a name change while keeping the other fields', async () => {
+      req.body = { name: 'New name', description: 'New description' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateApprovedPremisesDetails).toHaveBeenCalledWith({}, 'SHFPO', {
+        approvedPremisesName: 'New name',
+        description: 'New description',
+        contact: 'Duty Officer',
+        active: true,
+        accessibleAccess: undefined,
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        areaCode: 'SY',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/approved-premises-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('prefills the email update page from the existing email address', async () => {
+      req.query.emailId = '3'
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ emailAddress: 'a@b.com', emailId: 3 }),
+      )
+    })
+
+    it('adds an email address and returns to the details page', async () => {
+      hmppsAgencyRegisterApiService.addApprovedPremisesEmailAddress.mockResolvedValue({ success: true })
+      req.body = { emailAddress: 'new@b.com' }
+
+      await controller.submitAddEmail(req, res)
+
+      expect(hmppsAgencyRegisterApiService.addApprovedPremisesEmailAddress).toHaveBeenCalledWith({}, 'SHFPO', {
+        address: 'new@b.com',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/approved-premises-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('saves a contact change while keeping the other fields', async () => {
+      req.body = { contact: 'Front desk' }
+
+      await controller.submitUpdateContact(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateApprovedPremisesDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.objectContaining({ contact: 'Front desk', approvedPremisesName: 'Sheffield Approved Premises' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/approved-premises-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('saves an accessible access change', async () => {
+      req.body = { accessibleAccess: 'WHEELCHAIR_ACCESS' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateApprovedPremisesDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.objectContaining({ accessibleAccess: 'WHEELCHAIR_ACCESS' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/approved-premises-register/details?id=SHFPO&action=UPDATED')
+    })
+
+    it('clears accessible access when unknown is selected', async () => {
+      req.body = { accessibleAccess: 'UNKNOWN' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateApprovedPremisesDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPO',
+        expect.not.objectContaining({ accessibleAccess: expect.anything() }),
+      )
+    })
+
+    it('renders the contact page with the current contact', async () => {
+      await controller.updateContact(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyContact',
+        expect.objectContaining({ contact: 'Duty Officer' }),
+      )
+    })
+  })
 })

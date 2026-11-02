@@ -3,7 +3,8 @@
 {% macro approvedPremisesAreaDetailsCard(opts) %}
 
   {% set approvedPremises = opts.approvedPremises %}
-
+  {% set base = "/approved-premises-register" %}
+  {% set id = approvedPremises.approvedPremisesId %}
 
   {{ govukSummaryList({
     card: {
@@ -21,7 +22,13 @@
           text: approvedPremises.area.description if approvedPremises.area else 'Not provided'
         },
         actions: {
-         items: [ ]
+         items: [{
+            href: base + "/area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "area",
+            attributes: {"data-qa": "update-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -32,7 +39,13 @@
           text: approvedPremises.region.description if approvedPremises.region else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "region",
+            attributes: {"data-qa": "update-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -43,7 +56,13 @@
         text: approvedPremises.geographicalArea.description if approvedPremises.geographicalArea else 'Not provided'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: base + "/geographical-area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -54,7 +73,13 @@
           text: approvedPremises.localAuthority.description if approvedPremises.localAuthority else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/local-authority/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "local authority",
+            attributes: {"data-qa": "update-local-authority-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +90,13 @@
           text: approvedPremises.payrollRegion.description if approvedPremises.payrollRegion else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/payroll-region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]
