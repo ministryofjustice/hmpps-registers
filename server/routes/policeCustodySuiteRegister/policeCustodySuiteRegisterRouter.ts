@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
+import AddPoliceCustodySuiteController from './create/addPoliceCustodySuiteController'
 import PoliceCustodySuiteRegisterController from './policeCustodySuiteRegisterController'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
@@ -15,7 +16,13 @@ export default function routes(router: Router, services: Services): Router {
   const controller = new PoliceCustodySuiteRegisterController(services.hmppsAgencyRegisterApiService)
   const base = '/police-custody-suite-register'
 
+  const addController = new AddPoliceCustodySuiteController(services.hmppsAgencyRegisterApiService)
+
   get(base, (req, res) => controller.showAllPoliceCustodySuites(req, res))
+  get(`${base}/create/start`, (req, res) => addController.start(req, res))
+  get(`${base}/create/:journeyId/cancel`, (req, res) => addController.cancel(req, res))
+  get(`${base}/create/:journeyId/:step`, (req, res) => addController.show(req, res))
+  post(`${base}/create/:journeyId/:step`, (req, res) => addController.submit(req, res))
   get(`${base}/details`, (req, res) => controller.viewPoliceCustodySuite(req, res))
   get(`${base}/delete`, (req, res) => controller.deletePoliceCustodySuite(req, res))
   post(`${base}/delete`, (req, res) => controller.submitDeletePoliceCustodySuite(req, res))

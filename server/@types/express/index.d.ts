@@ -28,6 +28,7 @@ import type {
 } from '../prisonRegisterForms'
 
 import type { AddHospitalJourney } from '../../routes/hospitalRegister/create/addHospitalFlowControl'
+import type { AddPoliceCustodySuiteJourney } from '../../routes/policeCustodySuiteRegister/create/addPoliceCustodySuiteFlowControl'
 import type { AddCourtJourney } from '../../routes/courtRegister/create/addCourtFlowControl'
 
 export default {}
@@ -40,6 +41,7 @@ declare module 'express-session' {
     addNewPrisonForm: AddNewPrisonForm
     addCourtJourneys: Record<string, AddCourtJourney>
     addHospitalJourneys: Record<string, AddHospitalJourney>
+    addPoliceCustodySuiteJourneys: Record<string, AddPoliceCustodySuiteJourney>
     amendPrisonDetailsForm: AmendPrisonDetailsForm
     amendWelshPrisonAddressForm: AmendWelshPrisonAddressForm
     amendPrisonAddressForm: AmendPrisonAddressForm

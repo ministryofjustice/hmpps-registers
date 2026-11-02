@@ -22,6 +22,7 @@ import {
   UpdateCourt,
   CreateHospital,
   UpdateHospital,
+  CreatePoliceCustodySuite,
   UpdatePoliceCustodySuite,
   CreateCourt,
   UpdateEmailAddress,
@@ -614,6 +615,20 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<PoliceCustodySuite>({
       path: `/police-custody-suites/id/${policeCustodySuiteId}`,
     })
+  }
+
+  async createPoliceCustodySuite(
+    context: Context,
+    policeCustodySuite: CreatePoliceCustodySuite,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating police custody suite with id ${policeCustodySuite.policeCustodySuiteId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<PoliceCustodySuite>({
+        path: '/police-custody-suites',
+        data: policeCustodySuite,
+      }),
+    )
   }
 
   async updatePoliceCustodySuiteDetails(

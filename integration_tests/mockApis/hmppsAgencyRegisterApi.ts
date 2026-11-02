@@ -874,6 +874,74 @@ const stubGetPoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): Supe
     },
   })
 
+const createPoliceCustodySuiteScenario = (policeCustodySuiteId: string) =>
+  `create-police-custody-suite-${policeCustodySuiteId}`
+
+// The agency ID is available until POST /police-custody-suites creates the suite, which can then be retrieved.
+const stubPoliceCustodySuiteIdAvailable = async (policeCustodySuite: PoliceCustodySuite): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${policeCustodySuite.policeCustodySuiteId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/police-custody-suites/id/${policeCustodySuite.policeCustodySuiteId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: policeCustodySuite,
+    },
+  })
+}
+
+const stubCreatePoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/police-custody-suites',
+      bodyPatterns: [
+        { matchesJsonPath: `$[?(@.policeCustodySuiteId == '${policeCustodySuite.policeCustodySuiteId}')]` },
+      ],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: policeCustodySuite,
+    },
+  })
+
+const stubCreatePoliceCustodySuiteError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/police-custody-suites' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedPoliceCustodySuites = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/police-custody-suites',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 type PoliceCustodySuiteApiCall = {
   policeCustodySuiteId: string
   endpoint?: string
@@ -1035,6 +1103,10 @@ export default {
   getHospitalApiRequests,
   stubGetPoliceCustodySuites,
   stubGetPoliceCustodySuite,
+  stubPoliceCustodySuiteIdAvailable,
+  stubCreatePoliceCustodySuite,
+  stubCreatePoliceCustodySuiteError,
+  getCreatedPoliceCustodySuites,
   stubPoliceCustodySuiteApi,
   stubPoliceCustodySuiteApiError,
   getPoliceCustodySuiteApiRequests,
