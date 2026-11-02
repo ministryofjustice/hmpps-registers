@@ -1,7 +1,7 @@
 import { PoliceCustodySuite } from '../../@types/prisonRegister'
 import config from '../../config'
 
-export type Action = 'NONE' | 'UPDATED'
+export type Action = 'NONE' | 'UPDATED' | 'CREATED'
 
 export default class PoliceCustodySuiteDetailsView {
   constructor(

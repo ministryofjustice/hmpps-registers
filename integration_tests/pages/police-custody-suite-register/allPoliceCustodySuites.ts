@@ -22,6 +22,7 @@ const allPoliceCustodySuites = {
   textSearchFilter: () => cy.get('#textSearch'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  addPoliceCustodySuiteLink: () => cy.get('[data-qa=add-police-custody-suite-link]'),
   viewPoliceCustodySuiteLink: (policeCustodySuiteId: string) =>
     cy.get(`[href="/police-custody-suite-register/details?id=${policeCustodySuiteId}"]`).first(),
 }
