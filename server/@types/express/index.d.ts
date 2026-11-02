@@ -9,6 +9,7 @@ import type {
   UpdateAccessibleAccessForm,
   UpdateCjitCodeForm,
   UpdateContactForm,
+  UpdateAgencyTypeForm,
   UpdateActiveForm,
   UpdateAreaForm,
   UpdateRegionForm,
@@ -67,6 +68,7 @@ declare module 'express-session' {
     updateHighSecurityForm: UpdateHighSecurityForm
     updateCjitCodeForm: UpdateCjitCodeForm
     updateContactForm: UpdateContactForm
+    updateAgencyTypeForm: UpdateAgencyTypeForm
     updateActiveForm: UpdateActiveForm
     updateAreaForm: UpdateAreaForm
     updateRegionForm: UpdateRegionForm

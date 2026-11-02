@@ -14,6 +14,7 @@ import {
   InsertPrison,
   LegacyAgencyUsage,
   OtherAgency,
+  UpdateOtherAgency,
   PoliceCustodySuite,
   PhoneNumber,
   Prison,
@@ -450,6 +451,114 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<OtherAgency>({
       path: `/other-agencies/id/${agencyId}`,
     })
+  }
+
+  async updateOtherAgencyDetails(
+    context: Context,
+    agencyId: string,
+    otherAgency: UpdateOtherAgency,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating details for other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<OtherAgency>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}`,
+        data: otherAgency,
+      }),
+    )
+  }
+
+  async addOtherAgencyAddress(
+    context: Context,
+    agencyId: string,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding address to other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/address`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async updateOtherAgencyAddress(
+    context: Context,
+    agencyId: string,
+    addressId: number,
+    address: UpdateAgencyAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating address for other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/address/${addressId}`,
+        data: HMPPSAgencyRegisterApi.agencyAddressData(address),
+      }),
+    )
+  }
+
+  async addOtherAgencyPhoneNumber(
+    context: Context,
+    agencyId: string,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding phone number to other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/phone-number`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async updateOtherAgencyPhoneNumber(
+    context: Context,
+    agencyId: string,
+    phoneId: number,
+    phoneNumber: PhoneNumber,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating phone number for other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/phone-number/${phoneId}`,
+        data: phoneNumber,
+      }),
+    )
+  }
+
+  async addOtherAgencyEmailAddress(
+    context: Context,
+    agencyId: string,
+    emailAddress: EmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`adding email address to other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/email-address`,
+        data: emailAddress,
+      }),
+    )
+  }
+
+  async updateOtherAgencyEmailAddress(
+    context: Context,
+    agencyId: string,
+    emailId: number,
+    emailAddress: UpdateEmailAddress,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating email address for other agency with id ${agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
+        path: `/other-agencies/id/${encodeURIComponent(agencyId)}/email-address/${emailId}`,
+        data: emailAddress,
+      }),
+    )
   }
 
   async getHospitals(context: Context, filter: HospitalFilter): Promise<Hospital[]> {

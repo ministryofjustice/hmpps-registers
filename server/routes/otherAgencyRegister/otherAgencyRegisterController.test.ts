@@ -130,4 +130,112 @@ describe('Other Agency Register controller', () => {
       expect(hmppsAgencyRegisterApiService.getOtherAgency).toHaveBeenCalledWith({}, 'SHFPECS')
     })
   })
+
+  describe('updates', () => {
+    beforeEach(() => {
+      hmppsAgencyRegisterApiService.getOtherAgency.mockResolvedValue(
+        data.otherAgency({
+          agencyId: 'SHFPECS',
+          cjitCode: 'C00SH00',
+          area: { code: 'SY', description: 'South Yorkshire' },
+          emailAddresses: [{ id: 3, address: 'a@b.com' }],
+        }),
+      )
+      hmppsAgencyRegisterApiService.updateOtherAgencyDetails.mockResolvedValue({ success: true })
+      req.query.id = 'SHFPECS'
+      ;(req.flash as jest.Mock).mockReturnValue([])
+    })
+
+    it('saves a name change while keeping the other fields', async () => {
+      req.body = { name: 'New name', description: 'New description' }
+
+      await controller.submitUpdateNameDescription(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateOtherAgencyDetails).toHaveBeenCalledWith({}, 'SHFPECS', {
+        agencyName: 'New name',
+        description: 'New description',
+        active: true,
+        accessibleAccess: 'NONE',
+        otherAgencyType: 'PECS',
+        inactiveDate: undefined,
+        cjitCode: 'C00SH00',
+        areaCode: 'SY',
+        regionCode: 'YH',
+        geographicalAreaCode: 'YH',
+        localAuthorityCode: 'YH',
+        payrollRegionCode: 'YH',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/other-agency-register/details?id=SHFPECS&action=UPDATED')
+    })
+
+    it('prefills the email update page from the existing email address', async () => {
+      req.query.emailId = '3'
+
+      await controller.updateEmail(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/components/edit/updateAgencyEmail',
+        expect.objectContaining({ emailAddress: 'a@b.com', emailId: 3 }),
+      )
+    })
+
+    it('adds an email address and returns to the details page', async () => {
+      hmppsAgencyRegisterApiService.addOtherAgencyEmailAddress.mockResolvedValue({ success: true })
+      req.body = { emailAddress: 'new@b.com' }
+
+      await controller.submitAddEmail(req, res)
+
+      expect(hmppsAgencyRegisterApiService.addOtherAgencyEmailAddress).toHaveBeenCalledWith({}, 'SHFPECS', {
+        address: 'new@b.com',
+      })
+      expect(res.redirect).toHaveBeenCalledWith('/other-agency-register/details?id=SHFPECS&action=UPDATED')
+    })
+
+    it('saves an agency type change while keeping the other fields', async () => {
+      req.body = { agencyType: 'AIRPORT' }
+
+      await controller.submitUpdateAgencyType(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateOtherAgencyDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPECS',
+        expect.objectContaining({ otherAgencyType: 'AIRPORT', agencyName: 'Sheffield PECS Agency' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/other-agency-register/details?id=SHFPECS&action=UPDATED')
+    })
+
+    it('saves an accessible access change', async () => {
+      req.body = { accessibleAccess: 'WHEELCHAIR_ACCESS' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateOtherAgencyDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPECS',
+        expect.objectContaining({ accessibleAccess: 'WHEELCHAIR_ACCESS' }),
+      )
+      expect(res.redirect).toHaveBeenCalledWith('/other-agency-register/details?id=SHFPECS&action=UPDATED')
+    })
+
+    it('clears accessible access when unknown is selected', async () => {
+      req.body = { accessibleAccess: 'UNKNOWN' }
+
+      await controller.submitUpdateAccessibleAccess(req, res)
+
+      expect(hmppsAgencyRegisterApiService.updateOtherAgencyDetails).toHaveBeenCalledWith(
+        {},
+        'SHFPECS',
+        expect.not.objectContaining({ accessibleAccess: expect.anything() }),
+      )
+    })
+
+    it('renders the agency type page with the current type', async () => {
+      await controller.updateAgencyType(req, res)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/other-agency-register/updateAgencyType',
+        expect.objectContaining({ name: 'Sheffield PECS Agency' }),
+      )
+    })
+  })
 })

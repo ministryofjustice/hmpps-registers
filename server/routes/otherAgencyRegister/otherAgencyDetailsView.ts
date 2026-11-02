@@ -1,11 +1,17 @@
 import { OtherAgency } from '../../@types/prisonRegister'
 
-export default class OtherAgencyDetailsView {
-  constructor(private readonly otherAgency: OtherAgency) {}
+export type Action = 'NONE' | 'UPDATED'
 
-  get renderArgs(): { otherAgency: OtherAgency } {
+export default class OtherAgencyDetailsView {
+  constructor(
+    private readonly otherAgency: OtherAgency,
+    private readonly action: Action = 'NONE',
+  ) {}
+
+  get renderArgs(): { otherAgency: OtherAgency; action: Action } {
     return {
       otherAgency: this.otherAgency,
+      action: this.action,
     }
   }
 }

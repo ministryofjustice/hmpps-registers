@@ -56,6 +56,10 @@ declare module 'agencyForms' {
   export interface UpdateAccessibleAccessForm {
     accessibleAccess: string
   }
+  export interface UpdateAgencyTypeForm {
+    agencyType: string
+  }
+
   export interface UpdateContactForm {
     contact?: string
   }
