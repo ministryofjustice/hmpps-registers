@@ -18,6 +18,7 @@ const otherAgencyDetails = {
   emailAddress: () => cy.get('dt:contains("Email")').next(),
   phoneNumber: () => cy.get('dt:contains("Number")').next(),
   addEmailAddressLink: () => cy.get('[data-qa=add-email-address-link]'),
+  confirmCreated: () => cy.get('[data-qa=confirm-created]'),
   link: (qa: string) => cy.get(`[data-qa=${qa}]`),
   confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),
 }

@@ -1,6 +1,6 @@
 import { OtherAgency } from '../../@types/prisonRegister'
 
-export type Action = 'NONE' | 'UPDATED'
+export type Action = 'NONE' | 'UPDATED' | 'CREATED'
 
 export default class OtherAgencyDetailsView {
   constructor(

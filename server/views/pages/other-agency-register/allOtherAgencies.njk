@@ -39,7 +39,14 @@
 
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
-                            <div class="moj-action-bar__filter"></div>
+                            <div class="govuk-button-group">
+                                <div class="moj-action-bar__filter"></div>
+                                {{ govukButton({
+                                    text: "Add a new other agency",
+                                    href: "/other-agency-register/create/start",
+                                    attributes: { "data-qa": "add-other-agency-link" }
+                                }) }}
+                            </div>
                         </div>
                     </div>
 

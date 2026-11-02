@@ -1,6 +1,7 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import OtherAgencyRegisterController from './otherAgencyRegisterController'
+import AddOtherAgencyController from './create/addOtherAgencyController'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 // include this here otherwise TS complains about cyclical dependencies
@@ -16,9 +17,15 @@ export default function routes(router: Router, services: Services): Router {
 
   const otherAgencyRegisterController = new OtherAgencyRegisterController(services.hmppsAgencyRegisterApiService)
 
+  const addController = new AddOtherAgencyController(services.hmppsAgencyRegisterApiService)
+
   get('/other-agency-register', (req, res) => otherAgencyRegisterController.showAllOtherAgencies(req, res))
   get('/other-agency-register/details', (req, res) => otherAgencyRegisterController.viewOtherAgency(req, res))
 
+  get(`${base}/create/start`, (req, res) => addController.start(req, res))
+  get(`${base}/create/:journeyId/cancel`, (req, res) => addController.cancel(req, res))
+  get(`${base}/create/:journeyId/:step`, (req, res) => addController.show(req, res))
+  post(`${base}/create/:journeyId/:step`, (req, res) => addController.submit(req, res))
   get(`${base}/name-description/update`, (req, res) => otherAgencyRegisterController.updateNameDescription(req, res))
   post(`${base}/name-description/update`, (req, res) =>
     otherAgencyRegisterController.submitUpdateNameDescription(req, res),

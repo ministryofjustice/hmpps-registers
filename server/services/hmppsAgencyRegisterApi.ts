@@ -14,6 +14,7 @@ import {
   InsertPrison,
   LegacyAgencyUsage,
   OtherAgency,
+  CreateOtherAgency,
   UpdateOtherAgency,
   PoliceCustodySuite,
   PhoneNumber,
@@ -557,6 +558,17 @@ export default class HMPPSAgencyRegisterApi {
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
         path: `/other-agencies/id/${encodeURIComponent(agencyId)}/email-address/${emailId}`,
         data: emailAddress,
+      }),
+    )
+  }
+
+  async createOtherAgency(context: Context, otherAgency: CreateOtherAgency): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating other agency with id ${otherAgency.agencyId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<OtherAgency>({
+        path: '/other-agencies',
+        data: otherAgency,
       }),
     )
   }

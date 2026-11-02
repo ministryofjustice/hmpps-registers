@@ -20,6 +20,13 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ otherAgency.agencyName }}</h1>
 
+    {% if action == 'CREATED' %}
+      <div data-qa="confirm-created" class="govuk-panel govuk-panel--confirmation">
+        <div class="govuk-panel__body">
+          Other agency has been added successfully
+        </div>
+      </div>
+    {% endif %}
     {% if action == 'UPDATED' %}
       <div data-qa="confirm-updated" class="govuk-panel govuk-panel--confirmation">
         <div class="govuk-panel__body">
