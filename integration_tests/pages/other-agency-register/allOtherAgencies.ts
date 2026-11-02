@@ -10,6 +10,7 @@ const allOtherAgencies = {
     active: () => column(rowNumber, 2),
     type: () => column(rowNumber, 3),
   }),
+  addOtherAgencyLink: () => cy.get('[data-qa=add-other-agency-link]'),
   mojFilter: () => cy.get('div.moj-filter'),
   showFilterButton: () => cy.contains('Show filter'),
   hideFilterButton: () => cy.contains('Hide filter'),

@@ -729,6 +729,71 @@ type OtherAgencyApiCall = {
   method: 'POST' | 'PUT' | 'DELETE'
 }
 
+const createOtherAgencyScenario = (agencyId: string) => `create-other-agency-${agencyId}`
+
+// The agency ID is available until POST /other-agencies creates the office, which can then be retrieved.
+const stubOtherAgencyIdAvailable = async (otherAgency: OtherAgency): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${otherAgency.agencyId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/other-agencies/id/${otherAgency.agencyId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: otherAgency,
+    },
+  })
+}
+
+const stubCreateOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/other-agencies',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.agencyId == '${otherAgency.agencyId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: otherAgency,
+    },
+  })
+
+const stubCreateOtherAgencyError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/other-agencies' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedOtherAgency = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/other-agencies',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const otherAgencyApiPath = ({ agencyId, endpoint }: OtherAgencyApiCall) =>
   `/prison-register/other-agencies/id/${agencyId}${endpoint ? `/${endpoint}` : ''}`
 
@@ -1333,6 +1398,10 @@ export default {
   stubGetOtherAgencies,
   stubGetOtherAgency,
   stubOtherAgencyApi,
+  stubOtherAgencyIdAvailable,
+  stubCreateOtherAgency,
+  stubCreateOtherAgencyError,
+  getCreatedOtherAgency,
   stubOtherAgencyApiError,
   getOtherAgencyApiRequests,
   stubGetHospitals,

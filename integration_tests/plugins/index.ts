@@ -75,6 +75,10 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
 
     stubGetOtherAgencies: hmppsAgencyRegisterApi.stubGetOtherAgencies,
     stubGetOtherAgency: hmppsAgencyRegisterApi.stubGetOtherAgency,
+    stubOtherAgencyIdAvailable: hmppsAgencyRegisterApi.stubOtherAgencyIdAvailable,
+    stubCreateOtherAgency: hmppsAgencyRegisterApi.stubCreateOtherAgency,
+    stubCreateOtherAgencyError: hmppsAgencyRegisterApi.stubCreateOtherAgencyError,
+    getCreatedOtherAgency: hmppsAgencyRegisterApi.getCreatedOtherAgency,
     stubOtherAgencyApi: hmppsAgencyRegisterApi.stubOtherAgencyApi,
     stubOtherAgencyApiError: hmppsAgencyRegisterApi.stubOtherAgencyApiError,
     getOtherAgencyApiRequests: hmppsAgencyRegisterApi.getOtherAgencyApiRequests,
