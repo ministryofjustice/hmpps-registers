@@ -573,6 +573,30 @@ export default class HMPPSAgencyRegisterApi {
     )
   }
 
+  async deleteProbationOffice(context: Context, id: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting probation office with id ${id}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/probation-offices/id/${encodeURIComponent(id)}`,
+    })
+  }
+
+  async deleteApprovedPremises(context: Context, id: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting approved premises with id ${id}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/approved-premises/id/${encodeURIComponent(id)}`,
+    })
+  }
+
+  async deleteOtherAgency(context: Context, id: string): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting other agency with id ${id}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/other-agencies/id/${encodeURIComponent(id)}`,
+    })
+  }
+
   async getHospitals(context: Context, filter: HospitalFilter): Promise<Hospital[]> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting all hospitals with filter ${JSON.stringify(filter)}`)

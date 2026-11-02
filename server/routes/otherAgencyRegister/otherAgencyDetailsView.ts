@@ -1,3 +1,4 @@
+import config from '../../config'
 import { OtherAgency } from '../../@types/prisonRegister'
 
 export type Action = 'NONE' | 'UPDATED' | 'CREATED'
@@ -8,10 +9,11 @@ export default class OtherAgencyDetailsView {
     private readonly action: Action = 'NONE',
   ) {}
 
-  get renderArgs(): { otherAgency: OtherAgency; action: Action } {
+  get renderArgs(): { otherAgency: OtherAgency; action: Action; agencyRegistersDeleteEnabled: boolean } {
     return {
       otherAgency: this.otherAgency,
       action: this.action,
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
     }
   }
 }

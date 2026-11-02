@@ -58,6 +58,14 @@
       {{  emailAddressesCard({ emailAddresses: otherAgency.emailAddresses, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register", deleteHidden: true }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete other agency",
+      href: "/other-agency-register/delete?id=" + otherAgency.agencyId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-other-agency-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

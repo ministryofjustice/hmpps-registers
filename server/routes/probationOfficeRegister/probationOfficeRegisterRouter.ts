@@ -30,6 +30,8 @@ export default function routes(router: Router, services: Services): Router {
     probationOfficeRegisterController.viewProbationOffice(req, res),
   )
 
+  get(`${base}/delete`, (req, res) => probationOfficeRegisterController.deleteProbationOffice(req, res))
+  post(`${base}/delete`, (req, res) => probationOfficeRegisterController.submitDeleteProbationOffice(req, res))
   get(`${base}/name-description/update`, (req, res) =>
     probationOfficeRegisterController.updateNameDescription(req, res),
   )

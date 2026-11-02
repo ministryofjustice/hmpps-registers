@@ -6,7 +6,11 @@ describe('ProbationOfficeDetailsView', () => {
     const probationOffice = data.probationOffice({ probationOfficeId: 'SHFPO' })
     const view = new ProbationOfficeDetailsView(probationOffice)
 
-    expect(view.renderArgs).toEqual({ probationOffice, action: 'NONE' })
+    expect(view.renderArgs).toEqual({
+      probationOffice,
+      action: 'NONE',
+      agencyRegistersDeleteEnabled: expect.any(Boolean),
+    })
   })
 
   it('will pass the action to the page', () => {
@@ -15,6 +19,7 @@ describe('ProbationOfficeDetailsView', () => {
     expect(new ProbationOfficeDetailsView(probationOffice, 'UPDATED').renderArgs).toEqual({
       probationOffice,
       action: 'UPDATED',
+      agencyRegistersDeleteEnabled: expect.any(Boolean),
     })
   })
 })

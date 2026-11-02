@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/probation-office-register/probationOfficeCoreDetailsCard.njk" import probationOfficeCoreDetailsCard %}
 {% from "partials/probation-office-register/probationOfficeAreaDetailsCard.njk" import probationOfficeAreaDetailsCard %}
 {% from "partials/addressesCard.njk" import addressesCard %}
@@ -53,6 +54,14 @@
       {{  emailAddressesCard({ emailAddresses: probationOffice.emailAddresses, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register", deleteHidden: true }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete probation office",
+      href: "/probation-office-register/delete?id=" + probationOffice.probationOfficeId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-probation-office-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}
