@@ -24,6 +24,7 @@ import {
   UpdateHospital,
   CreatePoliceCustodySuite,
   UpdatePoliceCustodySuite,
+  CreateProbationOffice,
   UpdateProbationOffice,
   CreateCourt,
   UpdateEmailAddress,
@@ -599,6 +600,20 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<ProbationOffice>({
       path: `/probation-offices/id/${probationOfficeId}`,
     })
+  }
+
+  async createProbationOffice(
+    context: Context,
+    probationOffice: CreateProbationOffice,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating probation office with id ${probationOffice.probationOfficeId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<ProbationOffice>({
+        path: '/probation-offices',
+        data: probationOffice,
+      }),
+    )
   }
 
   async updateProbationOfficeDetails(

@@ -22,6 +22,7 @@ const allProbationOffices = {
   textSearchFilter: () => cy.get('#textSearch'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  addProbationOfficeLink: () => cy.get('[data-qa=add-probation-office-link]'),
   viewProbationOfficeLink: (probationOfficeId: string) =>
     cy.get(`[href="/probation-office-register/details?id=${probationOfficeId}"]`).first(),
 }
