@@ -1149,6 +1149,71 @@ const getApprovedPremisesApiRequests = (
       .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
   )
 
+const createApprovedPremisesScenario = (approvedPremisesId: string) => `create-approved-premises-${approvedPremisesId}`
+
+// The agency ID is available until POST /approved-premises creates the office, which can then be retrieved.
+const stubApprovedPremisesIdAvailable = async (approvedPremises: ApprovedPremises): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${approvedPremises.approvedPremisesId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/approved-premises/id/${approvedPremises.approvedPremisesId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: approvedPremises,
+    },
+  })
+}
+
+const stubCreateApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/approved-premises',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.approvedPremisesId == '${approvedPremises.approvedPremisesId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: approvedPremises,
+    },
+  })
+
+const stubCreateApprovedPremisesError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/approved-premises' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedApprovedPremises = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/approved-premises',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubGetAllApprovedPremises = (approvedPremisesList: ApprovedPremises[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1260,6 +1325,10 @@ export default {
   getProbationOfficeApiRequests,
   stubGetAllApprovedPremises,
   stubGetApprovedPremises,
+  stubApprovedPremisesIdAvailable,
+  stubCreateApprovedPremises,
+  stubCreateApprovedPremisesError,
+  getCreatedApprovedPremises,
   stubApprovedPremisesApi,
   stubApprovedPremisesApiError,
   getApprovedPremisesApiRequests,

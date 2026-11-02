@@ -23,6 +23,7 @@ import {
   CreateHospital,
   UpdateHospital,
   UpdateApprovedPremises,
+  CreateApprovedPremises,
   CreatePoliceCustodySuite,
   UpdatePoliceCustodySuite,
   CreateProbationOffice,
@@ -923,6 +924,20 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.restClient(token).get<ApprovedPremises>({
       path: `/approved-premises/id/${approvedPremisesId}`,
     })
+  }
+
+  async createApprovedPremises(
+    context: Context,
+    approvedPremises: CreateApprovedPremises,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`creating approved premises with id ${approvedPremises.approvedPremisesId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<ApprovedPremises>({
+        path: '/approved-premises',
+        data: approvedPremises,
+      }),
+    )
   }
 
   async updateApprovedPremisesDetails(

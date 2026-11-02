@@ -22,6 +22,7 @@ const allApprovedPremises = {
   textSearchFilter: () => cy.get('#textSearch'),
   cancelActiveFilter: () => cy.get('.moj-filter-tags').contains('Active'),
   cancelTextSearchFilter: (value: string) => cy.get('.moj-filter-tags').contains(value),
+  addApprovedPremisesLink: () => cy.get('[data-qa=add-approved-premises-link]'),
   viewApprovedPremisesLink: (approvedPremisesId: string) =>
     cy.get(`[href="/approved-premises-register/details?id=${approvedPremisesId}"]`).first(),
 }
