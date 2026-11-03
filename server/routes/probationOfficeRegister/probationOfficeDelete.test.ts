@@ -14,4 +14,13 @@ describe('ProbationOffice deletion feature switch', () => {
 
     await request(appWithAllRoutes({}))[method]('/probation-office-register/delete?id=SHFPO').expect(404)
   })
+
+  it.each([
+    ['get', 'address/delete?id=SHFPO&addressId=1'],
+    ['post', 'address/delete?id=SHFPO'],
+  ] as const)('returns 404 for direct %s %s requests when disabled', async (method, path) => {
+    config.agencyRegistersDeleteEnabled = false
+
+    await request(appWithAllRoutes({}))[method](`/probation-office-register/${path}`).expect(404)
+  })
 })

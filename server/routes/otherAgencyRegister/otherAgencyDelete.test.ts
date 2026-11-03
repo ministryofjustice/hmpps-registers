@@ -14,4 +14,13 @@ describe('OtherAgency deletion feature switch', () => {
 
     await request(appWithAllRoutes({}))[method]('/other-agency-register/delete?id=SHFAG').expect(404)
   })
+
+  it.each([
+    ['get', 'address/delete?id=SHFAG&addressId=1'],
+    ['post', 'address/delete?id=SHFAG'],
+  ] as const)('returns 404 for direct %s %s requests when disabled', async (method, path) => {
+    config.agencyRegistersDeleteEnabled = false
+
+    await request(appWithAllRoutes({}))[method](`/other-agency-register/${path}`).expect(404)
+  })
 })

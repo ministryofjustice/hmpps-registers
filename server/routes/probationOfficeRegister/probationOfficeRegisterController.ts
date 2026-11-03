@@ -602,6 +602,72 @@ export default class ProbationOfficeRegisterController {
     res.redirect('/probation-office-register')
   }
 
+  async deleteAddress(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const addressId = Number(req.query.addressId)
+    if (!Number.isSafeInteger(addressId) || addressId <= 0) throw createError(400, 'Invalid address ID')
+    const entity = await this.getOffice(req, res)
+    const address = entity.addresses.find(item => item.id === addressId)
+    if (!address) throw createError(404, 'Probation office address not found')
+    res.render('pages/components/edit/deleteAgencyAddress', {
+      name: entity.probationOfficeName,
+      navigation: { cancelButton: detailsLink(entity.probationOfficeId) },
+      address,
+    })
+  }
+
+  async submitDeleteAddress(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const addressId = Number(req.body.addressId)
+    if (!Number.isSafeInteger(addressId) || addressId <= 0) throw createError(400, 'Invalid address ID')
+    await this.hmppsAgencyRegisterApiService.deleteProbationOfficeAddress(
+      context(res),
+      req.query.id as string,
+      addressId,
+    )
+    res.redirect(`${detailsLink(req.query.id as string)}&action=UPDATED`)
+  }
+
+  async deletePhone(req: Request, res: Response): Promise<void> {
+    const phoneId = Number(req.query.phoneId)
+    const entity = await this.getOffice(req, res)
+    res.render('pages/components/edit/deleteAgencyPhone', {
+      name: entity.probationOfficeName,
+      navigation: { cancelButton: detailsLink(entity.probationOfficeId) },
+      phoneNumber: entity.phoneNumbers.find(phone => phone.id === phoneId)?.number,
+      phoneId,
+    })
+  }
+
+  async submitDeletePhone(req: Request, res: Response): Promise<void> {
+    await this.hmppsAgencyRegisterApiService.deleteProbationOfficePhoneNumber(
+      context(res),
+      req.query.id as string,
+      Number(req.body.phoneId),
+    )
+    res.redirect(`${detailsLink(req.query.id as string)}&action=UPDATED`)
+  }
+
+  async deleteEmail(req: Request, res: Response): Promise<void> {
+    const emailId = Number(req.query.emailId)
+    const entity = await this.getOffice(req, res)
+    res.render('pages/components/edit/deleteAgencyEmail', {
+      name: entity.probationOfficeName,
+      navigation: { cancelButton: detailsLink(entity.probationOfficeId) },
+      emailAddress: entity.emailAddresses.find(email => email.id === emailId)?.address,
+      emailId,
+    })
+  }
+
+  async submitDeleteEmail(req: Request, res: Response): Promise<void> {
+    await this.hmppsAgencyRegisterApiService.deleteProbationOfficeEmailAddress(
+      context(res),
+      req.query.id as string,
+      Number(req.body.emailId),
+    )
+    res.redirect(`${detailsLink(req.query.id as string)}&action=UPDATED`)
+  }
+
   private getOffice(req: Request, res: Response) {
     return this.hmppsAgencyRegisterApiService.getProbationOffice(context(res), req.query.id as string)
   }
