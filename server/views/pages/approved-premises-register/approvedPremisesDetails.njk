@@ -45,13 +45,13 @@
       {{  approvedPremisesAreaDetailsCard({ approvedPremises: approvedPremises }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: approvedPremises.addresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register" }) }}
+      {{  addressesCard({ addresses: approvedPremises.addresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: approvedPremises.phoneNumbers, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register", deleteHidden: true }) }}
+      {{  phoneNumbersCard({ phoneNumbers: approvedPremises.phoneNumbers, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: approvedPremises.emailAddresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register", deleteHidden: true }) }}
+      {{  emailAddressesCard({ emailAddresses: approvedPremises.emailAddresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register" }) }}
     </div>
   </div>
   {% if agencyRegistersDeleteEnabled %}

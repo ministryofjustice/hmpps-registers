@@ -109,7 +109,7 @@ context('Other agency register - update other agency', () => {
     details.link('add-email-address-link').should('have.attr', 'href', `${base}/email/create?id=SHFPECS`)
     details.link('update-email-address-link').should('have.attr', 'href', `${base}/email/update?id=SHFPECS&emailId=3`)
     ;['delete-address-link', 'delete-phone-number-link', 'delete-email-address-link'].forEach(qa =>
-      details.link(qa).should('not.exist'),
+      details.link(qa).should('exist'),
     )
   })
 

@@ -49,13 +49,13 @@
     <div class="govuk-grid-column-two-thirds">
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: otherAgency.addresses, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register" }) }}
+      {{  addressesCard({ addresses: otherAgency.addresses, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: otherAgency.phoneNumbers, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register", deleteHidden: true }) }}
+      {{  phoneNumbersCard({ phoneNumbers: otherAgency.phoneNumbers, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: otherAgency.emailAddresses, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register", deleteHidden: true }) }}
+      {{  emailAddressesCard({ emailAddresses: otherAgency.emailAddresses, id: otherAgency.agencyId, baseRegisterUrl: "/other-agency-register" }) }}
     </div>
   </div>
   {% if agencyRegistersDeleteEnabled %}

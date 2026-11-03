@@ -45,13 +45,13 @@
       {{  probationOfficeAreaDetailsCard({ probationOffice: probationOffice }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: probationOffice.addresses, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register" }) }}
+      {{  addressesCard({ addresses: probationOffice.addresses, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: probationOffice.phoneNumbers, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register", deleteHidden: true }) }}
+      {{  phoneNumbersCard({ phoneNumbers: probationOffice.phoneNumbers, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: probationOffice.emailAddresses, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register", deleteHidden: true }) }}
+      {{  emailAddressesCard({ emailAddresses: probationOffice.emailAddresses, id: probationOffice.probationOfficeId, baseRegisterUrl: "/probation-office-register" }) }}
     </div>
   </div>
   {% if agencyRegistersDeleteEnabled %}

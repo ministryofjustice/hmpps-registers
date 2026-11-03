@@ -581,6 +581,30 @@ export default class HMPPSAgencyRegisterApi {
     })
   }
 
+  async deleteProbationOfficeAddress(context: Context, probationOfficeId: string, addressId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for probation office with id ${probationOfficeId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/address/${addressId}`,
+    })
+  }
+
+  async deleteProbationOfficePhoneNumber(context: Context, probationOfficeId: string, phoneId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting phone number for probation office with id ${probationOfficeId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/phone-number/${phoneId}`,
+    })
+  }
+
+  async deleteProbationOfficeEmailAddress(context: Context, probationOfficeId: string, emailId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting email address for probation office with id ${probationOfficeId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/email-address/${emailId}`,
+    })
+  }
+
   async deleteApprovedPremises(context: Context, id: string): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`deleting approved premises with id ${id}`)
@@ -589,11 +613,67 @@ export default class HMPPSAgencyRegisterApi {
     })
   }
 
+  async deleteApprovedPremisesAddress(context: Context, approvedPremisesId: string, addressId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for approved premises with id ${approvedPremisesId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/address/${addressId}`,
+    })
+  }
+
+  async deleteApprovedPremisesPhoneNumber(
+    context: Context,
+    approvedPremisesId: string,
+    phoneId: number,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting phone number for approved premises with id ${approvedPremisesId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/phone-number/${phoneId}`,
+    })
+  }
+
+  async deleteApprovedPremisesEmailAddress(
+    context: Context,
+    approvedPremisesId: string,
+    emailId: number,
+  ): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting email address for approved premises with id ${approvedPremisesId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/email-address/${emailId}`,
+    })
+  }
+
   async deleteOtherAgency(context: Context, id: string): Promise<void> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`deleting other agency with id ${id}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/other-agencies/id/${encodeURIComponent(id)}`,
+    })
+  }
+
+  async deleteOtherAgencyAddress(context: Context, agencyId: string, addressId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting address for other agency with id ${agencyId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/other-agencies/id/${encodeURIComponent(agencyId)}/address/${addressId}`,
+    })
+  }
+
+  async deleteOtherAgencyPhoneNumber(context: Context, agencyId: string, phoneId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting phone number for other agency with id ${agencyId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/other-agencies/id/${encodeURIComponent(agencyId)}/phone-number/${phoneId}`,
+    })
+  }
+
+  async deleteOtherAgencyEmailAddress(context: Context, agencyId: string, emailId: number): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`deleting email address for other agency with id ${agencyId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/other-agencies/id/${encodeURIComponent(agencyId)}/email-address/${emailId}`,
     })
   }
 
