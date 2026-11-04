@@ -183,7 +183,7 @@ describe('Court Register controller', () => {
 
   describe('showAllCourts', () => {
     beforeEach(() => {
-      hmppsAgencyRegisterApiService.getCourts.mockResolvedValue([data.court({ courtId: 'SHFCC' })])
+      hmppsAgencyRegisterApiService.getCourtSummaries.mockResolvedValue([data.court({ courtId: 'SHFCC' })])
     })
 
     it('will render all courts page with courts', async () => {
@@ -192,7 +192,7 @@ describe('Court Register controller', () => {
       }
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({ username: 'tom' }, {})
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({ username: 'tom' }, {})
       expect(res.render).toHaveBeenCalledWith(
         'pages/court-register/allCourts',
         expect.objectContaining({
@@ -204,13 +204,13 @@ describe('Court Register controller', () => {
     it('it will call register service with no filter params', async () => {
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with no filter params', async () => {
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, {})
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({}, {})
     })
 
     it('it will call register service with active filter param', async () => {
@@ -218,7 +218,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { active: true })
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({}, { active: true })
     })
 
     it('it will call register service with textSearch filter param', async () => {
@@ -226,7 +226,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({}, { textSearch: 'Sheffield' })
     })
 
     it('it will call register service with type filter param', async () => {
@@ -234,7 +234,7 @@ describe('Court Register controller', () => {
 
       await controller.showAllCourts(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getCourts).toHaveBeenCalledWith({}, { courtTypeCodes: ['CC', 'MC'] })
+      expect(hmppsAgencyRegisterApiService.getCourtSummaries).toHaveBeenCalledWith({}, { courtTypeCodes: ['CC', 'MC'] })
     })
 
     it('will set the list page link in the session', async () => {
