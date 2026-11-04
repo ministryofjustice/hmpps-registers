@@ -55,7 +55,7 @@ export default class CourtRegisterController {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/court-register'
-    const courts = await this.hmppsAgencyRegisterApiService.getCourts(context(res), filter)
+    const courts = await this.hmppsAgencyRegisterApiService.getCourtSummaries(context(res), filter)
     const view = new AllCourtsView(courts, filter)
     res.render('pages/court-register/allCourts', view.renderArgs)
   }

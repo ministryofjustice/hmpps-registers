@@ -9,6 +9,7 @@ import {
   AgencyPhoneNumber,
   ApprovedPremises,
   Court,
+  CourtSummary,
   EmailAddress,
   Hospital,
   InsertPrison,
@@ -258,6 +259,15 @@ export default class HMPPSAgencyRegisterApi {
     logger.info(`getting all courts with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Court[]>({
       path: `/courts`,
+      query: `${querystring.stringify(filter)}`,
+    })
+  }
+
+  async getCourtSummaries(context: Context, filter: CourtsFilter): Promise<CourtSummary[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting court summaries with filter ${JSON.stringify(filter)}`)
+    return HMPPSAgencyRegisterApi.restClient(token).get<CourtSummary[]>({
+      path: `/courts/summary`,
       query: `${querystring.stringify(filter)}`,
     })
   }

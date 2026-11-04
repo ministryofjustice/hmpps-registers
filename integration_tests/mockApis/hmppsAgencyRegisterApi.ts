@@ -12,6 +12,7 @@ import {
   PhoneNumber,
   CodeDescription,
   LegacyAgencyUsage,
+  CourtSummary,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -263,11 +264,11 @@ const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
     },
   })
 
-const stubGetCourts = (courts: Court[]): SuperAgentRequest =>
+const stubGetCourts = (courts: CourtSummary[]): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/prison-register/courts.*',
+      urlPattern: '/prison-register/courts/summary.*',
     },
     response: {
       status: 200,

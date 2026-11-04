@@ -112,6 +112,34 @@ describe('HMPPS Court Register API', () => {
     })
   })
 
+  describe('getCourtSummaries', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('uses the summary endpoint and passes filters', async () => {
+      fakeHmppsAgencyRegisterApi
+        .get('/courts/summary?active=true&textSearch=Sheffield')
+        .reply(200, [{ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', active: true }])
+
+      const result = await hmppsAgencyRegisterApiService.getCourtSummaries(
+        {},
+        { active: true, textSearch: 'Sheffield' },
+      )
+
+      expect(result).toEqual([{ courtId: 'SHFCC', courtName: 'Sheffield Crown Court', active: true }])
+    })
+
+    it('uses the username when requesting court summaries', async () => {
+      fakeHmppsAgencyRegisterApi.get('/courts/summary').reply(200, [])
+
+      await hmppsAgencyRegisterApiService.getCourtSummaries({ username: 'tommy' }, {})
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+  })
+
   describe('getCourt', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>

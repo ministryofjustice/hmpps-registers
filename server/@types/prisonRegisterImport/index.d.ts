@@ -972,6 +972,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/legacy/sync/prison/id/{agencyId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates or updates a prison
+     * @description Used for synchronising data from NOMIS. This creates a prison, or updates it if it already exists, and publishes the corresponding prison-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    post: operations['createOrUpdatePrison']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/legacy/sync/agency/id/{agencyId}': {
     parameters: {
       query?: never
@@ -983,7 +1003,7 @@ export interface paths {
     put?: never
     /**
      * Creates or updates an agency of any type
-     * @description Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists, and publishes the corresponding agency-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     post: operations['createOrUpdateAgency']
     delete?: never
@@ -1493,7 +1513,7 @@ export interface paths {
     }
     /**
      * Returns details of an agency of any type
-     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['getAgency']
     put?: never
@@ -1513,9 +1533,29 @@ export interface paths {
     }
     /**
      * Returns details of an agency of any type for reconciliation
-     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['getAgencyDetails']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/legacy/reconciliation/prison/ids/all': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns IDs of all prisons for reconciliation
+     * @description Returns the IDs of all prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    get: operations['getAllPrisonIds']
     put?: never
     post?: never
     delete?: never
@@ -1556,6 +1596,26 @@ export interface paths {
      * @description Checks prisons, courts, hospitals, probation offices, approved premises, police custody suites and generic agencies for the given id. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['isAgencyIdUsed']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/courts/summary': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get summary of all courts
+     * @description Court IDs, names, active status and court types ordered by court ID ascending
+     */
+    get: operations['getCourtSummaries']
     put?: never
     post?: never
     delete?: never
@@ -3380,6 +3440,23 @@ export interface components {
        * @example COURT
        */
       legacyType: components['schemas']['LegacyAgencyType']
+    }
+    /** @description Court summary information */
+    CourtSummaryDto: {
+      /**
+       * @description Court ID
+       * @example NWCLYC
+       */
+      courtId: string
+      /**
+       * @description Name
+       * @example N Staffs Youth Court - Newcastle
+       */
+      courtName: string
+      /** @description Whether still active */
+      active: boolean
+      /** @description courtType */
+      courtType?: components['schemas']['CodeDescription'] | null
     }
     /** @description Summary information about an agency */
     AgencySummaryDto: {
@@ -8064,6 +8141,63 @@ export interface operations {
       }
     }
   }
+  createOrUpdatePrison: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example WWI
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LegacyAgencyDto']
+      }
+    }
+    responses: {
+      /** @description Prison created or updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyResponse']
+        }
+      }
+      /** @description Bad Information request to create or update prison */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to add or update agency */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   createOrUpdateAgency: {
     parameters: {
       query?: never
@@ -9565,6 +9699,44 @@ export interface operations {
       }
     }
   }
+  getAllPrisonIds: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Prison IDs returned */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AgencyIdsResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to retrieve prison IDs */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getAllAgencyIds: {
     parameters: {
       query?: never
@@ -9650,6 +9822,42 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getCourtSummaries: {
+    parameters: {
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+        /**
+         * @description Court type codes to filter by
+         * @example CACD, CB
+         */
+        courtTypeCodes?: ('CACD' | 'CB' | 'CC' | 'CO' | 'DCM' | 'GCM' | 'IMM' | 'MC' | 'OTHER' | 'YC')[]
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CourtSummaryDto'][]
         }
       }
     }
