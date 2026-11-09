@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
-import { AllPrisonsFilter } from './prisonMapper'
+import { AllPrisonsFilter, updatePrisonAreaMapper } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import ControllerHelper from '../utils/controllerHelper'
@@ -26,6 +26,9 @@ import AddNewPrisonSummaryView from './addNewPrisonSummaryView'
 import addNewPrisonSummaryValidator from './addNewPrisonSummaryValidator'
 import addNewPrisonAddressValidator from './addNewPrisonAddressValidator'
 import AddNewPrisonAddressView from './addNewPrisonAddressView'
+import UpdateAgencyCjitCodeView from '../agencyRegisters/updateCjitCodeView'
+import prisonReferenceFields from './prisonAreaFields'
+import { validatePrisonCjitCode, validatePrisonReference } from './updatePrisonAreaValidator'
 
 function context(res: Response): Context {
   return {
@@ -475,5 +478,75 @@ export default class PrisonRegisterController {
       },
     )
     return res.redirect(`/prison-register/details?id=${form.prisonId}&action=UPDATED`)
+  }
+
+  async updateCjitCode(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updateCjitCodeForm
+    const view = new UpdateAgencyCjitCodeView(
+      prison.prisonName,
+      { cancelButton: `/prison-register/details?id=${prison.prisonId}` },
+      errors,
+      req.session.updateCjitCodeForm ? req.session.updateCjitCodeForm.cjitCode : (prison.cjitCode ?? ''),
+    )
+    res.render('pages/components/edit/updateAgencyCjitCode', view.renderArgs)
+  }
+
+  async submitUpdateCjitCode(req: Request, res: Response): Promise<void> {
+    req.session.updateCjitCodeForm = trimForm(req.body)
+    const prisonId = req.query.id as string
+    res.redirect(
+      await validatePrisonCjitCode(req.session.updateCjitCodeForm, req, async cjitCode => {
+        const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), prisonId)
+        const result = await this.hmppsAgencyRegisterApiService.updatePrisonArea(context(res), prisonId, {
+          ...updatePrisonAreaMapper(prison),
+          cjitCode,
+        })
+        if (result.success) delete req.session.updateCjitCodeForm
+        return result
+      }),
+    )
+  }
+
+  async updateReference(req: Request, res: Response, fieldName: string): Promise<void> {
+    const config = prisonReferenceFields.find(f => f.field === fieldName)
+    const { id } = req.query as { id: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
+    const session = req.session as unknown as Record<string, Record<string, string> | undefined>
+    const errors = req.flash('errors')
+    if (!errors?.length) delete session[config.sessionKey]
+    const current = config.current(prison)
+    const form = session[config.sessionKey] ?? {
+      [`${config.field}Code`]: current?.code ?? '',
+      [`${config.field}Description`]: current?.description ?? '',
+    }
+    res.render(
+      `pages/components/edit/${config.template}`,
+      config.renderArgs(prison.prisonName, { cancelButton: `/prison-register/details?id=${id}` }, errors, form),
+    )
+  }
+
+  async submitUpdateReference(req: Request, res: Response, fieldName: string): Promise<void> {
+    const config = prisonReferenceFields.find(f => f.field === fieldName)
+    const session = req.session as unknown as Record<string, Record<string, string> | undefined>
+    session[config.sessionKey] = trimForm(req.body)
+    const prisonId = req.query.id as string
+    res.redirect(
+      await validatePrisonReference(
+        config,
+        session[config.sessionKey],
+        req,
+        () => config.getItems(this.hmppsAgencyRegisterApiService, context(res)),
+        async code => {
+          const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), prisonId)
+          const update = { ...updatePrisonAreaMapper(prison), [config.dtoKey]: code }
+          const result = await this.hmppsAgencyRegisterApiService.updatePrisonArea(context(res), prisonId, update)
+          if (result.success) delete session[config.sessionKey]
+          return result
+        },
+      ),
+    )
   }
 }

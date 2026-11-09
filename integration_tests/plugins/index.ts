@@ -35,6 +35,9 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubAmendedPrison: hmppsAgencyRegisterApi.stubAmendedPrison,
     stubAddPrison: hmppsAgencyRegisterApi.stubAddPrison,
     stubUpdatePrison: hmppsAgencyRegisterApi.stubUpdatePrison,
+    stubUpdatePrisonArea: hmppsAgencyRegisterApi.stubUpdatePrisonArea,
+    stubUpdatePrisonAreaError: hmppsAgencyRegisterApi.stubUpdatePrisonAreaError,
+    getUpdatedPrisonAreas: hmppsAgencyRegisterApi.getUpdatedPrisonAreas,
     stubGetPrisonAddress: hmppsAgencyRegisterApi.stubGetPrisonAddress,
 
     stubUpdatePrisonAddress: hmppsAgencyRegisterApi.stubUpdatePrisonAddress,

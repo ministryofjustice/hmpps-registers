@@ -22,7 +22,6 @@ export interface paths {
     options?: never
     head?: never
     patch?: never
-    nom
     trace?: never
   }
   '/probation-offices/id/{probationOfficeId}': {
@@ -154,6 +153,26 @@ export interface paths {
     }
     get?: never
     put: operations['updateWelshAddress']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/prison-maintenance/id/{prisonId}/area': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Updates specified prison area details
+     * @description Updates prison area information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA
+     */
+    put: operations['updatePrisonArea']
     post?: never
     delete?: never
     options?: never
@@ -2210,6 +2229,24 @@ export interface components {
        * @example Cymru
        */
       countryInWelsh?: string | null
+    }
+    /** @description Area prison data to update */
+    UpdatePrisonAreaDto: {
+      /**
+       * @description CJIT Code
+       * @example 123456789
+       */
+      cjitCode?: string | null
+      /** @description Area */
+      areaCode?: string | null
+      /** @description Region */
+      regionCode?: string | null
+      /** @description Geographical Area */
+      geographicalAreaCode?: string | null
+      /** @description Local Authority */
+      localAuthorityCode?: string | null
+      /** @description Prisoner Payroll Region */
+      payrollRegionCode?: string | null
     }
     /** @description Police Custody Suite Update Record */
     UpdatePoliceCustodySuiteDto: {
@@ -4553,6 +4590,72 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AddressDto']
+        }
+      }
+    }
+  }
+  updatePrisonArea: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdatePrisonAreaDto']
+      }
+    }
+    responses: {
+      /** @description Prison Area Information Updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PrisonDto']
+        }
+      }
+      /** @description Information request to update prison area */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to make prison update */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Prison ID not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
