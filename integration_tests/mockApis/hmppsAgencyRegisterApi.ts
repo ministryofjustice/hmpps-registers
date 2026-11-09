@@ -167,7 +167,7 @@ const stubGetPrisonDetails = (prison: PrisonDetails): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/prison-register/prisons/id/${prison.prisonId}/details`,
+      urlPattern: `/prison-register/prison-maintenance/id/${prison.prisonId}/details`,
     },
     response: {
       status: 200,

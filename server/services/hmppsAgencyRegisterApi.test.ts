@@ -149,7 +149,7 @@ describe('HMPPS Agency Register API', () => {
     })
 
     it('username will be used by client', async () => {
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI/details').reply(200, data.prisonDetails({}))
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/ALI/details').reply(200, data.prisonDetails({}))
 
       await hmppsAgencyRegisterApiService.getPrisonDetails({ username: 'tommy' }, 'ALI')
 
@@ -158,7 +158,7 @@ describe('HMPPS Agency Register API', () => {
 
     it('will return the prison details', async () => {
       fakeHmppsAgencyRegisterApi
-        .get('/prisons/id/ALI/details')
+        .get('/prison-maintenance/id/ALI/details')
         .reply(200, data.prisonDetails({ localAuthority: { code: 'LA1', description: 'Local Authority 1' } }))
 
       const result = await hmppsAgencyRegisterApiService.getPrisonDetails({}, 'ALI')
@@ -168,7 +168,7 @@ describe('HMPPS Agency Register API', () => {
     })
 
     it('will throw error when not found', async () => {
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI/details').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/ALI/details').reply(404, {
         status: 404,
         developerMessage: 'Prison ALI not found',
       })
