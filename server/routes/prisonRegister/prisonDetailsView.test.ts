@@ -142,6 +142,7 @@ describe('PrisonDetailsView', () => {
           description: 'Area Description',
         },
         cjitCode: 'CJIT',
+        departments: [],
         geographicalArea: {
           code: 'GEO',
           description: 'Geographical Area Description',

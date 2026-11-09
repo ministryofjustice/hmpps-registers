@@ -34,6 +34,21 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
   })
 
+  it('Will display departments without change or add links', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    AllPrisons.verifyOnPage().viewPrisonLink(moorlandPrison.prisonId).click()
+    const prisonDetailsPage = PrisonDetails.verifyOnPage(moorlandPrison.prisonName)
+
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Departments')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Social visits')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'social.visits@moorland.example.com')
+    prisonDetailsPage.departmentsSection().should('contain.text', '01302 111111')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'https://www.example.com/moorland/visits')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Offender management unit')
+    prisonDetailsPage.departmentsSection().should('not.contain.text', 'Change')
+    prisonDetailsPage.departmentsSection().should('not.contain.text', 'Add')
+  })
+
   it('Will display prison address details without link to add welsh address', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()

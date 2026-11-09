@@ -149,6 +149,18 @@
     }) }}
 {% endmacro %}
 
+{% macro departmentDetails(department) %}
+  {% if department.emailAddress %}
+    <p class="govuk-!-margin-bottom-1">Email: <a href="mailto:{{ department.emailAddress }}" class="govuk-link">{{ department.emailAddress }}</a></p>
+  {% endif %}
+  {% if department.webAddress %}
+    <p class="govuk-!-margin-bottom-1">Web address: <a href="{{ department.webAddress }}" class="govuk-link">{{ department.webAddress }}</a></p>
+  {% endif %}
+  {% if department.phoneNumber %}
+    <p class="govuk-!-margin-bottom-1">Phone: {{ department.phoneNumber }}</p>
+  {% endif %}
+{% endmacro %}
+
 {% macro confirmationPanel(message, attribute) %}
   <div data-qa="{{ attribute }}" class="govuk-panel govuk-panel--confirmation">
     <div class="govuk-panel__body">
@@ -237,6 +249,25 @@
 
  {{  prisonAreaDetailsCard({ prison: prisonDetails }) }}
 
+
+  {% if prisonDetails.departments | length %}
+    {% set departmentRows = [] %}
+    {% for department in prisonDetails.departments %}
+      {% set departmentRows = (departmentRows.push({
+        key: { text: department.name },
+        value: { html: departmentDetails(department) }
+      }), departmentRows) %}
+    {% endfor %}
+    <div data-qa="departments-section">
+      {{ govukSummaryList({
+        card: {
+          classes: 'summary-card-wider-key-column',
+          title: { text: 'Departments' }
+        },
+        rows: departmentRows
+      }) }}
+    </div>
+  {% endif %}
 
   {% for address in prisonDetails.addresses %}
     {% if prisonDetails.addresses.length > 1 %}

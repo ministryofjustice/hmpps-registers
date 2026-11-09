@@ -3,6 +3,7 @@ import page, { Page } from '../page'
 const prisonDetails = {
   prisonDetailsSection: () => cy.get('[data-qa=prison-summary-section]'),
   addressDetailsSection: (addressId: string) => cy.get(`[data-qa=address-details-section-${addressId}]`),
+  departmentsSection: () => cy.get('[data-qa=departments-section]'),
   amendPrisonDetailsLink: () => cy.get('[data-qa=amend-prison-details-link]'),
   prisonUpdatedConfirmationBlock: () => cy.get('[data-qa=confirm-updated]'),
   markAsInactiveButton: (id: string) => cy.get(`[data-qa=mark-as-inactive-${id}]`),
