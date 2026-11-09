@@ -51,6 +51,10 @@ describe('prisonDetailsMapper', () => {
         localAuthority: { code: 'LA', description: 'Local Authority Description' },
         payrollRegion: { code: 'PR', description: 'Payroll Region Description' },
         cjitCode: 'CJIT',
+        departments: [
+          { type: 'SOCIAL_VISIT', emailAddress: 'a@b.com', phoneNumber: '0123', webAddress: 'https://x.test' },
+          { type: 'OFFENDER_MANAGEMENT_UNIT' },
+        ],
       }),
     )
   })
@@ -95,6 +99,24 @@ describe('prisonDetailsMapper', () => {
     expect(prison.payrollRegion.code).toEqual('PR')
     expect(prison.payrollRegion.description).toEqual('Payroll Region Description')
     expect(prison.cjitCode).toEqual('CJIT')
+  })
+  it('will map departments with human readable names', () => {
+    expect(prison.departments).toEqual([
+      {
+        type: 'SOCIAL_VISIT',
+        name: 'Social visits',
+        emailAddress: 'a@b.com',
+        phoneNumber: '0123',
+        webAddress: 'https://x.test',
+      },
+      {
+        type: 'OFFENDER_MANAGEMENT_UNIT',
+        name: 'Offender management unit',
+        emailAddress: undefined,
+        phoneNumber: undefined,
+        webAddress: undefined,
+      },
+    ])
   })
 })
 

@@ -40,6 +40,7 @@ export type PrisonDetail = {
   geographicalArea?: CodeDescription
   localAuthority?: CodeDescription
   payrollRegion?: CodeDescription
+  departments?: DepartmentDetail[]
 }
 
 export function pageLinkMapper(): string {
@@ -71,6 +72,32 @@ export type WelshAddressDetail = {
 export type TypeDetail = {
   code: string
   description: string
+}
+
+export type DepartmentDetail = {
+  type: string
+  name: string
+  emailAddress?: string
+  phoneNumber?: string
+  webAddress?: string
+}
+
+const departmentNames: Record<string, string> = {
+  PRISON: 'Prison',
+  SOCIAL_VISIT: 'Social visits',
+  VIDEOLINK_CONFERENCING_CENTRE: 'Video link conferencing centre',
+  OFFENDER_MANAGEMENT_UNIT: 'Offender management unit',
+  OFFICIAL_VISIT: 'Official visits',
+}
+
+export function departmentMapper(department: PrisonDetails['departments'][number]): DepartmentDetail {
+  return {
+    type: department.type,
+    name: departmentNames[department.type] ?? department.type,
+    emailAddress: department.emailAddress,
+    phoneNumber: department.phoneNumber,
+    webAddress: department.webAddress,
+  }
 }
 
 export type OperatorDetail = {
@@ -117,6 +144,7 @@ export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
     geographicalArea: prison.geographicalArea,
     localAuthority: prison.localAuthority,
     payrollRegion: prison.payrollRegion,
+    departments: prison.departments?.map(departmentMapper) || [],
   }
 }
 

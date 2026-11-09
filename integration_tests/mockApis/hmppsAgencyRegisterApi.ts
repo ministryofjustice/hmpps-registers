@@ -1524,6 +1524,15 @@ export const moorlandPrison: Prison = data.prisonDetails({
     { code: 'YOI', description: 'His Majesty’s Youth Offender Institution' },
   ],
   operators: [{ name: 'G4S' }],
+  departments: [
+    {
+      type: 'SOCIAL_VISIT',
+      emailAddress: 'social.visits@moorland.example.com',
+      phoneNumber: '01302 111111',
+      webAddress: 'https://www.example.com/moorland/visits',
+    },
+    { type: 'OFFENDER_MANAGEMENT_UNIT', emailAddress: 'omu@moorland.example.com' },
+  ],
 })
 export const belmarshPrison: Prison = {
   prisonId: 'BAI',
