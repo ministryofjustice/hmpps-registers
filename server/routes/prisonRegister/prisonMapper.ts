@@ -5,6 +5,7 @@ import {
   PrisonDetails,
   PrisonType,
   CodeDescription,
+  UpdatePrisonArea,
 } from '../../@types/prisonRegister'
 
 export type PrisonSummary = {
@@ -167,4 +168,15 @@ export type AllPrisonsFilter = {
   genders?: string[]
   prisonTypeCodes?: string[]
   lthse?: boolean
+}
+
+export function updatePrisonAreaMapper(prison: PrisonDetails): UpdatePrisonArea {
+  return {
+    cjitCode: prison.cjitCode,
+    areaCode: prison.area?.code,
+    regionCode: prison.region?.code,
+    geographicalAreaCode: prison.geographicalArea?.code,
+    localAuthorityCode: prison.localAuthority?.code,
+    payrollRegionCode: prison.payrollRegion?.code,
+  }
 }

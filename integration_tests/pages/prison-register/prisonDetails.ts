@@ -17,6 +17,12 @@ const prisonDetails = {
     cy.get(`[data-qa=amend-welsh-address-details-link-${addressId}]`),
   deleteWelshAddressDetailsLink: (addressId: string) =>
     cy.get(`[data-qa=delete-welsh-address-details-link-${addressId}]`),
+  updateCjitCodeLink: () => cy.get('[data-qa=update-cjit-code-link]'),
+  updateAreaLink: () => cy.get('[data-qa=update-area-link]'),
+  updateRegionLink: () => cy.get('[data-qa=update-region-link]'),
+  updateGeographicalAreaLink: () => cy.get('[data-qa=update-geographical-area-link]'),
+  updateLocalAuthorityLink: () => cy.get('[data-qa=update-local-authority-link]'),
+  updatePayrollRegionLink: () => cy.get('[data-qa=update-payroll-region-link]'),
 }
 
 const verifyOnPage = (prisonName: string): typeof prisonDetails & Page => page(prisonName, prisonDetails)

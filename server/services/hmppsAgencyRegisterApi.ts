@@ -34,6 +34,7 @@ import {
   CreateCourt,
   UpdateEmailAddress,
   UpdatePrison,
+  UpdatePrisonArea,
   UpdatePrisonAddress,
   UpdateAgencyAddress,
   UpdateWelshPrisonAddress,
@@ -193,6 +194,17 @@ export default class HMPPSAgencyRegisterApi {
       path: `/prison-maintenance/id/${prisonId}`,
       data: updatedPrison,
     })
+  }
+
+  async updatePrisonArea(context: Context, prisonId: string, area: UpdatePrisonArea): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`updating area details for prison ${prisonId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put({
+        path: `/prison-maintenance/id/${prisonId}/area`,
+        data: area,
+      }),
+    )
   }
 
   async updatePrisonAddress(

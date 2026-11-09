@@ -1,6 +1,7 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import PrisonRegisterController from './prisonRegisterController'
+import prisonReferenceFields from './prisonAreaFields'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 // include this here otherwise TS complains about cyclical dependencies
@@ -92,6 +93,15 @@ export default function routes(router: Router, services: Services): Router {
   post('/prison-register/delete-prison-address', (req, res) =>
     prisonRegisterController.submitDeletePrisonAddress(req, res),
   )
+
+  get('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.updateCjitCode(req, res))
+  post('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.submitUpdateCjitCode(req, res))
+  prisonReferenceFields.forEach(({ field, path }) => {
+    get(`/prison-register/${path}/update`, (req, res) => prisonRegisterController.updateReference(req, res, field))
+    post(`/prison-register/${path}/update`, (req, res) =>
+      prisonRegisterController.submitUpdateReference(req, res, field),
+    )
+  })
 
   post('/prison-register/toggle-prison-active', (req, res) => prisonRegisterController.togglePrisonActive(req, res))
 

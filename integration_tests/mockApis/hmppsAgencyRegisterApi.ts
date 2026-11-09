@@ -280,6 +280,51 @@ const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
     },
   })
 
+const stubUpdatePrisonArea = (prisonId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${prisonId}/area`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+    },
+  })
+
+const stubUpdatePrisonAreaError = ({
+  prisonId,
+  userMessage,
+}: {
+  prisonId: string
+  userMessage: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${prisonId}/area`,
+    },
+    response: {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { userMessage },
+    },
+  })
+
+const getUpdatedPrisonAreas = (prisonId: string): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'PUT' && request.url === `/prison-register/prison-maintenance/id/${prisonId}/area`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubGetCourts = (courts: CourtSummary[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1377,6 +1422,9 @@ export default {
   stubFindPrison,
   stubAmendedPrison,
   stubUpdatePrison,
+  stubUpdatePrisonArea,
+  stubUpdatePrisonAreaError,
+  getUpdatedPrisonAreas,
   stubGetPrisonAddress,
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,
