@@ -3,7 +3,7 @@ import data from '../testutils/mockPrisonData'
 
 describe('PrisonDetailsView', () => {
   it('will map prison to details', () => {
-    const view = new PrisonDetailsView(data.prison({ addresses: [data.prisonAddress({})] }), 'NONE')
+    const view = new PrisonDetailsView(data.prisonDetails({ addresses: [data.prisonAddress({})] }), 'NONE')
 
     expect(view.renderArgs.prisonDetails.id).toEqual('ALI')
     expect(view.renderArgs.prisonDetails.name).toEqual('Albany (HMP)')
@@ -15,7 +15,7 @@ describe('PrisonDetailsView', () => {
 
   it('will map prison with multiple addresses to details', () => {
     const view = new PrisonDetailsView(
-      data.prison({
+      data.prisonDetails({
         addresses: [
           {
             id: 22,
@@ -41,13 +41,13 @@ describe('PrisonDetailsView', () => {
     expect(view.renderArgs.prisonDetails.addresses[1].line1).toEqual('Bawtry Road')
   })
   it('will pass through action', () => {
-    const view = new PrisonDetailsView(data.prison({}), 'ACTIVATE-PRISON')
+    const view = new PrisonDetailsView(data.prisonDetails({}), 'ACTIVATE-PRISON')
     expect(view.renderArgs.action).toEqual('ACTIVATE-PRISON')
   })
 
   it('will return isWelsh to be  false', () => {
     const view = new PrisonDetailsView(
-      data.prison({
+      data.prisonDetails({
         addresses: [
           {
             id: 22,
@@ -67,9 +67,9 @@ describe('PrisonDetailsView', () => {
     expect(view.renderArgs.isWelshPrison).toEqual(false)
   })
 
-  it('Will send both English and Welsh prison addresses to view', () => {
+  it('Will send both English and Welsh prison addresses to view along wit area', () => {
     const view = new PrisonDetailsView(
-      data.prison({
+      data.prisonDetails({
         prisonId: 'CFI',
         prisonName: 'Cardiff',
         prisonNameInWelsh: 'Carchar Caerdydd',
@@ -89,6 +89,12 @@ describe('PrisonDetailsView', () => {
             countryInWelsh: 'Cymru',
           }),
         ],
+        area: { code: 'AREA', description: 'Area Description' },
+        region: { code: 'REG', description: 'Region Description' },
+        geographicalArea: { code: 'GEO', description: 'Geographical Area Description' },
+        localAuthority: { code: 'LA', description: 'Local Authority Description' },
+        payrollRegion: { code: 'PR', description: 'Payroll Region Description' },
+        cjitCode: 'CJIT',
       }),
       'NONE',
     )
@@ -131,6 +137,27 @@ describe('PrisonDetailsView', () => {
             description: 'His Majesty’s Prison',
           },
         ],
+        area: {
+          code: 'AREA',
+          description: 'Area Description',
+        },
+        cjitCode: 'CJIT',
+        geographicalArea: {
+          code: 'GEO',
+          description: 'Geographical Area Description',
+        },
+        localAuthority: {
+          code: 'LA',
+          description: 'Local Authority Description',
+        },
+        payrollRegion: {
+          code: 'PR',
+          description: 'Payroll Region Description',
+        },
+        region: {
+          code: 'REG',
+          description: 'Region Description',
+        },
       },
     })
   })

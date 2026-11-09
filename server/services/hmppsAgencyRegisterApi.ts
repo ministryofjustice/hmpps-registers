@@ -38,6 +38,7 @@ import {
   UpdateAgencyAddress,
   UpdateWelshPrisonAddress,
   CodeDescription,
+  PrisonDetails,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -102,6 +103,12 @@ export default class HMPPSAgencyRegisterApi {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Prison>({ path: `/prisons/id/${prisonId}` })
+  }
+
+  async getPrisonDetails(context: Context, prisonId: string): Promise<PrisonDetails> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`getting full details for prison ${prisonId}`)
+    return HMPPSAgencyRegisterApi.restClient(token).get<PrisonDetails>({ path: `/prisons/id/${prisonId}/details` })
   }
 
   async findPrison(context: Context, prisonId: string): Promise<Prison | undefined> {

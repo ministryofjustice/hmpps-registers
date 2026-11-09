@@ -22,6 +22,7 @@ export interface paths {
     options?: never
     head?: never
     patch?: never
+    nom
     trace?: never
   }
   '/probation-offices/id/{probationOfficeId}': {
@@ -1496,6 +1497,26 @@ export interface paths {
      * @description Information on a specific prison address
      */
     get: operations['getAddressFromId']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/prison-maintenance/id/{prisonId}/details': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get details of specified prison
+     * @description Information on a specific prison
+     */
+    get: operations['getPrisonDetailsById']
     put?: never
     post?: never
     delete?: never
@@ -3416,6 +3437,73 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+    }
+    /** @description Prison Information */
+    DepartmentDto: {
+      /** @enum {string} */
+      type: 'PRISON' | 'SOCIAL_VISIT' | 'VIDEOLINK_CONFERENCING_CENTRE' | 'OFFENDER_MANAGEMENT_UNIT' | 'OFFICIAL_VISIT'
+      emailAddress?: string | null
+      phoneNumber?: string | null
+      webAddress?: string | null
+    }
+    /** @description Prison Information */
+    FullPrisonDto: {
+      /**
+       * @description Prison ID
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * @description Name of the prison
+       * @example Moorland HMP
+       */
+      prisonName: string
+      /**
+       * @description Name of the prison in Welsh
+       * @example Carchar Brynbuga
+       */
+      prisonNameInWelsh?: string | null
+      /** @description Whether the prison is still active */
+      active: boolean
+      /** @description Whether the prison has male prisoners */
+      male: boolean
+      /** @description Whether the prison has female prisoners */
+      female: boolean
+      /** @description Whether the prison is contracted */
+      contracted: boolean
+      /** @description Whether the prison is part of long term high security estate */
+      lthse: boolean
+      /** @description List of types for this prison */
+      types: components['schemas']['PrisonTypeDto'][]
+      /** @description List of the categories for this prison */
+      categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description List of address for this prison */
+      addresses: components['schemas']['AddressDto'][]
+      /** @description List of operators for this prison */
+      operators: components['schemas']['PrisonOperatorDto'][]
+      /** @description List of departments for this prison */
+      departments: components['schemas']['DepartmentDto'][]
+      /**
+       * Format: date
+       * @description Date made inactive
+       * @example 2023-12-31
+       */
+      inactiveDate?: string | null
+      /**
+       * @description CJIT Code
+       * @example 123456789
+       */
+      cjitCode?: string | null
+      /** @description Area */
+      area?: components['schemas']['CodeDescription'] | null
+      /** @description Region */
+      region?: components['schemas']['CodeDescription'] | null
+      /** @description Geographical Area */
+      geographicalArea?: components['schemas']['CodeDescription'] | null
+      /** @description Local Authority */
+      localAuthority?: components['schemas']['CodeDescription'] | null
+      /** @description Prisoner Payroll Region */
+      payrollRegion?: components['schemas']['CodeDescription'] | null
     }
     AgencyId: {
       agencyId: string
@@ -9589,6 +9677,32 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AddressDto']
+        }
+      }
+    }
+  }
+  getPrisonDetailsById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison ID
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FullPrisonDto']
         }
       }
     }

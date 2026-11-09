@@ -1,4 +1,25 @@
-import { OperatorType, Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
+import {
+  OperatorType,
+  Prison,
+  PrisonAddress,
+  PrisonDetails,
+  PrisonType,
+  CodeDescription,
+} from '../../@types/prisonRegister'
+
+export type PrisonSummary = {
+  id: string
+  name: string
+  prisonNameInWelsh: string
+  active: boolean
+  male?: boolean
+  female?: boolean
+  contracted?: boolean
+  lthse?: boolean
+  addresses: AddressDetail[]
+  types: TypeDetail[]
+  operators: OperatorDetail[]
+}
 
 export type PrisonDetail = {
   id: string
@@ -12,6 +33,12 @@ export type PrisonDetail = {
   addresses: AddressDetail[]
   types: TypeDetail[]
   operators: OperatorDetail[]
+  cjitCode?: string
+  area?: CodeDescription
+  region?: CodeDescription
+  geographicalArea?: CodeDescription
+  localAuthority?: CodeDescription
+  payrollRegion?: CodeDescription
 }
 
 export function pageLinkMapper(): string {
@@ -54,7 +81,7 @@ export type PrisonPageView = {
   allPrisonsFilter: AllPrisonsFilter
 }
 
-export default function prisonMapper(prison: Prison): PrisonDetail {
+export function prisonMapper(prison: Prison): PrisonSummary {
   return {
     id: prison.prisonId,
     name: prison.prisonName,
@@ -67,6 +94,28 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
     operators: prison.operators?.map(operatorMapper) || [],
+  }
+}
+
+export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
+  return {
+    id: prison.prisonId,
+    name: prison.prisonName,
+    prisonNameInWelsh: prison.prisonNameInWelsh,
+    active: prison.active,
+    male: prison.male,
+    female: prison.female,
+    contracted: prison.contracted,
+    lthse: prison.lthse,
+    addresses: prison.addresses?.map(addressMapper) || [],
+    types: prison.types?.map(typeMapper) || [],
+    operators: prison.operators?.map(operatorMapper) || [],
+    cjitCode: prison.cjitCode,
+    area: prison.area,
+    region: prison.region,
+    geographicalArea: prison.geographicalArea,
+    localAuthority: prison.localAuthority,
+    payrollRegion: prison.payrollRegion,
   }
 }
 

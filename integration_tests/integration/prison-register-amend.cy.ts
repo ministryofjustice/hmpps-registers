@@ -12,6 +12,8 @@ context('Prison register - amend existing prison', () => {
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, { ...belmarshPrison }, moorlandPrison])
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubGetPrison', belmarshPrison)
+    cy.task('stubGetPrisonDetails', moorlandPrison)
+    cy.task('stubGetPrisonDetails', belmarshPrison)
     cy.task('stubUpdatePrison', moorlandPrison)
     cy.signIn()
   })

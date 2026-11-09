@@ -1,4 +1,4 @@
-import { Prison, PrisonAddress, WelshPrisonAddress } from '../../@types/prisonRegister'
+import { Prison, PrisonAddress, PrisonDetails, WelshPrisonAddress } from '../../@types/prisonRegister'
 
 export default {
   prisonAddress: ({
@@ -100,4 +100,45 @@ export default {
       types,
       operators,
     }) as Prison,
+
+  prisonDetails: ({
+    prisonId = 'ALI',
+    prisonName = 'Albany (HMP)',
+    prisonNameInWelsh = '',
+    active = true,
+    male = true,
+    female = true,
+    contracted = false,
+    lthse = false,
+    addresses = [],
+    types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
+    operators = [{ name: 'PSP' }],
+    departments = [],
+    cjitCode = 'A',
+    area = null,
+    region = null,
+    geographicalArea = null,
+    localAuthority = null,
+    payrollRegion = null,
+  }: Partial<PrisonDetails>): PrisonDetails =>
+    ({
+      prisonId,
+      prisonName,
+      prisonNameInWelsh,
+      active,
+      male,
+      female,
+      contracted,
+      lthse,
+      addresses,
+      types,
+      operators,
+      departments,
+      cjitCode,
+      area,
+      region,
+      geographicalArea,
+      localAuthority,
+      payrollRegion,
+    }) as PrisonDetails,
 }

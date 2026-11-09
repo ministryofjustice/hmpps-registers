@@ -140,7 +140,9 @@ describe('Prison Register controller', () => {
 
   describe('viewPrison', () => {
     beforeEach(() => {
-      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(data.prison({ addresses: [data.prisonAddress({})] }))
+      hmppsAgencyRegisterApiService.getPrisonDetails.mockResolvedValue(
+        data.prisonDetails({ addresses: [data.prisonAddress({})] }),
+      )
     })
 
     it('will request prison for id', async () => {
@@ -151,7 +153,7 @@ describe('Prison Register controller', () => {
 
       await controller.viewPrison(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
+      expect(hmppsAgencyRegisterApiService.getPrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
     })
 
     it('will render prison details page', async () => {
@@ -197,8 +199,8 @@ describe('Prison Register controller', () => {
     })
 
     it('will render prison details page with both English and Welsh address', async () => {
-      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
-        data.prison({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
+      hmppsAgencyRegisterApiService.getPrisonDetails.mockResolvedValue(
+        data.prisonDetails({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
       )
 
       await controller.viewPrison(req, res)

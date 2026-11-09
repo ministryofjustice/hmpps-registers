@@ -10,7 +10,7 @@ context('Prison register - add Welsh address to existing prison', () => {
     cy.task('stubSignIn')
     cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [cardiffPrison])
-    cy.task('stubGetPrison', cardiffPrison)
+    cy.task('stubGetPrisonDetails', cardiffPrison)
     cy.task('stubPutWelshPrisonAddress', { prisonId: 'CFI', addressId: '16' })
     cy.signIn()
   })
