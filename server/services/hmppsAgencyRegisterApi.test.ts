@@ -142,6 +142,46 @@ describe('HMPPS Agency Register API', () => {
     })
   })
 
+  describe('getPrisonDetails', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('username will be used by client', async () => {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI/details').reply(200, data.prisonDetails({}))
+
+      await hmppsAgencyRegisterApiService.getPrisonDetails({ username: 'tommy' }, 'ALI')
+
+      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('will return the prison details', async () => {
+      fakeHmppsAgencyRegisterApi
+        .get('/prisons/id/ALI/details')
+        .reply(200, data.prisonDetails({ localAuthority: { code: 'LA1', description: 'Local Authority 1' } }))
+
+      const result = await hmppsAgencyRegisterApiService.getPrisonDetails({}, 'ALI')
+
+      expect(result.prisonId).toEqual('ALI')
+      expect(result.localAuthority.code).toEqual('LA1')
+    })
+
+    it('will throw error when not found', async () => {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI/details').reply(404, {
+        status: 404,
+        developerMessage: 'Prison ALI not found',
+      })
+
+      expect.assertions(1)
+      try {
+        await hmppsAgencyRegisterApiService.getPrisonDetails({}, 'ALI')
+      } catch (e) {
+        expect(e.message).toBe('Not Found')
+      }
+    })
+  })
+
   describe('updatePrisonDetails', () => {
     let updatedPrison: UpdatePrison
     beforeEach(() => {

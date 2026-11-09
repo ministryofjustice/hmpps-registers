@@ -9,8 +9,8 @@ context('Prison register - prison details navigation', () => {
     cy.task('stubSignIn')
     cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, moorlandPrison, cardiffPrison])
-    cy.task('stubGetPrison', moorlandPrison)
-    cy.task('stubGetPrison', albanyPrison)
+    cy.task('stubGetPrisonDetails', moorlandPrison)
+    cy.task('stubGetPrisonDetails', albanyPrison)
     cy.signIn()
   })
 
@@ -53,7 +53,7 @@ context('Prison register - prison details navigation', () => {
   })
 
   it('Will display prison address with link to add welsh address', () => {
-    cy.task('stubGetPrison', cardiffPrison)
+    cy.task('stubGetPrisonDetails', cardiffPrison)
 
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()

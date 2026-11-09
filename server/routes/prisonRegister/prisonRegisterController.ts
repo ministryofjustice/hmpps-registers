@@ -46,7 +46,7 @@ export default class PrisonRegisterController {
 
   async viewPrison(req: Request, res: Response): Promise<void> {
     const { id, action } = req.query as { id: string; action: Action }
-    const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), id)
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
     const view = new PrisonDetailsView(prison, (action || 'NONE') as Action)
     res.render('pages/prison-register/prisonDetails', view.renderArgs)
   }

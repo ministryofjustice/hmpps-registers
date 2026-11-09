@@ -13,6 +13,7 @@ import {
   CodeDescription,
   LegacyAgencyUsage,
   CourtSummary,
+  PrisonDetails,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -152,6 +153,21 @@ const stubGetPrison = (prison: Prison): SuperAgentRequest =>
     request: {
       method: 'GET',
       urlPattern: `/prison-register/prisons/id/${prison.prisonId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: prison,
+    },
+  })
+
+const stubGetPrisonDetails = (prison: PrisonDetails): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/prisons/id/${prison.prisonId}/details`,
     },
     response: {
       status: 200,
@@ -1357,6 +1373,7 @@ export default {
   stubGetPrisonsWithFilter,
   stubAddPrison,
   stubGetPrison,
+  stubGetPrisonDetails,
   stubFindPrison,
   stubAmendedPrison,
   stubUpdatePrison,
@@ -1444,8 +1461,8 @@ export default {
 }
 
 // Mock data
-export const albanyPrison: Prison = data.prison({ types: [] })
-export const moorlandPrison: Prison = data.prison({
+export const albanyPrison: Prison = data.prisonDetails({ types: [] })
+export const moorlandPrison: Prison = data.prisonDetails({
   prisonId: 'MDI',
   prisonName: 'HMP Moorland',
   active: true,
@@ -1484,7 +1501,7 @@ export const belmarshPrison: Prison = {
   operators: [{ name: 'PSP' }],
 }
 
-export const cardiffPrison: Prison = {
+export const cardiffPrison: PrisonDetails = {
   prisonId: 'CFI',
   prisonName: 'HMP Cardiff',
   active: false,
@@ -1506,6 +1523,12 @@ export const cardiffPrison: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  area: null,
+  region: null,
+  localAuthority: null,
+  payrollRegion: null,
+  cjitCode: null,
+  departments: [],
 }
 
 export const cardiffPrisonWithWelshAddress: Prison = {

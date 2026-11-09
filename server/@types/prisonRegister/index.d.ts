@@ -1,6 +1,7 @@
 import { components } from '../prisonRegisterImport'
 
 export type Prison = components['schemas']['PrisonDto']
+export type PrisonDetails = components['schemas']['FullPrisonDto']
 export type PrisonAddress = components['schemas']['AddressDto']
 export type WelshPrisonAddress = components['schemas']['WelshAddressDto']
 export type UpdateWelshPrisonAddress = components['schemas']['UpdateWelshAddressDto']
