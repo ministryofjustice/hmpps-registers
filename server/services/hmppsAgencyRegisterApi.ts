@@ -108,7 +108,9 @@ export default class HMPPSAgencyRegisterApi {
   async getPrisonDetails(context: Context, prisonId: string): Promise<PrisonDetails> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting full details for prison ${prisonId}`)
-    return HMPPSAgencyRegisterApi.restClient(token).get<PrisonDetails>({ path: `/prisons/id/${prisonId}/details` })
+    return HMPPSAgencyRegisterApi.restClient(token).get<PrisonDetails>({
+      path: `/prison-maintenance/id/${prisonId}/details`,
+    })
   }
 
   async findPrison(context: Context, prisonId: string): Promise<Prison | undefined> {

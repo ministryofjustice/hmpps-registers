@@ -1,0 +1,122 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro prisonAreaDetailsCard(opts) %}
+
+  {% set prison = opts.prison %}
+
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: {
+        text: 'Area and region details'
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'CJIT Code'
+        },
+        value: {
+          text: prison.cjitCode if prison.cjitCode else 'Not provided'
+        },
+        actions: {
+          items: [
+            {
+              href: "/prison-register/cjit-code/update?id=" + prison.cjitCode,
+              text: "Change",
+              visuallyHiddenText: "CJIT code",
+              attributes: {"data-qa": "update-cjit-code-link"},
+              classes: "govuk-link--no-visited-state"
+            }
+          ]
+        }
+      },
+      {
+        key: {
+          text: 'Area'
+        },
+        value: {
+          text: prison.area.description if prison.area else 'Not provided'
+        },
+        actions: {
+          items: [{
+            href: "/prison-register/area/update?id=" + prison.id,
+            text: "Change",
+            visuallyHiddenText: "area",
+            attributes: {"data-qa": "update-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
+        }
+      },
+      {
+        key: {
+          text: 'Region'
+        },
+        value: {
+          text: prison.region.description if prison.region else 'Not provided'
+        },
+        actions: {
+          items: [{
+            href: "/prison-register/region/update?id=" + prison.id,
+            text: "Change",
+            visuallyHiddenText: "region",
+            attributes: {"data-qa": "update-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
+        }
+      },
+      {
+        key: {
+          text: 'Geographical area'
+        },
+        value: {
+        text: prison.geographicalArea.description if prison.geographicalArea else 'Not provided'
+        },
+        actions: {
+          items: [{
+            href: "/prison-register/geographical-area/update?id=" + prison.id,
+            text: "Change",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
+        }
+      },
+      {
+        key: {
+          text: 'Local Authority'
+        },
+        value: {
+          text: prison.localAuthority.description if prison.localAuthority else 'Not provided'
+        },
+        actions: {
+          items: [{
+            href: "/prison-register/local-authority/update?id=" + prison.id,
+            text: "Change",
+            visuallyHiddenText: "local authority",
+            attributes: {"data-qa": "update-local-authority-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
+        }
+      },
+      {
+        key: {
+          text: 'Payroll region'
+        },
+        value: {
+          text: prison.payrollRegion.description if prison.payrollRegion else 'Not provided'
+        },
+        actions: {
+          items: [{
+            href: "/prison-register/payroll-region/update?id=" + prison.id,
+            text: "Change",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}

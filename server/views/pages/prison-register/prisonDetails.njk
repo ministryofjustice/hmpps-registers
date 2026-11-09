@@ -2,6 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/prison-register/prisonAreaDetailsCard.njk" import prisonAreaDetailsCard %}
 
 {% set pageTitle = applicationName + " - Prison Details" %}
 
@@ -111,6 +112,12 @@
 
 {% macro govukSummaryListEnglishPrisonAddress(address, addressLabel, showAddWelshAddressLink) %}
     {{ govukSummaryList({
+        card: {
+          classes: 'summary-card-wider-key-column',
+          title: {
+            text: 'Addresses'
+          }
+        },
       attributes: { "data-qa": "address-details-section-"+ address.id},
       rows: [
         {
@@ -194,7 +201,16 @@
       {% endif %}
     </form>
   </div>
+    <div class="govuk-grid-row"></div>
+
+
   {{ govukSummaryList({
+      card: {
+        classes: 'summary-card-wider-key-column',
+        title: {
+          text: 'Details'
+        }
+      },
     attributes: { "data-qa": "prison-summary-section"},
     rows: [
       {
@@ -218,6 +234,9 @@
       }
     ]
   }) }}
+
+ {{  prisonAreaDetailsCard({ prison: prisonDetails }) }}
+
 
   {% for address in prisonDetails.addresses %}
     {% if prisonDetails.addresses.length > 1 %}
@@ -245,7 +264,7 @@
                 href: amendWelshAddressUrl(prisonDetails, address),
                 text: "Change",
                 visuallyHiddenText: "welsh address details",
-                attributes: { "data-qa": "amend-welsh-address-details-link-"+ address.id} 
+                attributes: { "data-qa": "amend-welsh-address-details-link-"+ address.id}
               },
               {
                 href: deleteWelshAddressUrl(prisonDetails, address),
