@@ -267,6 +267,7 @@ export default class HMPPSAgencyRegisterApi {
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<ContactDetails>({
         path: `/secure/prisons/id/${prisonId}/department/contact-details`,
+        query: { removeIfNull: true },
         data: contactDetails,
       }),
     )
