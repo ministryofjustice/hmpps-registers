@@ -1,0 +1,114 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro prisonCoreDetailsCard(opts) %}
+
+  {% set prison = opts.prison %}
+
+  {% set genders = [] %}
+  {% if prison.male %}{% set genders = (genders.push('Male'), genders) %}{% endif %}
+  {% if prison.female %}{% set genders = (genders.push('Female'), genders) %}{% endif %}
+
+  {% set typeDescriptions = [] %}
+  {% for type in prison.types %}
+    {% set typeDescriptions = (typeDescriptions.push(type.description), typeDescriptions) %}
+  {% endfor %}
+
+  {% set operatorNames = [] %}
+  {% for operator in prison.operators %}
+    {% set operatorNames = (operatorNames.push(operator.name), operatorNames) %}
+  {% endfor %}
+
+  {% set rows = [
+    {
+      key: { text: 'Prison ID' },
+      value: { text: prison.id }
+    },
+    {
+      key: { text: 'Name' },
+      value: { text: prison.name },
+      actions: { items: [{
+        href: "/prison-register/name/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "name",
+        attributes: { "data-qa": "update-name-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    },
+    {
+      key: { text: 'Welsh name' },
+      value: { text: prison.prisonNameInWelsh if prison.prisonNameInWelsh else 'Not provided' },
+      actions: { items: [{
+        href: "/prison-register/welsh-name/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "Welsh name",
+        attributes: { "data-qa": "update-welsh-name-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    },
+    {
+      key: { text: 'Status' },
+      value: { text: 'Active' if prison.active else 'Inactive' }
+    },
+    {
+      key: { text: 'Gender' },
+      value: { text: genders | join(', ') if genders | length else 'Not provided' },
+      actions: { items: [{
+        href: "/prison-register/gender/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "gender",
+        attributes: { "data-qa": "update-gender-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    },
+    {
+      key: { text: 'Prison types' },
+      value: { text: typeDescriptions | join(', ') if typeDescriptions | length else 'Not provided' },
+      actions: { items: [{
+        href: "/prison-register/prison-types/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "prison types",
+        attributes: { "data-qa": "update-prison-types-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    },
+    {
+      key: { text: 'Contracted' },
+      value: { text: 'Yes' if prison.contracted else 'No' },
+      actions: { items: [{
+        href: "/prison-register/contracted/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "contracted status",
+        attributes: { "data-qa": "update-contracted-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    }
+  ] %}
+
+  {% if prison.contracted %}
+    {% set rows = (rows.push({
+      key: { text: 'Operators' },
+      value: { text: operatorNames | join(', ') if operatorNames | length else 'Not provided' }
+    }), rows) %}
+  {% endif %}
+
+  {% set rows = (rows.push({
+    key: { text: 'Long term high security estate' },
+    value: { text: 'Yes' if prison.lthse else 'No' },
+    actions: { items: [{
+      href: "/prison-register/lthse/update?id=" + prison.id,
+      text: "Change",
+      visuallyHiddenText: "long term high security estate status",
+      attributes: { "data-qa": "update-lthse-link" },
+      classes: "govuk-link--no-visited-state"
+    }] }
+  }), rows) %}
+
+  {{ govukSummaryList({
+    card: {
+      classes: 'summary-card-wider-key-column',
+      title: { text: 'Details' }
+    },
+    attributes: { "data-qa": "prison-summary-section" },
+    rows: rows
+  }) }}
+{% endmacro %}

@@ -3,67 +3,9 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/prison-register/prisonAreaDetailsCard.njk" import prisonAreaDetailsCard %}
+{% from "partials/prison-register/prisonCoreDetailsCard.njk" import prisonCoreDetailsCard %}
 
 {% set pageTitle = applicationName + " - Prison Details" %}
-
-{% macro prisonname(id, name, prisonNameInWelsh, active, male, female, contracted, lthse, types, operators) %}
-  <p>
-    {{ id }}
-  </p>
-  <p>
-    {{ name }}
-  </p>
-  {% if prisonNameInWelsh %}
-    <p>
-    {{ prisonNameInWelsh }}
-  </p>
-  {% endif %}
-  <p>
-    {% if active %}
-      Active
-    {% else %}
-      Inactive
-    {% endif %}
-  </p>
-  <p>
-    {% if male %}
-      Male prison
-    {% endif %}
-  </p>
-  <p>
-    {% if female %}
-      Female prison
-    {% endif %}
-  </p>
-  <p>
-    {% if contracted %}
-      Contracted
-    {% endif %}
-  </p>
-  <p>
-    {% if contracted %}
-      Operator(s):
-      {% for operator in operators %}
-        {{ operator.name }}{% if loop.revindex > 1 %},{% endif %}
-      {% endfor %}
-    {% endif %}
-  </p>
-
-  {% if types|length %}
-    <p>
-      Type(s):
-      {% for type in types %}
-        {{ type.description }}{% if loop.revindex > 1 %},{% endif %}
-      {% endfor %}
-    </p>
-  {% endif %}
-
-  <p>
-    {% if lthse %}
-      Long Term High Security Estate (LTHSE)
-    {% endif %}
-  </p>
-{% endmacro %}
 
 {% macro line(text) %}
   {% if text and text.trim() != '' %}
@@ -92,9 +34,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro amendPrisonUrl(prison) %}
-  /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
-{% endmacro %}
 {% macro amendAddressUrl(prison, address) %}
   /prison-register/amend-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
 {% endmacro %}
@@ -216,36 +155,7 @@
     <div class="govuk-grid-row"></div>
 
 
-  {{ govukSummaryList({
-      card: {
-        classes: 'summary-card-wider-key-column',
-        title: {
-          text: 'Details'
-        }
-      },
-    attributes: { "data-qa": "prison-summary-section"},
-    rows: [
-      {
-        key: {
-        text: "Prison"
-      },
-        value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.prisonNameInWelsh, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.lthse, prisonDetails.types, prisonDetails.operators),
-        classes: "prison-details"
-      },
-        actions: {
-        items: [
-          {
-            href: amendPrisonUrl(prisonDetails),
-            text: "Change",
-            visuallyHiddenText: "prison details",
-            attributes: { "data-qa": "amend-prison-details-link"}
-          }
-        ]
-      }
-      }
-    ]
-  }) }}
+  {{ prisonCoreDetailsCard({ prison: prisonDetails }) }}
 
  {{  prisonAreaDetailsCard({ prison: prisonDetails }) }}
 
