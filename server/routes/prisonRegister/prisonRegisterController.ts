@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import type { DepartmentContactDetailsForm } from 'agencyForms'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import { AllPrisonsFilter, updatePrisonAreaMapper } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
@@ -14,6 +15,7 @@ import AmendWelshPrisonAddressView from './amendWelshPrisonAddressView'
 import DeleteWelshPrisonAddressView from './deleteWelshPrisonAddressView'
 import {
   InsertPrison,
+  PrisonDetails,
   UpdatePrisonAddress,
   UpdateWelshPrisonAddress,
   WelshPrisonAddress,
@@ -28,6 +30,9 @@ import addNewPrisonAddressValidator from './addNewPrisonAddressValidator'
 import AddNewPrisonAddressView from './addNewPrisonAddressView'
 import UpdateAgencyCjitCodeView from '../agencyRegisters/updateCjitCodeView'
 import prisonReferenceFields from './prisonAreaFields'
+import DepartmentContactDetailsView from './departmentContactDetailsView'
+import validateDepartmentContactDetails from './departmentContactDetailsValidator'
+import { departmentTypes, isDepartmentType } from './departmentTypes'
 import { validatePrisonCjitCode, validatePrisonReference } from './updatePrisonAreaValidator'
 
 function context(res: Response): Context {
@@ -478,6 +483,113 @@ export default class PrisonRegisterController {
       },
     )
     return res.redirect(`/prison-register/details?id=${form.prisonId}&action=UPDATED`)
+  }
+
+  private static detailsUrl(prisonId: string): string {
+    return `/prison-register/details?id=${prisonId}`
+  }
+
+  private static departmentForm(department: PrisonDetails['departments'][number]): DepartmentContactDetailsForm {
+    return {
+      departmentType: department.type,
+      emailAddress: department.emailAddress ?? '',
+      phoneNumber: department.phoneNumber ?? '',
+      webAddress: department.webAddress ?? '',
+    }
+  }
+
+  async addDepartment(req: Request, res: Response): Promise<void> {
+    const { id } = req.query as { id: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.departmentContactDetailsForm
+    const existing = (prison.departments ?? []).map(department => department.type)
+    const availableTypes = departmentTypes.filter(type => !existing.includes(type))
+    if (!availableTypes.length) return res.redirect(PrisonRegisterController.detailsUrl(id))
+    const view = new DepartmentContactDetailsView(
+      'create',
+      prison.prisonName,
+      { cancelButton: PrisonRegisterController.detailsUrl(id) },
+      req.session.departmentContactDetailsForm ?? {},
+      errors,
+      availableTypes,
+    )
+    return res.render('pages/prison-register/departmentContactDetails', view.renderArgs)
+  }
+
+  async submitAddDepartment(req: Request, res: Response): Promise<void> {
+    req.session.departmentContactDetailsForm = trimForm(req.body)
+    const prisonId = req.query.id as string
+    res.redirect(
+      await validateDepartmentContactDetails(req.session.departmentContactDetailsForm, req, 'create', async details => {
+        const result = await this.hmppsAgencyRegisterApiService.createPrisonContactDetails(
+          context(res),
+          prisonId,
+          details,
+        )
+        if (result.success) delete req.session.departmentContactDetailsForm
+        return result
+      }),
+    )
+  }
+
+  async updateDepartment(req: Request, res: Response): Promise<void> {
+    const { id, departmentType } = req.query as { id: string; departmentType: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
+    const department = (prison.departments ?? []).find(d => d.type === departmentType)
+    if (!isDepartmentType(departmentType) || !department) return res.redirect(PrisonRegisterController.detailsUrl(id))
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.departmentContactDetailsForm
+    const view = new DepartmentContactDetailsView(
+      'update',
+      prison.prisonName,
+      { cancelButton: PrisonRegisterController.detailsUrl(id) },
+      {
+        ...PrisonRegisterController.departmentForm(department),
+        ...req.session.departmentContactDetailsForm,
+        departmentType,
+      },
+      errors,
+    )
+    return res.render('pages/prison-register/departmentContactDetails', view.renderArgs)
+  }
+
+  async submitUpdateDepartment(req: Request, res: Response): Promise<void> {
+    req.session.departmentContactDetailsForm = trimForm(req.body)
+    const prisonId = req.query.id as string
+    res.redirect(
+      await validateDepartmentContactDetails(req.session.departmentContactDetailsForm, req, 'update', async details => {
+        const result = await this.hmppsAgencyRegisterApiService.updatePrisonContactDetails(
+          context(res),
+          prisonId,
+          details,
+        )
+        if (result.success) delete req.session.departmentContactDetailsForm
+        return result
+      }),
+    )
+  }
+
+  async deleteDepartment(req: Request, res: Response): Promise<void> {
+    const { id, departmentType } = req.query as { id: string; departmentType: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrisonDetails(context(res), id)
+    const department = (prison.departments ?? []).find(d => d.type === departmentType)
+    if (!department) return res.redirect(PrisonRegisterController.detailsUrl(id))
+    const view = new DepartmentContactDetailsView(
+      'delete',
+      prison.prisonName,
+      { cancelButton: PrisonRegisterController.detailsUrl(id) },
+      PrisonRegisterController.departmentForm(department),
+    )
+    return res.render('pages/prison-register/deleteDepartmentContactDetails', view.renderArgs)
+  }
+
+  async submitDeleteDepartment(req: Request, res: Response): Promise<void> {
+    const { id, departmentType } = req.query as { id: string; departmentType: string }
+    if (isDepartmentType(departmentType)) {
+      await this.hmppsAgencyRegisterApiService.deletePrisonContactDetails(context(res), id, departmentType)
+    }
+    res.redirect(`${PrisonRegisterController.detailsUrl(id)}&action=UPDATED`)
   }
 
   async updateCjitCode(req: Request, res: Response): Promise<void> {

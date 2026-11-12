@@ -10,6 +10,8 @@ import {
   ApprovedPremises,
   Court,
   CourtSummary,
+  ContactDetails,
+  DepartmentType,
   EmailAddress,
   Hospital,
   InsertPrison,
@@ -237,6 +239,46 @@ export default class HMPPSAgencyRegisterApi {
     await HMPPSAgencyRegisterApi.restClient(token).put({
       path: `/prison-maintenance/id/${prisonId}/welsh-address/${addressId}`,
       data: welshAddress,
+    })
+  }
+
+  async createPrisonContactDetails(
+    context: Context,
+    prisonId: string,
+    contactDetails: ContactDetails,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Adding ${contactDetails.type} contact details to prison ${prisonId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).post<ContactDetails>({
+        path: `/secure/prisons/id/${prisonId}/department/contact-details`,
+        data: contactDetails,
+      }),
+    )
+  }
+
+  async updatePrisonContactDetails(
+    context: Context,
+    prisonId: string,
+    contactDetails: ContactDetails,
+  ): Promise<AgencyMutationResponse> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Updating ${contactDetails.type} contact details for prison ${prisonId}`)
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put<ContactDetails>({
+        path: `/secure/prisons/id/${prisonId}/department/contact-details`,
+        query: { removeIfNull: true },
+        data: contactDetails,
+      }),
+    )
+  }
+
+  async deletePrisonContactDetails(context: Context, prisonId: string, departmentType: DepartmentType): Promise<void> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    logger.info(`Deleting ${departmentType} contact details for prison ${prisonId}`)
+    await HMPPSAgencyRegisterApi.restClient(token).delete({
+      path: `/secure/prisons/id/${prisonId}/department/contact-details`,
+      query: { departmentType },
     })
   }
 

@@ -38,6 +38,8 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubUpdatePrisonArea: hmppsAgencyRegisterApi.stubUpdatePrisonArea,
     stubUpdatePrisonAreaError: hmppsAgencyRegisterApi.stubUpdatePrisonAreaError,
     getUpdatedPrisonAreas: hmppsAgencyRegisterApi.getUpdatedPrisonAreas,
+    stubPrisonContactDetails: hmppsAgencyRegisterApi.stubPrisonContactDetails,
+    getPrisonContactDetailsRequests: hmppsAgencyRegisterApi.getPrisonContactDetailsRequests,
     stubGetPrisonAddress: hmppsAgencyRegisterApi.stubGetPrisonAddress,
 
     stubUpdatePrisonAddress: hmppsAgencyRegisterApi.stubUpdatePrisonAddress,

@@ -63,6 +63,12 @@ declare module 'agencyForms' {
   export interface UpdateContactForm {
     contact?: string
   }
+  export interface DepartmentContactDetailsForm {
+    departmentType?: string
+    emailAddress?: string
+    phoneNumber?: string
+    webAddress?: string
+  }
   export interface UpdateCjitCodeForm {
     cjitCode?: string
   }

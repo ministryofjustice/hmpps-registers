@@ -34,7 +34,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
   })
 
-  it('Will display departments without change or add links', () => {
+  it('Will display departments with change, delete and add links', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage().viewPrisonLink(moorlandPrison.prisonId).click()
     const prisonDetailsPage = PrisonDetails.verifyOnPage(moorlandPrison.prisonName)
@@ -45,8 +45,13 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.departmentsSection().should('contain.text', '01302 111111')
     prisonDetailsPage.departmentsSection().should('contain.text', 'https://www.example.com/moorland/visits')
     prisonDetailsPage.departmentsSection().should('contain.text', 'Offender management unit')
-    prisonDetailsPage.departmentsSection().should('not.contain.text', 'Change')
-    prisonDetailsPage.departmentsSection().should('not.contain.text', 'Add')
+    prisonDetailsPage
+      .updateDepartmentLink('SOCIAL_VISIT')
+      .should('have.attr', 'href', '/prison-register/department/update?id=MDI&departmentType=SOCIAL_VISIT')
+    prisonDetailsPage
+      .deleteDepartmentLink('SOCIAL_VISIT')
+      .should('have.attr', 'href', '/prison-register/department/delete?id=MDI&departmentType=SOCIAL_VISIT')
+    prisonDetailsPage.addDepartmentLink().should('have.attr', 'href', '/prison-register/department/create?id=MDI')
   })
 
   it('Will display prison address details without link to add welsh address', () => {

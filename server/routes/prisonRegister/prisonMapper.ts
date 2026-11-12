@@ -7,6 +7,7 @@ import {
   CodeDescription,
   UpdatePrisonArea,
 } from '../../@types/prisonRegister'
+import { departmentName } from './departmentTypes'
 
 export type PrisonSummary = {
   id: string
@@ -82,18 +83,10 @@ export type DepartmentDetail = {
   webAddress?: string
 }
 
-const departmentNames: Record<string, string> = {
-  PRISON: 'Prison',
-  SOCIAL_VISIT: 'Social visits',
-  VIDEOLINK_CONFERENCING_CENTRE: 'Video link conferencing centre',
-  OFFENDER_MANAGEMENT_UNIT: 'Offender management unit',
-  OFFICIAL_VISIT: 'Official visits',
-}
-
 export function departmentMapper(department: PrisonDetails['departments'][number]): DepartmentDetail {
   return {
     type: department.type,
-    name: departmentNames[department.type] ?? department.type,
+    name: departmentName(department.type),
     emailAddress: department.emailAddress,
     phoneNumber: department.phoneNumber,
     webAddress: department.webAddress,
