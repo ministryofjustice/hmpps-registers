@@ -265,8 +265,19 @@ export default class HMPPSAgencyRegisterApi {
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const prisonTypes = prison.types.map(type => type.code)
-    const { prisonName, male, female, contracted, lthse, categories } = prison
-    const updatedPrison: UpdatePrison = { active, prisonName, male, female, contracted, lthse, prisonTypes, categories }
+    const { prisonName, prisonNameInWelsh, male, female, contracted, lthse, categories } = prison
+    // The API replaces every field it is sent, so anything left out here is cleared on the prison
+    const updatedPrison: UpdatePrison = {
+      active,
+      prisonName,
+      prisonNameInWelsh,
+      male,
+      female,
+      contracted,
+      lthse,
+      prisonTypes,
+      categories,
+    }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
     await HMPPSAgencyRegisterApi.restClient(token).put({

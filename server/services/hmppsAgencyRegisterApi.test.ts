@@ -268,6 +268,47 @@ describe('HMPPS Agency Register API', () => {
     })
   })
 
+  describe('updateActivePrisonMarker for a prison with a Welsh name', () => {
+    let updatedPrison: UpdatePrison
+    beforeEach(() => {
+      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+      fakeHmppsAgencyRegisterApi
+        .get('/prisons/id/CFI')
+        .reply(
+          200,
+          data.prison({ prisonId: 'CFI', prisonName: 'Cardiff (HMP)', prisonNameInWelsh: 'Carchar Caerdydd' }),
+        )
+      fakeHmppsAgencyRegisterApi
+        .put('/prison-maintenance/id/CFI', body => {
+          updatedPrison = body
+          return body
+        })
+        .reply(200, data.prison({}))
+    })
+    it('will keep the Welsh name when the prison is marked inactive', async () => {
+      await hmppsAgencyRegisterApiService.updateActivePrisonMarker({ username: 'tommy' }, 'CFI', false)
+
+      expect(updatedPrison).toEqual(
+        expect.objectContaining({
+          prisonName: 'Cardiff (HMP)',
+          prisonNameInWelsh: 'Carchar Caerdydd',
+          active: false,
+        }),
+      )
+    })
+    it('will keep the Welsh name when the prison is marked active', async () => {
+      await hmppsAgencyRegisterApiService.updateActivePrisonMarker({ username: 'tommy' }, 'CFI', true)
+
+      expect(updatedPrison).toEqual(
+        expect.objectContaining({
+          prisonNameInWelsh: 'Carchar Caerdydd',
+          active: true,
+        }),
+      )
+    })
+  })
+
   describe('findPrisonAddress', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
