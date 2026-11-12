@@ -91,6 +91,6 @@ context('Prison register - add department contact details', () => {
     const page = openAddPage()
     page.departmentType('PRISON').check()
     page.saveButton().click()
-    DepartmentContactDetails.verifyOnPage(title).error().should('contain.text', 'Contact details already exist')
+    DepartmentContactDetails.verifyOnPage(title).errorSummary().should('contain.text', 'Contact details already exist')
   })
 })

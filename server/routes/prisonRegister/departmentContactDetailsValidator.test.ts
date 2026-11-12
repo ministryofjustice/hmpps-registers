@@ -83,6 +83,6 @@ describe('departmentContactDetailsValidator', () => {
     save.mockResolvedValue({ success: false, userMessage: 'Already exists' })
     const next = await validate(form, reqFor({ id: 'MDI' }), 'create', save)
     expect(next).toEqual('/prison-register/department/create?id=MDI')
-    expect(flash).toHaveBeenCalledWith('errors', [{ href: '#emailAddress', text: 'Already exists' }])
+    expect(flash).toHaveBeenCalledWith('errors', [{ text: 'Already exists' }])
   })
 })
