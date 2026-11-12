@@ -1,13 +1,14 @@
 import { Request, Response } from 'express'
 import type { DepartmentContactDetailsForm } from 'agencyForms'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
-import { AllPrisonsFilter, updatePrisonAreaMapper } from './prisonMapper'
+import { AllPrisonsFilter, updatePrisonAreaMapper, updatePrisonMapper } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
 import AllPrisonsView from './allPrisonsView'
 import ControllerHelper from '../utils/controllerHelper'
-import AmendPrisonDetailsView from './amendPrisonDetailsView'
+import UpdatePrisonDetailView from './updatePrisonDetailView'
+import prisonDetailFields from './prisonDetailFields'
+import updatePrisonDetailValidator from './updatePrisonDetailValidator'
 import trimForm from '../../utils/trim'
-import amendPrisonDetailsValidator from './amendPrisonDetailsValidator'
 import prisonAddressValidator from './prisonAddressValidator'
 import welshPrisonAddressValidator from './welshPrisonAddressValidator'
 import AmendPrisonAddressView from './amendPrisonAddressView'
@@ -138,75 +139,6 @@ export default class PrisonRegisterController {
   addNewPrisonFinished(req: Request, res: Response): void {
     const { id, name } = req.session.addNewPrisonForm
     res.render('pages/prison-register/addNewPrisonFinished', { id, name, backLink: req.session.prisonListPageLink })
-  }
-
-  async amendPrisonDetailsStart(req: Request, res: Response): Promise<void> {
-    const { prisonId } = req.query as { prisonId: string }
-
-    const [prison] = await Promise.all([this.hmppsAgencyRegisterApiService.getPrison(context(res), prisonId)])
-
-    const gender = []
-    if (prison.male) gender.push('male')
-    if (prison.female) gender.push('female')
-
-    const contracted = prison.contracted ? 'yes' : 'no'
-    const lthse = prison.lthse ? 'yes' : 'no'
-
-    req.session.amendPrisonDetailsForm = {
-      id: prison.prisonId,
-      name: prison.prisonName,
-      prisonNameInWelsh: prison.prisonNameInWelsh,
-      gender,
-      prisonTypes: prison.types.map(type => type.code),
-      contracted,
-      lthse,
-    }
-
-    const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
-
-    res.render('pages/prison-register/amendPrisonDetails', view.renderArgs)
-  }
-
-  async amendPrisonDetails(req: Request, res: Response): Promise<void> {
-    const view = new AmendPrisonDetailsView(req.session.amendPrisonDetailsForm, req.flash('errors'))
-
-    res.render('pages/prison-register/amendPrisonDetails', view.renderArgs)
-  }
-
-  async submitAmendPrisonDetails(req: Request, res: Response): Promise<void> {
-    req.session.amendPrisonDetailsForm = { ...trimForm(req.body) }
-    res.redirect(
-      await amendPrisonDetailsValidator(
-        req.session.amendPrisonDetailsForm,
-        req,
-        (
-          prisonId: string,
-          name: string,
-          prisonNameInWelsh: string,
-          contracted: string,
-          lthse: string,
-          gender: string[],
-          prisonTypes: string[],
-        ) => {
-          const genderArray = ControllerHelper.parseStringArrayFromQuery(gender) || []
-          const prisonTypesArray = (ControllerHelper.parseStringArrayFromQuery(prisonTypes) || []) as (
-            'HMP' | 'YOI' | 'STC' | 'IRC'
-          )[]
-
-          return this.hmppsAgencyRegisterApiService.updatePrisonDetails(
-            context(res),
-            prisonId,
-            name,
-            prisonNameInWelsh || null,
-            contracted,
-            lthse,
-            genderArray.includes('male'),
-            genderArray.includes('female'),
-            prisonTypesArray,
-          )
-        },
-      ),
-    )
   }
 
   async addPrisonAddressStart(req: Request, res: Response): Promise<void> {
@@ -617,6 +549,41 @@ export default class PrisonRegisterController {
           cjitCode,
         })
         if (result.success) delete req.session.updateCjitCodeForm
+        return result
+      }),
+    )
+  }
+
+  async updatePrisonDetail(req: Request, res: Response, fieldName: string): Promise<void> {
+    const config = prisonDetailFields.find(f => f.field === fieldName)
+    const { id } = req.query as { id: string }
+    const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), id)
+    const errors = req.flash('errors')
+    if (!errors?.length) delete req.session.updatePrisonDetailForm
+    const view = new UpdatePrisonDetailView(
+      prison.prisonName,
+      config.field,
+      config.label,
+      { cancelButton: `/prison-register/details?id=${id}` },
+      errors,
+      req.session.updatePrisonDetailForm ?? config.initialForm(prison),
+    )
+    res.render('pages/prison-register/updatePrisonDetail', view.renderArgs)
+  }
+
+  async submitUpdatePrisonDetail(req: Request, res: Response, fieldName: string): Promise<void> {
+    const config = prisonDetailFields.find(f => f.field === fieldName)
+    req.session.updatePrisonDetailForm = trimForm(req.body)
+    const prisonId = req.query.id as string
+    res.redirect(
+      await updatePrisonDetailValidator(config, req.session.updatePrisonDetailForm, req, async form => {
+        const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), prisonId)
+        const result = await this.hmppsAgencyRegisterApiService.updatePrisonDetails(
+          context(res),
+          prisonId,
+          config.apply(updatePrisonMapper(prison), form),
+        )
+        if (result.success) delete req.session.updatePrisonDetailForm
         return result
       }),
     )

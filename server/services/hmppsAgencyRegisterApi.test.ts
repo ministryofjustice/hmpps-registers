@@ -183,55 +183,44 @@ describe('HMPPS Agency Register API', () => {
   })
 
   describe('updatePrisonDetails', () => {
+    const update: UpdatePrison = {
+      prisonName: 'HMP Moorland Updated',
+      prisonNameInWelsh: null,
+      active: false,
+      male: true,
+      female: false,
+      contracted: true,
+      lthse: false,
+      prisonTypes: ['HMP'],
+      categories: [],
+    }
     let updatedPrison: UpdatePrison
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI').reply(200, data.prison({ active: false }))
+    })
+    it('username will be used by client and the update sent as is', async () => {
       fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/MDI', body => {
           updatedPrison = body
           return body
         })
         .reply(200, data.prison({}))
-    })
-    it('username will be used by client', async () => {
-      await hmppsAgencyRegisterApiService.updatePrisonDetails(
-        { username: 'tommy' },
-        'MDI',
-        'HMP Moorland',
-        '',
-        'yes',
-        'no',
-        true,
-        false,
-        [],
-      )
+
+      const result = await hmppsAgencyRegisterApiService.updatePrisonDetails({ username: 'tommy' }, 'MDI', update)
 
       expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(updatedPrison).toEqual(update)
+      expect(result).toEqual({ success: true })
     })
-    it('will send current active marker with request', async () => {
-      await hmppsAgencyRegisterApiService.updatePrisonDetails(
-        { username: 'tommy' },
-        'MDI',
-        'HMP Moorland Updated',
-        '',
-        'yes',
-        'no',
-        true,
-        false,
-        ['HMP'],
-      )
+    it('will return the user message for a 400 response', async () => {
+      fakeHmppsAgencyRegisterApi
+        .put('/prison-maintenance/id/MDI')
+        .reply(400, { status: 400, userMessage: 'Name already in use' })
 
-      expect(updatedPrison).toEqual(
-        expect.objectContaining({
-          prisonName: 'HMP Moorland Updated',
-          active: false,
-          male: true,
-          female: false,
-          prisonTypes: ['HMP'],
-        }),
-      )
+      const result = await hmppsAgencyRegisterApiService.updatePrisonDetails({ username: 'tommy' }, 'MDI', update)
+
+      expect(result).toEqual({ success: false, userMessage: 'Name already in use' })
     })
   })
 
