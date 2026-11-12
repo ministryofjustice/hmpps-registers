@@ -9,6 +9,7 @@ export type DepartmentFormMode = 'create' | 'update'
 
 const isValidWebAddress = (value: string): boolean => {
   try {
+    if (!/^https?:\/\//i.test(value)) return false
     const url = new URL(value)
     return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname.length > 0
   } catch {
