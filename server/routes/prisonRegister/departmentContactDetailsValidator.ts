@@ -68,7 +68,7 @@ export default async function validate(
     webAddress: form.webAddress || null,
   })
   if (result.success === false) {
-    req.flash('errors', [{ href: '#emailAddress', text: result.userMessage }])
+    req.flash('errors', [{ text: result.userMessage }])
     return formUrl
   }
 
