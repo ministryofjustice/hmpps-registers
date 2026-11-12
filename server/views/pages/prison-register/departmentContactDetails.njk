@@ -1,0 +1,79 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set mainClasses = "app-container govuk-body" %}
+{% set isCreate = mode == "create" %}
+{% set heading = ("Add contact details for " if isCreate else "Update " + departmentName + " contact details for ") + name %}
+{% set pageTitle = ("Add contact details" if isCreate else "Update contact details") + " - DPS" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">{{ "Add contact details" if isCreate else "Update contact details" }}</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ heading }}</h1>
+      <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {% if isCreate %}
+          {{ govukRadios({
+            idPrefix: "departmentType",
+            name: "departmentType",
+            fieldset: { legend: { text: "Department type", classes: "govuk-fieldset__legend--s" } },
+            items: departmentTypeItems,
+            errorMessage: errors | findError('departmentType'),
+            attributes: { "data-qa": "departmentType" }
+          }) }}
+        {% else %}
+          <h2 class="govuk-heading-s">Department type</h2>
+          <p class="govuk-body" data-qa="department-type">{{ departmentName }}</p>
+        {% endif %}
+        {{ govukInput({
+          id: "emailAddress",
+          name: "emailAddress",
+          type: "email",
+          autocomplete: "off",
+          label: { text: "Email address" },
+          classes: "govuk-input--width-20",
+          value: form.emailAddress,
+          errorMessage: errors | findError('emailAddress'),
+          attributes: { "data-qa": "emailAddress" }
+        }) }}
+        {{ govukInput({
+          id: "webAddress",
+          name: "webAddress",
+          type: "url",
+          autocomplete: "off",
+          label: { text: "Web address" },
+          hint: { text: "For example, https://www.example.com" },
+          classes: "govuk-input--width-20",
+          value: form.webAddress,
+          errorMessage: errors | findError('webAddress'),
+          attributes: { "data-qa": "webAddress" }
+        }) }}
+        {{ govukInput({
+          id: "phoneNumber",
+          name: "phoneNumber",
+          type: "tel",
+          label: { text: "Phone number" },
+          hint: { text: "Use only numbers, spaces, plus signs and dashes." },
+          classes: "govuk-input--width-20",
+          value: form.phoneNumber,
+          errorMessage: errors | findError('phoneNumber'),
+          attributes: { "data-qa": "phoneNumber" }
+        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

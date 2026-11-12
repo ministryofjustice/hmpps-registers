@@ -325,6 +325,54 @@ const getUpdatedPrisonAreas = (prisonId: string): Promise<Array<Record<string, u
       .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
   )
 
+const departmentContactDetailsPath = (prisonId: string) =>
+  `/prison-register/secure/prisons/id/${prisonId}/department/contact-details`
+
+const stubPrisonContactDetails = ({
+  prisonId,
+  method,
+  status = 200,
+  userMessage,
+}: {
+  prisonId: string
+  method: 'POST' | 'PUT' | 'DELETE'
+  status?: number
+  userMessage?: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method,
+      urlPathPattern: departmentContactDetailsPath(prisonId),
+    },
+    response: {
+      status,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      ...(userMessage ? { jsonBody: { userMessage } } : {}),
+    },
+  })
+
+const getPrisonContactDetailsRequests = ({
+  prisonId,
+  method,
+}: {
+  prisonId: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === method && request.url.split('?')[0] === departmentContactDetailsPath(prisonId),
+      )
+      .map(({ request }: { request: { body: string; queryParams: Record<string, { values: string[] }> } }) =>
+        method === 'DELETE'
+          ? { departmentType: request.queryParams.departmentType?.values[0] }
+          : JSON.parse(request.body),
+      ),
+  )
+
 const stubGetCourts = (courts: CourtSummary[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1425,6 +1473,8 @@ export default {
   stubUpdatePrisonArea,
   stubUpdatePrisonAreaError,
   getUpdatedPrisonAreas,
+  stubPrisonContactDetails,
+  getPrisonContactDetailsRequests,
   stubGetPrisonAddress,
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,

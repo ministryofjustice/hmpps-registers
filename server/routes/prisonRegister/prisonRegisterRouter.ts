@@ -94,6 +94,13 @@ export default function routes(router: Router, services: Services): Router {
     prisonRegisterController.submitDeletePrisonAddress(req, res),
   )
 
+  get('/prison-register/department/create', (req, res) => prisonRegisterController.addDepartment(req, res))
+  post('/prison-register/department/create', (req, res) => prisonRegisterController.submitAddDepartment(req, res))
+  get('/prison-register/department/update', (req, res) => prisonRegisterController.updateDepartment(req, res))
+  post('/prison-register/department/update', (req, res) => prisonRegisterController.submitUpdateDepartment(req, res))
+  get('/prison-register/department/delete', (req, res) => prisonRegisterController.deleteDepartment(req, res))
+  post('/prison-register/department/delete', (req, res) => prisonRegisterController.submitDeleteDepartment(req, res))
+
   get('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.updateCjitCode(req, res))
   post('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.submitUpdateCjitCode(req, res))
   prisonReferenceFields.forEach(({ field, path }) => {

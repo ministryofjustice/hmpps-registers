@@ -250,21 +250,50 @@
  {{  prisonAreaDetailsCard({ prison: prisonDetails }) }}
 
 
-  {% if prisonDetails.departments | length %}
-    {% set departmentRows = [] %}
-    {% for department in prisonDetails.departments %}
-      {% set departmentRows = (departmentRows.push({
-        key: { text: department.name },
-        value: { html: departmentDetails(department) }
-      }), departmentRows) %}
-    {% endfor %}
-    <div data-qa="departments-section">
-      {{ govukSummaryList({
-        card: {
-          classes: 'summary-card-wider-key-column',
-          title: { text: 'Departments' }
-        },
-        rows: departmentRows
+  {% set departmentRows = [] %}
+  {% for department in prisonDetails.departments %}
+    {% set departmentRows = (departmentRows.push({
+      key: { text: department.name },
+      value: { html: departmentDetails(department) },
+      actions: {
+        items: [
+          {
+            href: "/prison-register/department/update?id=" + prisonDetails.id + "&departmentType=" + department.type,
+            text: "Change",
+            visuallyHiddenText: department.name + " contact details",
+            attributes: { "data-qa": "update-department-link-" + department.type },
+            classes: "govuk-link--no-visited-state"
+          },
+          {
+            href: "/prison-register/department/delete?id=" + prisonDetails.id + "&departmentType=" + department.type,
+            text: "Delete",
+            visuallyHiddenText: department.name + " contact details",
+            attributes: { "data-qa": "delete-department-link-" + department.type },
+            classes: "govuk-link--no-visited-state"
+          }
+        ]
+      }
+    }), departmentRows) %}
+  {% endfor %}
+  {% if not departmentRows | length %}
+    {% set departmentRows = [{ key: { text: "No contact details provided.", classes: "govuk-!-font-weight-regular govuk-!-width-full" } }] %}
+  {% endif %}
+  <div data-qa="departments-section">
+    {{ govukSummaryList({
+      card: {
+        classes: 'summary-card-wider-key-column',
+        title: { text: 'Departments' }
+      },
+      rows: departmentRows
+    }) }}
+  </div>
+  {% if prisonDetails.departments | length < 5 %}
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Add contact details",
+        href: "/prison-register/department/create?id=" + prisonDetails.id,
+        classes: "govuk-button govuk-button--secondary",
+        attributes: { "data-qa": "add-department-link" }
       }) }}
     </div>
   {% endif %}
