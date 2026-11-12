@@ -25,11 +25,11 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', moorlandPrison.prisonId)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', moorlandPrison.prisonName)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Active')
-    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male prison')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Operator(s)')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Type(s)')
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Operator(s)')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Prison types')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Prison,')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
   })
@@ -95,7 +95,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Type(s)')
   })
 
-  it('Will not state prison contracted when prison not contracted', () => {
+  it('Will not state prison has operators not contracted', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()
       .viewPrisonLink(albanyPrison.prisonId)
@@ -103,7 +103,7 @@ context('Prison register - prison details navigation', () => {
       .click()
     const prisonDetailsPage = PrisonDetails.verifyOnPage(albanyPrison.prisonName)
 
-    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Contracted')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Operator(s)')
   })
 })
