@@ -16,14 +16,13 @@ declare module 'prisonForms' {
     completed?: boolean
   }
 
-  export interface AmendPrisonDetailsForm {
-    id: string
-    name: string
+  export interface UpdatePrisonDetailForm {
+    name?: string
     prisonNameInWelsh?: string
-    gender: string[]
-    prisonTypes: string[]
-    contracted: string
-    lthse: string
+    gender?: string | string[]
+    prisonTypes?: string | string[]
+    contracted?: string
+    lthse?: string
   }
   export interface PrisonAddressForm {
     id?: string

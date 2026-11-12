@@ -22,7 +22,7 @@ import type {
 } from 'agencyForms'
 import type {
   AddNewPrisonForm,
-  AmendPrisonDetailsForm,
+  UpdatePrisonDetailForm,
   AmendWelshPrisonAddressForm,
   AmendPrisonAddressForm,
   AddPrisonAddressForm,
@@ -51,7 +51,7 @@ declare module 'express-session' {
     addOtherAgencyJourneys: Record<string, AddOtherAgencyJourney>
     addProbationOfficeJourneys: Record<string, AddProbationOfficeJourney>
     addPoliceCustodySuiteJourneys: Record<string, AddPoliceCustodySuiteJourney>
-    amendPrisonDetailsForm: AmendPrisonDetailsForm
+    updatePrisonDetailForm: UpdatePrisonDetailForm
     amendWelshPrisonAddressForm: AmendWelshPrisonAddressForm
     amendPrisonAddressForm: AmendPrisonAddressForm
     addPrisonAddressForm: AddPrisonAddressForm

@@ -5,6 +5,7 @@ import {
   PrisonDetails,
   PrisonType,
   CodeDescription,
+  UpdatePrison,
   UpdatePrisonArea,
 } from '../../@types/prisonRegister'
 import { departmentName } from './departmentTypes'
@@ -199,5 +200,19 @@ export function updatePrisonAreaMapper(prison: PrisonDetails): UpdatePrisonArea 
     geographicalAreaCode: prison.geographicalArea?.code,
     localAuthorityCode: prison.localAuthority?.code,
     payrollRegionCode: prison.payrollRegion?.code,
+  }
+}
+
+export function updatePrisonMapper(prison: Prison): UpdatePrison {
+  return {
+    prisonName: prison.prisonName,
+    prisonNameInWelsh: prison.prisonNameInWelsh,
+    active: prison.active,
+    male: prison.male,
+    female: prison.female,
+    contracted: prison.contracted,
+    lthse: prison.lthse,
+    prisonTypes: prison.types.map(type => type.code),
+    categories: prison.categories,
   }
 }

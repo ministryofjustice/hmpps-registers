@@ -166,38 +166,15 @@ export default class HMPPSAgencyRegisterApi {
     return { success: true }
   }
 
-  async updatePrisonDetails(
-    context: Context,
-    prisonId: string,
-    prisonName: string,
-    prisonNameInWelsh: string,
-    contracted: string,
-    lthse: string,
-    male: boolean,
-    female: boolean,
-    prisonTypes: UpdatePrison['prisonTypes'],
-  ): Promise<void> {
-    const prison: Prison = await this.getPrison(context, prisonId)
-    const isContracted = contracted === 'yes'
-    const isLthse = lthse === 'yes'
-
-    const updatedPrison: UpdatePrison = {
-      active: prison.active,
-      contracted: isContracted,
-      lthse: isLthse,
-      prisonName,
-      male,
-      female,
-      prisonTypes,
-      prisonNameInWelsh,
-      categories: prison.categories,
-    }
+  async updatePrisonDetails(context: Context, prisonId: string, prison: UpdatePrison): Promise<AgencyMutationResponse> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Amending prison details for ${prisonId}`)
-    await HMPPSAgencyRegisterApi.restClient(token).put({
-      path: `/prison-maintenance/id/${prisonId}`,
-      data: updatedPrison,
-    })
+    return HMPPSAgencyRegisterApi.agencyMutation(() =>
+      HMPPSAgencyRegisterApi.restClient(token).put({
+        path: `/prison-maintenance/id/${prisonId}`,
+        data: prison,
+      }),
+    )
   }
 
   async updatePrisonArea(context: Context, prisonId: string, area: UpdatePrisonArea): Promise<AgencyMutationResponse> {

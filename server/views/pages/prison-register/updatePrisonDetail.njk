@@ -1,0 +1,104 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set mainClasses = "app-container govuk-body" %}
+{% set pageTitle = "Update " + label + " - DPS" %}
+{% set title = "Update " + label + " for " + name %}
+
+{% block content %}
+  {% if errors.length > 0 %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: errors,
+      attributes: { "data-qa-errors": true }
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Update {{ label }}</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+        {% if field == 'name' %}
+          {{ govukInput({
+            id: "name",
+            name: "name",
+            label: { text: "Prison name" },
+            hint: { text: "This is the name which will be displayed in most services" },
+            value: form.name,
+            errorMessage: errors | findError('name')
+          }) }}
+        {% elif field == 'prisonNameInWelsh' %}
+          {{ govukInput({
+            id: "prisonNameInWelsh",
+            name: "prisonNameInWelsh",
+            label: { text: "Welsh prison name (optional)" },
+            hint: { text: "This is only required for establishments in Wales." },
+            value: form.prisonNameInWelsh,
+            errorMessage: errors | findError('prisonNameInWelsh')
+          }) }}
+        {% elif field == 'gender' %}
+          {{ govukCheckboxes({
+            idPrefix: "gender",
+            name: "gender",
+            fieldset: { legend: { text: "Is this a male and/or female prison?", classes: "govuk-fieldset__legend--m" } },
+            hint: { text: "Select all that apply." },
+            items: genderValues | setChecked(form.gender),
+            errorMessage: errors | findError('gender')
+          }) }}
+        {% elif field == 'prisonTypes' %}
+          {{ govukCheckboxes({
+            idPrefix: "prisonTypes",
+            name: "prisonTypes",
+            fieldset: { legend: { text: "What type of prison is this?", classes: "govuk-fieldset__legend--m" } },
+            hint: { text: "Select all that apply." },
+            items: prisonTypesValues | setChecked(form.prisonTypes),
+            errorMessage: errors | findError('prisonTypes')
+          }) }}
+        {% elif field == 'contracted' %}
+          {{ govukRadios({
+            classes: "govuk-radios--inline",
+            idPrefix: "contracted",
+            name: "contracted",
+            fieldset: { legend: { text: "Is this prison contracted?", classes: "govuk-fieldset__legend--m" } },
+            hint: { text: "A contracted prison is one run by a third party company, under contract to the Ministry of Justice" },
+            items: [
+              { value: "yes", text: "Yes", checked: form.contracted === 'yes' },
+              { value: "no", text: "No", checked: form.contracted === 'no' }
+            ],
+            errorMessage: errors | findError('contracted')
+          }) }}
+        {% elif field == 'lthse' %}
+          {{ govukRadios({
+            classes: "govuk-radios--inline",
+            idPrefix: "lthse",
+            name: "lthse",
+            fieldset: { legend: { text: "Is this prison part of the long term high security estate?", classes: "govuk-fieldset__legend--m" } },
+            items: [
+              { value: "yes", text: "Yes", checked: form.lthse === 'yes' },
+              { value: "no", text: "No", checked: form.lthse === 'no' }
+            ],
+            errorMessage: errors | findError('lthse')
+          }) }}
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm and save",
+            name: "save",
+            type: "submit",
+            classes: 'govuk-!-margin-top-6',
+            attributes: {"data-qa": "continue-button"},
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
