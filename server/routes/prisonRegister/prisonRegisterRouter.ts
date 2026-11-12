@@ -1,6 +1,7 @@
 import { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import PrisonRegisterController from './prisonRegisterController'
+import prisonDetailFields from './prisonDetailFields'
 import prisonReferenceFields from './prisonAreaFields'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
@@ -33,13 +34,12 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/prison-register/add-new-prison-finished', (req, res) => prisonRegisterController.addNewPrisonFinished(req, res))
 
-  get('/prison-register/amend-prison-details-start', (req, res) =>
-    prisonRegisterController.amendPrisonDetailsStart(req, res),
-  )
-  get('/prison-register/amend-prison-details', (req, res) => prisonRegisterController.amendPrisonDetails(req, res))
-  post('/prison-register/amend-prison-details', (req, res) =>
-    prisonRegisterController.submitAmendPrisonDetails(req, res),
-  )
+  prisonDetailFields.forEach(({ field, path }) => {
+    get(`/prison-register/${path}/update`, (req, res) => prisonRegisterController.updatePrisonDetail(req, res, field))
+    post(`/prison-register/${path}/update`, (req, res) =>
+      prisonRegisterController.submitUpdatePrisonDetail(req, res, field),
+    )
+  })
 
   get('/prison-register/add-prison-address-start', (req, res) =>
     prisonRegisterController.addPrisonAddressStart(req, res),
