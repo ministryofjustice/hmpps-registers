@@ -531,7 +531,7 @@ describe('Prison Register controller', () => {
         expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
         expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
           ...expectedUpdate,
-          description: 'A category B prison',
+          prisonDescription: 'A category B prison',
         })
       })
       it('will send null when the description is cleared', async () => {
@@ -540,16 +540,16 @@ describe('Prison Register controller', () => {
 
         expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
           ...expectedUpdate,
-          description: null,
+          prisonDescription: null,
         })
       })
-      it('will reject a description over 3000 characters', async () => {
-        req.body = { description: 'a'.repeat(3001) }
+      it('will reject a description over 256 characters', async () => {
+        req.body = { description: 'a'.repeat(257) }
         await controller.submitUpdatePrisonDetail(req, res, 'description')
 
         expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
         expect(req.flash).toHaveBeenCalledWith('errors', [
-          { href: '#description', text: 'Description must be 3000 characters or fewer' },
+          { href: '#description', text: 'Description must be 256 characters or fewer' },
         ])
         expect(res.redirect).toHaveBeenCalledWith('/prison-register/description/update?id=MDI')
       })

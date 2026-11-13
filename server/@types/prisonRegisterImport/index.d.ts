@@ -404,6 +404,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/legacy/sync/prison/id/{agencyId}/phone-number': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Updates prison phone number by creating or updating a department record
+     * @description Used for synchronising data from NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    put: operations['updatePrisonPhoneNumber']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/hospitals/id/{hospitalId}': {
     parameters: {
       query?: never
@@ -1364,6 +1384,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/reference-data/prison-operators': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all prison operators
+     * @description Returns all prison operators as a flat list of code and description
+     */
+    get: operations['getPrisonOperators']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/reference-data/payroll-regions': {
     parameters: {
       query?: never
@@ -2058,6 +2098,11 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
       /** @description Whether the prison is still active */
       active: boolean
       /** @description If this is a male prison */
@@ -2163,6 +2208,11 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
       /** @description Whether the prison is still active */
       active: boolean
       /** @description Whether the prison has male prisoners */
@@ -2472,6 +2522,31 @@ export interface components {
       emailAddresses: components['schemas']['AgencyEmailDto'][]
       /** @description phoneNumbers */
       phoneNumbers: components['schemas']['AgencyPhoneDto'][]
+    }
+    LegacyAgencyPhoneDto: {
+      /**
+       * Format: int64
+       * @description Database Id
+       * @example 123
+       */
+      id?: number | null
+      /**
+       * @description Phone number
+       * @example 0114 555 9898
+       */
+      number: string
+    }
+    /** @description Prison phone number */
+    LegacyPrisonPhoneDto: {
+      phoneNumber: components['schemas']['LegacyAgencyPhoneDto']
+    }
+    /** @description Prison Information */
+    DepartmentDto: {
+      /** @enum {string} */
+      type: 'PRISON' | 'SOCIAL_VISIT' | 'VIDEOLINK_CONFERENCING_CENTRE' | 'OFFENDER_MANAGEMENT_UNIT' | 'OFFICIAL_VISIT'
+      emailAddress?: string | null
+      phoneNumber?: string | null
+      webAddress?: string | null
     }
     /** @description Hospital Update Record */
     UpdateHospitalDto: {
@@ -3213,19 +3288,6 @@ export interface components {
        */
       address: string
     }
-    LegacyAgencyPhoneDto: {
-      /**
-       * Format: int64
-       * @description Database Id
-       * @example 123
-       */
-      id?: number | null
-      /**
-       * @description Phone number
-       * @example 0114 555 9898
-       */
-      number: string
-    }
     /** @enum {string} */
     LegacyAgencyType:
       | 'PRISON'
@@ -3457,6 +3519,11 @@ export interface components {
       /** @description Phone numbers */
       phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
+    PrisonOperator: {
+      /** Format: int64 */
+      id: number
+      name: string
+    }
     /** @description Full name of prison with id */
     PrisonNameDto: {
       /**
@@ -3476,14 +3543,6 @@ export interface components {
       prisonNameInWelsh?: string | null
     }
     /** @description Prison Information */
-    DepartmentDto: {
-      /** @enum {string} */
-      type: 'PRISON' | 'SOCIAL_VISIT' | 'VIDEOLINK_CONFERENCING_CENTRE' | 'OFFENDER_MANAGEMENT_UNIT' | 'OFFICIAL_VISIT'
-      emailAddress?: string | null
-      phoneNumber?: string | null
-      webAddress?: string | null
-    }
-    /** @description Prison Information */
     FullPrisonDto: {
       /**
        * @description Prison ID
@@ -3500,6 +3559,11 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
       /** @description Whether the prison is still active */
       active: boolean
       /** @description Whether the prison has male prisoners */
@@ -5826,6 +5890,45 @@ export interface operations {
       }
       /** @description Agency Id or Address Id not found */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  updatePrisonPhoneNumber: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example WWI
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LegacyPrisonPhoneDto']
+      }
+    }
+    responses: {
+      /** @description Prison phone number updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DepartmentDto']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
@@ -9475,6 +9578,44 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['CodeDescription'][]
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the HMPPS_REGISTERS_API__MAINTAIN__RW role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getPrisonOperators: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PrisonOperator'][]
         }
       }
       /** @description Unauthorized to access this endpoint */

@@ -89,17 +89,17 @@ context('Prison register - update main details', () => {
     page.description().type('A category B local prison')
     page.saveButton().click()
     PrisonDetails.verifyOnPage(prison.prisonName)
-    updatedPrisons().should('deep.equal', [expectedUpdate({ description: 'A category B local prison' })])
+    updatedPrisons().should('deep.equal', [expectedUpdate({ prisonDescription: 'A category B local prison' })])
   })
 
   it('validates the description length', () => {
     PrisonDetails.verifyOnPage(prison.prisonName).updateDescriptionLink().click()
     const page = UpdatePrisonDetail.verifyOnPage('Update description for HMP Moorland')
-    page.description().invoke('val', 'a'.repeat(3001))
+    page.description().invoke('val', 'a'.repeat(257))
     page.saveButton().click()
     UpdatePrisonDetail.verifyOnPage('Update description for HMP Moorland')
       .errorSummary()
-      .should('contain.text', 'Description must be 3000 characters or fewer')
+      .should('contain.text', 'Description must be 256 characters or fewer')
     updatedPrisons().should('be.empty')
   })
 

@@ -124,7 +124,7 @@ export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
   return {
     id: prison.prisonId,
     name: prison.prisonName,
-    description: prison.description,
+    description: prison.prisonDescription,
     prisonNameInWelsh: prison.prisonNameInWelsh,
     active: prison.active,
     male: prison.male,
@@ -208,7 +208,7 @@ export function updatePrisonAreaMapper(prison: PrisonDetails): UpdatePrisonArea 
 export function updatePrisonMapper(prison: Prison): UpdatePrison {
   return {
     prisonName: prison.prisonName,
-    description: prison.description,
+    prisonDescription: prison.prisonDescription,
     prisonNameInWelsh: prison.prisonNameInWelsh,
     active: prison.active,
     male: prison.male,

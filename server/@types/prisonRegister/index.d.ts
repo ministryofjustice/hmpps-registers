@@ -1,17 +1,14 @@
 import { components } from '../prisonRegisterImport'
 
-// The Prison Register API is expected to expose an optional description on prisons
-type PrisonDescription = { description?: string | null }
-
-export type Prison = components['schemas']['PrisonDto'] & PrisonDescription
-export type PrisonDetails = components['schemas']['FullPrisonDto'] & PrisonDescription
+export type Prison = components['schemas']['PrisonDto']
+export type PrisonDetails = components['schemas']['FullPrisonDto']
 export type PrisonAddress = components['schemas']['AddressDto']
 export type WelshPrisonAddress = components['schemas']['WelshAddressDto']
 export type UpdateWelshPrisonAddress = components['schemas']['UpdateWelshAddressDto']
 export type PrisonType = components['schemas']['PrisonTypeDto']
 export type OperatorType = components['schemas']['PrisonOperatorDto']
 export type InsertPrison = components['schemas']['InsertPrisonDto']
-export type UpdatePrison = components['schemas']['UpdatePrisonDto'] & PrisonDescription
+export type UpdatePrison = components['schemas']['UpdatePrisonDto']
 export type UpdatePrisonArea = components['schemas']['UpdatePrisonAreaDto']
 export type UpdatePrisonAddress = components['schemas']['UpdateAddressDto']
 export type UpdateAgencyAddress = components['schemas']['UpdateAddressDto']
