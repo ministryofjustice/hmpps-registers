@@ -8,6 +8,7 @@ const prisonDetails = {
   deleteDepartmentLink: (type: string) => cy.get(`[data-qa=delete-department-link-${type}]`),
   addDepartmentLink: () => cy.get('[data-qa=add-department-link]'),
   updateNameLink: () => cy.get('[data-qa=update-name-link]'),
+  updateDescriptionLink: () => cy.get('[data-qa=update-description-link]'),
   updateWelshNameLink: () => cy.get('[data-qa=update-welsh-name-link]'),
   updateGenderLink: () => cy.get('[data-qa=update-gender-link]'),
   updatePrisonTypesLink: () => cy.get('[data-qa=update-prison-types-link]'),
