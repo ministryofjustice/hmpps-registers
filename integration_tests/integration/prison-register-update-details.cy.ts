@@ -53,6 +53,7 @@ context('Prison register - update main details', () => {
     details.prisonDetailsSection().should('contain.text', 'Welsh name')
     details.prisonDetailsSection().should('contain.text', 'Not provided')
     details.updateNameLink().should('have.attr', 'href', '/prison-register/name/update?id=MDI')
+    details.updateDescriptionLink().should('have.attr', 'href', '/prison-register/description/update?id=MDI')
     details.updateWelshNameLink().should('have.attr', 'href', '/prison-register/welsh-name/update?id=MDI')
     details.updateGenderLink().should('have.attr', 'href', '/prison-register/gender/update?id=MDI')
     details.updatePrisonTypesLink().should('have.attr', 'href', '/prison-register/prison-types/update?id=MDI')
@@ -78,6 +79,27 @@ context('Prison register - update main details', () => {
     const withErrors = UpdatePrisonDetail.verifyOnPage('Update name for HMP Moorland')
     withErrors.errorSummary().should('contain.text', 'Enter a prison name between 3 and 80 characters')
     withErrors.name().should('have.value', 'A')
+    updatedPrisons().should('be.empty')
+  })
+
+  it('updates the description', () => {
+    PrisonDetails.verifyOnPage(prison.prisonName).updateDescriptionLink().click()
+    const page = UpdatePrisonDetail.verifyOnPage('Update description for HMP Moorland')
+    page.description().should('have.value', '')
+    page.description().type('A category B local prison')
+    page.saveButton().click()
+    PrisonDetails.verifyOnPage(prison.prisonName)
+    updatedPrisons().should('deep.equal', [expectedUpdate({ prisonDescription: 'A category B local prison' })])
+  })
+
+  it('validates the description length', () => {
+    PrisonDetails.verifyOnPage(prison.prisonName).updateDescriptionLink().click()
+    const page = UpdatePrisonDetail.verifyOnPage('Update description for HMP Moorland')
+    page.description().invoke('val', 'a'.repeat(257))
+    page.saveButton().click()
+    UpdatePrisonDetail.verifyOnPage('Update description for HMP Moorland')
+      .errorSummary()
+      .should('contain.text', 'Description must be 256 characters or fewer')
     updatedPrisons().should('be.empty')
   })
 

@@ -27,6 +27,7 @@ export type PrisonSummary = {
 export type PrisonDetail = {
   id: string
   name: string
+  description?: string | null
   prisonNameInWelsh: string
   active: boolean
   male?: boolean
@@ -123,6 +124,7 @@ export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
   return {
     id: prison.prisonId,
     name: prison.prisonName,
+    description: prison.prisonDescription,
     prisonNameInWelsh: prison.prisonNameInWelsh,
     active: prison.active,
     male: prison.male,
@@ -206,6 +208,7 @@ export function updatePrisonAreaMapper(prison: PrisonDetails): UpdatePrisonArea 
 export function updatePrisonMapper(prison: Prison): UpdatePrison {
   return {
     prisonName: prison.prisonName,
+    prisonDescription: prison.prisonDescription,
     prisonNameInWelsh: prison.prisonNameInWelsh,
     active: prison.active,
     male: prison.male,

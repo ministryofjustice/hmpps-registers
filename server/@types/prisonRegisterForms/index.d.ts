@@ -18,6 +18,7 @@ declare module 'prisonForms' {
 
   export interface UpdatePrisonDetailForm {
     name?: string
+    description?: string
     prisonNameInWelsh?: string
     gender?: string | string[]
     prisonTypes?: string | string[]

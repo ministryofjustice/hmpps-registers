@@ -480,6 +480,13 @@ describe('Prison Register controller', () => {
           expect.objectContaining({ form: { contracted: 'no' } }),
         )
       })
+      it('will prefill an empty description', async () => {
+        await controller.updatePrisonDetail(req, res, 'description')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { description: '' } }),
+        )
+      })
       it('will prefill an empty Welsh name', async () => {
         await controller.updatePrisonDetail(req, res, 'prisonNameInWelsh')
         expect(res.render).toHaveBeenLastCalledWith(
@@ -516,6 +523,35 @@ describe('Prison Register controller', () => {
           prisonName: 'HMP Moorland New',
         })
         expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=UPDATED')
+      })
+      it('will get the prison then put the description', async () => {
+        req.body = { description: 'A category B prison' }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
+
+        expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonDescription: 'A category B prison',
+        })
+      })
+      it('will send null when the description is cleared', async () => {
+        req.body = { description: '' }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonDescription: null,
+        })
+      })
+      it('will reject a description over 256 characters', async () => {
+        req.body = { description: 'a'.repeat(257) }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#description', text: 'Description must be 256 characters or fewer' },
+        ])
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/description/update?id=MDI')
       })
       it('will send null when the Welsh name is cleared', async () => {
         req.body = { prisonNameInWelsh: '' }

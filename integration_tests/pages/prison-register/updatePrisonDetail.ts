@@ -2,6 +2,7 @@ import page, { Page } from '../page'
 
 const updatePrisonDetail = {
   name: () => cy.get('#name'),
+  description: () => cy.get('#description'),
   welshName: () => cy.get('#prisonNameInWelsh'),
   maleCheckbox: () => cy.get('input[value="male"]'),
   femaleCheckbox: () => cy.get('input[value="female"]'),
