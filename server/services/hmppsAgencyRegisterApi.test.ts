@@ -112,7 +112,7 @@ describe('HMPPS Agency Register API', () => {
     })
 
     it('username will be used by client', async () => {
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(200, [])
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/ALI/details').reply(200, [])
 
       await hmppsAgencyRegisterApiService.getPrison({ username: 'tommy' }, 'ALI')
 
@@ -120,7 +120,7 @@ describe('HMPPS Agency Register API', () => {
     })
 
     it('will return the prison', async () => {
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(200, data.prison({}))
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/ALI/details').reply(200, data.prison({}))
 
       const result = await hmppsAgencyRegisterApiService.getPrison({}, 'ALI')
 
@@ -128,7 +128,7 @@ describe('HMPPS Agency Register API', () => {
     })
 
     it('will throw error when not found', async () => {
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/ALI').reply(404, {
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/ALI/details').reply(404, {
         status: 404,
         developerMessage: 'Prison ALI not found',
       })
@@ -229,7 +229,7 @@ describe('HMPPS Agency Register API', () => {
     beforeEach(() => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
-      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI').reply(200, moorlandPrison)
+      fakeHmppsAgencyRegisterApi.get('/prison-maintenance/id/MDI/details').reply(200, moorlandPrison)
       fakeHmppsAgencyRegisterApi
         .put('/prison-maintenance/id/MDI', body => {
           updatedPrison = body
@@ -263,7 +263,7 @@ describe('HMPPS Agency Register API', () => {
       hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
       fakeHmppsAgencyRegisterApi
-        .get('/prisons/id/CFI')
+        .get('/prison-maintenance/id/CFI/details')
         .reply(
           200,
           data.prison({ prisonId: 'CFI', prisonName: 'Cardiff (HMP)', prisonNameInWelsh: 'Carchar Caerdydd' }),
