@@ -28,6 +28,15 @@ const prisonDetailFields: PrisonDetailField[] = [
     apply: (update, form) => ({ ...update, prisonName: form.name }),
   },
   {
+    field: 'description',
+    label: 'description',
+    path: 'description',
+    rules: { description: 'max:3000' },
+    messages: { 'max.description': 'Description must be 3000 characters or fewer' },
+    initialForm: prison => ({ description: prison.description ?? '' }),
+    apply: (update, form) => ({ ...update, description: form.description || null }),
+  },
+  {
     field: 'prisonNameInWelsh',
     label: 'Welsh name',
     path: 'welsh-name',

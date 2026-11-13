@@ -1,5 +1,6 @@
 {% extends "partials/layout.njk" %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
@@ -32,6 +33,14 @@
             hint: { text: "This is the name which will be displayed in most services" },
             value: form.name,
             errorMessage: errors | findError('name')
+          }) }}
+        {% elif field == 'description' %}
+          {{ govukTextarea({
+            id: "description",
+            name: "description",
+            label: { text: "Description (optional)" },
+            value: form.description,
+            errorMessage: errors | findError('description')
           }) }}
         {% elif field == 'prisonNameInWelsh' %}
           {{ govukInput({

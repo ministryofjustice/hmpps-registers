@@ -35,6 +35,17 @@
       }] }
     },
     {
+      key: { text: 'Description' },
+      value: { text: prison.description if prison.description else 'Not provided' },
+      actions: { items: [{
+        href: "/prison-register/description/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "description",
+        attributes: { "data-qa": "update-description-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
+    },
+    {
       key: { text: 'Welsh name' },
       value: { text: prison.prisonNameInWelsh if prison.prisonNameInWelsh else 'Not provided' },
       actions: { items: [{

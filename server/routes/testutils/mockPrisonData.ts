@@ -104,6 +104,7 @@ export default {
   prisonDetails: ({
     prisonId = 'ALI',
     prisonName = 'Albany (HMP)',
+    description,
     prisonNameInWelsh = '',
     active = true,
     male = true,
@@ -124,6 +125,7 @@ export default {
     ({
       prisonId,
       prisonName,
+      description,
       prisonNameInWelsh,
       active,
       male,
