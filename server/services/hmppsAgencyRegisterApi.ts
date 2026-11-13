@@ -105,7 +105,9 @@ export default class HMPPSAgencyRegisterApi {
   async getPrison(context: Context, prisonId: string): Promise<Prison> {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`getting details for prison ${prisonId}`)
-    return HMPPSAgencyRegisterApi.restClient(token).get<Prison>({ path: `/prisons/id/${prisonId}` })
+    // Read from the maintenance endpoint, not /prisons/id: the API caches /prisons/id, and the
+    // updates below send back every field, so a cached copy could undo a recent change
+    return HMPPSAgencyRegisterApi.restClient(token).get<Prison>({ path: `/prison-maintenance/id/${prisonId}/details` })
   }
 
   async getPrisonDetails(context: Context, prisonId: string): Promise<PrisonDetails> {
