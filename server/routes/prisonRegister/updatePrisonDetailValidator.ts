@@ -2,6 +2,7 @@ import { Request } from 'express'
 import type { UpdatePrisonDetailForm } from 'prisonForms'
 import validateSync from '../../validation/validation'
 import type { AgencyMutationResponse } from '../../services/hmppsAgencyRegisterApi'
+import type { PrisonOperator } from '../../@types/prisonRegister'
 import type { PrisonDetailField } from './prisonDetailFields'
 
 export default async function validate(
@@ -9,11 +10,12 @@ export default async function validate(
   form: UpdatePrisonDetailForm,
   req: Request,
   update: (form: UpdatePrisonDetailForm) => Promise<AgencyMutationResponse>,
+  operators: PrisonOperator[] = [],
 ): Promise<string> {
   const { id } = req.query as { id: string }
   const updateUrl = `/prison-register/${config.path}/update?id=${id}`
 
-  const errors = validateSync(form, config.rules, config.messages)
+  const errors = validateSync(form, { ...config.rules, ...config.operatorRules?.(operators) }, config.messages)
   if (errors.length > 0) {
     req.flash('errors', errors)
     return updateUrl

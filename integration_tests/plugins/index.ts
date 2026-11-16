@@ -27,6 +27,7 @@ export default (on: (task: string, tasks: Record<string, unknown>) => void): voi
     stubGetPayrollRegions: hmppsAgencyRegisterApi.stubGetPayrollRegions,
     stubGetLocalAuthorities: hmppsAgencyRegisterApi.stubGetLocalAuthorities,
     stubGetRegions: hmppsAgencyRegisterApi.stubGetRegions,
+    stubGetPrisonOperators: hmppsAgencyRegisterApi.stubGetPrisonOperators,
     stubGetCountySuggestions: hmppsAgencyRegisterApi.stubGetCountySuggestions,
     stubGetPrisonsWithFilter: hmppsAgencyRegisterApi.stubGetPrisonsWithFilter,
     stubGetPrison: hmppsAgencyRegisterApi.stubGetPrison,

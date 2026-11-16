@@ -4,6 +4,10 @@ import PrisonDetails from '../pages/prison-register/prisonDetails'
 import UpdatePrisonDetail from '../pages/prison-register/updatePrisonDetail'
 import prisonData from '../../server/routes/testutils/mockPrisonData'
 
+const psp = { id: 1, name: 'PSP' }
+const g4s = { id: 2, name: 'G4S' }
+const serco = { id: 3, name: 'Serco' }
+
 const prison = prisonData.prisonDetails({
   prisonId: 'MDI',
   prisonName: 'HMP Moorland',
@@ -18,6 +22,7 @@ const prison = prisonData.prisonDetails({
     { code: 'YOI', description: 'His Majesty’s Youth Offender Institution' },
   ],
   operators: [{ name: 'G4S' }],
+  currentOperator: g4s,
 })
 
 const expectedUpdate = (changes: Record<string, unknown>) => ({
@@ -29,6 +34,7 @@ const expectedUpdate = (changes: Record<string, unknown>) => ({
   contracted: true,
   lthse: false,
   prisonTypes: ['HMP', 'YOI'],
+  operator: g4s,
   ...changes,
 })
 
@@ -43,6 +49,7 @@ context('Prison register - update main details', () => {
     cy.task('stubGetPrison', prison)
     cy.task('stubGetPrisonDetails', prison)
     cy.task('stubUpdatePrison', prison)
+    cy.task('stubGetPrisonOperators', [psp, g4s, serco])
     cy.signIn()
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage().viewPrisonLink(prison.prisonId).click()
@@ -134,14 +141,49 @@ context('Prison register - update main details', () => {
     updatedPrisons().should('deep.equal', [expectedUpdate({ prisonTypes: ['HMP', 'YOI', 'STC'] })])
   })
 
-  it('updates contracted status', () => {
+  it('shows the operator for a contracted prison', () => {
+    const details = PrisonDetails.verifyOnPage(prison.prisonName)
+    details.prisonDetailsSection().should('contain.text', 'Operator')
+    details.prisonDetailsSection().should('contain.text', 'G4S')
+    details.updateOperatorLink().should('have.attr', 'href', '/prison-register/contracted/update?id=MDI')
+  })
+
+  it('preselects the current operator and shows the operators when contracted', () => {
     PrisonDetails.verifyOnPage(prison.prisonName).updateContractedLink().click()
-    const page = UpdatePrisonDetail.verifyOnPage('Update contracted status for HMP Moorland')
+    const page = UpdatePrisonDetail.verifyOnPage('Update contracted status and operator for HMP Moorland')
     page.contractedYes().should('be.checked')
-    page.contractedNo().check()
+    page.operatorSection().should('be.visible')
+    page.operatorRadio(2).should('be.checked')
+    page.operatorRadio(1).should('not.be.checked')
+  })
+
+  it('updates the operator', () => {
+    PrisonDetails.verifyOnPage(prison.prisonName).updateContractedLink().click()
+    const page = UpdatePrisonDetail.verifyOnPage('Update contracted status and operator for HMP Moorland')
+    page.operatorRadio(3).check()
     page.saveButton().click()
     PrisonDetails.verifyOnPage(prison.prisonName)
-    updatedPrisons().should('deep.equal', [expectedUpdate({ contracted: false })])
+    updatedPrisons().should('deep.equal', [expectedUpdate({ operator: serco })])
+  })
+
+  it('hides the operators and sends PSP when not contracted', () => {
+    PrisonDetails.verifyOnPage(prison.prisonName).updateContractedLink().click()
+    const page = UpdatePrisonDetail.verifyOnPage('Update contracted status and operator for HMP Moorland')
+    page.contractedNo().check()
+    page.operatorSection().should('not.be.visible')
+    page.saveButton().click()
+    PrisonDetails.verifyOnPage(prison.prisonName)
+    updatedPrisons().should('deep.equal', [expectedUpdate({ contracted: false, operator: psp })])
+  })
+
+  it('selects PSP by default when there is no current operator', () => {
+    const unassigned = prisonData.prisonDetails({ ...prison, currentOperator: null })
+    cy.task('stubGetPrison', unassigned)
+    cy.task('stubGetPrisonDetails', unassigned)
+    cy.visit('/prison-register/contracted/update?id=MDI')
+    UpdatePrisonDetail.verifyOnPage('Update contracted status and operator for HMP Moorland')
+      .operatorRadio(1)
+      .should('be.checked')
   })
 
   it('updates long term high security estate status', () => {

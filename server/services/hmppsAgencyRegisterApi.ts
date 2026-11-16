@@ -42,6 +42,7 @@ import {
   UpdateWelshPrisonAddress,
   CodeDescription,
   PrisonDetails,
+  PrisonOperator,
 } from '../@types/prisonRegister'
 import { AllPrisonsFilter } from '../routes/prisonRegister/prisonMapper'
 import { CourtsFilter } from '../routes/courtRegister/courtMapper'
@@ -286,7 +287,17 @@ export default class HMPPSAgencyRegisterApi {
   async updateActivePrisonMarker(context: Context, prisonId: string, active: boolean): Promise<void> {
     const prison: Prison = await this.getPrison(context, prisonId)
     const prisonTypes = prison.types.map(type => type.code)
-    const { prisonName, prisonDescription, prisonNameInWelsh, male, female, contracted, lthse, categories } = prison
+    const {
+      prisonName,
+      prisonDescription,
+      prisonNameInWelsh,
+      male,
+      female,
+      contracted,
+      lthse,
+      categories,
+      currentOperator,
+    } = prison
     // The API replaces every field it is sent, so anything left out here is cleared on the prison
     const updatedPrison: UpdatePrison = {
       active,
@@ -299,6 +310,7 @@ export default class HMPPSAgencyRegisterApi {
       lthse,
       prisonTypes,
       categories,
+      operator: currentOperator,
     }
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
@@ -1363,6 +1375,13 @@ export default class HMPPSAgencyRegisterApi {
     const token = await this.hmppsAuthClient.getApiClientToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: '/reference-data/local-authorities',
+    })
+  }
+
+  async getPrisonOperators(context: Context): Promise<PrisonOperator[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    return HMPPSAgencyRegisterApi.restClient(token).get<PrisonOperator[]>({
+      path: '/reference-data/prison-operators',
     })
   }
 

@@ -86,6 +86,7 @@ export default {
     addresses = [],
     types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators = [{ name: 'PSP' }],
+    currentOperator = { id: 1, name: 'PSP' },
   }: Partial<Prison>): Prison =>
     ({
       prisonId,
@@ -99,6 +100,7 @@ export default {
       addresses,
       types,
       operators,
+      currentOperator,
     }) as Prison,
 
   prisonDetails: ({
@@ -114,6 +116,7 @@ export default {
     addresses = [],
     types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators = [{ name: 'PSP' }],
+    currentOperator = { id: 1, name: 'PSP' },
     departments = [],
     cjitCode = 'A',
     area = null,
@@ -135,6 +138,7 @@ export default {
       addresses,
       types,
       operators,
+      currentOperator,
       departments,
       cjitCode,
       area,

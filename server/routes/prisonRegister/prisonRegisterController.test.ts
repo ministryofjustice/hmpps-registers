@@ -440,10 +440,16 @@ describe('Prison Register controller', () => {
       hmppsAgencyRegisterApiService.updatePrisonAddress.mockResolvedValue(undefined)
     })
 
+    const operators = [
+      { id: 1, name: 'PSP' },
+      { id: 2, name: 'G4S' },
+    ]
+
     describe('updatePrisonDetail', () => {
       beforeEach(() => {
         req.query.id = 'MDI'
         res.locals.user = { username: 'tom' }
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue(operators)
       })
       it('will request the prison and render the name page prefilled', async () => {
         await controller.updatePrisonDetail(req, res, 'name')
@@ -473,11 +479,27 @@ describe('Prison Register controller', () => {
           expect.objectContaining({ form: { prisonTypes: ['HMP'] } }),
         )
       })
-      it('will prefill contracted and lthse from the prison', async () => {
+      it('will prefill contracted and default the operator to PSP when none is set', async () => {
         await controller.updatePrisonDetail(req, res, 'contracted')
         expect(res.render).toHaveBeenLastCalledWith(
           'pages/prison-register/updatePrisonDetail',
-          expect.objectContaining({ form: { contracted: 'no' } }),
+          expect.objectContaining({
+            form: { contracted: 'no', operator: '1' },
+            operators: [
+              { text: 'PSP', value: '1' },
+              { text: 'G4S', value: '2' },
+            ],
+          }),
+        )
+      })
+      it('will prefill the current operator', async () => {
+        hmppsAgencyRegisterApiService.getPrison.mockResolvedValueOnce(
+          data.prison({ prisonId: 'MDI', contracted: true, currentOperator: operators[1] }),
+        )
+        await controller.updatePrisonDetail(req, res, 'contracted')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { contracted: 'yes', operator: '2' } }),
         )
       })
       it('will prefill an empty description', async () => {
@@ -501,6 +523,7 @@ describe('Prison Register controller', () => {
         req.query.id = 'MDI'
         res.locals.user = { username: 'tom' }
         hmppsAgencyRegisterApiService.updatePrisonDetails.mockResolvedValue({ success: true })
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue(operators)
       })
       const expectedUpdate = {
         prisonName: 'HMP Moorland',
@@ -512,6 +535,7 @@ describe('Prison Register controller', () => {
         lthse: false,
         prisonTypes: ['HMP'],
         categories: undefined as undefined,
+        operator: { id: 1, name: 'PSP' },
       }
       it('will get the prison before putting the single changed field', async () => {
         req.body = { name: 'HMP Moorland New' }
@@ -581,12 +605,13 @@ describe('Prison Register controller', () => {
           prisonTypes: ['HMP', 'YOI'],
         })
       })
-      it('will update contracted and lthse', async () => {
-        req.body = { contracted: 'yes' }
+      it('will update contracted with the selected operator and lthse', async () => {
+        req.body = { contracted: 'yes', operator: '2' }
         await controller.submitUpdatePrisonDetail(req, res, 'contracted')
         expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenLastCalledWith({ username: 'tom' }, 'MDI', {
           ...expectedUpdate,
           contracted: true,
+          operator: operators[1],
         })
 
         req.body = { lthse: 'yes' }
@@ -595,6 +620,23 @@ describe('Prison Register controller', () => {
           ...expectedUpdate,
           lthse: true,
         })
+      })
+      it('will send PSP as the operator when not contracted', async () => {
+        req.body = { contracted: 'no', operator: '2' }
+        await controller.submitUpdatePrisonDetail(req, res, 'contracted')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenLastCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          contracted: false,
+          operator: operators[0],
+        })
+      })
+      it('will require a valid operator when contracted', async () => {
+        req.body = { contracted: 'yes', operator: '99' }
+        await controller.submitUpdatePrisonDetail(req, res, 'contracted')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#operator', text: 'Select the operator of the prison' },
+        ])
       })
       it('will not call the API when validation fails', async () => {
         req.body = { name: 'A' }

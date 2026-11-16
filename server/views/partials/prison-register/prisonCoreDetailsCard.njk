@@ -13,11 +13,6 @@
     {% set typeDescriptions = (typeDescriptions.push(type.description), typeDescriptions) %}
   {% endfor %}
 
-  {% set operatorNames = [] %}
-  {% for operator in prison.operators %}
-    {% set operatorNames = (operatorNames.push(operator.name), operatorNames) %}
-  {% endfor %}
-
   {% set rows = [
     {
       key: { text: 'Prison ID' },
@@ -97,8 +92,15 @@
 
   {% if prison.contracted %}
     {% set rows = (rows.push({
-      key: { text: 'Operators' },
-      value: { text: operatorNames | join(', ') if operatorNames | length else 'Not provided' }
+      key: { text: 'Operator' },
+      value: { text: prison.currentOperator.name if prison.currentOperator else 'Not provided' },
+      actions: { items: [{
+        href: "/prison-register/contracted/update?id=" + prison.id,
+        text: "Change",
+        visuallyHiddenText: "operator",
+        attributes: { "data-qa": "update-operator-link" },
+        classes: "govuk-link--no-visited-state"
+      }] }
     }), rows) %}
   {% endif %}
 

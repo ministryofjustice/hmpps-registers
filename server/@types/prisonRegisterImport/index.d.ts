@@ -2086,6 +2086,11 @@ export interface components {
        */
       country: string
     }
+    PrisonOperator: {
+      /** Format: int64 */
+      id: number
+      name: string
+    }
     /** @description Prison Update Record */
     UpdatePrisonDto: {
       /**
@@ -2127,6 +2132,8 @@ export interface components {
        *     ]
        */
       categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description Operator of the prison. When not provided, the operator will not be updated */
+      operator?: components['schemas']['PrisonOperator'] | null
     }
     AddressDto: {
       /**
@@ -2231,6 +2238,8 @@ export interface components {
       addresses: components['schemas']['AddressDto'][]
       /** @description List of operators for this prison */
       operators: components['schemas']['PrisonOperatorDto'][]
+      /** @description The current operator for this prison */
+      currentOperator?: components['schemas']['PrisonOperator'] | null
     }
     PrisonOperatorDto: {
       /**
@@ -3519,11 +3528,6 @@ export interface components {
       /** @description Phone numbers */
       phoneNumbers: components['schemas']['CreateOrUpdatePhoneNumberDto'][]
     }
-    PrisonOperator: {
-      /** Format: int64 */
-      id: number
-      name: string
-    }
     /** @description Full name of prison with id */
     PrisonNameDto: {
       /**
@@ -3580,8 +3584,13 @@ export interface components {
       categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
       /** @description List of address for this prison */
       addresses: components['schemas']['AddressDto'][]
-      /** @description List of operators for this prison */
+      /**
+       * @deprecated
+       * @description List of operators for this prison
+       */
       operators: components['schemas']['PrisonOperatorDto'][]
+      /** @description The current operator for this prison */
+      currentOperator?: components['schemas']['PrisonOperator'] | null
       /** @description List of departments for this prison */
       departments: components['schemas']['DepartmentDto'][]
       /**

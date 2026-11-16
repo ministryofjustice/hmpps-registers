@@ -70,14 +70,26 @@
             errorMessage: errors | findError('prisonTypes')
           }) }}
         {% elif field == 'contracted' %}
+          {% set operatorItems = [] %}
+          {% for operator in operators %}
+            {% set operatorItems = (operatorItems.push({ value: operator.value, text: operator.text, checked: form.operator == operator.value }), operatorItems) %}
+          {% endfor %}
+          {% set operatorHtml %}
+            {{ govukRadios({
+              idPrefix: "operator",
+              name: "operator",
+              fieldset: { legend: { text: "Who operates this prison?", classes: "govuk-fieldset__legend--s" } },
+              items: operatorItems,
+              errorMessage: errors | findError('operator')
+            }) }}
+          {% endset %}
           {{ govukRadios({
-            classes: "govuk-radios--inline",
             idPrefix: "contracted",
             name: "contracted",
             fieldset: { legend: { text: "Is this prison contracted?", classes: "govuk-fieldset__legend--m" } },
             hint: { text: "A contracted prison is one run by a third party company, under contract to the Ministry of Justice" },
             items: [
-              { value: "yes", text: "Yes", checked: form.contracted === 'yes' },
+              { value: "yes", text: "Yes", checked: form.contracted === 'yes', conditional: { html: operatorHtml } },
               { value: "no", text: "No", checked: form.contracted === 'no' }
             ],
             errorMessage: errors | findError('contracted')

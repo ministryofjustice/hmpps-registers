@@ -126,11 +126,10 @@ describe('PrisonDetailsView', () => {
         lthse: false,
         male: true,
         name: 'Cardiff',
-        operators: [
-          {
-            name: 'PSP',
-          },
-        ],
+        currentOperator: {
+          id: 1,
+          name: 'PSP',
+        },
         types: [
           {
             code: 'HMP',
