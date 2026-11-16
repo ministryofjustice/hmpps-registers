@@ -558,6 +558,9 @@ export default class PrisonRegisterController {
     const config = prisonDetailFields.find(f => f.field === fieldName)
     const { id } = req.query as { id: string }
     const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), id)
+    const operators = config.usesOperators
+      ? await this.hmppsAgencyRegisterApiService.getPrisonOperators(context(res))
+      : []
     const errors = req.flash('errors')
     if (!errors?.length) delete req.session.updatePrisonDetailForm
     const view = new UpdatePrisonDetailView(
@@ -566,7 +569,8 @@ export default class PrisonRegisterController {
       config.label,
       { cancelButton: `/prison-register/details?id=${id}` },
       errors,
-      req.session.updatePrisonDetailForm ?? config.initialForm(prison),
+      req.session.updatePrisonDetailForm ?? config.initialForm(prison, operators),
+      operators,
     )
     res.render('pages/prison-register/updatePrisonDetail', view.renderArgs)
   }
@@ -575,17 +579,26 @@ export default class PrisonRegisterController {
     const config = prisonDetailFields.find(f => f.field === fieldName)
     req.session.updatePrisonDetailForm = trimForm(req.body)
     const prisonId = req.query.id as string
+    const operators = config.usesOperators
+      ? await this.hmppsAgencyRegisterApiService.getPrisonOperators(context(res))
+      : []
     res.redirect(
-      await updatePrisonDetailValidator(config, req.session.updatePrisonDetailForm, req, async form => {
-        const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), prisonId)
-        const result = await this.hmppsAgencyRegisterApiService.updatePrisonDetails(
-          context(res),
-          prisonId,
-          config.apply(updatePrisonMapper(prison), form),
-        )
-        if (result.success) delete req.session.updatePrisonDetailForm
-        return result
-      }),
+      await updatePrisonDetailValidator(
+        config,
+        req.session.updatePrisonDetailForm,
+        req,
+        async form => {
+          const prison = await this.hmppsAgencyRegisterApiService.getPrison(context(res), prisonId)
+          const result = await this.hmppsAgencyRegisterApiService.updatePrisonDetails(
+            context(res),
+            prisonId,
+            config.apply(updatePrisonMapper(prison), form, operators),
+          )
+          if (result.success) delete req.session.updatePrisonDetailForm
+          return result
+        },
+        operators,
+      ),
     )
   }
 

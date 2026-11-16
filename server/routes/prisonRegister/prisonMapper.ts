@@ -1,5 +1,5 @@
 import {
-  OperatorType,
+  PrisonOperator,
   Prison,
   PrisonAddress,
   PrisonDetails,
@@ -21,7 +21,7 @@ export type PrisonSummary = {
   lthse?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
-  operators: OperatorDetail[]
+  currentOperator?: OperatorDetail | null
 }
 
 export type PrisonDetail = {
@@ -36,7 +36,7 @@ export type PrisonDetail = {
   lthse?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
-  operators: OperatorDetail[]
+  currentOperator?: OperatorDetail | null
   cjitCode?: string
   area?: CodeDescription
   region?: CodeDescription
@@ -96,6 +96,7 @@ export function departmentMapper(department: PrisonDetails['departments'][number
 }
 
 export type OperatorDetail = {
+  id: number
   name: string
 }
 
@@ -116,7 +117,7 @@ export function prisonMapper(prison: Prison): PrisonSummary {
     lthse: prison.lthse,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
-    operators: prison.operators?.map(operatorMapper) || [],
+    currentOperator: prison.currentOperator ? operatorMapper(prison.currentOperator) : null,
   }
 }
 
@@ -133,7 +134,7 @@ export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
     lthse: prison.lthse,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
-    operators: prison.operators?.map(operatorMapper) || [],
+    currentOperator: prison.currentOperator ? operatorMapper(prison.currentOperator) : null,
     cjitCode: prison.cjitCode,
     area: prison.area,
     region: prison.region,
@@ -175,8 +176,9 @@ export function typeMapper(type: PrisonType): TypeDetail {
   }
 }
 
-export function operatorMapper(operator: OperatorType): OperatorDetail {
+export function operatorMapper(operator: PrisonOperator): OperatorDetail {
   return {
+    id: operator.id,
     name: operator.name,
   }
 }
@@ -217,5 +219,6 @@ export function updatePrisonMapper(prison: Prison): UpdatePrison {
     lthse: prison.lthse,
     prisonTypes: prison.types.map(type => type.code),
     categories: prison.categories,
+    operator: prison.currentOperator,
   }
 }

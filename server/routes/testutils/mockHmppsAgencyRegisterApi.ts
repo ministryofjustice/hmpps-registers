@@ -18,6 +18,7 @@ hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([
     addresses: [],
     types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators: [{ name: 'PSP' }],
+    currentOperator: { id: 1, name: 'PSP' },
     categories: [],
   },
 ])
@@ -42,6 +43,7 @@ hmppsAgencyRegisterApiService.getPrison.mockResolvedValue({
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
   categories: [],
 })
 export default hmppsAgencyRegisterApiService

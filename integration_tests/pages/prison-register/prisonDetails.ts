@@ -13,6 +13,7 @@ const prisonDetails = {
   updateGenderLink: () => cy.get('[data-qa=update-gender-link]'),
   updatePrisonTypesLink: () => cy.get('[data-qa=update-prison-types-link]'),
   updateContractedLink: () => cy.get('[data-qa=update-contracted-link]'),
+  updateOperatorLink: () => cy.get('[data-qa=update-operator-link]'),
   updateLthseLink: () => cy.get('[data-qa=update-lthse-link]'),
   prisonUpdatedConfirmationBlock: () => cy.get('[data-qa=confirm-updated]'),
   markAsInactiveButton: (id: string) => cy.get(`[data-qa=mark-as-inactive-${id}]`),

@@ -1,5 +1,5 @@
 import type { UpdatePrisonDetailForm } from 'prisonForms'
-import type { Prison, UpdatePrison } from '../../@types/prisonRegister'
+import type { Prison, PrisonOperator, UpdatePrison } from '../../@types/prisonRegister'
 import ControllerHelper from '../utils/controllerHelper'
 
 export type PrisonDetailField = {
@@ -8,9 +8,13 @@ export type PrisonDetailField = {
   path: string
   rules: Record<string, string>
   messages: Record<string, string>
-  initialForm: (prison: Prison) => UpdatePrisonDetailForm
-  apply: (update: UpdatePrison, form: UpdatePrisonDetailForm) => UpdatePrison
+  usesOperators?: boolean
+  operatorRules?: (operators: PrisonOperator[]) => Record<string, string>
+  initialForm: (prison: Prison, operators: PrisonOperator[]) => UpdatePrisonDetailForm
+  apply: (update: UpdatePrison, form: UpdatePrisonDetailForm, operators: PrisonOperator[]) => UpdatePrison
 }
+
+export const DEFAULT_OPERATOR_NAME = 'PSP'
 
 const toArray = (value?: string | string[]): string[] => ControllerHelper.parseStringArrayFromQuery(value) || []
 
@@ -72,15 +76,32 @@ const prisonDetailFields: PrisonDetailField[] = [
   },
   {
     field: 'contracted',
-    label: 'contracted status',
+    label: 'contracted status and operator',
     path: 'contracted',
-    rules: { contracted: 'required|in:yes,no' },
+    usesOperators: true,
+    rules: { contracted: 'required|in:yes,no', operator: 'required_if:contracted,yes' },
+    operatorRules: operators => ({
+      operator: `required_if:contracted,yes|in:${operators.map(operator => operator.id).join(',')}`,
+    }),
     messages: {
       'required.contracted': 'Select whether the prison is contracted',
       'in.contracted': 'Select whether the prison is contracted',
+      'required_if.operator': 'Select the operator of the prison',
+      'in.operator': 'Select the operator of the prison',
     },
-    initialForm: prison => ({ contracted: prison.contracted ? 'yes' : 'no' }),
-    apply: (update, form) => ({ ...update, contracted: form.contracted === 'yes' }),
+    initialForm: (prison, operators) => ({
+      contracted: prison.contracted ? 'yes' : 'no',
+      operator: String(
+        prison.currentOperator?.id ?? operators.find(operator => operator.name === DEFAULT_OPERATOR_NAME)?.id ?? '',
+      ),
+    }),
+    apply: (update, form, operators) => {
+      const contracted = form.contracted === 'yes'
+      const operator = contracted
+        ? operators.find(candidate => String(candidate.id) === form.operator)
+        : operators.find(candidate => candidate.name === DEFAULT_OPERATOR_NAME)
+      return { ...update, contracted, operator }
+    },
   },
   {
     field: 'lthse',

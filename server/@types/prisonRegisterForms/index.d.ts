@@ -23,6 +23,7 @@ declare module 'prisonForms' {
     gender?: string | string[]
     prisonTypes?: string | string[]
     contracted?: string
+    operator?: string
     lthse?: string
   }
   export interface PrisonAddressForm {

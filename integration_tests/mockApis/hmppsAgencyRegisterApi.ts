@@ -14,6 +14,7 @@ import {
   LegacyAgencyUsage,
   CourtSummary,
   PrisonDetails,
+  PrisonOperator,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -59,6 +60,16 @@ const stubGetRegions = (regions: CodeDescription[]): SuperAgentRequest =>
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: regions,
+    },
+  })
+
+const stubGetPrisonOperators = (operators: PrisonOperator[]): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'GET', url: '/prison-register/reference-data/prison-operators' },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: operators,
     },
   })
 
@@ -1491,6 +1502,7 @@ export default {
   stubGetLocalAuthorities,
   stubGetAreas,
   stubGetRegions,
+  stubGetPrisonOperators,
   stubGetTownSuggestions,
   stubGetCountySuggestions,
   stubPing,
@@ -1607,6 +1619,7 @@ export const moorlandPrison: Prison = data.prisonDetails({
     { code: 'YOI', description: 'His Majesty’s Youth Offender Institution' },
   ],
   operators: [{ name: 'G4S' }],
+  currentOperator: { id: 2, name: 'G4S' },
   departments: [
     {
       type: 'SOCIAL_VISIT',
@@ -1639,6 +1652,7 @@ export const belmarshPrison: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
 }
 
 export const cardiffPrison: PrisonDetails = {
@@ -1663,6 +1677,7 @@ export const cardiffPrison: PrisonDetails = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
   area: null,
   region: null,
   localAuthority: null,
@@ -1698,6 +1713,7 @@ export const cardiffPrisonWithWelshAddress: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
 }
 
 export const sheffieldCrownCourt: Court = courtData.court({

@@ -11,6 +11,8 @@ const updatePrisonDetail = {
   stcCheckbox: () => cy.get('input[value="STC"]'),
   contractedYes: () => cy.get('input[name="contracted"][value="yes"]'),
   contractedNo: () => cy.get('input[name="contracted"][value="no"]'),
+  operatorRadio: (id: number) => cy.get(`input[name="operator"][value="${id}"]`),
+  operatorSection: () => cy.get('#conditional-contracted'),
   lthseYes: () => cy.get('input[name="lthse"][value="yes"]'),
   lthseNo: () => cy.get('input[name="lthse"][value="no"]'),
   errorSummary: () => cy.get('[data-qa-errors]'),
