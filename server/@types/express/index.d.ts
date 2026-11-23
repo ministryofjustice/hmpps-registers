@@ -1,3 +1,4 @@
+import type { PageViewEventDetails } from '@ministryofjustice/hmpps-audit-client'
 import type {
   AddAddressForm,
   UpdateAddressForm,
@@ -88,6 +89,11 @@ export declare global {
       username: string
       token: string
       authSource: string
+    }
+
+    interface Locals {
+      /** Page view being audited to HMPPS Audit (see auditPageView middleware) */
+      auditEvent?: PageViewEventDetails
     }
 
     interface Request {

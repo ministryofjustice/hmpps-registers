@@ -1,5 +1,6 @@
 import express from 'express'
 import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
+import type { AuditService } from '@ministryofjustice/hmpps-audit-client'
 
 import createError from 'http-errors'
 import indexRoutes from './routes'
@@ -17,12 +18,14 @@ import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
 import setUpCurrentUser from './middleware/setUpCurrentUser'
+import auditPageView from './middleware/auditPageView'
 import { ApplicationInfo } from './applicationInfo'
 
 export default function createApp(
   userService: UserService,
   hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi,
   applicationInfo: ApplicationInfo,
+  auditService: AuditService,
 ): express.Application {
   const app = express()
 
@@ -37,6 +40,8 @@ export default function createApp(
   app.use(setUpStaticResources())
   nunjucksSetup(app)
   app.use(setUpAuthentication())
+  // before authorisation, so that refused requests are still audited as access attempts
+  app.get('*any', auditPageView(auditService))
   app.use(authorisationMiddleware([MAINTAINER_ROLE]))
   app.use(setUpCurrentUser())
   app.use(
