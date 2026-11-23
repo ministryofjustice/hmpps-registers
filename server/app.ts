@@ -43,7 +43,6 @@ export default function createApp(
     telemetryMiddleware.addUserMetadataToTelemetry({
       getAttributes: (_req: express.Request, res: express.Response) => ({
         username: res.locals.user?.username,
-        userUuid: res.locals.user?.uuid,
       }),
     }),
   )

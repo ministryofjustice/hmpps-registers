@@ -8,7 +8,7 @@ describe('setUpCurrentUser', () => {
 
     const tokenHeader = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url')
     const tokenPayload = Buffer.from(
-      JSON.stringify({ user_id: '123', uuid: userUuid, name: 'Test User', authorities: [] }),
+      JSON.stringify({ user_id: '123', user_uuid: userUuid, name: 'Test User', authorities: [] }),
     ).toString('base64url')
     const app = express()
 
@@ -25,6 +25,6 @@ describe('setUpCurrentUser', () => {
 
     const response = await request(app).get('/').expect(200)
 
-    expect(response.body.uuid).toEqual(userUuid)
+    expect(response.body.userUuid).toEqual(userUuid)
   })
 })

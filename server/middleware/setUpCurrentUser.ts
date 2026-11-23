@@ -12,19 +12,19 @@ export default function setUpCurrentUser() {
       const {
         name,
         user_id: userId,
-        uuid,
+        user_uuid: userUuid,
         authorities: roles = [],
       } = jwtDecode(res.locals.user.token) as {
         name?: string
         user_id?: string
-        uuid: UUID
+        user_uuid?: UUID
         authorities?: string[]
       }
 
       res.locals.user = {
         ...res.locals.user,
         userId,
-        uuid,
+        userUuid,
         name,
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
