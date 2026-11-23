@@ -31,6 +31,7 @@ generic-service:
     AUDIT_SERVICE_NAME: 'DPS098' # Your audit service name
     PRODUCT_ID: 'DPS098'
     AGENCY_REGISTER_ENABLED: 'true'
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
