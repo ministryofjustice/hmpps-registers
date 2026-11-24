@@ -61,7 +61,7 @@ describe('auditPageView', () => {
   it('logs a page view and an access attempt when a page renders', async () => {
     await request(appWithAuditing()).get('/prison-register/details').expect(200)
 
-    expect(loggedEvents()).toEqual(['PAGE_VIEW', 'PAGE_VIEW_ACCESS_ATTEMPT'])
+    expect(loggedEvents()).toEqual(['VIEW_REGISTERS_PAGE_SUCCESS', 'VIEW_REGISTERS_PAGE_ATTEMPT'])
   })
 
   it('passes the username, correlation id, subject type and page path to the audit service without throwing on failure', async () => {
@@ -86,19 +86,19 @@ describe('auditPageView', () => {
       .expect(302)
       .expect('Location', '/authError')
 
-    expect(loggedEvents()).toEqual(['PAGE_VIEW_ACCESS_ATTEMPT'])
+    expect(loggedEvents()).toEqual(['VIEW_REGISTERS_PAGE_ATTEMPT'])
   })
 
   it('logs only an attempt for a redirect', async () => {
     await request(appWithAuditing()).get('/prison-register/start').expect(302)
 
-    expect(loggedEvents()).toEqual(['PAGE_VIEW_ACCESS_ATTEMPT'])
+    expect(loggedEvents()).toEqual(['VIEW_REGISTERS_PAGE_ATTEMPT'])
   })
 
   it('logs only an attempt when the page is not found', async () => {
     await request(appWithAuditing()).get('/missing').expect(404)
 
-    expect(loggedEvents()).toEqual(['PAGE_VIEW_ACCESS_ATTEMPT'])
+    expect(loggedEvents()).toEqual(['VIEW_REGISTERS_PAGE_ATTEMPT'])
   })
 
   it('passes render errors to the error handler rather than swallowing them', async () => {
@@ -111,7 +111,7 @@ describe('auditPageView', () => {
 
     await request(app).get('/prison-register/details').expect(500)
 
-    expect(loggedEvents()).toEqual(['PAGE_VIEW_ACCESS_ATTEMPT'])
+    expect(loggedEvents()).toEqual(['VIEW_REGISTERS_PAGE_ATTEMPT'])
   })
 
   it('does not audit the address look-ups behind the autocomplete fields', async () => {
