@@ -1,11 +1,12 @@
-// eslint-disable-next-line import/no-named-as-default
-import Validator, { ErrorMessages, Rules } from 'validatorjs'
 import { Prison } from '../@types/prisonRegister'
+import { type ErrorMessages, type FormError, type Rules, validateForm, validateFormAsync } from './validator'
 
 type lookupFn<T> = (code: string) => Promise<T | undefined>
 
-export function validateAsync<T>(
-  form: T,
+const isPrisonCode = (code: string) => code.length >= 2 && code.length <= 6
+
+export function validateAsync(
+  form: object | undefined,
   rules: Rules,
   customMessages: ErrorMessages,
   lookups: {
@@ -13,61 +14,21 @@ export function validateAsync<T>(
   } = {
     prisonLookup: () => Promise.resolve(undefined),
   },
-): Promise<Array<{ text: string; href: string }>> {
-  Validator.registerAsync(
-    'unique-prison-code',
-    async (value, requirment, request, passes) => {
-      if (typeof value === 'string' && typeof lookups.prisonLookup === 'function') {
-        if (isPrisonCode(value)) {
+): Promise<FormError[]> {
+  return validateFormAsync(form, rules, customMessages, {
+    'unique-prison-code': {
+      check: async value => {
+        if (typeof value === 'string' && typeof lookups.prisonLookup === 'function' && isPrisonCode(value)) {
           const existingPrison = await lookups.prisonLookup(value)
-          if (existingPrison) {
-            passes(false, `${existingPrison.prisonName} already has that code. Choose another code`)
-            return
-          }
+          if (existingPrison) return `${existingPrison.prisonName} already has that code. Choose another code`
         }
-      }
-      passes()
+        return true
+      },
+      message: 'The code is already used. Choose another code',
     },
-    `The code is already used. Choose another code`,
-  )
-
-  const validation = new Validator(form, rules, customMessages)
-
-  return checkErrorsAsync(validation)
-}
-export function validate<T>(
-  form: T,
-  rules: Rules,
-  customMessages: ErrorMessages,
-): Array<{ text: string; href: string }> {
-  const validation = new Validator(form, rules, customMessages)
-
-  return checkErrors(validation)
-}
-
-const checkErrorsAsync = <T>(validation: Validator.Validator<T>): Promise<Array<{ text: string; href: string }>> => {
-  return new Promise(resolve => {
-    validation.checkAsync(
-      () => {
-        resolve([])
-      },
-      () => {
-        resolve(asErrors(validation.errors))
-      },
-    )
   })
 }
-const checkErrors = <T>(validation: Validator.Validator<T>): Array<{ text: string; href: string }> => {
-  validation.check()
-  return asErrors(validation.errors)
-}
 
-const isPrisonCode = (code: string) => {
-  return new Validator({ code }, { code: 'between:2,6' }).passes()
+export function validate(form: object | undefined, rules: Rules, customMessages: ErrorMessages): FormError[] {
+  return validateForm(form, rules, customMessages)
 }
-
-const asErrors = (errors: Validator.Errors) =>
-  Object.keys(errors.all()).map(key => {
-    const message = errors.first(key) as string
-    return { text: message, href: `#${key}` }
-  })
