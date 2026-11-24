@@ -1,5 +1,5 @@
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import type { CodeDescription } from '../../../@types/prisonRegister'
-import HmppsAuthClient from '../../../data/hmppsAuthClient'
 import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import { AddCourtJourney, CourtStep, referenceSteps } from './addCourtFlowControl'
 import validateCourtStep from './addCourtValidation'
@@ -23,7 +23,7 @@ describe('validateCourtStep', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    service = new HMPPSAgencyRegisterApi({} as HmppsAuthClient) as jest.Mocked<HMPPSAgencyRegisterApi>
+    service = new HMPPSAgencyRegisterApi({} as AuthenticationClient) as jest.Mocked<HMPPSAgencyRegisterApi>
     service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([{ code: 'AREA1', description: 'Canonical area' }])
     service.getRegions.mockResolvedValue([{ code: 'REGION1', description: 'Canonical region' }])

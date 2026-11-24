@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import HmppsAuthClient from '../../../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../../services/hmppsAgencyRegisterApi'
 import AddCourtController from './addCourtController'
 import { AddCourtJourney, courtSteps } from './addCourtFlowControl'
@@ -56,7 +56,7 @@ describe('AddCourtController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    service = new HMPPSAgencyRegisterApi({} as HmppsAuthClient) as jest.Mocked<HMPPSAgencyRegisterApi>
+    service = new HMPPSAgencyRegisterApi({} as AuthenticationClient) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new AddCourtController(service)
     service.isAgencyIdUsed.mockResolvedValue(undefined)
     service.getAreas.mockResolvedValue([

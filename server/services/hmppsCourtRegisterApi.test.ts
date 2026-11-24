@@ -1,9 +1,8 @@
 import nock from 'nock'
 
-import HmppsAuthClient from '../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import config from '../config'
 import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
-import TokenStore from '../data/tokenStore/redisTokenStore'
 import courtData from '../routes/testutils/mockCourtData'
 import {
   AgencyAddress,
@@ -17,10 +16,10 @@ import {
   UpdatePrisonAddress,
 } from '../@types/prisonRegister'
 
-jest.mock('../data/hmppsAuthClient')
+jest.mock('@ministryofjustice/hmpps-auth-clients')
 
 describe('HMPPS Court Register API', () => {
-  let hmppsAuthClient: jest.Mocked<HmppsAuthClient>
+  let hmppsAuthClient: jest.Mocked<AuthenticationClient>
   let hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi
   let fakeHmppsAgencyRegisterApi: nock.Scope
 
@@ -34,7 +33,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('deleteCourt', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -43,7 +42,7 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.deleteCourt({ username: 'tommy' }, 'SHFCC')
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
@@ -65,7 +64,7 @@ describe('HMPPS Court Register API', () => {
     })
 
     it('propagates authentication failures', async () => {
-      hmppsAuthClient.getApiClientToken.mockRejectedValueOnce(new Error('Authentication unavailable'))
+      hmppsAuthClient.getToken.mockRejectedValueOnce(new Error('Authentication unavailable'))
 
       await expect(hmppsAgencyRegisterApiService.deleteCourt({}, 'SHFCC')).rejects.toThrow('Authentication unavailable')
     })
@@ -73,7 +72,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('getCourts', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -82,7 +81,7 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.getCourts({ username: 'tommy' }, {})
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
@@ -114,7 +113,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('getCourtSummaries', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -136,13 +135,13 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.getCourtSummaries({ username: 'tommy' }, {})
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
   })
 
   describe('getCourt', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -151,7 +150,7 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.getCourt({ username: 'tommy' }, 'SHFCC')
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will return a court', async () => {
@@ -177,7 +176,7 @@ describe('HMPPS Court Register API', () => {
     let sentAddress: UpdatePrisonAddress
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -194,7 +193,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.addCourtAddress({ username: 'tommy' }, 'SHFCC', address)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the address and omit blank optional fields', async () => {
@@ -237,7 +236,7 @@ describe('HMPPS Court Register API', () => {
     const updatedAddress: AgencyAddress = { id: 2, ...address }
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -246,7 +245,7 @@ describe('HMPPS Court Register API', () => {
 
       const result = await hmppsAgencyRegisterApiService.updateCourtAddress({ username: 'tommy' }, 'SHFCC', 2, address)
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
       expect(result).toEqual({ success: true })
     })
@@ -281,7 +280,7 @@ describe('HMPPS Court Register API', () => {
     let sentPhoneNumber: PhoneNumber
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -298,7 +297,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.addCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', phoneNumber)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the phone number in the request body', async () => {
@@ -332,7 +331,7 @@ describe('HMPPS Court Register API', () => {
     let sentEmailAddress: EmailAddress
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -349,7 +348,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.addCourtEmailAddress({ username: 'tommy' }, 'SHFCC', emailAddress)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the email address in the request body', async () => {
@@ -420,7 +419,7 @@ describe('HMPPS Court Register API', () => {
     let sentPhoneNumber: PhoneNumber
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -437,7 +436,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.updateCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000, phoneNumber)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the phone number in the request body', async () => {
@@ -470,7 +469,7 @@ describe('HMPPS Court Register API', () => {
     let sentEmailAddress: UpdateEmailAddress
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -487,7 +486,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.updateCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000, emailAddress)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send the email address in the request body', async () => {
@@ -532,7 +531,7 @@ describe('HMPPS Court Register API', () => {
     let sentCourt: UpdateCourt
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -549,7 +548,7 @@ describe('HMPPS Court Register API', () => {
       it('username will be used by client', async () => {
         await hmppsAgencyRegisterApiService.updateCourtDetails({ username: 'tommy' }, 'SHFCC', updateCourt)
 
-        expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+        expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       })
 
       it('will send all the court fields in the request body', async () => {
@@ -630,7 +629,7 @@ describe('HMPPS Court Register API', () => {
     },
   ])('$method API errors', ({ httpMethod, path, invoke }) => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -672,7 +671,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('deleteCourtAddress', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -681,7 +680,7 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.deleteCourtAddress({ username: 'tommy' }, 'SHFCC', 2)
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
@@ -707,7 +706,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('deleteCourtPhoneNumber', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -716,7 +715,7 @@ describe('HMPPS Court Register API', () => {
 
       await hmppsAgencyRegisterApiService.deleteCourtPhoneNumber({ username: 'tommy' }, 'SHFCC', 10000)
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
@@ -734,7 +733,7 @@ describe('HMPPS Court Register API', () => {
 
   describe('deleteCourtEmailAddress', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
       fakeHmppsAgencyRegisterApi.delete('/courts/id/SHFCC/email-address/10000').reply(204)
     })
@@ -742,7 +741,7 @@ describe('HMPPS Court Register API', () => {
     it('will use the username to get an API token and delete the court email address', async () => {
       await hmppsAgencyRegisterApiService.deleteCourtEmailAddress({ username: 'tommy' }, 'SHFCC', 10000)
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will throw an error when the court email address is not found', async () => {
@@ -759,7 +758,7 @@ describe('HMPPS Court Register API', () => {
 })
 
 describe('Court creation API', () => {
-  let auth: jest.Mocked<HmppsAuthClient>
+  let auth: jest.Mocked<AuthenticationClient>
   let service: HMPPSAgencyRegisterApi
   const court: CreateCourt = {
     courtId: 'NEWCC',
@@ -772,8 +771,8 @@ describe('Court creation API', () => {
   }
 
   beforeEach(() => {
-    auth = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
-    auth.getApiClientToken.mockResolvedValue('court-creation-test-token')
+    auth = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
+    auth.getToken.mockResolvedValue('court-creation-test-token')
     service = new HMPPSAgencyRegisterApi(auth)
   })
 
@@ -789,7 +788,7 @@ describe('Court creation API', () => {
       .reply(201, courtData.court({ courtId: court.courtId }))
 
     expect(await service.createCourt({ username: 'tom' }, court)).toEqual({ success: true })
-    expect(auth.getApiClientToken).toHaveBeenCalledWith('tom')
+    expect(auth.getToken).toHaveBeenCalledWith('tom')
     expect(api.isDone()).toBe(true)
   })
 
@@ -823,7 +822,7 @@ describe('Court creation API', () => {
       .reply(200, existing)
 
     expect(await service.findCourt({ username: 'tom' }, court.courtId)).toEqual(existing)
-    expect(auth.getApiClientToken).toHaveBeenCalledWith('tom')
+    expect(auth.getToken).toHaveBeenCalledWith('tom')
     expect(api.isDone()).toBe(true)
   })
 
@@ -851,7 +850,7 @@ describe('Court creation API', () => {
 
   it.each(['findCourt', 'createCourt'] as const)('propagates authentication failures for %s', async method => {
     const error = new Error('Authentication unavailable')
-    auth.getApiClientToken.mockRejectedValue(error)
+    auth.getToken.mockRejectedValue(error)
 
     const result = method === 'findCourt' ? service.findCourt({}, court.courtId) : service.createCourt({}, court)
     await expect(result).rejects.toBe(error)
