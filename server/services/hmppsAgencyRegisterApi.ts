@@ -1,4 +1,4 @@
-import querystring from 'querystring'
+import querystring from 'node:querystring'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { asSystem, RestClient, type SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
