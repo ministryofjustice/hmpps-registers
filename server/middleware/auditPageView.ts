@@ -19,8 +19,8 @@ type ResRender = (view: string, options?: object | RenderCallback, callback?: Re
 /**
  * Audits page views to HMPPS Audit.
  *
- * Emits PAGE_VIEW_ACCESS_ATTEMPT once the response closes – covering redirects, errors and
- * requests refused by the authorisation middleware – and PAGE_VIEW when a page
+ * Emits VIEW_REGISTERS_PAGE_ATTEMPT once the response closes – covering redirects, errors and
+ * requests refused by the authorisation middleware – and VIEW_REGISTERS_PAGE_SUCCESS when a page
  * renders successfully.
  *
  * The registers hold organisations rather than people, so every event has the subject type NOT_APPLICABLE.
@@ -77,7 +77,7 @@ function logPageView(auditService: AuditService, auditEvent: Express.Locals['aud
   // auditing must not be able to break page rendering, so never throw
   auditService
     .logAuditEvent(
-      { ...auditEvent, what: isAttempt ? 'PAGE_VIEW_ACCESS_ATTEMPT' : 'PAGE_VIEW' },
+      { ...auditEvent, what: isAttempt ? 'VIEW_REGISTERS_PAGE_ATTEMPT' : 'VIEW_REGISTERS_PAGE_SUCCESS' },
       { throwOnError: false, logOnError: true },
     )
     .catch(error => {
