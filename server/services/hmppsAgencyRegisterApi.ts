@@ -1,4 +1,4 @@
-import querystring from 'querystring'
+import querystring from 'node:querystring'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
