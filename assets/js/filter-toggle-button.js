@@ -8,9 +8,9 @@ module.exports = () => {
     })
   }
 
-  $('.moj-filter__options')
-    .find(':button')
-    .on('click', () => {
-      $('#filter-form').submit()
-    })
+  // the "Apply filters" button sits outside the filter form, so submit the form when it is clicked
+  const filterForm = document.getElementById('filter-form')
+  document.querySelectorAll('.moj-filter__options button').forEach(button => {
+    button.addEventListener('click', () => filterForm?.submit())
+  })
 }

@@ -1,4 +1,4 @@
-import querystring from 'querystring'
+import querystring from 'node:querystring'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import RestClient from '../data/restClient'
 import config from '../config'
