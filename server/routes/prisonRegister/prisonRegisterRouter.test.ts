@@ -1,6 +1,8 @@
 import request from 'supertest'
 import { Express } from 'express'
 import appWithAllRoutes from '../testutils/appSetup'
+import config from '../../config'
+import hmppsAgencyRegisterApiService from '../testutils/mockHmppsAgencyRegisterApi'
 
 let app: Express
 
@@ -53,5 +55,65 @@ describe('GET /', () => {
       .expect(res => {
         expect(res.text).toContain('Add Welsh prison address for')
       })
+  })
+})
+
+describe('adding a new prison', () => {
+  const addPages: Array<['get' | 'post', string]> = [
+    ['get', '/prison-register/add'],
+    ['get', '/prison-register/add-new-prison-details'],
+    ['post', '/prison-register/add-new-prison-details'],
+    ['get', '/prison-register/add-new-prison-address'],
+    ['post', '/prison-register/add-new-prison-address'],
+    ['get', '/prison-register/add-new-prison-summary'],
+    ['post', '/prison-register/add-new-prison-finished'],
+    ['get', '/prison-register/add-new-prison-finished'],
+  ]
+
+  beforeEach(() => {
+    hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([])
+  })
+
+  afterEach(() => {
+    config.prisonRegisterAddEnabled = false
+  })
+
+  describe('when switched off, as in production', () => {
+    beforeEach(() => {
+      config.prisonRegisterAddEnabled = false
+      app = appWithAllRoutes({})
+    })
+
+    it('does not offer the "Add a new prison" button', () => {
+      return request(app)
+        .get('/prison-register')
+        .expect(200)
+        .expect(res => expect(res.text).not.toContain('Add a new prison'))
+    })
+
+    it.each(addPages)('responds not found to %s %s', (method, path) => {
+      return request(app)[method](path).expect(404)
+    })
+  })
+
+  describe('when switched on, as in dev and preprod', () => {
+    beforeEach(() => {
+      config.prisonRegisterAddEnabled = true
+      app = appWithAllRoutes({})
+    })
+
+    it('offers the "Add a new prison" button', () => {
+      return request(app)
+        .get('/prison-register')
+        .expect(200)
+        .expect(res => expect(res.text).toContain('Add a new prison'))
+    })
+
+    it('starts the journey', () => {
+      return request(app)
+        .get('/prison-register/add')
+        .expect(302)
+        .expect('Location', '/prison-register/add-new-prison-details')
+    })
   })
 })

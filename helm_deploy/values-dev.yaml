@@ -14,6 +14,7 @@ generic-service:
     COMPONENTS_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk
 
     INGRESS_URL: https://registers-dev.hmpps.service.justice.gov.uk
+    PRISON_REGISTER_ADD_ENABLED: 'true'
 
 generic-prometheus-alerts:
   alertSeverity: move-a-prisoner-alerts-nonprod
