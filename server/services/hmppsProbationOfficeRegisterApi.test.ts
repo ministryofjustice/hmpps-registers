@@ -88,7 +88,9 @@ describe('HMPPS Probation Office Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, {})
 
-      await expect(hmppsAgencyRegisterApiService.getProbationOffices({}, {})).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.getProbationOffices({}, {})).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
   })
 
