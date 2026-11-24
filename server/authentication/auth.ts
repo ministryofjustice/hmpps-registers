@@ -1,10 +1,9 @@
 import passport from 'passport'
 import { Strategy } from 'passport-oauth2'
-import type { RequestHandler } from 'express'
+import type { Request, RequestHandler } from 'express'
 
 import config from '../config'
 import generateOauthClientToken from './clientCredentials'
-import type { TokenVerifier } from '../data/tokenVerification'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -15,6 +14,8 @@ passport.deserializeUser((user, done) => {
   // Not used but required for Passport
   done(null, user as Express.User)
 })
+
+export type TokenVerifier = (request: Request) => Promise<boolean>
 
 export type AuthenticationMiddleware = (tokenVerifier: TokenVerifier) => RequestHandler
 
@@ -33,14 +34,14 @@ function init(): void {
     {
       authorizationURL: `${config.apis.hmppsAuth.externalUrl}/oauth/authorize`,
       tokenURL: `${config.apis.hmppsAuth.url}/oauth/token`,
-      clientID: config.apis.hmppsAuth.systemClientId,
-      clientSecret: config.apis.hmppsAuth.systemClientSecret,
+      clientID: config.apis.hmppsAuth.authClientId,
+      clientSecret: config.apis.hmppsAuth.authClientSecret,
       callbackURL: `${config.domain}/sign-in/callback`,
       state: true,
       customHeaders: {
         Authorization: generateOauthClientToken(
-          config.apis.hmppsAuth.systemClientId,
-          config.apis.hmppsAuth.systemClientSecret,
+          config.apis.hmppsAuth.authClientId,
+          config.apis.hmppsAuth.authClientSecret,
         ),
       },
     },

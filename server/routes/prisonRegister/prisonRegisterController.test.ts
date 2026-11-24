@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import PrisonRegisterController from './prisonRegisterController'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
@@ -22,7 +22,7 @@ describe('Prison Register controller', () => {
 
   beforeEach(() => {
     hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-      {} as HmppsAuthClient,
+      {} as AuthenticationClient,
     ) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     req = {
@@ -235,7 +235,7 @@ describe('Prison Register controller', () => {
   describe('togglePrisonActive', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
       req.body = {
@@ -275,7 +275,7 @@ describe('Prison Register controller', () => {
   describe('Add new prison flow', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     })
@@ -422,7 +422,7 @@ describe('Prison Register controller', () => {
   describe('Amend prison flow', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
       hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(

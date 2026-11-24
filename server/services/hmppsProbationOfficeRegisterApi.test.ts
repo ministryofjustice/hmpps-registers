@@ -1,9 +1,8 @@
 import nock from 'nock'
 
-import HmppsAuthClient from '../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import config from '../config'
 import HMPPSAgencyRegisterApi from './hmppsAgencyRegisterApi'
-import TokenStore from '../data/tokenStore/redisTokenStore'
 import {
   CreateProbationOffice,
   EmailAddress,
@@ -14,10 +13,10 @@ import {
   UpdateProbationOffice,
 } from '../@types/prisonRegister'
 
-jest.mock('../data/hmppsAuthClient')
+jest.mock('@ministryofjustice/hmpps-auth-clients')
 
 describe('HMPPS Probation Office Register API', () => {
-  let hmppsAuthClient: jest.Mocked<HmppsAuthClient>
+  let hmppsAuthClient: jest.Mocked<AuthenticationClient>
   let hmppsAgencyRegisterApiService: HMPPSAgencyRegisterApi
   let fakeHmppsAgencyRegisterApi: nock.Scope
 
@@ -40,7 +39,7 @@ describe('HMPPS Probation Office Register API', () => {
     }
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -49,7 +48,7 @@ describe('HMPPS Probation Office Register API', () => {
 
       await hmppsAgencyRegisterApiService.getProbationOffices({ username: 'tommy' }, {})
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will pass filter to service', async () => {
@@ -95,7 +94,7 @@ describe('HMPPS Probation Office Register API', () => {
 
   describe('getProbationOffice', () => {
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -104,7 +103,7 @@ describe('HMPPS Probation Office Register API', () => {
 
       await hmppsAgencyRegisterApiService.getProbationOffice({ username: 'tommy' }, 'SHEFPB')
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
     })
 
     it('will return a probation office', async () => {
@@ -164,7 +163,7 @@ describe('HMPPS Probation Office Register API', () => {
     const updatedEmailAddress: UpdateEmailAddress = { address: 'updated@example.com' }
 
     beforeEach(() => {
-      hmppsAuthClient = new HmppsAuthClient({} as TokenStore) as jest.Mocked<HmppsAuthClient>
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
     })
 
@@ -175,7 +174,7 @@ describe('HMPPS Probation Office Register API', () => {
         { success: true },
       )
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 
@@ -186,7 +185,7 @@ describe('HMPPS Probation Office Register API', () => {
         hmppsAgencyRegisterApiService.updateProbationOfficeDetails({ username: 'tommy' }, 'a/b', update),
       ).resolves.toEqual({ success: true })
 
-      expect(hmppsAuthClient.getApiClientToken).toHaveBeenCalledWith('tommy')
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
       expect(scope.isDone()).toBe(true)
     })
 

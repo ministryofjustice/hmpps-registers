@@ -1,10 +1,10 @@
-import HmppsAuthClient from '../../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
 
 const hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-  {} as HmppsAuthClient,
+  {} as AuthenticationClient,
 ) as jest.Mocked<HMPPSAgencyRegisterApi>
 hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([
   {

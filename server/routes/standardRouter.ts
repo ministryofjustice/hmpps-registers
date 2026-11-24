@@ -1,8 +1,10 @@
 import { Router } from 'express'
+import { type AuthenticatedRequest, VerificationClient } from '@ministryofjustice/hmpps-auth-clients'
 
 import { csrfSync } from 'csrf-sync'
 import auth from '../authentication/auth'
-import tokenVerifier from '../data/tokenVerification'
+import config from '../config'
+import logger from '../../logger'
 import populateCurrentUser from '../middleware/populateCurrentUser'
 import type UserService from '../services/userService'
 
@@ -11,7 +13,10 @@ const testMode = process.env.NODE_ENV === 'test'
 export default function standardRouter(userService: UserService): Router {
   const router = Router({ mergeParams: true })
 
-  router.use(auth.authenticationMiddleware(tokenVerifier))
+  const tokenVerificationClient = new VerificationClient(config.apis.tokenVerification, logger)
+  router.use(
+    auth.authenticationMiddleware(req => tokenVerificationClient.verifyToken(req as unknown as AuthenticatedRequest)),
+  )
   router.use(populateCurrentUser(userService))
 
   // CSRF protection
