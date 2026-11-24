@@ -1,35 +1,5 @@
-// eslint-disable-next-line import/no-named-as-default
-import Validator, { ErrorMessages, Rules } from 'validatorjs'
+import { type ErrorMessages, type FormError, type Rules, validateForm } from './validator'
 
-Validator.register(
-  'postcode',
-  value => {
-    if (typeof value === 'string') {
-      return Boolean(
-        value.replace(/[\s.,/=\-_`()]/g, '').match(/^[A-Z]{1,2}[0-9R][0-9A-Z]?[0-9][ABD-HJLNP-UW-Z]{2}$/i),
-      ).valueOf()
-    }
-    return false
-  },
-  'Enter a real postcode, like AA11AA',
-)
-
-export default function validate<T>(
-  form: T,
-  rules: Rules,
-  customMessages: ErrorMessages,
-): Array<{ text: string; href: string }> {
-  const validation = new Validator(form, rules, customMessages)
-
-  return checkErrors(validation)
+export default function validate(form: object | undefined, rules: Rules, customMessages: ErrorMessages): FormError[] {
+  return validateForm(form, rules, customMessages)
 }
-const checkErrors = <T>(validation: Validator.Validator<T>): Array<{ text: string; href: string }> => {
-  validation.check()
-  return asErrors(validation.errors)
-}
-
-const asErrors = (errors: Validator.Errors) =>
-  Object.keys(errors.all()).map(key => {
-    const message = errors.first(key) as string
-    return { text: message, href: `#${key}` }
-  })

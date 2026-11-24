@@ -109,8 +109,7 @@
     "querystring": "^0.2.1",
     "redis": "^6.2.1",
     "superagent": "^10.3.0",
-    "uuid": "^14.0.2",
-    "validatorjs": "^3.22.1"
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "@jgoz/esbuild-plugin-typecheck": "^5.0.0",
@@ -133,7 +132,6 @@
     "@types/passport-oauth2": "^1.8.0",
     "@types/superagent": "^8.1.11",
     "@types/supertest": "^7.2.1",
-    "@types/validatorjs": "^3.15.5",
     "audit-ci": "^7.1.0",
     "chokidar": "5.0.0",
     "concurrently": "^10.0.5",
