@@ -1,8 +1,6 @@
 import UserService from './userService'
 import ManageUsersApiClient from '../data/manageUsersApiClient'
 
-jest.mock('../data/hmppsAuthClient')
-
 const token =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNzEyODMzNTgxfQ.msHZ1pMy8FoZkFyODFViloAD4jVcxxHrTRvCVmRd1uc'
 

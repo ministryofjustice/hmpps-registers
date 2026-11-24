@@ -1,5 +1,5 @@
 import querystring from 'node:querystring'
-import HmppsAuthClient from '../data/hmppsAuthClient'
+import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../logger'
@@ -66,7 +66,7 @@ export type AgencyMutationResponse = { success: true } | { success: false; userM
 type ServerError = { status: number; error: string; message: string }
 
 export default class HMPPSAgencyRegisterApi {
-  constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
+  constructor(private readonly hmppsAuthClient: AuthenticationClient) {}
 
   private static restClient(token: string): RestClient {
     return new RestClient('HMPPS Agency Register API Client', config.apis.prisonRegister, token)
@@ -95,7 +95,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPrisonsWithFilter(context: Context, filter: AllPrisonsFilter): Promise<Prison[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting details for prisons with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Prison[]>({
       path: `/prisons/search`,
@@ -104,7 +104,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPrison(context: Context, prisonId: string): Promise<Prison> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting details for prison ${prisonId}`)
     // Read from the maintenance endpoint, not /prisons/id: the API caches /prisons/id, and the
     // updates below send back every field, so a cached copy could undo a recent change
@@ -112,7 +112,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPrisonDetails(context: Context, prisonId: string): Promise<PrisonDetails> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting full details for prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<PrisonDetails>({
       path: `/prison-maintenance/id/${prisonId}/details`,
@@ -120,7 +120,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async findPrison(context: Context, prisonId: string): Promise<Prison | undefined> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`finding details for prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Prison | undefined>({
       path: `/prisons/id/${prisonId}`,
@@ -129,7 +129,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async isAgencyIdUsed(context: Context, agencyId: string): Promise<LegacyAgencyUsage | undefined> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`checking whether agency id ${agencyId} is in use`)
     const response = await HMPPSAgencyRegisterApi.restClient(token).get<{
       status: number
@@ -142,7 +142,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPrisonAddress(context: Context, prisonId: string, addressId: string): Promise<PrisonAddress> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting details for prisonId ${prisonId} address ${addressId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<PrisonAddress>({
       path: `/prisons/id/${prisonId}/address/${addressId}`,
@@ -150,7 +150,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async addPrison(context: Context, insertPrison: InsertPrison): Promise<AddUpdateResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Creating prison ${insertPrison.prisonId}`)
     const prisonOrError = await HMPPSAgencyRegisterApi.restClient(token).post<Prison & ServerError>({
       path: `/prison-maintenance`,
@@ -168,7 +168,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async updatePrisonDetails(context: Context, prisonId: string, prison: UpdatePrison): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Amending prison details for ${prisonId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put({
@@ -179,7 +179,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async updatePrisonArea(context: Context, prisonId: string, area: UpdatePrisonArea): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating area details for prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put({
@@ -195,7 +195,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: string,
     prisonAddress: UpdatePrisonAddress,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Amending prison ${prisonId} address for ${addressId}`)
     await HMPPSAgencyRegisterApi.restClient(token).put({
       path: `/prison-maintenance/id/${prisonId}/address/${addressId}`,
@@ -214,7 +214,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: string,
     welshAddress: UpdateWelshPrisonAddress,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Amending Welsh prison ${prisonId} address for ${addressId}`)
     await HMPPSAgencyRegisterApi.restClient(token).put({
       path: `/prison-maintenance/id/${prisonId}/welsh-address/${addressId}`,
@@ -227,7 +227,7 @@ export default class HMPPSAgencyRegisterApi {
     prisonId: string,
     contactDetails: ContactDetails,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Adding ${contactDetails.type} contact details to prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<ContactDetails>({
@@ -242,7 +242,7 @@ export default class HMPPSAgencyRegisterApi {
     prisonId: string,
     contactDetails: ContactDetails,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Updating ${contactDetails.type} contact details for prison ${prisonId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<ContactDetails>({
@@ -254,7 +254,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deletePrisonContactDetails(context: Context, prisonId: string, departmentType: DepartmentType): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Deleting ${departmentType} contact details for prison ${prisonId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/secure/prisons/id/${prisonId}/department/contact-details`,
@@ -263,7 +263,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deletePrisonAddress(context: Context, prisonId: string, addressId: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Deleting prison address for prison ${prisonId} and address ${addressId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/prison-maintenance/id/${prisonId}/address/${addressId}`,
@@ -271,7 +271,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async addPrisonAddress(context: Context, prisonId: string, prisonAddress: UpdatePrisonAddress): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Adding address to prison ${prisonId}`)
     await HMPPSAgencyRegisterApi.restClient(token).post({
       path: `/prison-maintenance/id/${prisonId}/address`,
@@ -312,7 +312,7 @@ export default class HMPPSAgencyRegisterApi {
       categories,
       operator: currentOperator,
     }
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`Updating Prison ${prisonId} with active=${active}`)
     await HMPPSAgencyRegisterApi.restClient(token).put({
       path: `/prison-maintenance/id/${prisonId}`,
@@ -321,7 +321,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getCourts(context: Context, filter: CourtsFilter): Promise<Court[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all courts with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Court[]>({
       path: `/courts`,
@@ -330,7 +330,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getCourtSummaries(context: Context, filter: CourtsFilter): Promise<CourtSummary[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting court summaries with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<CourtSummary[]>({
       path: `/courts/summary`,
@@ -339,7 +339,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getCourt(context: Context, courtId: string): Promise<Court> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Court>({
       path: `/courts/id/${courtId}`,
@@ -347,7 +347,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async findCourt(context: Context, courtId: string): Promise<Court | undefined> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`finding court with id ${courtId}`)
     try {
       return await HMPPSAgencyRegisterApi.restClient(token).get<Court>({
@@ -360,7 +360,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async createCourt(context: Context, court: CreateCourt): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating court with id ${court.courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<Court>({ path: '/courts', data: court }),
@@ -368,7 +368,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async updateCourtDetails(context: Context, courtId: string, court: UpdateCourt): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<Court>({
@@ -383,7 +383,7 @@ export default class HMPPSAgencyRegisterApi {
     courtId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -404,7 +404,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -424,7 +424,7 @@ export default class HMPPSAgencyRegisterApi {
     courtId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -439,7 +439,7 @@ export default class HMPPSAgencyRegisterApi {
     courtId: string,
     emailAddress: EmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding email address to court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
@@ -455,7 +455,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -471,7 +471,7 @@ export default class HMPPSAgencyRegisterApi {
     emailId: number,
     emailAddress: UpdateEmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating email address for court with id ${courtId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
@@ -482,7 +482,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteCourt(context: Context, courtId: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting court with id ${courtId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/courts/id/${encodeURIComponent(courtId)}`,
@@ -490,7 +490,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteCourtAddress(context: Context, courtId: string, addressId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for court with id ${courtId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/courts/id/${encodeURIComponent(courtId)}/address/${addressId}`,
@@ -498,7 +498,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteCourtPhoneNumber(context: Context, courtId: string, phoneId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for court with id ${courtId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/courts/id/${courtId}/phone-number/${phoneId}`,
@@ -506,7 +506,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteCourtEmailAddress(context: Context, courtId: string, emailId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting email address for court with id ${courtId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/courts/id/${courtId}/email-address/${emailId}`,
@@ -514,7 +514,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getOtherAgencies(context: Context, filter: OtherAgencyFilter): Promise<OtherAgency[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all other agencies with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<OtherAgency[]>({
       path: `/other-agencies`,
@@ -523,7 +523,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getOtherAgency(context: Context, agencyId: string): Promise<OtherAgency> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<OtherAgency>({
       path: `/other-agencies/id/${agencyId}`,
@@ -535,7 +535,7 @@ export default class HMPPSAgencyRegisterApi {
     agencyId: string,
     otherAgency: UpdateOtherAgency,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<OtherAgency>({
@@ -550,7 +550,7 @@ export default class HMPPSAgencyRegisterApi {
     agencyId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -566,7 +566,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -581,7 +581,7 @@ export default class HMPPSAgencyRegisterApi {
     agencyId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -597,7 +597,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -612,7 +612,7 @@ export default class HMPPSAgencyRegisterApi {
     agencyId: string,
     emailAddress: EmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding email address to other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
@@ -628,7 +628,7 @@ export default class HMPPSAgencyRegisterApi {
     emailId: number,
     emailAddress: UpdateEmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating email address for other agency with id ${agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
@@ -639,7 +639,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async createOtherAgency(context: Context, otherAgency: CreateOtherAgency): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating other agency with id ${otherAgency.agencyId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<OtherAgency>({
@@ -650,7 +650,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteProbationOffice(context: Context, id: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting probation office with id ${id}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/probation-offices/id/${encodeURIComponent(id)}`,
@@ -658,7 +658,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteProbationOfficeAddress(context: Context, probationOfficeId: string, addressId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for probation office with id ${probationOfficeId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/address/${addressId}`,
@@ -666,7 +666,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteProbationOfficePhoneNumber(context: Context, probationOfficeId: string, phoneId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for probation office with id ${probationOfficeId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/phone-number/${phoneId}`,
@@ -674,7 +674,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteProbationOfficeEmailAddress(context: Context, probationOfficeId: string, emailId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting email address for probation office with id ${probationOfficeId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/probation-offices/id/${encodeURIComponent(probationOfficeId)}/email-address/${emailId}`,
@@ -682,7 +682,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteApprovedPremises(context: Context, id: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting approved premises with id ${id}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/approved-premises/id/${encodeURIComponent(id)}`,
@@ -690,7 +690,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteApprovedPremisesAddress(context: Context, approvedPremisesId: string, addressId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for approved premises with id ${approvedPremisesId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/address/${addressId}`,
@@ -702,7 +702,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     phoneId: number,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for approved premises with id ${approvedPremisesId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/phone-number/${phoneId}`,
@@ -714,7 +714,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     emailId: number,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting email address for approved premises with id ${approvedPremisesId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/approved-premises/id/${encodeURIComponent(approvedPremisesId)}/email-address/${emailId}`,
@@ -722,7 +722,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteOtherAgency(context: Context, id: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting other agency with id ${id}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/other-agencies/id/${encodeURIComponent(id)}`,
@@ -730,7 +730,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteOtherAgencyAddress(context: Context, agencyId: string, addressId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for other agency with id ${agencyId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/other-agencies/id/${encodeURIComponent(agencyId)}/address/${addressId}`,
@@ -738,7 +738,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteOtherAgencyPhoneNumber(context: Context, agencyId: string, phoneId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for other agency with id ${agencyId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/other-agencies/id/${encodeURIComponent(agencyId)}/phone-number/${phoneId}`,
@@ -746,7 +746,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteOtherAgencyEmailAddress(context: Context, agencyId: string, emailId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting email address for other agency with id ${agencyId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/other-agencies/id/${encodeURIComponent(agencyId)}/email-address/${emailId}`,
@@ -754,7 +754,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getHospitals(context: Context, filter: HospitalFilter): Promise<Hospital[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all hospitals with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Hospital[]>({
       path: `/hospitals`,
@@ -763,7 +763,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getHospital(context: Context, hospitalId: string): Promise<Hospital> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<Hospital>({
       path: `/hospitals/id/${hospitalId}`,
@@ -771,7 +771,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async createHospital(context: Context, hospital: CreateHospital): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating hospital with id ${hospital.hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<Hospital>({ path: '/hospitals', data: hospital }),
@@ -783,7 +783,7 @@ export default class HMPPSAgencyRegisterApi {
     hospitalId: string,
     hospital: UpdateHospital,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<Hospital>({
@@ -798,7 +798,7 @@ export default class HMPPSAgencyRegisterApi {
     hospitalId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -814,7 +814,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -829,7 +829,7 @@ export default class HMPPSAgencyRegisterApi {
     hospitalId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -845,7 +845,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for hospital with id ${hospitalId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -856,7 +856,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteHospital(context: Context, hospitalId: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting hospital with id ${hospitalId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/hospitals/id/${encodeURIComponent(hospitalId)}`,
@@ -864,7 +864,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteHospitalAddress(context: Context, hospitalId: string, addressId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for hospital with id ${hospitalId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/hospitals/id/${encodeURIComponent(hospitalId)}/address/${addressId}`,
@@ -872,7 +872,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deleteHospitalPhoneNumber(context: Context, hospitalId: string, phoneId: number): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for hospital with id ${hospitalId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/hospitals/id/${encodeURIComponent(hospitalId)}/phone-number/${phoneId}`,
@@ -889,7 +889,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getProbationOffices(context: Context, filter: ProbationOfficeFilter): Promise<ProbationOffice[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all probation offices with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<ProbationOffice[]>({
       path: `/probation-offices`,
@@ -898,7 +898,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getProbationOffice(context: Context, probationOfficeId: string): Promise<ProbationOffice> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<ProbationOffice>({
       path: `/probation-offices/id/${probationOfficeId}`,
@@ -909,7 +909,7 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     probationOffice: CreateProbationOffice,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating probation office with id ${probationOffice.probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<ProbationOffice>({
@@ -924,7 +924,7 @@ export default class HMPPSAgencyRegisterApi {
     probationOfficeId: string,
     probationOffice: UpdateProbationOffice,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<ProbationOffice>({
@@ -939,7 +939,7 @@ export default class HMPPSAgencyRegisterApi {
     probationOfficeId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -955,7 +955,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -970,7 +970,7 @@ export default class HMPPSAgencyRegisterApi {
     probationOfficeId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -986,7 +986,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -1001,7 +1001,7 @@ export default class HMPPSAgencyRegisterApi {
     probationOfficeId: string,
     emailAddress: EmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding email address to probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
@@ -1017,7 +1017,7 @@ export default class HMPPSAgencyRegisterApi {
     emailId: number,
     emailAddress: UpdateEmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating email address for probation office with id ${probationOfficeId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
@@ -1028,7 +1028,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPoliceCustodySuites(context: Context, filter: PoliceCustodySuiteFilter): Promise<PoliceCustodySuite[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all police custody suites with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<PoliceCustodySuite[]>({
       path: `/police-custody-suites`,
@@ -1037,7 +1037,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getPoliceCustodySuite(context: Context, policeCustodySuiteId: string): Promise<PoliceCustodySuite> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<PoliceCustodySuite>({
       path: `/police-custody-suites/id/${policeCustodySuiteId}`,
@@ -1048,7 +1048,7 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     policeCustodySuite: CreatePoliceCustodySuite,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating police custody suite with id ${policeCustodySuite.policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<PoliceCustodySuite>({
@@ -1063,7 +1063,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     policeCustodySuite: UpdatePoliceCustodySuite,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<PoliceCustodySuite>({
@@ -1078,7 +1078,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -1094,7 +1094,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -1109,7 +1109,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -1125,7 +1125,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -1140,7 +1140,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     emailAddress: EmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding email address to police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
@@ -1156,7 +1156,7 @@ export default class HMPPSAgencyRegisterApi {
     emailId: number,
     emailAddress: UpdateEmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating email address for police custody suite with id ${policeCustodySuiteId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
@@ -1167,7 +1167,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async deletePoliceCustodySuite(context: Context, policeCustodySuiteId: string): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting police custody suite with id ${policeCustodySuiteId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}`,
@@ -1179,7 +1179,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     addressId: number,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting address for police custody suite with id ${policeCustodySuiteId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/address/${addressId}`,
@@ -1191,7 +1191,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     phoneId: number,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting phone number for police custody suite with id ${policeCustodySuiteId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/phone-number/${phoneId}`,
@@ -1203,7 +1203,7 @@ export default class HMPPSAgencyRegisterApi {
     policeCustodySuiteId: string,
     emailId: number,
   ): Promise<void> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`deleting email address for police custody suite with id ${policeCustodySuiteId}`)
     await HMPPSAgencyRegisterApi.restClient(token).delete({
       path: `/police-custody-suites/id/${encodeURIComponent(policeCustodySuiteId)}/email-address/${emailId}`,
@@ -1211,7 +1211,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getAllApprovedPremises(context: Context, filter: ApprovedPremisesFilter): Promise<ApprovedPremises[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting all approved premises with filter ${JSON.stringify(filter)}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<ApprovedPremises[]>({
       path: `/approved-premises`,
@@ -1220,7 +1220,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getApprovedPremises(context: Context, approvedPremisesId: string): Promise<ApprovedPremises> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.restClient(token).get<ApprovedPremises>({
       path: `/approved-premises/id/${approvedPremisesId}`,
@@ -1231,7 +1231,7 @@ export default class HMPPSAgencyRegisterApi {
     context: Context,
     approvedPremises: CreateApprovedPremises,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`creating approved premises with id ${approvedPremises.approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<ApprovedPremises>({
@@ -1246,7 +1246,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     approvedPremises: UpdateApprovedPremises,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating details for approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<ApprovedPremises>({
@@ -1261,7 +1261,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding address to approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyAddress>({
@@ -1277,7 +1277,7 @@ export default class HMPPSAgencyRegisterApi {
     addressId: number,
     address: UpdateAgencyAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating address for approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyAddress>({
@@ -1292,7 +1292,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding phone number to approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyPhoneNumber>({
@@ -1308,7 +1308,7 @@ export default class HMPPSAgencyRegisterApi {
     phoneId: number,
     phoneNumber: PhoneNumber,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating phone number for approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyPhoneNumber>({
@@ -1323,7 +1323,7 @@ export default class HMPPSAgencyRegisterApi {
     approvedPremisesId: string,
     emailAddress: EmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`adding email address to approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).post<AgencyEmailAddress>({
@@ -1339,7 +1339,7 @@ export default class HMPPSAgencyRegisterApi {
     emailId: number,
     emailAddress: UpdateEmailAddress,
   ): Promise<AgencyMutationResponse> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`updating email address for approved premises with id ${approvedPremisesId}`)
     return HMPPSAgencyRegisterApi.agencyMutation(() =>
       HMPPSAgencyRegisterApi.restClient(token).put<AgencyEmailAddress>({
@@ -1350,7 +1350,7 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getTownSuggestions(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting town suggestions`)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: `/reference-data/suggestions/towns`,
@@ -1358,42 +1358,42 @@ export default class HMPPSAgencyRegisterApi {
   }
 
   async getAreas(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: '/reference-data/areas',
     })
   }
 
   async getPayrollRegions(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: '/reference-data/payroll-regions',
     })
   }
 
   async getLocalAuthorities(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: '/reference-data/local-authorities',
     })
   }
 
   async getPrisonOperators(context: Context): Promise<PrisonOperator[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<PrisonOperator[]>({
       path: '/reference-data/prison-operators',
     })
   }
 
   async getRegions(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: '/reference-data/regions',
     })
   }
 
   async getCountySuggestions(context: Context): Promise<CodeDescription[]> {
-    const token = await this.hmppsAuthClient.getApiClientToken(context.username)
+    const token = await this.hmppsAuthClient.getToken(context.username)
     logger.info(`getting county suggestions`)
     return HMPPSAgencyRegisterApi.restClient(token).get<CodeDescription[]>({
       path: `/reference-data/suggestions/counties`,

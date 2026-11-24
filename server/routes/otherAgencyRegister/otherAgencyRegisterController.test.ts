@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import OtherAgencyRegisterController from './otherAgencyRegisterController'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockOtherAgencyData'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
@@ -22,7 +22,7 @@ describe('Other Agency Register controller', () => {
 
   beforeEach(() => {
     hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-      {} as HmppsAuthClient,
+      {} as AuthenticationClient,
     ) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new OtherAgencyRegisterController(hmppsAgencyRegisterApiService)
     req = {
