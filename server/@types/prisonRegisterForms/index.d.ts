@@ -5,6 +5,10 @@ declare module 'prisonForms' {
     prisonNameInWelsh?: string
     gender: string[]
     contracted: string
+    // the id of the operator chosen for a contracted prison
+    operator?: string
+    // the operator that will be saved: the one chosen, or PSP when the prison is not contracted
+    prisonOperator?: { id: number; name: string }
     lthse: string
     prisonTypes?: string[]
     addressline1?: string

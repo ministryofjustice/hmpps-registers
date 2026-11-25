@@ -8,6 +8,7 @@ const prisonDetails = {
   prisonType: (prisonType: string) => cy.get(`input[value="${prisonType}"]`),
   gender: (gender: string) => cy.get(`input[value="${gender}"]`),
   contractedRadioYes: () => cy.get('#contracted[value="yes"]'),
+  operatorRadio: (id: number) => cy.get(`input[name="operator"][value="${id}"]`),
   lthseYes: () => cy.get('#lthse[value="yes"]'),
   errorSummary: () => cy.get('.govuk-error-summary'),
   prisonWelshName: () => cy.get('[data-qa=prison-name-in-welsh]'),

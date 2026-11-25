@@ -1,6 +1,6 @@
 import querystring from 'node:querystring'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
-import { asSystem, RestClient, type SanitisedError } from '@ministryofjustice/hmpps-rest-client'
+import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import {
@@ -62,8 +62,6 @@ export interface AddUpdateResponse {
 }
 
 export type AgencyMutationResponse = { success: true } | { success: false; userMessage: string }
-
-type ServerError = { status: number; error: string; message: string }
 
 export default class HMPPSAgencyRegisterApi {
   private readonly restClient: RestClient
@@ -171,24 +169,13 @@ export default class HMPPSAgencyRegisterApi {
 
   async addPrison(context: Context, insertPrison: InsertPrison): Promise<AddUpdateResponse> {
     logger.info(`Creating prison ${insertPrison.prisonId}`)
-    const prisonOrError = await this.restClient.post<Prison & ServerError>(
-      {
-        path: `/prison-maintenance`,
-        data: insertPrison,
-        // a 400 carries a message to show the user
-        errorHandler: (_path, _method, error: SanitisedError<Prison & ServerError>) => {
-          if (error.responseStatus === 400) return error.data
-          throw error
-        },
-      },
-      asSystem(context.username),
+    // a 400 carries a message to show the user, such as a field the API will not accept
+    const response = await HMPPSAgencyRegisterApi.agencyMutation(() =>
+      this.restClient.post({ path: `/prison-maintenance`, data: insertPrison }, asSystem(context.username)),
     )
-    if (prisonOrError.error) {
+    if (response.success === false) {
       logger.error(`failed to create prison ${insertPrison.prisonId}`)
-      return {
-        success: false,
-        errorMessage: prisonOrError.message,
-      }
+      return { success: false, errorMessage: response.userMessage }
     }
     return { success: true }
   }

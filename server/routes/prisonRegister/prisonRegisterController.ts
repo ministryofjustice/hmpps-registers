@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import type { DepartmentContactDetailsForm } from 'agencyForms'
+import type { AddNewPrisonForm } from 'prisonForms'
 import HMPPSAgencyRegisterApi, { Context } from '../../services/hmppsAgencyRegisterApi'
 import { AllPrisonsFilter, updatePrisonAreaMapper, updatePrisonMapper } from './prisonMapper'
 import PrisonDetailsView, { Action } from './prisonDetailsView'
@@ -24,7 +25,7 @@ import {
 import AddPrisonAddressView from './addPrisonAddressView'
 import AddWelshPrisonAddressView from './addWelshPrisonAddressView'
 import AddNewPrisonDetailsView from './addNewPrisonDetailsView'
-import addNewPrisonDetailsValidator from './addNewPrisonDetailsValidator'
+import addNewPrisonDetailsValidator, { prisonOperatorFor } from './addNewPrisonDetailsValidator'
 import AddNewPrisonSummaryView from './addNewPrisonSummaryView'
 import addNewPrisonSummaryValidator from './addNewPrisonSummaryValidator'
 import addNewPrisonAddressValidator from './addNewPrisonAddressValidator'
@@ -89,17 +90,23 @@ export default class PrisonRegisterController {
       req.session.addNewPrisonForm,
       req.session.prisonListPageLink as string,
       req.flash('errors'),
+      await this.hmppsAgencyRegisterApiService.getPrisonOperators(context(res)),
     )
 
     res.render('pages/prison-register/addNewPrisonDetails', view.renderArgs)
   }
 
   async submitNewPrisonDetails(req: Request, res: Response): Promise<void> {
-    req.session.addNewPrisonForm = { ...req.session.addNewPrisonForm, ...trimForm(req.body) }
+    const operators = await this.hmppsAgencyRegisterApiService.getPrisonOperators(context(res))
+    const form: AddNewPrisonForm = { ...req.session.addNewPrisonForm, ...trimForm<Partial<AddNewPrisonForm>>(req.body) }
+    req.session.addNewPrisonForm = { ...form, prisonOperator: prisonOperatorFor(form, operators) }
 
     res.redirect(
-      await addNewPrisonDetailsValidator(req.session.addNewPrisonForm, req, (id: string) =>
-        this.hmppsAgencyRegisterApiService.findPrison(context(res), id),
+      await addNewPrisonDetailsValidator(
+        req.session.addNewPrisonForm,
+        req,
+        (id: string) => this.hmppsAgencyRegisterApiService.findPrison(context(res), id),
+        operators,
       ),
     )
   }

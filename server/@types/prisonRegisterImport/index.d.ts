@@ -3015,6 +3015,8 @@ export interface components {
        *     ]
        */
       categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description Operator of the prison: PSP for a public sector prison, or the provider of a contracted prison */
+      operator?: components['schemas']['PrisonOperator']
     }
     /** @description Police Custody Suite Create Record */
     CreatePoliceCustodySuiteDto: {

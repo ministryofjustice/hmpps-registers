@@ -15,6 +15,10 @@ context('Prison register - Add new prison', () => {
     cy.task('stubGetPrison', albanyPrison)
     cy.task('stubGetPrison', moorlandPrison)
     cy.task('stubAddPrison')
+    cy.task('stubGetPrisonOperators', [
+      { id: 1, name: 'PSP' },
+      { id: 2, name: 'Serco' },
+    ])
     cy.signIn()
   })
 
@@ -26,6 +30,7 @@ context('Prison register - Add new prison', () => {
       prisonDetails.gender('female').click()
       prisonDetails.prisonType('STC').click()
       prisonDetails.contractedRadioYes().click()
+      prisonDetails.operatorRadio(2).click()
       prisonDetails.lthseYes().click()
       prisonDetails.continueButton().click()
     }
@@ -119,6 +124,7 @@ context('Prison register - Add new prison', () => {
         summaryPage.prisonDetails().contains('Secure Training Centre')
         summaryPage.prisonDetails().contains('Female')
         summaryPage.prisonDetails().contains('Contracted')
+        summaryPage.prisonDetails().contains('Operated by Serco')
 
         summaryPage.changePrisonDetailsLink().click()
 

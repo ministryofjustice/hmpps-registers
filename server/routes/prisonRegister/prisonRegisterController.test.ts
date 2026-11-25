@@ -291,6 +291,13 @@ describe('Prison Register controller', () => {
       })
     })
     describe('addNewPrisonDetails', () => {
+      beforeEach(() => {
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue([
+          { id: 1, name: 'PSP' },
+          { id: 2, name: 'Serco' },
+        ])
+      })
+
       it('will render prison details page with prison types', async () => {
         req.session.prisonListPageLink = '/prison-register'
         controller.addNewPrisonStart(req, res)
@@ -311,6 +318,10 @@ describe('Prison Register controller', () => {
           ],
           backLink: '/prison-register',
           errors: [],
+          operators: [
+            { text: 'PSP', value: '1' },
+            { text: 'Serco', value: '2' },
+          ],
         })
       })
       it('will pass through form to page', async () => {
@@ -339,6 +350,10 @@ describe('Prison Register controller', () => {
           ],
           backLink: '/prison-register',
           errors: [],
+          operators: [
+            { text: 'PSP', value: '1' },
+            { text: 'Serco', value: '2' },
+          ],
         })
       })
     })

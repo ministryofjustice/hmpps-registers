@@ -480,17 +480,15 @@ describe('HMPPS Agency Register API', () => {
     describe('on failure', () => {
       it('will send back error if prison failed to be added due to bad request', async () => {
         fakeHmppsAgencyRegisterApi.post('/prison-maintenance').reply(400, {
-          timestamp: '2022-03-30 10:42:59',
           status: 400,
-          error: 'Bad Request',
-          message: "Validation failed for object='insertPrisonDto'. Error count: 1",
-          path: '/prison-maintenance',
+          userMessage: 'Welsh prison name must be between 3 and 80 letters',
+          developerMessage: 'Validation failed for argument [0]',
         })
 
         await expect(hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)).resolves.toEqual(
           {
             success: false,
-            errorMessage: "Validation failed for object='insertPrisonDto'. Error count: 1",
+            errorMessage: 'Welsh prison name must be between 3 and 80 letters',
           },
         )
       })
