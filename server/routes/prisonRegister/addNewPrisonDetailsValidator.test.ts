@@ -48,12 +48,12 @@ describe('addNewPrisonDetailsValidator', () => {
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#id', text: 'Enter a prison code' }])
     })
-    it('id must be greater than 2 characters', async () => {
-      const form = { ...validForm, id: 'A' }
+    it('id must be at least 3 characters', async () => {
+      const form = { ...validForm, id: 'AB' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#id', text: 'Enter a prison code between 2 and 6 characters' },
+        { href: '#id', text: 'Enter a prison code between 3 and 6 characters' },
       ])
     })
     it('id must be less or equal to 6 characters', async () => {
@@ -61,14 +61,14 @@ describe('addNewPrisonDetailsValidator', () => {
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#id', text: 'Enter a prison code between 2 and 6 characters' },
+        { href: '#id', text: 'Enter a prison code between 3 and 6 characters' },
       ])
     })
     it('id must not match an existing prison', async () => {
       const prison: Prison = data.prison({})
       lookup = jest.fn().mockResolvedValue(prison)
 
-      const form = { ...validForm, id: 'AA' }
+      const form = { ...validForm, id: 'AAA' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [
@@ -81,20 +81,33 @@ describe('addNewPrisonDetailsValidator', () => {
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Enter a prison name' }])
     })
-    it('name must be greater than 2 characters', async () => {
-      const form = { ...validForm, name: 'A' }
+    it('name must be at least 3 characters', async () => {
+      const form = { ...validForm, name: 'AB' }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#name', text: 'Enter a prison name between 2 and 80 characters' },
+        { href: '#name', text: 'Enter a prison name between 3 and 40 characters' },
       ])
     })
-    it('name must be less or equal to 80 characters', async () => {
-      const form = { ...validForm, name: 'A'.repeat(81) }
+    it('name must be 40 characters or fewer, as the API requires', async () => {
+      const form = { ...validForm, name: 'A'.repeat(41) }
       const nextPage = await validate(form, req, lookup)
       expect(nextPage).toEqual('/prison-register/add-new-prison-details')
       expect(req.flash).toHaveBeenCalledWith('errors', [
-        { href: '#name', text: 'Enter a prison name between 2 and 80 characters' },
+        { href: '#name', text: 'Enter a prison name between 3 and 40 characters' },
+      ])
+    })
+    it('Welsh name may be left blank', async () => {
+      const form = { ...validForm, prisonNameInWelsh: '' }
+      const nextPage = await validate(form, req, lookup)
+      expect(nextPage).toEqual('/prison-register/add-new-prison-address')
+    })
+    it('Welsh name must be at least 3 characters when given', async () => {
+      const form = { ...validForm, prisonNameInWelsh: 'AB' }
+      const nextPage = await validate(form, req, lookup)
+      expect(nextPage).toEqual('/prison-register/add-new-prison-details')
+      expect(req.flash).toHaveBeenCalledWith('errors', [
+        { href: '#prisonNameInWelsh', text: 'Enter a prison name in Welsh between 3 and 80 characters' },
       ])
     })
     it('contracted must not be a blank', async () => {

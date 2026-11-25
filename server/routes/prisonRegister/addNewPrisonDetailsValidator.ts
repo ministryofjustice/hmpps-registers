@@ -11,17 +11,18 @@ export default async function validate(
   const errors = await validateAsync(
     form,
     {
-      name: ['required', 'between:2,80'],
-      prisonNameInWelsh: ['between:2,80'],
-      id: ['required', 'between:2,6', 'unique-prison-code'],
+      // the same limits as the API
+      name: ['required', 'between:3,40'],
+      prisonNameInWelsh: ['between:3,80'],
+      id: ['required', 'between:3,6', 'unique-prison-code'],
       contracted: ['required'],
     },
     {
       'required.id': 'Enter a prison code',
-      'between.id': 'Enter a prison code between 2 and 6 characters',
+      'between.id': 'Enter a prison code between 3 and 6 characters',
       'required.name': 'Enter a prison name',
-      'between.name': 'Enter a prison name between 2 and 80 characters',
-      'between.prisonNameInWelsh': 'Enter a prison name in Welsh between 2 and 80 characters',
+      'between.name': 'Enter a prison name between 3 and 40 characters',
+      'between.prisonNameInWelsh': 'Enter a prison name in Welsh between 3 and 80 characters',
       'between.description': 'Enter a prison description between 2 and 200 characters',
       'required.contracted': 'State whether prison is contracted',
     },

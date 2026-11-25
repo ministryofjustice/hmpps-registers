@@ -27,7 +27,8 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
   return {
     prisonId: form.id as string,
     prisonName: form.name as string,
-    prisonNameInWelsh: form.prisonNameInWelsh as string,
+    // the API accepts no Welsh name, but rejects an empty one
+    prisonNameInWelsh: form.prisonNameInWelsh?.trim() || undefined,
     male: genders.includes('male'),
     female: genders.includes('female'),
     contracted: form.contracted.includes('yes'),
