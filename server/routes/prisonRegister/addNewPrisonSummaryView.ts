@@ -13,6 +13,7 @@ export default class AddNewPrisonSummaryView {
     backLink: string
     gender: string[] | undefined
     typeDescription?: string
+    operatorName?: string
   } {
     const allPrisonTypes = prisonTypes
 
@@ -27,6 +28,7 @@ export default class AddNewPrisonSummaryView {
       backLink: this.listPageLink,
       gender: ControllerHelper.parseStringArrayFromQuery(this.addPrisonForm.gender as string[]),
       typeDescription: selectedPrisonTypesDesc,
+      operatorName: this.addPrisonForm.prisonOperator?.name,
     }
   }
 }

@@ -46,5 +46,6 @@ function asAddPrison(form: AddNewPrisonForm): InsertPrison {
       },
     ],
     categories: [],
+    operator: form.prisonOperator,
   }
 }

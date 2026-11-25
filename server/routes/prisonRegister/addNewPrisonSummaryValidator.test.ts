@@ -15,6 +15,8 @@ describe('addNewPrisonSummaryValidator', () => {
     prisonNameInWelsh: '',
     gender: ['female'],
     contracted: 'yes',
+    operator: '2',
+    prisonOperator: { id: 2, name: 'Serco' },
     lthse: 'no',
     prisonTypes: ['HMP'],
     addressline1: '',
@@ -44,6 +46,7 @@ describe('addNewPrisonSummaryValidator', () => {
         lthse: false,
         active: true,
         categories: [],
+        operator: { id: 2, name: 'Serco' },
         addresses: [
           {
             addressLine1: '',
