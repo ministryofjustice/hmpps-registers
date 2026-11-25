@@ -125,4 +125,7 @@ export default {
   environmentName: get('ENVIRONMENT_NAME', ''),
   agencyRegistersEnabled: get('AGENCY_REGISTER_ENABLED', 'true') === 'true',
   agencyRegistersDeleteEnabled: get('AGENCY_REGISTER_DELETE_ENABLED', 'true') === 'true',
+  // New prisons are set up in NOMIS, which needs far more than a register entry, so adding one here
+  // is for testing only and must stay off in production
+  prisonRegisterAddEnabled: get('PRISON_REGISTER_ADD_ENABLED', 'false') === 'true',
 }
