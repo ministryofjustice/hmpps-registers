@@ -88,7 +88,9 @@ describe('HMPPS Approved Premises Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, {})
 
-      await expect(hmppsAgencyRegisterApiService.getAllApprovedPremises({}, {})).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.getAllApprovedPremises({}, {})).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
   })
 

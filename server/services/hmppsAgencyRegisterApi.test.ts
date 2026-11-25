@@ -60,7 +60,9 @@ describe('HMPPS Agency Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, { userMessage: 'Lookup failed' })
 
-      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'NEWCC')).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.isAgencyIdUsed({}, 'NEWCC')).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
 
     it('propagates authentication failures', async () => {
@@ -101,6 +103,40 @@ describe('HMPPS Agency Register API', () => {
       const result = await hmppsAgencyRegisterApiService.getPrisonsWithFilter({}, { active: true, textSearch: 'ALI' })
 
       expect(result).toHaveLength(2)
+    })
+  })
+
+  describe('findPrison', () => {
+    beforeEach(() => {
+      hmppsAuthClient = new AuthenticationClient(null, null) as jest.Mocked<AuthenticationClient>
+      hmppsAuthClient.getToken.mockResolvedValue('find-prison-token')
+      hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(hmppsAuthClient)
+    })
+
+    it('returns the prison with that code', async () => {
+      fakeHmppsAgencyRegisterApi
+        .get('/prisons/id/MDI')
+        .matchHeader('authorization', 'Bearer find-prison-token')
+        .reply(200, moorlandPrison)
+
+      await expect(hmppsAgencyRegisterApiService.findPrison({ username: 'tommy' }, 'MDI')).resolves.toEqual(
+        moorlandPrison,
+      )
+      expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('tommy')
+    })
+
+    it('returns nothing when no prison has that code, so the code can be used for a new prison', async () => {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/NEW').reply(404, { status: 404 })
+
+      await expect(hmppsAgencyRegisterApiService.findPrison({ username: 'tommy' }, 'NEW')).resolves.toBeUndefined()
+    })
+
+    it('propagates other errors', async () => {
+      fakeHmppsAgencyRegisterApi.get('/prisons/id/MDI').reply(500).persist()
+
+      await expect(hmppsAgencyRegisterApiService.findPrison({ username: 'tommy' }, 'MDI')).rejects.toMatchObject({
+        responseStatus: 500,
+      })
     })
   })
 
@@ -451,11 +487,12 @@ describe('HMPPS Agency Register API', () => {
           path: '/prison-maintenance',
         })
 
-        try {
-          await hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)
-        } catch (e) {
-          expect(e.data.message).toEqual("Validation failed for object='insertPrisonDto'. Error count: 1")
-        }
+        await expect(hmppsAgencyRegisterApiService.addPrison({ username: 'tommy' }, addPrisonRequest)).resolves.toEqual(
+          {
+            success: false,
+            errorMessage: "Validation failed for object='insertPrisonDto'. Error count: 1",
+          },
+        )
       })
       it('will throw error if prison failed to be added due to some of reason', async () => {
         fakeHmppsAgencyRegisterApi

@@ -88,7 +88,9 @@ describe('HMPPS Police Custody Suite Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, {})
 
-      await expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites({}, {})).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.getPoliceCustodySuites({}, {})).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
   })
 

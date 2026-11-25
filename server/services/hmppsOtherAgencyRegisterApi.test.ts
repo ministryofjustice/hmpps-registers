@@ -86,7 +86,9 @@ describe('HMPPS Other Agency Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, {})
 
-      await expect(hmppsAgencyRegisterApiService.getOtherAgencies({}, {})).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.getOtherAgencies({}, {})).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
   })
 

@@ -60,7 +60,9 @@ describe('HMPPS Court Register API', () => {
         .times(status === 500 ? 3 : 1)
         .reply(status, {})
 
-      await expect(hmppsAgencyRegisterApiService.deleteCourt({}, 'SHFCC')).rejects.toMatchObject({ status })
+      await expect(hmppsAgencyRegisterApiService.deleteCourt({}, 'SHFCC')).rejects.toMatchObject({
+        responseStatus: status,
+      })
     })
 
     it('propagates authentication failures', async () => {
@@ -269,7 +271,7 @@ describe('HMPPS Court Register API', () => {
       fakeHmppsAgencyRegisterApi.put('/courts/id/SHFCC/address/2').reply(status, { status })
 
       await expect(hmppsAgencyRegisterApiService.updateCourtAddress({}, 'SHFCC', 2, address)).rejects.toMatchObject({
-        status,
+        responseStatus: status,
       })
     })
   })
@@ -384,7 +386,7 @@ describe('HMPPS Court Register API', () => {
         await expect(
           hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress),
         ).rejects.toMatchObject({
-          status: 400,
+          responseStatus: 400,
         })
       },
     )
@@ -396,7 +398,7 @@ describe('HMPPS Court Register API', () => {
 
       await expect(hmppsAgencyRegisterApiService.addCourtEmailAddress({}, 'SHFCC', emailAddress)).rejects.toMatchObject(
         {
-          status: 500,
+          responseStatus: 500,
         },
       )
     })
@@ -458,7 +460,7 @@ describe('HMPPS Court Register API', () => {
       await expect(
         hmppsAgencyRegisterApiService.updateCourtPhoneNumber({}, 'SHFCC', 10000, phoneNumber),
       ).rejects.toMatchObject({
-        status,
+        responseStatus: status,
       })
     })
   })
@@ -659,13 +661,13 @@ describe('HMPPS Court Register API', () => {
     ])('propagates a 400 response without a usable user message: %j', async body => {
       fakeHmppsAgencyRegisterApi[httpMethod](path).reply(400, body)
 
-      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ status: 400 })
+      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ responseStatus: 400 })
     })
 
     it('propagates a server error even when it contains a user message', async () => {
       fakeHmppsAgencyRegisterApi[httpMethod](path).reply(500, { userMessage: 'Service unavailable' })
 
-      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ status: 500 })
+      await expect(invoke(hmppsAgencyRegisterApiService)).rejects.toMatchObject({ responseStatus: 500 })
     })
   })
 
@@ -699,7 +701,7 @@ describe('HMPPS Court Register API', () => {
         .reply(status, { status })
 
       await expect(hmppsAgencyRegisterApiService.deleteCourtAddress({}, 'SHFCC', 2)).rejects.toMatchObject({
-        status,
+        responseStatus: status,
       })
     })
   })
@@ -811,7 +813,7 @@ describe('Court creation API', () => {
   ])('propagates unexpected creation errors: $status $data', async ({ status, data }) => {
     nock(config.apis.prisonRegister.url).post('/courts', court).reply(status, data)
 
-    await expect(service.createCourt({}, court)).rejects.toMatchObject({ status })
+    await expect(service.createCourt({}, court)).rejects.toMatchObject({ responseStatus: status })
   })
 
   it('finds an existing court with the authenticated user context', async () => {
@@ -838,7 +840,7 @@ describe('Court creation API', () => {
       .times(status === 500 ? 3 : 1)
       .reply(status, {})
 
-    await expect(service.findCourt({}, court.courtId)).rejects.toMatchObject({ status })
+    await expect(service.findCourt({}, court.courtId)).rejects.toMatchObject({ responseStatus: status })
   })
 
   it('encodes the court ID when constructing the lookup URL', async () => {
