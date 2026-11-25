@@ -70,8 +70,12 @@ describe('adding a new prison', () => {
     ['get', '/prison-register/add-new-prison-finished'],
   ]
 
+  const guidance =
+    'New prisons are created in NOMIS. They then appear in this list, where you can add their types, categories, operator and other details.'
+
   beforeEach(() => {
     hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([])
+    hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue([{ id: 1, name: 'PSP' }])
   })
 
   afterEach(() => {
@@ -91,6 +95,13 @@ describe('adding a new prison', () => {
         .expect(res => expect(res.text).not.toContain('Add a new prison'))
     })
 
+    it('explains that new prisons are created in NOMIS', () => {
+      return request(app)
+        .get('/prison-register')
+        .expect(200)
+        .expect(res => expect(res.text).toContain(guidance))
+    })
+
     it.each(addPages)('responds not found to %s %s', (method, path) => {
       return request(app)[method](path).expect(404)
     })
@@ -107,6 +118,23 @@ describe('adding a new prison', () => {
         .get('/prison-register')
         .expect(200)
         .expect(res => expect(res.text).toContain('Add a new prison'))
+    })
+
+    it('still explains that new prisons are created in NOMIS', () => {
+      return request(app)
+        .get('/prison-register')
+        .expect(200)
+        .expect(res => expect(res.text).toContain(guidance))
+    })
+
+    it('warns that a prison added here does not reach NOMIS', () => {
+      return request(app)
+        .get('/prison-register/add-new-prison-details')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Only add a prison here once NOMIS is no longer used.')
+          expect(res.text).toContain('A prison added here is not created in NOMIS')
+        })
     })
 
     it('starts the journey', () => {

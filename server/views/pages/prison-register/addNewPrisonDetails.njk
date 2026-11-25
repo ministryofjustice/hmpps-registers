@@ -6,6 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = applicationName + " - Add Prison" %}
 
@@ -25,6 +26,13 @@
                 <h1 class="govuk-heading-xl">Add a new prison - main details</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
+                <div data-qa="nomis-warning">
+                    {{ govukWarningText({
+                        text: "Only add a prison here once NOMIS is no longer used.",
+                        iconFallbackText: "Warning"
+                    }) }}
+                    <p class="govuk-body">A prison added here is not created in NOMIS, and later changes to it do not reach NOMIS. While NOMIS is in use, ask for the prison to be created in NOMIS. It will then appear here automatically.</p>
+                </div>
                 <form action="/prison-register/add-new-prison-details" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     {% call govukFieldset({
