@@ -15,6 +15,3 @@ generic-service:
 
     INGRESS_URL: https://registers-dev.hmpps.service.justice.gov.uk
     PRISON_REGISTER_ADD_ENABLED: 'true'
-
-generic-prometheus-alerts:
-  alertSeverity: move-a-prisoner-alerts-nonprod

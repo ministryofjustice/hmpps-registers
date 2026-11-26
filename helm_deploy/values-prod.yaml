@@ -15,7 +15,3 @@ generic-service:
     AGENCY_REGISTER_DELETE_ENABLED: 'false'
     # new prisons are set up in NOMIS, so they must never be added here in production
     PRISON_REGISTER_ADD_ENABLED: 'false'
-
-# CloudPlatform AlertManager receiver to route prometheus alerts to slack
-generic-prometheus-alerts:
-  alertSeverity: move-a-prisoner-alerts-prod
