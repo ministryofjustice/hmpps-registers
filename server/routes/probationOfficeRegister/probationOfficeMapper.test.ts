@@ -1,4 +1,8 @@
-import probationOfficeMapper, { ProbationOfficeDetail, probationOfficesPageMapper } from './probationOfficeMapper'
+import probationOfficeMapper, {
+  ProbationOfficeDetail,
+  probationOfficesPageMapper,
+  updateProbationOfficeMapper,
+} from './probationOfficeMapper'
 import data from '../testutils/mockProbationOfficeData'
 
 describe('probationOfficeMapper', () => {
@@ -44,5 +48,41 @@ describe('probationOfficesPageMapper', () => {
 
   it('will pass through the filter', () => {
     expect(probationOfficesPageMapper([], { active: true }).filter).toEqual({ active: true })
+  })
+})
+
+describe('updateProbationOfficeMapper', () => {
+  it('will map every updatable field using reference codes', () => {
+    const office = data.probationOffice({
+      probationOfficeName: 'Sheffield Probation Office',
+      description: 'Desc',
+      contact: 'Front desk',
+      accessibleAccess: 'ACCESSIBLE',
+      active: false,
+      inactiveDate: '2024-01-01',
+      cjitCode: 'C00SH00',
+      area: { code: 'SY', description: 'South Yorkshire' },
+      subarea: { code: 'SA', description: 'Subarea' },
+      region: { code: 'YH', description: 'Yorkshire' },
+      geographicalArea: { code: 'GA', description: 'Geo' },
+      localAuthority: { code: 'LA', description: 'Local' },
+      payrollRegion: { code: 'PR', description: 'Payroll' },
+    })
+
+    expect(updateProbationOfficeMapper(office)).toEqual({
+      probationOfficeName: 'Sheffield Probation Office',
+      description: 'Desc',
+      contact: 'Front desk',
+      accessibleAccess: 'ACCESSIBLE',
+      active: false,
+      inactiveDate: '2024-01-01',
+      cjitCode: 'C00SH00',
+      areaCode: 'SY',
+      subareaCode: 'SA',
+      regionCode: 'YH',
+      geographicalAreaCode: 'GA',
+      localAuthorityCode: 'LA',
+      payrollRegionCode: 'PR',
+    })
   })
 })

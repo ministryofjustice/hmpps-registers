@@ -160,6 +160,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/prison-maintenance/id/{prisonId}/area': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Updates specified prison area details
+     * @description Updates prison area information, role required is MAINTAIN_REF_DATA or MAINTAIN_PRISON_DATA
+     */
+    put: operations['updatePrisonArea']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/prison-maintenance/id/{prisonId}/address/{addressId}': {
     parameters: {
       query?: never
@@ -379,6 +399,26 @@ export interface paths {
      * @description Deletes a single address for a agency. Requires role HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     delete: operations['deleteOtherAgencyAddress']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/legacy/sync/prison/id/{agencyId}/phone-number': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Updates prison phone number by creating or updating a department record
+     * @description Used for synchronising data from NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    put: operations['updatePrisonPhoneNumber']
+    post?: never
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -972,6 +1012,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/legacy/sync/prison/id/{agencyId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates or updates a prison
+     * @description Used for synchronising data from NOMIS. This creates a prison, or updates it if it already exists, and publishes the corresponding prison-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    post: operations['createOrUpdatePrison']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/legacy/sync/agency/id/{agencyId}': {
     parameters: {
       query?: never
@@ -983,7 +1043,7 @@ export interface paths {
     put?: never
     /**
      * Creates or updates an agency of any type
-     * @description Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Used for synchronising data from NOMIS. This creates an agency, or updates it if it already exists, and publishes the corresponding agency-type domain event with source NOMIS. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     post: operations['createOrUpdateAgency']
     delete?: never
@@ -1324,6 +1384,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/reference-data/prison-operators': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all prison operators
+     * @description Returns all prison operators as a flat list of code and description
+     */
+    get: operations['getPrisonOperators']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/reference-data/payroll-regions': {
     parameters: {
       query?: never
@@ -1484,6 +1564,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/prison-maintenance/id/{prisonId}/details': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get details of specified prison
+     * @description Information on a specific prison
+     */
+    get: operations['getPrisonDetailsById']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/legacy/{agencyId}': {
     parameters: {
       query?: never
@@ -1493,7 +1593,7 @@ export interface paths {
     }
     /**
      * Returns details of an agency of any type
-     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['getAgency']
     put?: never
@@ -1513,9 +1613,29 @@ export interface paths {
     }
     /**
      * Returns details of an agency of any type for reconciliation
-     * @description Returns the details of any agency (court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     * @description Returns the details of any agency (prison, court, hospital, probation office, approved premises, police custody suite, or generic agency) as a LegacyAgencyDto. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['getAgencyDetails']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/legacy/reconciliation/prison/ids/all': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns IDs of all prisons for reconciliation
+     * @description Returns the IDs of all prisons. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
+     */
+    get: operations['getAllPrisonIds']
     put?: never
     post?: never
     delete?: never
@@ -1556,6 +1676,26 @@ export interface paths {
      * @description Checks prisons, courts, hospitals, probation offices, approved premises, police custody suites and generic agencies for the given id. Role required is ROLE_HMPPS_REGISTERS_API__SYNCHRONISATION__RW
      */
     get: operations['isAgencyIdUsed']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/courts/summary': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get summary of all courts
+     * @description Court IDs, names, active status and court types ordered by court ID ascending
+     */
+    get: operations['getCourtSummaries']
     put?: never
     post?: never
     delete?: never
@@ -1946,6 +2086,11 @@ export interface components {
        */
       country: string
     }
+    PrisonOperator: {
+      /** Format: int64 */
+      id: number
+      name: string
+    }
     /** @description Prison Update Record */
     UpdatePrisonDto: {
       /**
@@ -1958,6 +2103,11 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
       /** @description Whether the prison is still active */
       active: boolean
       /** @description If this is a male prison */
@@ -1982,6 +2132,8 @@ export interface components {
        *     ]
        */
       categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description Operator of the prison. When not provided, the operator will not be updated */
+      operator?: components['schemas']['PrisonOperator'] | null
     }
     AddressDto: {
       /**
@@ -2063,6 +2215,11 @@ export interface components {
        * @example Carchar Brynbuga
        */
       prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
       /** @description Whether the prison is still active */
       active: boolean
       /** @description Whether the prison has male prisoners */
@@ -2081,6 +2238,8 @@ export interface components {
       addresses: components['schemas']['AddressDto'][]
       /** @description List of operators for this prison */
       operators: components['schemas']['PrisonOperatorDto'][]
+      /** @description The current operator for this prison */
+      currentOperator?: components['schemas']['PrisonOperator'] | null
     }
     PrisonOperatorDto: {
       /**
@@ -2129,6 +2288,24 @@ export interface components {
        * @example Cymru
        */
       countryInWelsh?: string | null
+    }
+    /** @description Area prison data to update */
+    UpdatePrisonAreaDto: {
+      /**
+       * @description CJIT Code
+       * @example 123456789
+       */
+      cjitCode?: string | null
+      /** @description Area */
+      areaCode?: string | null
+      /** @description Region */
+      regionCode?: string | null
+      /** @description Geographical Area */
+      geographicalAreaCode?: string | null
+      /** @description Local Authority */
+      localAuthorityCode?: string | null
+      /** @description Prisoner Payroll Region */
+      payrollRegionCode?: string | null
     }
     /** @description Police Custody Suite Update Record */
     UpdatePoliceCustodySuiteDto: {
@@ -2354,6 +2531,31 @@ export interface components {
       emailAddresses: components['schemas']['AgencyEmailDto'][]
       /** @description phoneNumbers */
       phoneNumbers: components['schemas']['AgencyPhoneDto'][]
+    }
+    LegacyAgencyPhoneDto: {
+      /**
+       * Format: int64
+       * @description Database Id
+       * @example 123
+       */
+      id?: number | null
+      /**
+       * @description Phone number
+       * @example 0114 555 9898
+       */
+      number: string
+    }
+    /** @description Prison phone number */
+    LegacyPrisonPhoneDto: {
+      phoneNumber: components['schemas']['LegacyAgencyPhoneDto']
+    }
+    /** @description Prison Information */
+    DepartmentDto: {
+      /** @enum {string} */
+      type: 'PRISON' | 'SOCIAL_VISIT' | 'VIDEOLINK_CONFERENCING_CENTRE' | 'OFFENDER_MANAGEMENT_UNIT' | 'OFFICIAL_VISIT'
+      emailAddress?: string | null
+      phoneNumber?: string | null
+      webAddress?: string | null
     }
     /** @description Hospital Update Record */
     UpdateHospitalDto: {
@@ -2813,6 +3015,8 @@ export interface components {
        *     ]
        */
       categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description Operator of the prison: PSP for a public sector prison, or the provider of a contracted prison */
+      operator?: components['schemas']['PrisonOperator']
     }
     /** @description Police Custody Suite Create Record */
     CreatePoliceCustodySuiteDto: {
@@ -3095,19 +3299,6 @@ export interface components {
        */
       address: string
     }
-    LegacyAgencyPhoneDto: {
-      /**
-       * Format: int64
-       * @description Database Id
-       * @example 123
-       */
-      id?: number | null
-      /**
-       * @description Phone number
-       * @example 0114 555 9898
-       */
-      number: string
-    }
     /** @enum {string} */
     LegacyAgencyType:
       | 'PRISON'
@@ -3357,6 +3548,75 @@ export interface components {
        */
       prisonNameInWelsh?: string | null
     }
+    /** @description Prison Information */
+    FullPrisonDto: {
+      /**
+       * @description Prison ID
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * @description Name of the prison
+       * @example Moorland HMP
+       */
+      prisonName: string
+      /**
+       * @description Name of the prison in Welsh
+       * @example Carchar Brynbuga
+       */
+      prisonNameInWelsh?: string | null
+      /**
+       * @description Description of the prison
+       * @example HMP BRIXTON
+       */
+      prisonDescription?: string | null
+      /** @description Whether the prison is still active */
+      active: boolean
+      /** @description Whether the prison has male prisoners */
+      male: boolean
+      /** @description Whether the prison has female prisoners */
+      female: boolean
+      /** @description Whether the prison is contracted */
+      contracted: boolean
+      /** @description Whether the prison is part of long term high security estate */
+      lthse: boolean
+      /** @description List of types for this prison */
+      types: components['schemas']['PrisonTypeDto'][]
+      /** @description List of the categories for this prison */
+      categories: ('A' | 'B' | 'C' | 'D' | 'OPEN' | 'CLOSED')[]
+      /** @description List of address for this prison */
+      addresses: components['schemas']['AddressDto'][]
+      /**
+       * @deprecated
+       * @description List of operators for this prison
+       */
+      operators: components['schemas']['PrisonOperatorDto'][]
+      /** @description The current operator for this prison */
+      currentOperator?: components['schemas']['PrisonOperator'] | null
+      /** @description List of departments for this prison */
+      departments: components['schemas']['DepartmentDto'][]
+      /**
+       * Format: date
+       * @description Date made inactive
+       * @example 2023-12-31
+       */
+      inactiveDate?: string | null
+      /**
+       * @description CJIT Code
+       * @example 123456789
+       */
+      cjitCode?: string | null
+      /** @description Area */
+      area?: components['schemas']['CodeDescription'] | null
+      /** @description Region */
+      region?: components['schemas']['CodeDescription'] | null
+      /** @description Geographical Area */
+      geographicalArea?: components['schemas']['CodeDescription'] | null
+      /** @description Local Authority */
+      localAuthority?: components['schemas']['CodeDescription'] | null
+      /** @description Prisoner Payroll Region */
+      payrollRegion?: components['schemas']['CodeDescription'] | null
+    }
     AgencyId: {
       agencyId: string
     }
@@ -3380,6 +3640,23 @@ export interface components {
        * @example COURT
        */
       legacyType: components['schemas']['LegacyAgencyType']
+    }
+    /** @description Court summary information */
+    CourtSummaryDto: {
+      /**
+       * @description Court ID
+       * @example NWCLYC
+       */
+      courtId: string
+      /**
+       * @description Name
+       * @example N Staffs Youth Court - Newcastle
+       */
+      courtName: string
+      /** @description Whether still active */
+      active: boolean
+      /** @description courtType */
+      courtType?: components['schemas']['CodeDescription'] | null
     }
     /** @description Summary information about an agency */
     AgencySummaryDto: {
@@ -4388,6 +4665,72 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AddressDto']
+        }
+      }
+    }
+  }
+  updatePrisonArea: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdatePrisonAreaDto']
+      }
+    }
+    responses: {
+      /** @description Prison Area Information Updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PrisonDto']
+        }
+      }
+      /** @description Information request to update prison area */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to make prison update */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Prison ID not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -5558,6 +5901,45 @@ export interface operations {
       }
       /** @description Agency Id or Address Id not found */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  updatePrisonPhoneNumber: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example WWI
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LegacyPrisonPhoneDto']
+      }
+    }
+    responses: {
+      /** @description Prison phone number updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DepartmentDto']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
@@ -8064,6 +8446,63 @@ export interface operations {
       }
     }
   }
+  createOrUpdatePrison: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description NOMIS Agency Id
+         * @example WWI
+         */
+        agencyId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LegacyAgencyDto']
+      }
+    }
+    responses: {
+      /** @description Prison created or updated */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyResponse']
+        }
+      }
+      /** @description Bad Information request to create or update prison */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyAgencyResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to add or update agency */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   createOrUpdateAgency: {
     parameters: {
       query?: never
@@ -9172,6 +9611,44 @@ export interface operations {
       }
     }
   }
+  getPrisonOperators: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PrisonOperator'][]
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the HMPPS_REGISTERS_API__MAINTAIN__RW role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getPayrollRegions: {
     parameters: {
       query?: {
@@ -9459,6 +9936,32 @@ export interface operations {
       }
     }
   }
+  getPrisonDetailsById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison ID
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FullPrisonDto']
+        }
+      }
+    }
+  }
   getAgency: {
     parameters: {
       query?: never
@@ -9565,6 +10068,44 @@ export interface operations {
       }
     }
   }
+  getAllPrisonIds: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Prison IDs returned */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AgencyIdsResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Incorrect permissions to retrieve prison IDs */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getAllAgencyIds: {
     parameters: {
       query?: never
@@ -9650,6 +10191,42 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getCourtSummaries: {
+    parameters: {
+      query?: {
+        /**
+         * @description Active
+         * @example true
+         */
+        active?: boolean
+        /**
+         * @description Text search
+         * @example Sheffield
+         */
+        textSearch?: string
+        /**
+         * @description Court type codes to filter by
+         * @example CACD, CB
+         */
+        courtTypeCodes?: ('CACD' | 'CB' | 'CC' | 'CO' | 'DCM' | 'GCM' | 'IMM' | 'MC' | 'OTHER' | 'YC')[]
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Operation */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CourtSummaryDto'][]
         }
       }
     }

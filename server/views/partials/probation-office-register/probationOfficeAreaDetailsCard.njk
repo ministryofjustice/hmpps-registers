@@ -3,7 +3,8 @@
 {% macro probationOfficeAreaDetailsCard(opts) %}
 
   {% set probationOffice = opts.probationOffice %}
-
+  {% set base = "/probation-office-register" %}
+  {% set id = probationOffice.probationOfficeId %}
 
   {{ govukSummaryList({
     card: {
@@ -21,7 +22,13 @@
           text: probationOffice.area.description if probationOffice.area else 'Not provided'
         },
         actions: {
-         items: [ ]
+         items: [{
+            href: base + "/area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "area",
+            attributes: {"data-qa": "update-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -43,7 +50,13 @@
           text: probationOffice.region.description if probationOffice.region else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "region",
+            attributes: {"data-qa": "update-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -54,7 +67,13 @@
         text: probationOffice.geographicalArea.description if probationOffice.geographicalArea else 'Not provided'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: base + "/geographical-area/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "geographical area",
+            attributes: {"data-qa": "update-geographical-area-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +84,13 @@
           text: probationOffice.localAuthority.description if probationOffice.localAuthority else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/local-authority/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "local authority",
+            attributes: {"data-qa": "update-local-authority-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -76,7 +101,13 @@
           text: probationOffice.payrollRegion.description if probationOffice.payrollRegion else 'Not provided'
         },
         actions: {
-        items: [ ]
+        items: [{
+            href: base + "/payroll-region/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "payroll region",
+            attributes: {"data-qa": "update-payroll-region-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]

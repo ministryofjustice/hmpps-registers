@@ -6,6 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = applicationName + " - Add Prison" %}
 
@@ -25,6 +26,13 @@
                 <h1 class="govuk-heading-xl">Add a new prison - main details</h1>
             </div>
             <div class="govuk-grid-column-two-thirds">
+                <div data-qa="nomis-warning">
+                    {{ govukWarningText({
+                        text: "Only add a prison here once NOMIS is no longer used.",
+                        iconFallbackText: "Warning"
+                    }) }}
+                    <p class="govuk-body">A prison added here is not created in NOMIS, and later changes to it do not reach NOMIS. While NOMIS is in use, ask for the prison to be created in NOMIS. It will then appear here automatically.</p>
+                </div>
                 <form action="/prison-register/add-new-prison-details" method="post" novalidate>
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     {% call govukFieldset({
@@ -110,8 +118,21 @@
                             errorMessage: errors | findError('prisonType')
                         }) }}
 
+                        {% set operatorItems = [] %}
+                        {% for operator in operators %}
+                          {% set operatorItems = (operatorItems.push({ value: operator.value, text: operator.text, checked: form.operator == operator.value }), operatorItems) %}
+                        {% endfor %}
+                        {% set operatorHtml %}
+                          {{ govukRadios({
+                            idPrefix: "operator",
+                            name: "operator",
+                            fieldset: { legend: { text: "Who operates this prison?", classes: "govuk-fieldset__legend--s" } },
+                            items: operatorItems,
+                            errorMessage: errors | findError('operator')
+                          }) }}
+                        {% endset %}
+
                         {{ govukRadios({
-                          classes: "govuk-radios--inline",
                           idPrefix: "contracted",
                           name: "contracted",
                           fieldset: {
@@ -128,7 +149,8 @@
                             {
                               value: "yes",
                               text: "Yes",
-                              checked: form.contracted === 'yes'
+                              checked: form.contracted === 'yes',
+                              conditional: { html: operatorHtml }
                             },
                             {
                               value: "no",

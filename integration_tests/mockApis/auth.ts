@@ -12,7 +12,7 @@ const createToken = (roles: string[]) => {
     authorities: roles,
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
     client_id: 'clientid',
-    uuid: '12345-12345-12345-12345-12345' as UUID,
+    user_uuid: '12345-12345-12345-12345-12345' as UUID,
   }
 
   return jwt.sign(payload, 'secret', { expiresIn: '1h' })

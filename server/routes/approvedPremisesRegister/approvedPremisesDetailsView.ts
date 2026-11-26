@@ -1,11 +1,19 @@
+import config from '../../config'
 import { ApprovedPremises } from '../../@types/prisonRegister'
 
-export default class ApprovedPremisesDetailsView {
-  constructor(private readonly approvedPremises: ApprovedPremises) {}
+export type Action = 'NONE' | 'UPDATED' | 'CREATED'
 
-  get renderArgs(): { approvedPremises: ApprovedPremises } {
+export default class ApprovedPremisesDetailsView {
+  constructor(
+    private readonly approvedPremises: ApprovedPremises,
+    private readonly action: Action = 'NONE',
+  ) {}
+
+  get renderArgs(): { approvedPremises: ApprovedPremises; action: Action; agencyRegistersDeleteEnabled: boolean } {
     return {
       approvedPremises: this.approvedPremises,
+      action: this.action,
+      agencyRegistersDeleteEnabled: config.agencyRegistersDeleteEnabled,
     }
   }
 }

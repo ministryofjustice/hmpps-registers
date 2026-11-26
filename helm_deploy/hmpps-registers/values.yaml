@@ -4,6 +4,9 @@
 generic-service:
   nameOverride: hmpps-registers
 
+  # service account that can send page-view events to the HMPPS Audit queue (cloud-platform-environments irsa)
+  serviceAccountName: hmpps-registers-ui
+
   image:
     repository: ghcr.io/ministryofjustice/hmpps-registers
     tag: app_version    # override at deployment time
@@ -27,10 +30,12 @@ generic-service:
     REDIS_ENABLED: 'true'
     REDIS_TLS_ENABLED: 'true'
     TOKEN_VERIFICATION_ENABLED: 'true'
+    AUDIT_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
-    AUDIT_SERVICE_NAME: 'DPS098' # Your audit service name
+    AUDIT_SERVICE_NAME: 'hmpps-registers'
     PRODUCT_ID: 'DPS098'
     AGENCY_REGISTER_ENABLED: 'true'
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
@@ -47,6 +52,8 @@ generic-service:
       SYSTEM_CLIENT_SECRET: 'SYSTEM_CLIENT_SECRET'
       APPINSIGHTS_INSTRUMENTATIONKEY: 'APPINSIGHTS_INSTRUMENTATIONKEY'
       SESSION_SECRET: 'SESSION_SECRET'
+    sqs-hmpps-audit-secret:
+      AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
 
 generic-prometheus-alerts:
   targetApplication: hmpps-registers

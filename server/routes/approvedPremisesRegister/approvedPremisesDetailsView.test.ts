@@ -6,6 +6,20 @@ describe('ApprovedPremisesDetailsView', () => {
     const approvedPremises = data.approvedPremises({ approvedPremisesId: 'SHFAP' })
     const view = new ApprovedPremisesDetailsView(approvedPremises)
 
-    expect(view.renderArgs).toEqual({ approvedPremises })
+    expect(view.renderArgs).toEqual({
+      approvedPremises,
+      action: 'NONE',
+      agencyRegistersDeleteEnabled: expect.any(Boolean),
+    })
+  })
+
+  it('will pass the action to the page', () => {
+    const approvedPremises = data.approvedPremises({ approvedPremisesId: 'SHFAP' })
+
+    expect(new ApprovedPremisesDetailsView(approvedPremises, 'UPDATED').renderArgs).toEqual({
+      approvedPremises,
+      action: 'UPDATED',
+      agencyRegistersDeleteEnabled: expect.any(Boolean),
+    })
   })
 })

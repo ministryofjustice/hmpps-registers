@@ -1,4 +1,4 @@
-import { Prison, PrisonAddress, WelshPrisonAddress } from '../../@types/prisonRegister'
+import { Prison, PrisonAddress, PrisonDetails, WelshPrisonAddress } from '../../@types/prisonRegister'
 
 export default {
   prisonAddress: ({
@@ -86,6 +86,7 @@ export default {
     addresses = [],
     types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators = [{ name: 'PSP' }],
+    currentOperator = { id: 1, name: 'PSP' },
   }: Partial<Prison>): Prison =>
     ({
       prisonId,
@@ -99,5 +100,51 @@ export default {
       addresses,
       types,
       operators,
+      currentOperator,
     }) as Prison,
+
+  prisonDetails: ({
+    prisonId = 'ALI',
+    prisonName = 'Albany (HMP)',
+    prisonDescription,
+    prisonNameInWelsh = '',
+    active = true,
+    male = true,
+    female = true,
+    contracted = false,
+    lthse = false,
+    addresses = [],
+    types = [{ code: 'HMP', description: 'His Majesty’s Prison' }],
+    operators = [{ name: 'PSP' }],
+    currentOperator = { id: 1, name: 'PSP' },
+    departments = [],
+    cjitCode = 'A',
+    area = null,
+    region = null,
+    geographicalArea = null,
+    localAuthority = null,
+    payrollRegion = null,
+  }: Partial<PrisonDetails>): PrisonDetails =>
+    ({
+      prisonId,
+      prisonName,
+      prisonDescription,
+      prisonNameInWelsh,
+      active,
+      male,
+      female,
+      contracted,
+      lthse,
+      addresses,
+      types,
+      operators,
+      currentOperator,
+      departments,
+      cjitCode,
+      area,
+      region,
+      geographicalArea,
+      localAuthority,
+      payrollRegion,
+    }) as PrisonDetails,
 }

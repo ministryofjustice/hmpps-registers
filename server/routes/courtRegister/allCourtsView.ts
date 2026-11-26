@@ -1,9 +1,9 @@
-import { Court } from '../../@types/prisonRegister'
+import { CourtSummary } from '../../@types/prisonRegister'
 import { CourtPageView, CourtsFilter, courtsPageMapper } from './courtMapper'
 
 export default class AllCourtsView {
   constructor(
-    private readonly courts: Court[],
+    private readonly courts: CourtSummary[],
     private readonly filter: CourtsFilter,
   ) {}
 

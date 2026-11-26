@@ -1,0 +1,81 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% set pageTitle = title + " - Add a new police custody suite - DPS" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {{ govukBackLink({ text: "Back", href: navigation.backLink, attributes: { "data-qa": "back-link" } }) }}
+  {% if errors.length %}
+    {{ govukErrorSummary({ titleText: "There is a problem", errorList: errors }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">Add a new police custody suite</span>
+      <h1 class="govuk-heading-l" data-qa="main-heading">{{ title }}</h1>
+      <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        {% if page == 'details' %}
+          <p class="govuk-body">New police custody suites are active. You can add addresses, phone numbers and email addresses after creating the police custody suite.</p>
+          {{ govukInput({
+            id: "policeCustodySuiteId", name: "policeCustodySuiteId",
+            label: { text: "Police custody suite ID" },
+            hint: { text: "Enter between 2 and 6 letters or numbers." },
+            value: form.policeCustodySuiteId,
+            classes: "govuk-input--width-10",
+            errorMessage: errors | findError('policeCustodySuiteId')
+          }) }}
+          {{ govukInput({
+            id: "policeCustodySuiteName", name: "policeCustodySuiteName",
+            label: { text: "Police custody suite name" },
+            hint: { text: "Enter 40 characters or fewer." },
+            value: form.policeCustodySuiteName,
+            errorMessage: errors | findError('policeCustodySuiteName')
+          }) }}
+          {{ govukInput({
+            id: "description", name: "description",
+            label: { text: "Description (optional)" },
+            hint: { text: "Enter 3000 characters or fewer." },
+            value: form.description,
+            errorMessage: errors | findError('description')
+          }) }}
+        {% elif page == 'cjit-code' %}
+          {{ govukInput({
+            id: "cjitCode", name: "cjitCode",
+            label: { text: "CJIT code (optional)" },
+            hint: { text: "Enter 7 characters or fewer." },
+            value: form.cjitCode,
+            errorMessage: errors | findError('cjitCode')
+          }) }}
+        {% elif reference %}
+          <input type="hidden" id="{{ reference.field }}Code" name="{{ reference.field }}Code" value="{{ reference.code }}" />
+          {{ govukInput({
+            id: reference.field, name: reference.field + "Description",
+            label: { text: reference.inputLabel + " (optional)" },
+            hint: { text: "Start typing a " + reference.label + " name and select a suggestion. Clear the field to remove the " + reference.label + "." },
+            value: reference.description,
+            errorMessage: errors | findError(reference.field)
+          }) }}
+          <p id="{{ reference.field }}-search-status" role="status" class="govuk-body"></p>
+        {% endif %}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: { "data-qa": "continue-button" },
+            preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ navigation.cancelButton }}" data-qa="cancel-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {% if reference %}
+    <script src="/assets/accessible-autocomplete.min.js"></script>
+    <script src="/assets/js/{{ reference.script }}.js"></script>
+  {% endif %}
+{% endblock %}

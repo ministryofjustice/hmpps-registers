@@ -115,6 +115,13 @@ Both buttons and the confirmation and submission endpoints are gated by
 `agencyRegistersDeleteEnabled` (`AGENCY_REGISTER_DELETE_ENABLED`). This defaults
 to enabled locally and is disabled in production configuration.
 
+### Delete a court address
+
+Select **Delete** next to an address's **Update** link, then **Delete address** on
+the confirmation page to remove only that address. Cancel returns to court details
+without deleting it. The link and both endpoints use the same
+`agencyRegistersDeleteEnabled` flag.
+
 ## Reusing agency maintenance patterns
 
 Keep agency-specific controllers, creation steps, routes and DTO mappers explicit.

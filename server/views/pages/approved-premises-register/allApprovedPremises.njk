@@ -37,7 +37,14 @@
 
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
-                            <div class="moj-action-bar__filter"></div>
+                            <div class="govuk-button-group">
+                                <div class="moj-action-bar__filter"></div>
+                                {{ govukButton({
+                                    text: "Add a new approved premises",
+                                    href: "/approved-premises-register/create/start",
+                                    attributes: { "data-qa": "add-approved-premises-link" }
+                                }) }}
+                            </div>
                         </div>
                     </div>
 

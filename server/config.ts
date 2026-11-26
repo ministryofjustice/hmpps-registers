@@ -1,3 +1,6 @@
+import type { AuditClientConfig } from '@ministryofjustice/hmpps-audit-client'
+import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
+
 const production = process.env.NODE_ENV === 'production'
 
 function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
@@ -12,15 +15,6 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 
 const requiredInProduction = { requireInProduction: true }
 
-export class AgentConfig {
-  // Sets the working socket to timeout after timeout milliseconds of inactivity on the working socket.
-  timeout: number
-
-  constructor(timeout = 8000) {
-    this.timeout = timeout
-  }
-}
-
 export interface ApiConfig {
   url: string
   timeout: {
@@ -34,7 +28,7 @@ export interface ApiConfig {
   agent: AgentConfig
 }
 
-const auditConfig = () => {
+const auditConfig = (): AuditClientConfig => {
   const auditEnabled = get('AUDIT_ENABLED', 'false') === 'true'
   return {
     enabled: auditEnabled,
@@ -77,10 +71,12 @@ export default {
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
       },
       agent: new AgentConfig(),
-      apiClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction) as string,
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
-      systemClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction) as string,
-      systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
+      // The environment variable names are older than the HMPPS template's and the wrong way round:
+      // SYSTEM_CLIENT_* is the client users sign in with, and API_CLIENT_* is the client used to call APIs.
+      authClientId: get('SYSTEM_CLIENT_ID', 'hmpps-registers-ui', requiredInProduction) as string,
+      authClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
+      systemClientId: get('API_CLIENT_ID', 'hmpps-registers-ui-client', requiredInProduction) as string,
+      systemClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction) as string,
     },
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
@@ -129,4 +125,7 @@ export default {
   environmentName: get('ENVIRONMENT_NAME', ''),
   agencyRegistersEnabled: get('AGENCY_REGISTER_ENABLED', 'true') === 'true',
   agencyRegistersDeleteEnabled: get('AGENCY_REGISTER_DELETE_ENABLED', 'true') === 'true',
+  // New prisons are set up in NOMIS, which needs far more than a register entry, so adding one here
+  // is for testing only and must stay off in production
+  prisonRegisterAddEnabled: get('PRISON_REGISTER_ADD_ENABLED', 'false') === 'true',
 }

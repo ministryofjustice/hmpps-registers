@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 import PrisonRegisterController from './prisonRegisterController'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
 import data from '../testutils/mockPrisonData'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
@@ -22,7 +22,7 @@ describe('Prison Register controller', () => {
 
   beforeEach(() => {
     hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-      {} as HmppsAuthClient,
+      {} as AuthenticationClient,
     ) as jest.Mocked<HMPPSAgencyRegisterApi>
     controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     req = {
@@ -140,7 +140,9 @@ describe('Prison Register controller', () => {
 
   describe('viewPrison', () => {
     beforeEach(() => {
-      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(data.prison({ addresses: [data.prisonAddress({})] }))
+      hmppsAgencyRegisterApiService.getPrisonDetails.mockResolvedValue(
+        data.prisonDetails({ addresses: [data.prisonAddress({})] }),
+      )
     })
 
     it('will request prison for id', async () => {
@@ -151,7 +153,7 @@ describe('Prison Register controller', () => {
 
       await controller.viewPrison(req, res)
 
-      expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
+      expect(hmppsAgencyRegisterApiService.getPrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'ALI')
     })
 
     it('will render prison details page', async () => {
@@ -197,8 +199,8 @@ describe('Prison Register controller', () => {
     })
 
     it('will render prison details page with both English and Welsh address', async () => {
-      hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
-        data.prison({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
+      hmppsAgencyRegisterApiService.getPrisonDetails.mockResolvedValue(
+        data.prisonDetails({ addresses: [data.combinedEnglishAddWelshAddress({})] }),
       )
 
       await controller.viewPrison(req, res)
@@ -233,7 +235,7 @@ describe('Prison Register controller', () => {
   describe('togglePrisonActive', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
       req.body = {
@@ -273,7 +275,7 @@ describe('Prison Register controller', () => {
   describe('Add new prison flow', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
     })
@@ -289,6 +291,13 @@ describe('Prison Register controller', () => {
       })
     })
     describe('addNewPrisonDetails', () => {
+      beforeEach(() => {
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue([
+          { id: 1, name: 'PSP' },
+          { id: 2, name: 'Serco' },
+        ])
+      })
+
       it('will render prison details page with prison types', async () => {
         req.session.prisonListPageLink = '/prison-register'
         controller.addNewPrisonStart(req, res)
@@ -309,6 +318,10 @@ describe('Prison Register controller', () => {
           ],
           backLink: '/prison-register',
           errors: [],
+          operators: [
+            { text: 'PSP', value: '1' },
+            { text: 'Serco', value: '2' },
+          ],
         })
       })
       it('will pass through form to page', async () => {
@@ -337,6 +350,10 @@ describe('Prison Register controller', () => {
           ],
           backLink: '/prison-register',
           errors: [],
+          operators: [
+            { text: 'PSP', value: '1' },
+            { text: 'Serco', value: '2' },
+          ],
         })
       })
     })
@@ -420,7 +437,7 @@ describe('Prison Register controller', () => {
   describe('Amend prison flow', () => {
     beforeEach(() => {
       hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-        {} as HmppsAuthClient,
+        {} as AuthenticationClient,
       ) as jest.Mocked<HMPPSAgencyRegisterApi>
       controller = new PrisonRegisterController(hmppsAgencyRegisterApiService)
       hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
@@ -435,215 +452,225 @@ describe('Prison Register controller', () => {
       )
       hmppsAgencyRegisterApiService.getPrisonAddress.mockResolvedValue(data.prisonAddress({}))
 
-      hmppsAgencyRegisterApiService.updatePrisonDetails.mockResolvedValue(undefined)
       hmppsAgencyRegisterApiService.updatePrisonAddress.mockResolvedValue(undefined)
     })
 
-    describe('amendPrisonDetailsStart', () => {
+    const operators = [
+      { id: 1, name: 'PSP' },
+      { id: 2, name: 'G4S' },
+    ]
+
+    describe('updatePrisonDetail', () => {
       beforeEach(() => {
-        req.query.prisonId = 'MDI'
-        res.locals.user = {
-          username: 'tom',
-        }
+        req.query.id = 'MDI'
+        res.locals.user = { username: 'tom' }
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue(operators)
       })
-      it('will request prison details', async () => {
-        await controller.amendPrisonDetailsStart(req, res)
+      it('will request the prison and render the name page prefilled', async () => {
+        await controller.updatePrisonDetail(req, res, 'name')
 
         expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
-      })
-      it('will render prison details page', async () => {
-        await controller.amendPrisonDetailsStart(req, res)
-
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
-          form: expect.objectContaining({}),
-          genderValues: expect.any(Array),
-          prisonTypesValues: expect.any(Array),
-          errors: [],
-        })
-      })
-      it('will create form and pass through to page', async () => {
-        await controller.amendPrisonDetailsStart(req, res)
-
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
-          form: {
-            id: 'MDI',
+        expect(res.render).toHaveBeenCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({
             name: 'HMP Moorland',
-            prisonNameInWelsh: '',
-            contracted: 'no',
-            lthse: 'no',
-            gender: ['male'],
-            prisonType: ['HMP'],
-          },
-          genderValues: [
-            { text: 'Male', value: 'male' },
-            {
-              text: 'Female',
-              value: 'female',
-            },
-          ],
-          prisonTypesValues: [
-            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
-            { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
-            { text: 'Secure Training Centre (STC)', value: 'STC' },
-            { text: 'Youth Custody Service (YCS)', value: 'YCS' },
-          ],
-          errors: [],
-        })
-      })
-
-      it('will create form for Welsh prison and pass through to page', async () => {
-        hmppsAgencyRegisterApiService.getPrison.mockResolvedValue(
-          data.prison({
-            prisonId: 'CFI',
-            prisonName: 'HMP Cardiff',
-            prisonNameInWelsh: 'Carchar Caerdydd',
-            active: true,
-            male: true,
-            female: false,
+            field: 'name',
+            form: { name: 'HMP Moorland' },
+            navigation: { cancelButton: '/prison-register/details?id=MDI' },
+            errors: [],
           }),
         )
+      })
+      it('will prefill gender and prison types from the prison', async () => {
+        await controller.updatePrisonDetail(req, res, 'gender')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { gender: ['male'] } }),
+        )
 
-        await controller.amendPrisonDetailsStart(req, res)
+        await controller.updatePrisonDetail(req, res, 'prisonTypes')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { prisonTypes: ['HMP'] } }),
+        )
+      })
+      it('will prefill contracted and default the operator to PSP when none is set', async () => {
+        await controller.updatePrisonDetail(req, res, 'contracted')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({
+            form: { contracted: 'no', operator: '1' },
+            operators: [
+              { text: 'PSP', value: '1' },
+              { text: 'G4S', value: '2' },
+            ],
+          }),
+        )
+      })
+      it('will prefill the current operator', async () => {
+        hmppsAgencyRegisterApiService.getPrison.mockResolvedValueOnce(
+          data.prison({ prisonId: 'MDI', contracted: true, currentOperator: operators[1] }),
+        )
+        await controller.updatePrisonDetail(req, res, 'contracted')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { contracted: 'yes', operator: '2' } }),
+        )
+      })
+      it('will prefill an empty description', async () => {
+        await controller.updatePrisonDetail(req, res, 'description')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { description: '' } }),
+        )
+      })
+      it('will prefill an empty Welsh name', async () => {
+        await controller.updatePrisonDetail(req, res, 'prisonNameInWelsh')
+        expect(res.render).toHaveBeenLastCalledWith(
+          'pages/prison-register/updatePrisonDetail',
+          expect.objectContaining({ form: { prisonNameInWelsh: '' } }),
+        )
+      })
+    })
 
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', {
-          form: {
-            id: 'CFI',
-            name: 'HMP Cardiff',
-            prisonNameInWelsh: 'Carchar Caerdydd',
-            contracted: 'no',
-            lthse: 'no',
-            gender: ['male'],
-            prisonType: ['HMP'],
-          },
-          genderValues: [
-            { text: 'Male', value: 'male' },
-            {
-              text: 'Female',
-              value: 'female',
-            },
-          ],
-          prisonTypesValues: [
-            { text: "His Majesty's Prison (HMP)", value: 'HMP' },
-            { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
-            { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
-            { text: 'Secure Training Centre (STC)', value: 'STC' },
-            { text: 'Youth Custody Service (YCS)', value: 'YCS' },
-          ],
-          errors: [],
+    describe('submitUpdatePrisonDetail', () => {
+      beforeEach(() => {
+        req.query.id = 'MDI'
+        res.locals.user = { username: 'tom' }
+        hmppsAgencyRegisterApiService.updatePrisonDetails.mockResolvedValue({ success: true })
+        hmppsAgencyRegisterApiService.getPrisonOperators.mockResolvedValue(operators)
+      })
+      const expectedUpdate = {
+        prisonName: 'HMP Moorland',
+        prisonNameInWelsh: '',
+        active: true,
+        male: true,
+        female: false,
+        contracted: false,
+        lthse: false,
+        prisonTypes: ['HMP'],
+        categories: undefined as undefined,
+        operator: { id: 1, name: 'PSP' },
+      }
+      it('will get the prison before putting the single changed field', async () => {
+        req.body = { name: 'HMP Moorland New' }
+        await controller.submitUpdatePrisonDetail(req, res, 'name')
+
+        expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonName: 'HMP Moorland New',
+        })
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/details?id=MDI&action=UPDATED')
+      })
+      it('will get the prison then put the description', async () => {
+        req.body = { description: 'A category B prison' }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
+
+        expect(hmppsAgencyRegisterApiService.getPrison).toHaveBeenCalledWith({ username: 'tom' }, 'MDI')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonDescription: 'A category B prison',
         })
       })
-    })
+      it('will send null when the description is cleared', async () => {
+        req.body = { description: '' }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
 
-    describe('amendPrisonDetails', () => {
-      const expected = {
-        form: {
-          id: 'MDI',
-          name: 'HMP Moorland',
-          gender: ['male'],
-          prisonTypes: ['HMP'],
-        },
-        genderValues: [
-          { text: 'Male', value: 'male' },
-          {
-            text: 'Female',
-            value: 'female',
-          },
-        ],
-        prisonTypesValues: [
-          { text: "His Majesty's Prison (HMP)", value: 'HMP' },
-          { text: "His Majesty's Youth Offender Institution (YOI)", value: 'YOI' },
-          { text: 'Immigration Removal Centre (IRC)', value: 'IRC' },
-          { text: 'Secure Training Centre (STC)', value: 'STC' },
-          { text: 'Youth Custody Service (YCS)', value: 'YCS' },
-        ],
-        // @ts-expect-error Allow any
-        errors: [],
-      }
-      beforeEach(() => {
-        req.session.amendPrisonDetailsForm = {
-          id: 'MDI',
-          name: 'HMP Moorland',
-          gender: ['male'],
-          prisonTypes: ['HMP'],
-        }
-        req.body = {
-          ...req.session.amendPrisonDetailsForm,
-        }
-
-        res.locals.user = {
-          username: 'tom',
-        }
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonDescription: null,
+        })
       })
-      it('will not request prison details', async () => {
-        await controller.amendPrisonDetails(req, res)
+      it('will reject a description over 256 characters', async () => {
+        req.body = { description: 'a'.repeat(257) }
+        await controller.submitUpdatePrisonDetail(req, res, 'description')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#description', text: 'Description must be 256 characters or fewer' },
+        ])
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/description/update?id=MDI')
+      })
+      it('will send null when the Welsh name is cleared', async () => {
+        req.body = { prisonNameInWelsh: '' }
+        await controller.submitUpdatePrisonDetail(req, res, 'prisonNameInWelsh')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonNameInWelsh: null,
+        })
+      })
+      it('will update gender, accepting a single value', async () => {
+        req.body = { gender: 'female' }
+        await controller.submitUpdatePrisonDetail(req, res, 'gender')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          male: false,
+          female: true,
+        })
+      })
+      it('will update prison types', async () => {
+        req.body = { prisonTypes: ['HMP', 'YOI'] }
+        await controller.submitUpdatePrisonDetail(req, res, 'prisonTypes')
+
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          prisonTypes: ['HMP', 'YOI'],
+        })
+      })
+      it('will update contracted with the selected operator and lthse', async () => {
+        req.body = { contracted: 'yes', operator: '2' }
+        await controller.submitUpdatePrisonDetail(req, res, 'contracted')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenLastCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          contracted: true,
+          operator: operators[1],
+        })
+
+        req.body = { lthse: 'yes' }
+        await controller.submitUpdatePrisonDetail(req, res, 'lthse')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenLastCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          lthse: true,
+        })
+      })
+      it('will send PSP as the operator when not contracted', async () => {
+        req.body = { contracted: 'no', operator: '2' }
+        await controller.submitUpdatePrisonDetail(req, res, 'contracted')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenLastCalledWith({ username: 'tom' }, 'MDI', {
+          ...expectedUpdate,
+          contracted: false,
+          operator: operators[0],
+        })
+      })
+      it('will require a valid operator when contracted', async () => {
+        req.body = { contracted: 'yes', operator: '99' }
+        await controller.submitUpdatePrisonDetail(req, res, 'contracted')
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { href: '#operator', text: 'Select the operator of the prison' },
+        ])
+      })
+      it('will not call the API when validation fails', async () => {
+        req.body = { name: 'A' }
+        await controller.submitUpdatePrisonDetail(req, res, 'name')
 
         expect(hmppsAgencyRegisterApiService.getPrison).not.toHaveBeenCalled()
+        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).not.toHaveBeenCalled()
+        expect(req.flash).toHaveBeenCalledWith('errors', [
+          { text: 'Enter a prison name between 3 and 80 characters', href: '#name' },
+        ])
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/name/update?id=MDI')
       })
-      it('will render prison details page', async () => {
-        await controller.amendPrisonDetails(req, res)
+      it('will flash API errors and return to the update page', async () => {
+        hmppsAgencyRegisterApiService.updatePrisonDetails.mockResolvedValue({ success: false, userMessage: 'Nope' })
+        req.body = { name: 'HMP Moorland New' }
+        await controller.submitUpdatePrisonDetail(req, res, 'name')
 
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', expected)
-      })
-      it('will pass through form to page', async () => {
-        await controller.amendPrisonDetails(req, res)
-
-        expect(res.render).toHaveBeenCalledWith('pages/prison-register/amendPrisonDetails', expected)
-      })
-    })
-    describe('submitAmendPrisonDetails', () => {
-      beforeEach(() => {
-        req.session.amendPrisonDetailsForm = {
-          name: 'HMP Moorland',
-          id: 'MDI',
-          prisonNameInWelsh: '',
-          contracted: 'yes',
-          lthse: 'no',
-          gender: ['male'],
-          prisonTypes: ['HMP'],
-        }
-        req.body = {
-          ...req.session.amendPrisonDetailsForm,
-        }
-
-        res.locals.user = {
-          username: 'tom',
-        }
-      })
-      it('will call service with a valid form data', async () => {
-        await controller.submitAmendPrisonDetails(req, res)
-        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith(
-          { username: 'tom' },
-          'MDI',
-          'HMP Moorland',
-          null,
-          'yes',
-          'no',
-          true,
-          false,
-          ['HMP'],
-        )
-      })
-
-      it('will call service with a valid form data including welsh prison name', async () => {
-        req.body = {
-          ...req.body,
-          name: 'HMP Cardiff',
-          id: 'CFI',
-          prisonNameInWelsh: 'Carchar Caerdydd',
-        }
-        await controller.submitAmendPrisonDetails(req, res)
-        expect(hmppsAgencyRegisterApiService.updatePrisonDetails).toHaveBeenCalledWith(
-          { username: 'tom' },
-          'CFI',
-          'HMP Cardiff',
-          'Carchar Caerdydd',
-          'yes',
-          'no',
-          true,
-          false,
-          ['HMP'],
-        )
+        expect(req.flash).toHaveBeenCalledWith('errors', [{ href: '#name', text: 'Nope' }])
+        expect(res.redirect).toHaveBeenCalledWith('/prison-register/name/update?id=MDI')
       })
     })
 
@@ -902,9 +929,7 @@ describe('Prison Register controller', () => {
           addresspostcode: 'DN7 6BW',
           addresscountry: 'England',
         }
-        req.body = {
-          ...req.session.amendPrisonDetailsForm,
-        }
+        req.body = {}
 
         res.locals.user = {
           username: 'tom',

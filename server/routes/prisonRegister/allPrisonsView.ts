@@ -1,4 +1,5 @@
 import { Prison } from '../../@types/prisonRegister'
+import config from '../../config'
 import { AllPrisonsFilter, PrisonPageView, prisonsPageMapper } from './prisonMapper'
 
 export default class AllPrisonsView {
@@ -9,7 +10,11 @@ export default class AllPrisonsView {
 
   readonly prisonPageView = prisonsPageMapper(this.prisons, this.allPrisonsFilter)
 
-  get renderArgs(): PrisonPageView {
-    return { ...this.prisonPageView, allPrisonsFilter: this.allPrisonsFilter }
+  get renderArgs(): PrisonPageView & { prisonRegisterAddEnabled: boolean } {
+    return {
+      ...this.prisonPageView,
+      allPrisonsFilter: this.allPrisonsFilter,
+      prisonRegisterAddEnabled: config.prisonRegisterAddEnabled,
+    }
   }
 }

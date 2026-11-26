@@ -3,7 +3,8 @@
 {% macro policeCustodySuiteCoreDetailsCard(opts) %}
 
   {% set policeCustodySuite = opts.policeCustodySuite %}
-
+  {% set base = "/police-custody-suite-register" %}
+  {% set id = policeCustodySuite.policeCustodySuiteId %}
 
   {{ govukSummaryList({
     card: {
@@ -18,10 +19,10 @@
           text: 'Code'
         },
         value: {
-          text: policeCustodySuite.policeCustodySuiteId
+          text: id
         },
         actions: {
-         items: [ ]
+          items: [ ]
         }
       },
       {
@@ -32,7 +33,13 @@
           text: policeCustodySuite.policeCustodySuiteName
         },
         actions: {
-         items: [ ]
+          items: [{
+            href: base + "/name-description/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "name",
+            attributes: {"data-qa": "update-name-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -43,7 +50,13 @@
           text: policeCustodySuite.description if policeCustodySuite.description else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/name-description/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "description",
+            attributes: {"data-qa": "update-description-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -51,10 +64,16 @@
           text: 'Active'
         },
         value: {
-        text: 'Active' if policeCustodySuite.active else 'Inactive'
+          text: 'Active' if policeCustodySuite.active else 'Inactive'
         },
         actions: {
-          items: [ ]
+          items: [{
+            href: base + "/active/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "active status",
+            attributes: {"data-qa": "update-active-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       },
       {
@@ -65,7 +84,13 @@
           text: policeCustodySuite.inactiveDate | formatDate
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/active/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "date deactivated",
+            attributes: {"data-qa": "update-inactive-date-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       } if policeCustodySuite.inactiveDate,
       {
@@ -76,7 +101,13 @@
           text: policeCustodySuite.cjitCode if policeCustodySuite.cjitCode else 'Not provided'
         },
         actions: {
-        items: [ ]
+          items: [{
+            href: base + "/cjit-code/update?id=" + id,
+            text: "Update",
+            visuallyHiddenText: "CJIT code",
+            attributes: {"data-qa": "update-cjit-code-link"},
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       }
     ]

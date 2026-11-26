@@ -1,4 +1,4 @@
-import { Court, UpdateCourt } from '../../@types/prisonRegister'
+import { Court, CourtSummary, UpdateCourt } from '../../@types/prisonRegister'
 import { AgencyFilter } from '../utils/filter'
 
 export type CourtDetail = {
@@ -13,17 +13,17 @@ export type CourtPageView = {
   filter: CourtsFilter
 }
 
-export default function courtMapper(court: Court): CourtDetail {
+export default function courtMapper(court: CourtSummary): CourtDetail {
   return {
     id: court.courtId,
     name: court.courtName,
     active: court.active,
-    type: court.courtType.description,
+    type: court.courtType?.description ?? '',
   }
 }
 
-export function courtsPageMapper(courtResults: Court[], filter: CourtsFilter): CourtPageView {
-  const courts = courtResults.map((court: Court) => courtMapper(court))
+export function courtsPageMapper(courtResults: CourtSummary[], filter: CourtsFilter): CourtPageView {
+  const courts = courtResults.map((court: CourtSummary) => courtMapper(court))
   return { courts, filter }
 }
 

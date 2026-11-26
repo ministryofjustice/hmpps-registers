@@ -35,4 +35,23 @@ describe('AddNewPrisonSummaryView', () => {
   it('will pass through the back link', () => {
     expect(view.renderArgs.backLink).toEqual('http://get-back')
   })
+
+  it('will show the operator that will be saved', () => {
+    const withOperator = new AddNewPrisonSummaryView(
+      {
+        id: 'MDI',
+        name: 'Moorland Prison',
+        gender: ['male'],
+        contracted: 'yes',
+        prisonOperator: { id: 2, name: 'Serco' },
+        lthse: 'no',
+        addresstown: 'Doncaster',
+        addresspostcode: 'DN12 3AB',
+        addresscountry: 'England',
+      },
+      'http://get-back',
+    )
+
+    expect(withOperator.renderArgs.operatorName).toEqual('Serco')
+  })
 })

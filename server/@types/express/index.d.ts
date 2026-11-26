@@ -1,3 +1,4 @@
+import type { PageViewEventDetails } from '@ministryofjustice/hmpps-audit-client'
 import type {
   AddAddressForm,
   UpdateAddressForm,
@@ -5,8 +6,12 @@ import type {
   UpdatePhoneNumberForm,
   UpdateNameDescriptionForm,
   UpdateCourtTypeForm,
+  UpdateHighSecurityForm,
   UpdateAccessibleAccessForm,
   UpdateCjitCodeForm,
+  DepartmentContactDetailsForm,
+  UpdateContactForm,
+  UpdateAgencyTypeForm,
   UpdateActiveForm,
   UpdateAreaForm,
   UpdateRegionForm,
@@ -18,7 +23,7 @@ import type {
 } from 'agencyForms'
 import type {
   AddNewPrisonForm,
-  AmendPrisonDetailsForm,
+  UpdatePrisonDetailForm,
   AmendWelshPrisonAddressForm,
   AmendPrisonAddressForm,
   AddPrisonAddressForm,
@@ -26,6 +31,11 @@ import type {
   DeleteWelshPrisonAddressForm,
 } from '../prisonRegisterForms'
 
+import type { AddHospitalJourney } from '../../routes/hospitalRegister/create/addHospitalFlowControl'
+import type { AddPoliceCustodySuiteJourney } from '../../routes/policeCustodySuiteRegister/create/addPoliceCustodySuiteFlowControl'
+import type { AddProbationOfficeJourney } from '../../routes/probationOfficeRegister/create/addProbationOfficeFlowControl'
+import type { AddOtherAgencyJourney } from '../../routes/otherAgencyRegister/create/addOtherAgencyFlowControl'
+import type { AddApprovedPremisesJourney } from '../../routes/approvedPremisesRegister/create/addApprovedPremisesFlowControl'
 import type { AddCourtJourney } from '../../routes/courtRegister/create/addCourtFlowControl'
 
 export default {}
@@ -37,7 +47,12 @@ declare module 'express-session' {
     nowInMinutes: number
     addNewPrisonForm: AddNewPrisonForm
     addCourtJourneys: Record<string, AddCourtJourney>
-    amendPrisonDetailsForm: AmendPrisonDetailsForm
+    addHospitalJourneys: Record<string, AddHospitalJourney>
+    addApprovedPremisesJourneys: Record<string, AddApprovedPremisesJourney>
+    addOtherAgencyJourneys: Record<string, AddOtherAgencyJourney>
+    addProbationOfficeJourneys: Record<string, AddProbationOfficeJourney>
+    addPoliceCustodySuiteJourneys: Record<string, AddPoliceCustodySuiteJourney>
+    updatePrisonDetailForm: UpdatePrisonDetailForm
     amendWelshPrisonAddressForm: AmendWelshPrisonAddressForm
     amendPrisonAddressForm: AmendPrisonAddressForm
     addPrisonAddressForm: AddPrisonAddressForm
@@ -54,7 +69,11 @@ declare module 'express-session' {
     updateNameDescriptionForm: UpdateNameDescriptionForm
     updateCourtTypeForm: UpdateCourtTypeForm
     updateAccessibleAccessForm: UpdateAccessibleAccessForm
+    updateHighSecurityForm: UpdateHighSecurityForm
     updateCjitCodeForm: UpdateCjitCodeForm
+    departmentContactDetailsForm: DepartmentContactDetailsForm
+    updateContactForm: UpdateContactForm
+    updateAgencyTypeForm: UpdateAgencyTypeForm
     updateActiveForm: UpdateActiveForm
     updateAreaForm: UpdateAreaForm
     updateRegionForm: UpdateRegionForm
@@ -70,6 +89,11 @@ export declare global {
       username: string
       token: string
       authSource: string
+    }
+
+    interface Locals {
+      /** Page view being audited to HMPPS Audit (see auditPageView middleware) */
+      auditEvent?: PageViewEventDetails
     }
 
     interface Request {

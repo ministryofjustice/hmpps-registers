@@ -12,6 +12,9 @@ import {
   PhoneNumber,
   CodeDescription,
   LegacyAgencyUsage,
+  CourtSummary,
+  PrisonDetails,
+  PrisonOperator,
 } from '../../server/@types/prisonRegister'
 import data from '../../server/routes/testutils/mockPrisonData'
 import courtData from '../../server/routes/testutils/mockCourtData'
@@ -57,6 +60,16 @@ const stubGetRegions = (regions: CodeDescription[]): SuperAgentRequest =>
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: regions,
+    },
+  })
+
+const stubGetPrisonOperators = (operators: PrisonOperator[]): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'GET', url: '/prison-register/reference-data/prison-operators' },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: operators,
     },
   })
 
@@ -151,6 +164,21 @@ const stubGetPrison = (prison: Prison): SuperAgentRequest =>
     request: {
       method: 'GET',
       urlPattern: `/prison-register/prisons/id/${prison.prisonId}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: prison,
+    },
+  })
+
+const stubGetPrisonDetails = (prison: PrisonDetails): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prison-register/prison-maintenance/id/${prison.prisonId}/details`,
     },
     response: {
       status: 200,
@@ -263,11 +291,135 @@ const stubUpdatePrison = (prison: Prison): SuperAgentRequest =>
     },
   })
 
-const stubGetCourts = (courts: Court[]): SuperAgentRequest =>
+const stubUpdatePrisonError = ({
+  prisonId,
+  userMessage,
+}: {
+  prisonId: string
+  userMessage: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${prisonId}`,
+    },
+    response: {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { userMessage },
+    },
+  })
+
+const getUpdatedPrisons = (prisonId: string): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'PUT' && request.url === `/prison-register/prison-maintenance/id/${prisonId}`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
+const stubUpdatePrisonArea = (prisonId: string): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${prisonId}/area`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+    },
+  })
+
+const stubUpdatePrisonAreaError = ({
+  prisonId,
+  userMessage,
+}: {
+  prisonId: string
+  userMessage: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      urlPattern: `/prison-register/prison-maintenance/id/${prisonId}/area`,
+    },
+    response: {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: { userMessage },
+    },
+  })
+
+const getUpdatedPrisonAreas = (prisonId: string): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'PUT' && request.url === `/prison-register/prison-maintenance/id/${prisonId}/area`,
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
+const departmentContactDetailsPath = (prisonId: string) =>
+  `/prison-register/secure/prisons/id/${prisonId}/department/contact-details`
+
+const stubPrisonContactDetails = ({
+  prisonId,
+  method,
+  status = 200,
+  userMessage,
+}: {
+  prisonId: string
+  method: 'POST' | 'PUT' | 'DELETE'
+  status?: number
+  userMessage?: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method,
+      urlPathPattern: departmentContactDetailsPath(prisonId),
+    },
+    response: {
+      status,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      ...(userMessage ? { jsonBody: { userMessage } } : {}),
+    },
+  })
+
+const getPrisonContactDetailsRequests = ({
+  prisonId,
+  method,
+}: {
+  prisonId: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === method && request.url.split('?')[0] === departmentContactDetailsPath(prisonId),
+      )
+      .map(({ request }: { request: { body: string; queryParams: Record<string, { values: string[] }> } }) =>
+        method === 'DELETE'
+          ? { departmentType: request.queryParams.departmentType?.values[0] }
+          : JSON.parse(request.body),
+      ),
+  )
+
+const stubGetCourts = (courts: CourtSummary[]): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/prison-register/courts.*',
+      urlPattern: '/prison-register/courts/summary.*',
     },
     response: {
       status: 200,
@@ -590,6 +742,30 @@ const getDeletedCourtRequests = (courtId: string): Promise<number> =>
       ).length,
   )
 
+const stubDeleteCourtAddress = ({ courtId, addressId }: { courtId: string; addressId: number }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'DELETE',
+      urlPattern: `/prison-register/courts/id/${courtId}/address/${addressId}`,
+    },
+    response: { status: 204 },
+  })
+
+const getDeletedCourtAddressRequests = ({
+  courtId,
+  addressId,
+}: {
+  courtId: string
+  addressId: number
+}): Promise<number> =>
+  getRequests().then(
+    response =>
+      response.body.requests.filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'DELETE' && request.url === `/prison-register/courts/id/${courtId}/address/${addressId}`,
+      ).length,
+  )
+
 const stubDeleteCourtPhoneNumber = ({ courtId, phoneId }: { courtId: string; phoneId: number }): SuperAgentRequest =>
   stubFor({
     request: {
@@ -699,6 +875,107 @@ const stubGetOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
     },
   })
 
+type OtherAgencyApiCall = {
+  agencyId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const createOtherAgencyScenario = (agencyId: string) => `create-other-agency-${agencyId}`
+
+// The agency ID is available until POST /other-agencies creates the office, which can then be retrieved.
+const stubOtherAgencyIdAvailable = async (otherAgency: OtherAgency): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${otherAgency.agencyId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/other-agencies/id/${otherAgency.agencyId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: otherAgency,
+    },
+  })
+}
+
+const stubCreateOtherAgency = (otherAgency: OtherAgency): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createOtherAgencyScenario(otherAgency.agencyId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/other-agencies',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.agencyId == '${otherAgency.agencyId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: otherAgency,
+    },
+  })
+
+const stubCreateOtherAgencyError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/other-agencies' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedOtherAgency = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/other-agencies',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
+const otherAgencyApiPath = ({ agencyId, endpoint }: OtherAgencyApiCall) =>
+  `/prison-register/other-agencies/id/${agencyId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubOtherAgencyApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: OtherAgencyApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: otherAgencyApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubOtherAgencyApiError = (call: OtherAgencyApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubOtherAgencyApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getOtherAgencyApiRequests = (call: OtherAgencyApiCall): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === otherAgencyApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
 const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -714,6 +991,65 @@ const stubGetHospitals = (hospitals: Hospital[]): SuperAgentRequest =>
     },
   })
 
+const createHospitalScenario = (hospitalId: string) => `create-hospital-${hospitalId}`
+
+// The agency ID is available until POST /hospitals creates the hospital, which can then be retrieved.
+const stubHospitalIdAvailable = async (hospital: Hospital): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    requiredScenarioState: 'Started',
+    request: { method: 'GET', url: `/prison-register/legacy/agency/${hospital.hospitalId}/is-used` },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    requiredScenarioState: 'Created',
+    request: { method: 'GET', url: `/prison-register/hospitals/id/${hospital.hospitalId}` },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: hospital,
+    },
+  })
+}
+
+const stubCreateHospital = (hospital: Hospital): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createHospitalScenario(hospital.hospitalId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/hospitals',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.hospitalId == '${hospital.hospitalId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: hospital,
+    },
+  })
+
+const stubCreateHospitalError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/hospitals' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedHospitals = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/hospitals',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
 const stubGetHospital = (hospital: Hospital): SuperAgentRequest =>
   stubFor({
     request: {
@@ -728,6 +1064,38 @@ const stubGetHospital = (hospital: Hospital): SuperAgentRequest =>
       jsonBody: hospital,
     },
   })
+
+type HospitalApiCall = { hospitalId: string; endpoint?: string; method: 'POST' | 'PUT' | 'DELETE' }
+
+const hospitalApiPath = ({ hospitalId, endpoint }: HospitalApiCall) =>
+  `/prison-register/hospitals/id/${hospitalId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubHospitalApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: HospitalApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: hospitalApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubHospitalApiError = (call: HospitalApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubHospitalApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getHospitalApiRequests = (call: HospitalApiCall): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === hospitalApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
 
 const stubGetPoliceCustodySuites = (policeCustodySuites: PoliceCustodySuite[]): SuperAgentRequest =>
   stubFor({
@@ -759,6 +1127,112 @@ const stubGetPoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): Supe
     },
   })
 
+const createPoliceCustodySuiteScenario = (policeCustodySuiteId: string) =>
+  `create-police-custody-suite-${policeCustodySuiteId}`
+
+// The agency ID is available until POST /police-custody-suites creates the suite, which can then be retrieved.
+const stubPoliceCustodySuiteIdAvailable = async (policeCustodySuite: PoliceCustodySuite): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${policeCustodySuite.policeCustodySuiteId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/police-custody-suites/id/${policeCustodySuite.policeCustodySuiteId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: policeCustodySuite,
+    },
+  })
+}
+
+const stubCreatePoliceCustodySuite = (policeCustodySuite: PoliceCustodySuite): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createPoliceCustodySuiteScenario(policeCustodySuite.policeCustodySuiteId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/police-custody-suites',
+      bodyPatterns: [
+        { matchesJsonPath: `$[?(@.policeCustodySuiteId == '${policeCustodySuite.policeCustodySuiteId}')]` },
+      ],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: policeCustodySuite,
+    },
+  })
+
+const stubCreatePoliceCustodySuiteError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/police-custody-suites' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedPoliceCustodySuites = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/police-custody-suites',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
+type PoliceCustodySuiteApiCall = {
+  policeCustodySuiteId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const policeCustodySuiteApiPath = ({ policeCustodySuiteId, endpoint }: PoliceCustodySuiteApiCall) =>
+  `/prison-register/police-custody-suites/id/${policeCustodySuiteId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubPoliceCustodySuiteApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: PoliceCustodySuiteApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: policeCustodySuiteApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubPoliceCustodySuiteApiError = (call: PoliceCustodySuiteApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubPoliceCustodySuiteApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getPoliceCustodySuiteApiRequests = (
+  call: PoliceCustodySuiteApiCall,
+): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === policeCustodySuiteApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
 const stubGetProbationOffices = (probationOffices: ProbationOffice[]): SuperAgentRequest =>
   stubFor({
     request: {
@@ -788,6 +1262,210 @@ const stubGetProbationOffice = (probationOffice: ProbationOffice): SuperAgentReq
       jsonBody: probationOffice,
     },
   })
+
+const createProbationOfficeScenario = (probationOfficeId: string) => `create-probation-office-${probationOfficeId}`
+
+// The agency ID is available until POST /probation-offices creates the office, which can then be retrieved.
+const stubProbationOfficeIdAvailable = async (probationOffice: ProbationOffice): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${probationOffice.probationOfficeId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/probation-offices/id/${probationOffice.probationOfficeId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: probationOffice,
+    },
+  })
+}
+
+const stubCreateProbationOffice = (probationOffice: ProbationOffice): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createProbationOfficeScenario(probationOffice.probationOfficeId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/probation-offices',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.probationOfficeId == '${probationOffice.probationOfficeId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: probationOffice,
+    },
+  })
+
+const stubCreateProbationOfficeError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/probation-offices' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedProbationOffices = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/probation-offices',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
+
+type ProbationOfficeApiCall = {
+  probationOfficeId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const probationOfficeApiPath = ({ probationOfficeId, endpoint }: ProbationOfficeApiCall) =>
+  `/prison-register/probation-offices/id/${probationOfficeId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubProbationOfficeApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: ProbationOfficeApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: probationOfficeApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubProbationOfficeApiError = (call: ProbationOfficeApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubProbationOfficeApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getProbationOfficeApiRequests = (call: ProbationOfficeApiCall): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === probationOfficeApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
+type ApprovedPremisesApiCall = {
+  approvedPremisesId: string
+  endpoint?: string
+  method: 'POST' | 'PUT' | 'DELETE'
+}
+
+const approvedPremisesApiPath = ({ approvedPremisesId, endpoint }: ApprovedPremisesApiCall) =>
+  `/prison-register/approved-premises/id/${approvedPremisesId}${endpoint ? `/${endpoint}` : ''}`
+
+const stubApprovedPremisesApi = ({
+  status = 200,
+  jsonBody,
+  ...call
+}: ApprovedPremisesApiCall & { status?: number; jsonBody?: unknown }): SuperAgentRequest =>
+  stubFor({
+    request: { method: call.method, urlPattern: approvedPremisesApiPath(call) },
+    response: {
+      status,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody,
+    },
+  })
+
+const stubApprovedPremisesApiError = (call: ApprovedPremisesApiCall & { userMessage: string }): SuperAgentRequest =>
+  stubApprovedPremisesApi({ ...call, status: 400, jsonBody: { userMessage: call.userMessage } })
+
+const getApprovedPremisesApiRequests = (
+  call: ApprovedPremisesApiCall,
+): Promise<Array<Record<string, unknown> | null>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === call.method && request.url === approvedPremisesApiPath(call),
+      )
+      .map(({ request }: { request: { body?: string } }) => (request.body ? JSON.parse(request.body) : null)),
+  )
+
+const createApprovedPremisesScenario = (approvedPremisesId: string) => `create-approved-premises-${approvedPremisesId}`
+
+// The agency ID is available until POST /approved-premises creates the office, which can then be retrieved.
+const stubApprovedPremisesIdAvailable = async (approvedPremises: ApprovedPremises): Promise<unknown> => {
+  await resetScenarios()
+  await stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    requiredScenarioState: 'Started',
+    request: {
+      method: 'GET',
+      url: `/prison-register/legacy/agency/${approvedPremises.approvedPremisesId}/is-used`,
+    },
+    response: { status: 204 },
+  })
+  return stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    requiredScenarioState: 'Created',
+    request: {
+      method: 'GET',
+      url: `/prison-register/approved-premises/id/${approvedPremises.approvedPremisesId}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: approvedPremises,
+    },
+  })
+}
+
+const stubCreateApprovedPremises = (approvedPremises: ApprovedPremises): SuperAgentRequest =>
+  stubFor({
+    scenarioName: createApprovedPremisesScenario(approvedPremises.approvedPremisesId),
+    newScenarioState: 'Created',
+    request: {
+      method: 'POST',
+      url: '/prison-register/approved-premises',
+      bodyPatterns: [{ matchesJsonPath: `$[?(@.approvedPremisesId == '${approvedPremises.approvedPremisesId}')]` }],
+    },
+    response: {
+      status: 201,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: approvedPremises,
+    },
+  })
+
+const stubCreateApprovedPremisesError = (userMessage: string): SuperAgentRequest =>
+  stubFor({
+    request: { method: 'POST', url: '/prison-register/approved-premises' },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 400, userMessage, developerMessage: userMessage },
+    },
+  })
+
+const getCreatedApprovedPremises = (): Promise<Array<Record<string, unknown>>> =>
+  getRequests().then(response =>
+    response.body.requests
+      .filter(
+        ({ request }: { request: { method: string; url: string } }) =>
+          request.method === 'POST' && request.url === '/prison-register/approved-premises',
+      )
+      .map(({ request }: { request: { body: string } }) => JSON.parse(request.body)),
+  )
 
 const stubGetAllApprovedPremises = (approvedPremisesList: ApprovedPremises[]): SuperAgentRequest =>
   stubFor({
@@ -824,15 +1502,24 @@ export default {
   stubGetLocalAuthorities,
   stubGetAreas,
   stubGetRegions,
+  stubGetPrisonOperators,
   stubGetTownSuggestions,
   stubGetCountySuggestions,
   stubPing,
   stubGetPrisonsWithFilter,
   stubAddPrison,
   stubGetPrison,
+  stubGetPrisonDetails,
   stubFindPrison,
   stubAmendedPrison,
   stubUpdatePrison,
+  stubUpdatePrisonError,
+  getUpdatedPrisons,
+  stubUpdatePrisonArea,
+  stubUpdatePrisonAreaError,
+  getUpdatedPrisonAreas,
+  stubPrisonContactDetails,
+  getPrisonContactDetailsRequests,
   stubGetPrisonAddress,
   stubUpdatePrisonAddress,
   stubAddPrisonAddress,
@@ -851,6 +1538,8 @@ export default {
   getAddedCourtAddresses,
   stubUpdateCourtAddress,
   getUpdatedCourtAddresses,
+  stubDeleteCourtAddress,
+  getDeletedCourtAddressRequests,
   stubAddCourtPhoneNumber,
   getAddedCourtPhoneNumbers,
   stubUpdateCourtPhoneNumber,
@@ -869,19 +1558,54 @@ export default {
   getDeletedCourtEmailAddressRequests,
   stubGetOtherAgencies,
   stubGetOtherAgency,
+  stubOtherAgencyApi,
+  stubOtherAgencyIdAvailable,
+  stubCreateOtherAgency,
+  stubCreateOtherAgencyError,
+  getCreatedOtherAgency,
+  stubOtherAgencyApiError,
+  getOtherAgencyApiRequests,
   stubGetHospitals,
   stubGetHospital,
+  stubHospitalIdAvailable,
+  stubCreateHospital,
+  stubCreateHospitalError,
+  getCreatedHospitals,
+  stubHospitalApi,
+  stubHospitalApiError,
+  getHospitalApiRequests,
   stubGetPoliceCustodySuites,
   stubGetPoliceCustodySuite,
+  stubPoliceCustodySuiteIdAvailable,
+  stubCreatePoliceCustodySuite,
+  stubCreatePoliceCustodySuiteError,
+  getCreatedPoliceCustodySuites,
+  stubPoliceCustodySuiteApi,
+  stubPoliceCustodySuiteApiError,
+  getPoliceCustodySuiteApiRequests,
   stubGetProbationOffices,
   stubGetProbationOffice,
+  stubProbationOfficeIdAvailable,
+  stubCreateProbationOffice,
+  stubCreateProbationOfficeError,
+  getCreatedProbationOffices,
+  stubProbationOfficeApi,
+  stubProbationOfficeApiError,
+  getProbationOfficeApiRequests,
   stubGetAllApprovedPremises,
   stubGetApprovedPremises,
+  stubApprovedPremisesIdAvailable,
+  stubCreateApprovedPremises,
+  stubCreateApprovedPremisesError,
+  getCreatedApprovedPremises,
+  stubApprovedPremisesApi,
+  stubApprovedPremisesApiError,
+  getApprovedPremisesApiRequests,
 }
 
 // Mock data
-export const albanyPrison: Prison = data.prison({ types: [] })
-export const moorlandPrison: Prison = data.prison({
+export const albanyPrison: Prison = data.prisonDetails({ types: [] })
+export const moorlandPrison: Prison = data.prisonDetails({
   prisonId: 'MDI',
   prisonName: 'HMP Moorland',
   active: true,
@@ -895,6 +1619,16 @@ export const moorlandPrison: Prison = data.prison({
     { code: 'YOI', description: 'His Majesty’s Youth Offender Institution' },
   ],
   operators: [{ name: 'G4S' }],
+  currentOperator: { id: 2, name: 'G4S' },
+  departments: [
+    {
+      type: 'SOCIAL_VISIT',
+      emailAddress: 'social.visits@moorland.example.com',
+      phoneNumber: '01302 111111',
+      webAddress: 'https://www.example.com/moorland/visits',
+    },
+    { type: 'OFFENDER_MANAGEMENT_UNIT', emailAddress: 'omu@moorland.example.com' },
+  ],
 })
 export const belmarshPrison: Prison = {
   prisonId: 'BAI',
@@ -918,9 +1652,10 @@ export const belmarshPrison: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
 }
 
-export const cardiffPrison: Prison = {
+export const cardiffPrison: PrisonDetails = {
   prisonId: 'CFI',
   prisonName: 'HMP Cardiff',
   active: false,
@@ -942,6 +1677,13 @@ export const cardiffPrison: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
+  area: null,
+  region: null,
+  localAuthority: null,
+  payrollRegion: null,
+  cjitCode: null,
+  departments: [],
 }
 
 export const cardiffPrisonWithWelshAddress: Prison = {
@@ -971,6 +1713,7 @@ export const cardiffPrisonWithWelshAddress: Prison = {
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
 }
 
 export const sheffieldCrownCourt: Court = courtData.court({

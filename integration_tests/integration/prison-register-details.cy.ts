@@ -9,8 +9,8 @@ context('Prison register - prison details navigation', () => {
     cy.task('stubSignIn')
     cy.task('stubManageUser')
     cy.task('stubGetPrisonsWithFilter', [albanyPrison, moorlandPrison, cardiffPrison])
-    cy.task('stubGetPrison', moorlandPrison)
-    cy.task('stubGetPrison', albanyPrison)
+    cy.task('stubGetPrisonDetails', moorlandPrison)
+    cy.task('stubGetPrisonDetails', albanyPrison)
     cy.signIn()
   })
 
@@ -25,13 +25,34 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('contain.text', moorlandPrison.prisonId)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', moorlandPrison.prisonName)
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Active')
-    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male prison')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female prison')
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Male')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Female')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Operator(s)')
-    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Type(s)')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Operator')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'G4S')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Prison types')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Prison,')
     prisonDetailsPage.prisonDetailsSection().should('contain.text', 'His Majesty’s Youth Offender Institution')
+  })
+
+  it('Will display departments with change, delete and add links', () => {
+    IndexPage.verifyOnPage().prisonRegisterLink().click()
+    AllPrisons.verifyOnPage().viewPrisonLink(moorlandPrison.prisonId).click()
+    const prisonDetailsPage = PrisonDetails.verifyOnPage(moorlandPrison.prisonName)
+
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Departments')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Social visits')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'social.visits@moorland.example.com')
+    prisonDetailsPage.departmentsSection().should('contain.text', '01302 111111')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'https://www.example.com/moorland/visits')
+    prisonDetailsPage.departmentsSection().should('contain.text', 'Offender management unit')
+    prisonDetailsPage
+      .updateDepartmentLink('SOCIAL_VISIT')
+      .should('have.attr', 'href', '/prison-register/department/update?id=MDI&departmentType=SOCIAL_VISIT')
+    prisonDetailsPage
+      .deleteDepartmentLink('SOCIAL_VISIT')
+      .should('have.attr', 'href', '/prison-register/department/delete?id=MDI&departmentType=SOCIAL_VISIT')
+    prisonDetailsPage.addDepartmentLink().should('have.attr', 'href', '/prison-register/department/create?id=MDI')
   })
 
   it('Will display prison address details without link to add welsh address', () => {
@@ -53,7 +74,7 @@ context('Prison register - prison details navigation', () => {
   })
 
   it('Will display prison address with link to add welsh address', () => {
-    cy.task('stubGetPrison', cardiffPrison)
+    cy.task('stubGetPrisonDetails', cardiffPrison)
 
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()
@@ -75,7 +96,7 @@ context('Prison register - prison details navigation', () => {
     prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Type(s)')
   })
 
-  it('Will not state prison contracted when prison not contracted', () => {
+  it('Will not show the operator when not contracted', () => {
     IndexPage.verifyOnPage().prisonRegisterLink().click()
     AllPrisons.verifyOnPage()
       .viewPrisonLink(albanyPrison.prisonId)
@@ -83,7 +104,7 @@ context('Prison register - prison details navigation', () => {
       .click()
     const prisonDetailsPage = PrisonDetails.verifyOnPage(albanyPrison.prisonName)
 
-    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Contracted')
-    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Operator(s)')
+    prisonDetailsPage.prisonDetailsSection().should('contain.text', 'Contracted')
+    prisonDetailsPage.prisonDetailsSection().should('not.contain.text', 'Operator')
   })
 })

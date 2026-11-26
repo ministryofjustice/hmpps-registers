@@ -1,4 +1,4 @@
-import { OtherAgency } from '../../@types/prisonRegister'
+import { OtherAgency, UpdateOtherAgency } from '../../@types/prisonRegister'
 import { AgencyFilter } from '../utils/filter'
 import { otherAgencyTypeDescription } from './otherAgencyData'
 
@@ -20,6 +20,23 @@ export default function otherAgencyMapper(otherAgency: OtherAgency): OtherAgency
     name: otherAgency.agencyName,
     active: otherAgency.active,
     type: otherAgencyTypeDescription(otherAgency.agencyType),
+  }
+}
+
+export function updateOtherAgencyMapper(otherAgency: OtherAgency): UpdateOtherAgency {
+  return {
+    agencyName: otherAgency.agencyName,
+    description: otherAgency.description,
+    active: otherAgency.active,
+    accessibleAccess: otherAgency.accessibleAccess as UpdateOtherAgency['accessibleAccess'],
+    otherAgencyType: otherAgency.agencyType as UpdateOtherAgency['otherAgencyType'],
+    inactiveDate: otherAgency.inactiveDate,
+    cjitCode: otherAgency.cjitCode,
+    areaCode: otherAgency.area?.code,
+    regionCode: otherAgency.region?.code,
+    geographicalAreaCode: otherAgency.geographicalArea?.code,
+    localAuthorityCode: otherAgency.localAuthority?.code,
+    payrollRegionCode: otherAgency.payrollRegion?.code,
   }
 }
 

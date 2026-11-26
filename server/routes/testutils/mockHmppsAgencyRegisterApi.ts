@@ -1,10 +1,10 @@
-import HmppsAuthClient from '../../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 jest.mock('../../services/hmppsAgencyRegisterApi')
 
 const hmppsAgencyRegisterApiService = new HMPPSAgencyRegisterApi(
-  {} as HmppsAuthClient,
+  {} as AuthenticationClient,
 ) as jest.Mocked<HMPPSAgencyRegisterApi>
 hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([
   {
@@ -18,6 +18,7 @@ hmppsAgencyRegisterApiService.getPrisonsWithFilter.mockResolvedValue([
     addresses: [],
     types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
     operators: [{ name: 'PSP' }],
+    currentOperator: { id: 1, name: 'PSP' },
     categories: [],
   },
 ])
@@ -42,6 +43,7 @@ hmppsAgencyRegisterApiService.getPrison.mockResolvedValue({
   ],
   types: [{ code: 'HMP', description: 'His Majesty’s Prison' }],
   operators: [{ name: 'PSP' }],
+  currentOperator: { id: 1, name: 'PSP' },
   categories: [],
 })
 export default hmppsAgencyRegisterApiService

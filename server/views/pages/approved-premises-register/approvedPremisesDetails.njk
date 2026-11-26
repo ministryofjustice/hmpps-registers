@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/approved-premises-register/approvedPremisesCoreDetailsCard.njk" import approvedPremisesCoreDetailsCard %}
 {% from "partials/approved-premises-register/approvedPremisesAreaDetailsCard.njk" import approvedPremisesAreaDetailsCard %}
 {% from "partials/addressesCard.njk" import addressesCard %}
@@ -18,6 +19,21 @@
   <main class="app-container govuk-body">
     <h1 class="govuk-heading-l">{{ approvedPremises.approvedPremisesName }}</h1>
 
+    {% if action == 'CREATED' %}
+      <div data-qa="confirm-created" class="govuk-panel govuk-panel--confirmation">
+        <div class="govuk-panel__body">
+          Approved premises has been added successfully
+        </div>
+      </div>
+    {% endif %}
+    {% if action == 'UPDATED' %}
+      <div data-qa="confirm-updated" class="govuk-panel govuk-panel--confirmation">
+        <div class="govuk-panel__body">
+          Approved premises has been updated successfully
+        </div>
+      </div>
+    {% endif %}
+
   <div>
     <h2 class="flush-left govuk-heading-m govuk-grid-column-one-half">Approved premises details</h2>
   </div>
@@ -29,15 +45,23 @@
       {{  approvedPremisesAreaDetailsCard({ approvedPremises: approvedPremises }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  addressesCard({ addresses: approvedPremises.addresses }) }}
+      {{  addressesCard({ addresses: approvedPremises.addresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register", deleteEnabled: agencyRegistersDeleteEnabled }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  phoneNumbersCard({ phoneNumbers: approvedPremises.phoneNumbers }) }}
+      {{  phoneNumbersCard({ phoneNumbers: approvedPremises.phoneNumbers, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register" }) }}
     </div>
     <div class="govuk-grid-column-two-thirds">
-      {{  emailAddressesCard({ emailAddresses: approvedPremises.emailAddresses }) }}
+      {{  emailAddressesCard({ emailAddresses: approvedPremises.emailAddresses, id: approvedPremises.approvedPremisesId, baseRegisterUrl: "/approved-premises-register" }) }}
     </div>
   </div>
+  {% if agencyRegistersDeleteEnabled %}
+    {{ govukButton({
+      text: "Delete approved premises",
+      href: "/approved-premises-register/delete?id=" + approvedPremises.approvedPremisesId,
+      classes: "govuk-button--warning",
+      attributes: { "data-qa": "delete-approved-premises-button" }
+    }) }}
+  {% endif %}
   </main>
 
 {% endblock %}

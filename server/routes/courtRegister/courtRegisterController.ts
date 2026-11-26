@@ -55,7 +55,7 @@ export default class CourtRegisterController {
     const filter = this.parseFilter(req)
 
     req.session.allListPageLink = '/court-register'
-    const courts = await this.hmppsAgencyRegisterApiService.getCourts(context(res), filter)
+    const courts = await this.hmppsAgencyRegisterApiService.getCourtSummaries(context(res), filter)
     const view = new AllCourtsView(courts, filter)
     res.render('pages/court-register/allCourts', view.renderArgs)
   }
@@ -167,6 +167,28 @@ export default class CourtRegisterController {
         return updatedAddress
       }),
     )
+  }
+
+  async deleteAddress(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const addressId = Number(req.query.addressId)
+    if (!Number.isSafeInteger(addressId) || addressId <= 0) throw createError(400, 'Invalid address ID')
+    const court = await this.hmppsAgencyRegisterApiService.getCourt(context(res), req.query.id as string)
+    const address = court.addresses.find(item => item.id === addressId)
+    if (!address) throw createError(404, 'Court address not found')
+    res.render('pages/components/edit/deleteAgencyAddress', {
+      name: court.courtName,
+      navigation: { cancelButton: `/court-register/details?id=${court.courtId}` },
+      address,
+    })
+  }
+
+  async submitDeleteAddress(req: Request, res: Response): Promise<void> {
+    if (!config.agencyRegistersDeleteEnabled) throw createError(404, 'Not found')
+    const addressId = Number(req.body.addressId)
+    if (!Number.isSafeInteger(addressId) || addressId <= 0) throw createError(400, 'Invalid address ID')
+    await this.hmppsAgencyRegisterApiService.deleteCourtAddress(context(res), req.query.id as string, addressId)
+    res.redirect(`/court-register/details?id=${req.query.id}&action=UPDATED`)
   }
 
   async addPhone(req: Request, res: Response): Promise<void> {

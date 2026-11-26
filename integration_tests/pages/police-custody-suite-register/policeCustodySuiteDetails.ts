@@ -18,6 +18,10 @@ const policeCustodySuiteDetails = {
   phoneNumber: () => summaryValue('Number'),
   emailAddress: () => summaryValue('Email'),
   summaryKeys: () => cy.get('dt'),
+  link: (qa: string) => cy.get(`[data-qa=${qa}]`),
+  confirmCreated: () => cy.get('[data-qa=confirm-created]'),
+  confirmUpdated: () => cy.get('[data-qa=confirm-updated]'),
+  deletePoliceCustodySuiteButton: () => cy.get('[data-qa=delete-police-custody-suite-button]'),
 }
 
 const verifyOnPage = (policeCustodySuiteName: string): typeof policeCustodySuiteDetails & Page =>

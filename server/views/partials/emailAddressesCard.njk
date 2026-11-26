@@ -10,6 +10,13 @@
 
   {% if emailAddresses and emailAddresses.length > 0 %}
     {% for item in emailAddresses %}
+      {% set deleteItems = [] if opts.deleteHidden else [{
+              href: baseRegisterUrl + "/email/delete?id=" + id + "&emailId=" + item.id,
+              text: "Delete",
+              visuallyHiddenText: "email address " + item.address,
+              attributes: {"data-qa": "delete-email-address-link"},
+              classes: "govuk-link--no-visited-state"
+            }] %}
       {% set data = data.concat([{
 
         key: {
@@ -26,15 +33,8 @@
               visuallyHiddenText: "email address " + item.address,
               attributes: {"data-qa": "update-email-address-link"},
               classes: "govuk-link--no-visited-state"
-            },
-            {
-              href: baseRegisterUrl + "/email/delete?id=" + id + "&emailId=" + item.id,
-              text: "Delete",
-              visuallyHiddenText: "email address " + item.address,
-              attributes: {"data-qa": "delete-email-address-link"},
-              classes: "govuk-link--no-visited-state"
             }
-          ] if baseRegisterUrl else []
+          ].concat(deleteItems) if baseRegisterUrl else []
         }
       }]) %}
     {% endfor %}

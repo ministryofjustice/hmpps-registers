@@ -1,6 +1,16 @@
-import { OperatorType, Prison, PrisonAddress, PrisonType } from '../../@types/prisonRegister'
+import {
+  PrisonOperator,
+  Prison,
+  PrisonAddress,
+  PrisonDetails,
+  PrisonType,
+  CodeDescription,
+  UpdatePrison,
+  UpdatePrisonArea,
+} from '../../@types/prisonRegister'
+import { departmentName } from './departmentTypes'
 
-export type PrisonDetail = {
+export type PrisonSummary = {
   id: string
   name: string
   prisonNameInWelsh: string
@@ -11,7 +21,29 @@ export type PrisonDetail = {
   lthse?: boolean
   addresses: AddressDetail[]
   types: TypeDetail[]
-  operators: OperatorDetail[]
+  currentOperator?: OperatorDetail | null
+}
+
+export type PrisonDetail = {
+  id: string
+  name: string
+  description?: string | null
+  prisonNameInWelsh: string
+  active: boolean
+  male?: boolean
+  female?: boolean
+  contracted?: boolean
+  lthse?: boolean
+  addresses: AddressDetail[]
+  types: TypeDetail[]
+  currentOperator?: OperatorDetail | null
+  cjitCode?: string
+  area?: CodeDescription
+  region?: CodeDescription
+  geographicalArea?: CodeDescription
+  localAuthority?: CodeDescription
+  payrollRegion?: CodeDescription
+  departments?: DepartmentDetail[]
 }
 
 export function pageLinkMapper(): string {
@@ -45,7 +77,26 @@ export type TypeDetail = {
   description: string
 }
 
+export type DepartmentDetail = {
+  type: string
+  name: string
+  emailAddress?: string
+  phoneNumber?: string
+  webAddress?: string
+}
+
+export function departmentMapper(department: PrisonDetails['departments'][number]): DepartmentDetail {
+  return {
+    type: department.type,
+    name: departmentName(department.type),
+    emailAddress: department.emailAddress,
+    phoneNumber: department.phoneNumber,
+    webAddress: department.webAddress,
+  }
+}
+
 export type OperatorDetail = {
+  id: number
   name: string
 }
 
@@ -54,7 +105,7 @@ export type PrisonPageView = {
   allPrisonsFilter: AllPrisonsFilter
 }
 
-export default function prisonMapper(prison: Prison): PrisonDetail {
+export function prisonMapper(prison: Prison): PrisonSummary {
   return {
     id: prison.prisonId,
     name: prison.prisonName,
@@ -66,7 +117,31 @@ export default function prisonMapper(prison: Prison): PrisonDetail {
     lthse: prison.lthse,
     addresses: prison.addresses?.map(addressMapper) || [],
     types: prison.types?.map(typeMapper) || [],
-    operators: prison.operators?.map(operatorMapper) || [],
+    currentOperator: prison.currentOperator ? operatorMapper(prison.currentOperator) : null,
+  }
+}
+
+export function prisonDetailsMapper(prison: PrisonDetails): PrisonDetail {
+  return {
+    id: prison.prisonId,
+    name: prison.prisonName,
+    description: prison.prisonDescription,
+    prisonNameInWelsh: prison.prisonNameInWelsh,
+    active: prison.active,
+    male: prison.male,
+    female: prison.female,
+    contracted: prison.contracted,
+    lthse: prison.lthse,
+    addresses: prison.addresses?.map(addressMapper) || [],
+    types: prison.types?.map(typeMapper) || [],
+    currentOperator: prison.currentOperator ? operatorMapper(prison.currentOperator) : null,
+    cjitCode: prison.cjitCode,
+    area: prison.area,
+    region: prison.region,
+    geographicalArea: prison.geographicalArea,
+    localAuthority: prison.localAuthority,
+    payrollRegion: prison.payrollRegion,
+    departments: prison.departments?.map(departmentMapper) || [],
   }
 }
 
@@ -101,8 +176,9 @@ export function typeMapper(type: PrisonType): TypeDetail {
   }
 }
 
-export function operatorMapper(operator: OperatorType): OperatorDetail {
+export function operatorMapper(operator: PrisonOperator): OperatorDetail {
   return {
+    id: operator.id,
     name: operator.name,
   }
 }
@@ -118,4 +194,31 @@ export type AllPrisonsFilter = {
   genders?: string[]
   prisonTypeCodes?: string[]
   lthse?: boolean
+}
+
+export function updatePrisonAreaMapper(prison: PrisonDetails): UpdatePrisonArea {
+  return {
+    cjitCode: prison.cjitCode,
+    areaCode: prison.area?.code,
+    regionCode: prison.region?.code,
+    geographicalAreaCode: prison.geographicalArea?.code,
+    localAuthorityCode: prison.localAuthority?.code,
+    payrollRegionCode: prison.payrollRegion?.code,
+  }
+}
+
+export function updatePrisonMapper(prison: Prison): UpdatePrison {
+  return {
+    prisonName: prison.prisonName,
+    prisonDescription: prison.prisonDescription,
+    prisonNameInWelsh: prison.prisonNameInWelsh,
+    active: prison.active,
+    male: prison.male,
+    female: prison.female,
+    contracted: prison.contracted,
+    lthse: prison.lthse,
+    prisonTypes: prison.types.map(type => type.code),
+    categories: prison.categories,
+    operator: prison.currentOperator,
+  }
 }

@@ -2,67 +2,10 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/prison-register/prisonAreaDetailsCard.njk" import prisonAreaDetailsCard %}
+{% from "partials/prison-register/prisonCoreDetailsCard.njk" import prisonCoreDetailsCard %}
 
 {% set pageTitle = applicationName + " - Prison Details" %}
-
-{% macro prisonname(id, name, prisonNameInWelsh, active, male, female, contracted, lthse, types, operators) %}
-  <p>
-    {{ id }}
-  </p>
-  <p>
-    {{ name }}
-  </p>
-  {% if prisonNameInWelsh %}
-    <p>
-    {{ prisonNameInWelsh }}
-  </p>
-  {% endif %}
-  <p>
-    {% if active %}
-      Active
-    {% else %}
-      Inactive
-    {% endif %}
-  </p>
-  <p>
-    {% if male %}
-      Male prison
-    {% endif %}
-  </p>
-  <p>
-    {% if female %}
-      Female prison
-    {% endif %}
-  </p>
-  <p>
-    {% if contracted %}
-      Contracted
-    {% endif %}
-  </p>
-  <p>
-    {% if contracted %}
-      Operator(s):
-      {% for operator in operators %}
-        {{ operator.name }}{% if loop.revindex > 1 %},{% endif %}
-      {% endfor %}
-    {% endif %}
-  </p>
-
-  {% if types|length %}
-    <p>
-      Type(s):
-      {% for type in types %}
-        {{ type.description }}{% if loop.revindex > 1 %},{% endif %}
-      {% endfor %}
-    </p>
-  {% endif %}
-
-  <p>
-    {% if lthse %}
-      Long Term High Security Estate (LTHSE)
-    {% endif %}
-  </p>
-{% endmacro %}
 
 {% macro line(text) %}
   {% if text and text.trim() != '' %}
@@ -91,9 +34,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro amendPrisonUrl(prison) %}
-  /prison-register/amend-prison-details-start?prisonId={{ prison.id }}
-{% endmacro %}
 {% macro amendAddressUrl(prison, address) %}
   /prison-register/amend-prison-address-start?prisonId={{ prison.id }}&addressId={{ address.id }}
 {% endmacro %}
@@ -111,6 +51,12 @@
 
 {% macro govukSummaryListEnglishPrisonAddress(address, addressLabel, showAddWelshAddressLink) %}
     {{ govukSummaryList({
+        card: {
+          classes: 'summary-card-wider-key-column',
+          title: {
+            text: 'Addresses'
+          }
+        },
       attributes: { "data-qa": "address-details-section-"+ address.id},
       rows: [
         {
@@ -140,6 +86,18 @@
         }
       ]
     }) }}
+{% endmacro %}
+
+{% macro departmentDetails(department) %}
+  {% if department.emailAddress %}
+    <p class="govuk-!-margin-bottom-1">Email: <a href="mailto:{{ department.emailAddress }}" class="govuk-link">{{ department.emailAddress }}</a></p>
+  {% endif %}
+  {% if department.webAddress %}
+    <p class="govuk-!-margin-bottom-1">Web address: <a href="{{ department.webAddress }}" class="govuk-link">{{ department.webAddress }}</a></p>
+  {% endif %}
+  {% if department.phoneNumber %}
+    <p class="govuk-!-margin-bottom-1">Phone: {{ department.phoneNumber }}</p>
+  {% endif %}
 {% endmacro %}
 
 {% macro confirmationPanel(message, attribute) %}
@@ -194,30 +152,61 @@
       {% endif %}
     </form>
   </div>
-  {{ govukSummaryList({
-    attributes: { "data-qa": "prison-summary-section"},
-    rows: [
-      {
-        key: {
-        text: "Prison"
-      },
-        value: {
-        html: prisonname(prisonDetails.id, prisonDetails.name, prisonDetails.prisonNameInWelsh, prisonDetails.active, prisonDetails.male, prisonDetails.female, prisonDetails.contracted, prisonDetails.lthse, prisonDetails.types, prisonDetails.operators),
-        classes: "prison-details"
-      },
-        actions: {
+    <div class="govuk-grid-row"></div>
+
+
+  {{ prisonCoreDetailsCard({ prison: prisonDetails }) }}
+
+ {{  prisonAreaDetailsCard({ prison: prisonDetails }) }}
+
+
+  {% set departmentRows = [] %}
+  {% for department in prisonDetails.departments %}
+    {% set departmentRows = (departmentRows.push({
+      key: { text: department.name },
+      value: { html: departmentDetails(department) },
+      actions: {
         items: [
           {
-            href: amendPrisonUrl(prisonDetails),
+            href: "/prison-register/department/update?id=" + prisonDetails.id + "&departmentType=" + department.type,
             text: "Change",
-            visuallyHiddenText: "prison details",
-            attributes: { "data-qa": "amend-prison-details-link"}
+            visuallyHiddenText: department.name + " contact details",
+            attributes: { "data-qa": "update-department-link-" + department.type },
+            classes: "govuk-link--no-visited-state"
+          },
+          {
+            href: "/prison-register/department/delete?id=" + prisonDetails.id + "&departmentType=" + department.type,
+            text: "Delete",
+            visuallyHiddenText: department.name + " contact details",
+            attributes: { "data-qa": "delete-department-link-" + department.type },
+            classes: "govuk-link--no-visited-state"
           }
         ]
       }
-      }
-    ]
-  }) }}
+    }), departmentRows) %}
+  {% endfor %}
+  {% if not departmentRows | length %}
+    {% set departmentRows = [{ key: { text: "No contact details provided.", classes: "govuk-!-font-weight-regular govuk-!-width-full" } }] %}
+  {% endif %}
+  <div data-qa="departments-section">
+    {{ govukSummaryList({
+      card: {
+        classes: 'summary-card-wider-key-column',
+        title: { text: 'Departments' }
+      },
+      rows: departmentRows
+    }) }}
+  </div>
+  {% if prisonDetails.departments | length < 5 %}
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Add contact details",
+        href: "/prison-register/department/create?id=" + prisonDetails.id,
+        classes: "govuk-button govuk-button--secondary",
+        attributes: { "data-qa": "add-department-link" }
+      }) }}
+    </div>
+  {% endif %}
 
   {% for address in prisonDetails.addresses %}
     {% if prisonDetails.addresses.length > 1 %}
@@ -245,7 +234,7 @@
                 href: amendWelshAddressUrl(prisonDetails, address),
                 text: "Change",
                 visuallyHiddenText: "welsh address details",
-                attributes: { "data-qa": "amend-welsh-address-details-link-"+ address.id} 
+                attributes: { "data-qa": "amend-welsh-address-details-link-"+ address.id}
               },
               {
                 href: deleteWelshAddressUrl(prisonDetails, address),

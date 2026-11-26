@@ -1,6 +1,10 @@
 import { RequestHandler, Router } from 'express'
+import createError from 'http-errors'
+import config from '../../config'
 import asyncMiddleware from '../../middleware/asyncMiddleware'
 import PrisonRegisterController from './prisonRegisterController'
+import prisonDetailFields from './prisonDetailFields'
+import prisonReferenceFields from './prisonAreaFields'
 import HMPPSAgencyRegisterApi from '../../services/hmppsAgencyRegisterApi'
 
 // include this here otherwise TS complains about cyclical dependencies
@@ -14,31 +18,54 @@ export default function routes(router: Router, services: Services): Router {
 
   const prisonRegisterController = new PrisonRegisterController(services.hmppsAgencyRegisterApiService)
 
+  // adding a prison is switched off in production: new prisons are set up in NOMIS
+  const whenAddEnabled =
+    (handler: RequestHandler): RequestHandler =>
+    (req, res, next) =>
+      config.prisonRegisterAddEnabled ? handler(req, res, next) : next(createError(404, 'Not found'))
+
   get('/prison-register', (req, res) => prisonRegisterController.showAllPrisons(req, res))
   get('/prison-register/details', (req, res) => prisonRegisterController.viewPrison(req, res))
 
-  get('/prison-register/add', (req, res) => prisonRegisterController.addNewPrisonStart(req, res))
-  get('/prison-register/add-new-prison-details', (req, res) => prisonRegisterController.addNewPrisonDetails(req, res))
-  post('/prison-register/add-new-prison-details', (req, res) =>
-    prisonRegisterController.submitNewPrisonDetails(req, res),
+  get(
+    '/prison-register/add',
+    whenAddEnabled((req, res) => prisonRegisterController.addNewPrisonStart(req, res)),
   )
-  get('/prison-register/add-new-prison-address', (req, res) => prisonRegisterController.addNewPrisonAddress(req, res))
-  post('/prison-register/add-new-prison-address', (req, res) =>
-    prisonRegisterController.submitNewPrisonNewAddress(req, res),
+  get(
+    '/prison-register/add-new-prison-details',
+    whenAddEnabled((req, res) => prisonRegisterController.addNewPrisonDetails(req, res)),
   )
-  get('/prison-register/add-new-prison-summary', (req, res) => prisonRegisterController.addNewPrisonSummary(req, res))
-  post('/prison-register/add-new-prison-finished', (req, res) =>
-    prisonRegisterController.submitNewPrisonSummary(req, res),
+  post(
+    '/prison-register/add-new-prison-details',
+    whenAddEnabled((req, res) => prisonRegisterController.submitNewPrisonDetails(req, res)),
   )
-  get('/prison-register/add-new-prison-finished', (req, res) => prisonRegisterController.addNewPrisonFinished(req, res))
+  get(
+    '/prison-register/add-new-prison-address',
+    whenAddEnabled((req, res) => prisonRegisterController.addNewPrisonAddress(req, res)),
+  )
+  post(
+    '/prison-register/add-new-prison-address',
+    whenAddEnabled((req, res) => prisonRegisterController.submitNewPrisonNewAddress(req, res)),
+  )
+  get(
+    '/prison-register/add-new-prison-summary',
+    whenAddEnabled((req, res) => prisonRegisterController.addNewPrisonSummary(req, res)),
+  )
+  post(
+    '/prison-register/add-new-prison-finished',
+    whenAddEnabled((req, res) => prisonRegisterController.submitNewPrisonSummary(req, res)),
+  )
+  get(
+    '/prison-register/add-new-prison-finished',
+    whenAddEnabled((req, res) => prisonRegisterController.addNewPrisonFinished(req, res)),
+  )
 
-  get('/prison-register/amend-prison-details-start', (req, res) =>
-    prisonRegisterController.amendPrisonDetailsStart(req, res),
-  )
-  get('/prison-register/amend-prison-details', (req, res) => prisonRegisterController.amendPrisonDetails(req, res))
-  post('/prison-register/amend-prison-details', (req, res) =>
-    prisonRegisterController.submitAmendPrisonDetails(req, res),
-  )
+  prisonDetailFields.forEach(({ field, path }) => {
+    get(`/prison-register/${path}/update`, (req, res) => prisonRegisterController.updatePrisonDetail(req, res, field))
+    post(`/prison-register/${path}/update`, (req, res) =>
+      prisonRegisterController.submitUpdatePrisonDetail(req, res, field),
+    )
+  })
 
   get('/prison-register/add-prison-address-start', (req, res) =>
     prisonRegisterController.addPrisonAddressStart(req, res),
@@ -92,6 +119,22 @@ export default function routes(router: Router, services: Services): Router {
   post('/prison-register/delete-prison-address', (req, res) =>
     prisonRegisterController.submitDeletePrisonAddress(req, res),
   )
+
+  get('/prison-register/department/create', (req, res) => prisonRegisterController.addDepartment(req, res))
+  post('/prison-register/department/create', (req, res) => prisonRegisterController.submitAddDepartment(req, res))
+  get('/prison-register/department/update', (req, res) => prisonRegisterController.updateDepartment(req, res))
+  post('/prison-register/department/update', (req, res) => prisonRegisterController.submitUpdateDepartment(req, res))
+  get('/prison-register/department/delete', (req, res) => prisonRegisterController.deleteDepartment(req, res))
+  post('/prison-register/department/delete', (req, res) => prisonRegisterController.submitDeleteDepartment(req, res))
+
+  get('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.updateCjitCode(req, res))
+  post('/prison-register/cjit-code/update', (req, res) => prisonRegisterController.submitUpdateCjitCode(req, res))
+  prisonReferenceFields.forEach(({ field, path }) => {
+    get(`/prison-register/${path}/update`, (req, res) => prisonRegisterController.updateReference(req, res, field))
+    post(`/prison-register/${path}/update`, (req, res) =>
+      prisonRegisterController.submitUpdateReference(req, res, field),
+    )
+  })
 
   post('/prison-register/toggle-prison-active', (req, res) => prisonRegisterController.togglePrisonActive(req, res))
 
