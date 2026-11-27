@@ -5,12 +5,12 @@
     "moduleResolution": "nodenext",
     "noEmit": true,
     "lib": ["dom", "es2015.promise"],
-    "types": ["cypress", "express", "express-session"],
+    "types": ["cypress", "@playwright/test", "express", "express-session"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
     "noImplicitAny": false
   },
-  "include": ["**/*.ts", "../cypress.config.ts"]
+  "include": ["**/*.ts", "../cypress.config.ts", "../playwright.config.ts"]
 }

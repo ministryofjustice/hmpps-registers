@@ -62,13 +62,28 @@ Then run the server in test mode by:
 
 `npm run start-feature` (or `npm run start-feature:dev` to run with auto-restart on changes)
 
-And then either, run tests in headless mode with:
+The integration tests are moving from Cypress to Playwright (MAPB-1173). Until every spec has moved,
+both run in CI.
+
+Cypress specs are in `integration_tests/integration`. Run them headless with:
 
 `npm run int-test`
 
-Or run tests with the cypress UI:
+Or with the Cypress UI:
 
 `npm run int-test-ui`
+
+Playwright specs are in `integration_tests/specs`. The first time, install the browser with:
+
+`npx playwright install chromium`
+
+Then run them headless with:
+
+`npm run int-test-playwright`
+
+Or with the Playwright UI:
+
+`npm run int-test-playwright-ui`
 
 ## Court geographical area
 
