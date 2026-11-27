@@ -29,6 +29,7 @@
     "integration_tests",
     "dist",
     "cypress.config.ts",
+    "playwright.config.ts",
     "esbuild",
     "eslint.config.mjs"
   ],

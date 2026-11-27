@@ -25,6 +25,9 @@
     "security_audit": "npx audit-ci --config audit-ci.json",
     "int-test": "cypress run --config video=false",
     "int-test-ui": "cypress open --e2e --browser chrome",
+    "int-test-playwright": "npx playwright test",
+    "int-test-playwright-ui": "npx playwright test --ui",
+    "int-test-init:ci": "npx playwright install chromium",
     "clean": "rm -rf dist node_modules",
     "rebuild": "npm run clean && npm run setup && npm run build",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
@@ -112,6 +115,7 @@
     "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "^3.0.2",
+    "@playwright/test": "1.65.1",
     "@tsconfig/node24": "^24.0.5",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
